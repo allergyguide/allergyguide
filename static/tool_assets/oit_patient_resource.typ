@@ -760,10 +760,161 @@ Each step has a different _protein target_. In the example below, during Step 1 
 
 #pagebreak()
 
-= What if the patient is sick?
+#page(flipped: true)[
+  = What if the patient is sick?
 
-Add diagram
+  Being sick can make reactions more likely to happen. Use this guide to decide if you should give the daily dose.
 
+  #let height = 88%
+  #let mild-card(body) = {
+    rect(
+      width: 100%,
+      height: height,
+      radius: 4pt,
+      stroke: (paint: black, thickness: 1pt), // Thin border
+      inset: 0pt, // handle padding inside
+    )[
+      #block(
+        width: 100%,
+        inset: 12pt,
+        fill: luma(240), // Very light gray header
+        stroke: (bottom: 0.5pt + black),
+      )[
+        #set align(center)
+        #text(weight: "bold", size: 1.2em)[MILD Symptoms]
+      ]
+      #block(inset: 12pt)[#body]
+    ]
+  }
+
+  #let severe-card(body) = {
+    rect(
+      width: 100%,
+      height: height,
+      radius: 4pt,
+      stroke: (paint: black, thickness: 3pt), // Thick border
+      inset: 0pt,
+    )[
+      // Inverted Header: Black background, White text
+      #block(
+        width: 100%,
+        inset: 12pt,
+        fill: black,
+        radius: (top: 2pt),
+      )[
+        #set align(center)
+        #set text(fill: white, weight: "bold", size: 1.2em)
+        SEVERE Symptoms
+      ]
+      #block(inset: 12pt)[#body]
+    ]
+  }
+
+  #let icon-item(icon, term, desc) = {
+    grid(
+      columns: (2.5em, 1fr),
+      column-gutter: 0.8em,
+      align: horizon,
+      image(icon, width: 100%), [#strong(term): #desc],
+    )
+  }
+
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 1em,
+
+    mild-card([
+      #set text(size: 0.95em)
+      #set list(spacing: 1em)
+      #v(-0.5em)
+      _Generally well, but with minor symptoms._
+      #v(0.5em)
+
+      *Acceptable Symptoms:*
+
+      - Mild cough or runny nose
+      - Mild headache or tummy ache
+      - *No* fever
+      - *No* change in energy or appetite
+      - *No* large change in behaviour
+      - *No* asthma symptoms
+
+      #v(1fr)
+      #line(length: 100%, stroke: (dash: "dashed"))
+
+      *Action Plan:*
+      + #text(weight: "black")[GIVE THE DOSE]
+      + Give with a solid snack.
+      + *Avoid* exercise for 2 hours after the dose.
+      + Optional: give a non-drowsy antihistamine 1 hour prior.
+    ]),
+
+    severe-card([
+      #set text(size: 0.95em)
+      #v(-0.5em)
+      _Do not dose if there is *ANY* of the following:_
+      #v(0.5em)
+
+      #icon-item("fever.svg", "Fever", "Requiring treatment/medication")
+      #v(-0.2em)
+      #icon-item(
+        "inhaler.svg",
+        "Asthma",
+        "Sickness causing flare, requiring >1 puff of rescue inhaler in a day",
+      )
+      #v(-0.2em)
+      #icon-item(
+        "throat.svg",
+        "Throat/lungs",
+        "Sore throat, persistent cough, shortness of breath",
+      )
+      #v(-0.2em)
+      #icon-item(
+        "gut.svg",
+        "Stomach",
+        "Vomiting, diarrhea, or severe stomach pain",
+      )
+      #v(-0.2em)
+      #icon-item(
+        "malaise.svg",
+        "General",
+        "Fatigued/lethargic, poor sleep/appetite, muscle aches",
+      )
+
+      #v(1fr)
+      #line(length: 100%, stroke: (paint: black, thickness: 2pt))
+
+      *Action Plan:*
+      #v(0.2em)
+      #box(
+        fill: black,
+        inset: (x: 4pt, y: 0pt),
+        radius: 2pt,
+        outset: (y: 2pt),
+      )[
+        #text(size: 1.5em, weight: "bold", fill: white)[DO NOT GIVE THE DOSE]
+      ]
+
+      #v(0.2em)
+      // Restart Logic Box
+      #block(
+        fill: white,
+        inset: 8pt,
+        radius: 4pt,
+        width: 100%,
+        stroke: 1pt + black,
+      )[
+        *When to restart #underline()[once symptoms resolve]:*
+
+        - *Missed 1-2 days consecutively:* \ #v(0em) Resume same dose.
+
+        - *Missed 3 or more days consecutively:* \
+          #v(0em)
+          #text(weight: "black")[STOP OIT.] See page X for how to safely restart.
+      ]
+    ]),
+  )
+]
 #pagebreak()
 
 = What if the patient misses doses?
