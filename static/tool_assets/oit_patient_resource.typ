@@ -613,25 +613,152 @@ Each step has a different _protein target_. In the example below, during Step 1 
 
 #pagebreak()
 
-#align(center)[
-  #text(size: 24pt, weight: "bold")[Troubleshooting]\
-  #v(0.1pt)
-  #line(length: 100%, stroke: 2pt)
+#page(flipped: true)[
+  #align(center)[
+    #text(size: 24pt, weight: "bold")[Troubleshooting]\
+    #v(0.1pt)
+    #line(length: 100%, stroke: 2pt)
+  ]
+
+  = What to do if there's symptoms after a dose?
+
+  // Symptoms can be either MILD or SEVERE. Mild symptoms are expected especially in the beginning; however, they should be monitored in the rare case it progresses to a severe reaction. Record reactions in a diary.
+
+  #let height = 88%
+  #let mild-card(body) = {
+    rect(
+      width: 100%,
+      height: height,
+      radius: 4pt,
+      stroke: (paint: black, thickness: 1pt), // Thin border
+      inset: 0pt, // handle padding inside
+    )[
+      #block(
+        width: 100%,
+        inset: 12pt,
+        fill: luma(240), // Very light gray header
+        stroke: (bottom: 0.5pt + black),
+      )[
+        #set align(center)
+        #text(weight: "bold", size: 1.2em)[MILD Symptoms]
+      ]
+      #block(inset: 12pt)[#body]
+    ]
+  }
+
+  #let severe-card(body) = {
+    rect(
+      width: 100%,
+      height: height,
+      radius: 4pt,
+      stroke: (paint: black, thickness: 3pt), // Thick border
+      inset: 0pt,
+    )[
+      // Inverted Header: Black background, White text
+      #block(
+        width: 100%,
+        inset: 12pt,
+        fill: black,
+        radius: (top: 2pt),
+      )[
+        #set align(center)
+        #set text(fill: white, weight: "bold", size: 1.2em)
+        SEVERE Symptoms
+      ]
+      #block(inset: 12pt)[#body]
+    ]
+  }
+
+  #let icon-item(icon, term, desc) = {
+    grid(
+      columns: (2.5em, 1fr),
+      column-gutter: 0.8em,
+      align: horizon,
+      image(icon, width: 100%), [#strong(term): #desc],
+    )
+  }
+
+  #grid(
+    columns: (1fr, 1fr),
+    gutter: 1em,
+
+    // --- MILD COLUMN ---
+    mild-card([
+      _Monitor closely. Usually resolves in 30-60 mins._
+
+      #v(0.5em)
+      *What to look for:*
+      #icon-item("nose.svg", "Nose", "itchy, congested, runny, sneezing")
+      #v(-0.5em)
+      #icon-item("skin.svg", "Skin", "mild hives, itch, redness, warmth
+")
+      #v(-0.5em)
+      #icon-item(
+        "mouth.svg",
+        "Mouth",
+        "throat or mouth itch, tingle, lip swelling",
+      )
+      #v(-0.5em)
+      #icon-item("eyes.svg", "Eyes", "itchy, red, watery, swelling
+")
+      #v(-0.5em)
+      #icon-item("gut.svg", "Stomach", "mild nausea, stomach ache, burping/gas")
+
+      #line(length: 100%, stroke: (dash: "dashed"))
+
+      *Action Plan:*
+      - Give non-drowsy antihistamine.
+      - Avoid strenuous activity for at least 2 hours.
+      - Record in diary.
+      - *No need* to contact doctor.
+    ]),
+
+    // --- SEVERE COLUMN ---
+    severe-card([
+      _Anaphylaxis: Act immediately._
+
+      #v(0.5em)
+      *Look for ANY of the following:*
+      #icon-item(
+        "lungs.svg",
+        "Lungs",
+        "new shortness of breath, wheeze, persistent cough
+",
+      )
+      #v(-0.5em)
+      #icon-item(
+        "throat.svg",
+        "Throat",
+        "tightness, trouble swallowing, hoarse voice",
+      )
+      #v(-0.5em)
+      #icon-item("heart.svg", "Heart", "pale, blue, dizzy, weak pulse")
+      #v(-0.5em)
+      #icon-item(
+        "nose.svg",
+        "Other",
+        "anxiety, confusion, loss of consciousness",
+      )
+      #v(-0.5em)
+      #icon-item("gut.svg", "Stomach", "repetitive vomiting or nausea")
+      #v(-0.5em)
+      #icon-item("skin.svg", "Skin", "body-wide hives")
+      #v(-0.5em)
+
+      #text(size: 0.8em)[
+        \* _Watch & wait if vomiting x1 or hives only_
+      ]
+
+      #line(length: 100%, stroke: (paint: black, thickness: 2pt))
+
+      *Action Plan:*
+      + #text(weight: "black", size: 1.1em)[GIVE EPINEPHRINE]
+      + Call 911 / Transport to ER.
+      + Lay patient flat (side if vomiting).
+      + *Stop OIT* & contact doctor.
+    ]),
+  )
 ]
-
-= What do I do if there's a reaction after a dose?
-
-Reactions can be either MILD or SEVERE. Mild reactions are expected especially in the beginning; however, they should be monitored in the rare case it progresses to a severe reaction. Record reactions in a diary.
-
-== Mild
-
-What do I look out for?
-What do I do?
-
-== Severe
-
-What do I look out for?
-What do I do?
 
 #pagebreak()
 
