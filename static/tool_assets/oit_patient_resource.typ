@@ -181,7 +181,7 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 
     - *Severe active eczema:* Severe eczema can make it hard to tell when an allergic reaction is happening.
 
-    - *Older patients:* while not a strict rule, once over 6 years old, patients are more likely to have anaphylaxis, and less likely to be consistent with doses
+    - *Older patients:* while not a strict rule, once over 6 years old, patients are more likely to have anaphylaxis, and less likely to be consistent with doses.
 
     - *Inability to obtain required equipment, language barriers, or inconsistent schedule*
   ],
@@ -923,7 +923,29 @@ Each step has a different _protein target_. In the example below, during Step 1 
 - Main point: if you miss too many doses, the body can lose its desensitization and 'forget' the food, making restarting more risky
 - We have different plans for how to restart based on both number of days missed and also what stage (build-up or maintenance) the patient is on
 
+== Build up phase
 
+=== if 3-7 missed doses
+
+- reduce dose by one step, and give for 3-5 days (or longer)
+- Increase to back to original dose level when tolerating the dose with no/minimal symptoms
+- remain on the original dose level for at least 2-4 weeks
+
+=== if >7 missed doses
+
+- reduce dose by two steps, give for 3-5 days
+- then if no / minimal symptoms, go up to the next step for 3-5 days
+- then if no / minimal symptoms, go up to the original step for at least 2-4 weeks
+
+== Maintenance phase
+
+=== 3-7 missed doses
+
+- give 240mg protein for 3-5 days then increase to maintenance dose when tolerating with no/minimal symptoms
+
+=== >7 missed doses
+
+- 160 mg 3-5 days, 240 mg 3-5 days, then 300 mg long term
 
 #pagebreak()
 
@@ -943,6 +965,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 ]
 
 = OIT in general
+
 *Q: Is OIT a cure?*
 Not exactly. It is a treatment. If you stop taking the daily dose, the allergy may likely come back.
 
