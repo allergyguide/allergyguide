@@ -424,6 +424,7 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
 = Safety checklist before giving a dose
 
 == 1. THERE ARE NO COFACTORS
+#v(0.5em)
 *Cofactors* are things that increase the risk of severe allergic reactions. *If any of these are present, that dose should not be given*.
 
 #rect(width: 100%, stroke: 1pt, radius: 4pt, inset: 12pt)[
@@ -639,7 +640,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
         stroke: (bottom: 0.5pt + black),
       )[
         #set align(center)
-        #text(weight: "bold", size: 1.2em)[MILD Symptoms]
+        #text(weight: "bold", size: 1.2em)[If there are MILD Symptoms]
       ]
       #block(inset: 12pt)[#body]
     ]
@@ -662,7 +663,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
       )[
         #set align(center)
         #set text(fill: white, weight: "bold", size: 1.2em)
-        SEVERE Symptoms
+        If there are SEVERE Symptoms
       ]
       #block(inset: 12pt)[#body]
     ]
@@ -761,7 +762,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 #pagebreak()
 
 #page(flipped: true)[
-  = What if the patient is sick?
+  = What if the patient is sick? SICK DAY PLAN
 
   Being sick can make reactions more likely to happen. Use this guide to decide if you should give the daily dose.
 
@@ -781,7 +782,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
         stroke: (bottom: 0.5pt + black),
       )[
         #set align(center)
-        #text(weight: "bold", size: 1.2em)[MILD Symptoms]
+        #text(weight: "bold", size: 1.2em)[If there are MILD Symptoms]
       ]
       #block(inset: 12pt)[#body]
     ]
@@ -795,7 +796,6 @@ Each step has a different _protein target_. In the example below, during Step 1 
       stroke: (paint: black, thickness: 3pt), // Thick border
       inset: 0pt,
     )[
-      // Inverted Header: Black background, White text
       #block(
         width: 100%,
         inset: 12pt,
@@ -804,7 +804,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
       )[
         #set align(center)
         #set text(fill: white, weight: "bold", size: 1.2em)
-        SEVERE Symptoms
+        If there are SEVERE Symptoms
       ]
       #block(inset: 12pt)[#body]
     ]
@@ -906,9 +906,9 @@ Each step has a different _protein target_. In the example below, during Step 1 
       )[
         *When to restart #underline()[once symptoms resolve]:*
 
-        - *Missed 1-2 days consecutively:* \ #v(0em) Resume same dose.
+        - *Missed 1-2 days of doses consecutively:* \ #v(0em) Resume same dose.
 
-        - *Missed 3 or more days consecutively:* \
+        - *Missed 3 or more days of doses consecutively:* \
           #v(0em)
           #text(weight: "black")[STOP OIT.] See page X for how to safely restart.
       ]
@@ -917,43 +917,183 @@ Each step has a different _protein target_. In the example below, during Step 1 
 ]
 #pagebreak()
 
-= What if daily doses are missed?
+#page(flipped: true)[
 
-- Missed for various reasons: being sick, life events, forgetting, etc.
-- Main point: if you miss too many doses, the body can lose its desensitization and 'forget' the food, making restarting more risky
-- We have different plans for how to restart based on both number of days missed and also what stage (build-up or maintenance) the patient is on
+  #block()[
 
-== Build up phase
+    // A consistent header for the two main columns
+    #let phase-header(title) = {
+      block(
+        width: 100%,
+        fill: black,
+        inset: 1em,
+        radius: (top: 5pt),
+        stroke: 0.5pt + black,
+        below: 0pt, // connects to the content box below
+        [
+          #set align(center)
+          #text(fill: white, size: 1.4em, weight: "black", title) \
+        ],
+      )
+    }
 
-=== if 3-7 missed doses
+    // The container for the column content
+    #let phase-body(body) = {
+      rect(
+        width: 100%,
+        height: 70%,
+        inset: 0.8em,
+        stroke: 0.5pt + black,
+        radius: (bottom: 5pt),
+        fill: luma(250), // Very faint gray to differentiate from page white
+        body,
+      )
+    }
 
-- reduce dose by one step, and give for 3-5 days (or longer)
-- Increase to back to original dose level when tolerating the dose with no/minimal symptoms
-- remain on the original dose level for at least 2-4 weeks
+    #let scenario-block(days, body) = {
+      block(
+        width: 100%,
+        stroke: 0.5pt + black,
+        fill: white,
+        radius: 4pt,
+        inset: 0pt,
+        above: 0.8em,
+        breakable: false,
+        [
+          // Header of the scenario
+          #block(
+            width: 100%,
+            fill: luma(230), // Light gray header
+            inset: 0.8em,
+            stroke: (bottom: 1pt + black),
+            radius: (top: 4pt),
+            [
+              #grid(
+                columns: (1fr, auto),
+                align: horizon,
+                [#text(weight: "bold", size: 1.1em)[Missed #days]],
+              )
+            ],
+          )
+          #block(inset: 0.8em, above: 0.3em, body)
+        ],
+      )
+    }
 
-=== if >7 missed doses
+    #let arrow-down = align(center, block(
+      above: 0.5em,
+      below: 1em,
+      stack(
+        dir: ltr,
+        spacing: 0.5em, // Adjust space between arrow and text
+        align(horizon)[#text(size: 3em, weight: "bold")[↓]],
+        align(horizon)[#v(0.2em)If no / minimal symptoms with doses],
+      ),
+    ))
 
-- reduce dose by two steps, give for 3-5 days
-- then if no / minimal symptoms, go up to the next step for 3-5 days
-- then if no / minimal symptoms, go up to the original step for at least 2-4 weeks
+    = What if daily doses are missed? SAFE-RESTART PLAN
+    #grid(
+      columns: (2fr, 1fr),
+      gutter: 2em,
+      [
+        Tolerance to allergens drops quickly! If you miss doses, your body may slowly "forget" the protection it has built up.
+        Restarting at your current daily dose could cause a reaction.
 
-== Maintenance phase
+        *General Rule:* If you missed only *1-2 consecutive days*, just resume the current daily dose.\
+        *The restart strategy is different if you are in the BUILD-UP or MAINTENANCE phase.*
+      ],
+      [
+        #set align(center + horizon)
+        #rect(stroke: 1pt + black, radius: 4pt, inset: 8pt)[
+          *Important:* \ If patient is currently sick, \ *DO NOT* restart until well.
+        ]
+      ],
+    )
 
-=== 3-7 missed doses
+    #v(0.3em)
 
-- give 240mg protein for 3-5 days then increase to maintenance dose when tolerating with no/minimal symptoms
+    #grid(
+      columns: (1fr, 1fr),
+      gutter: 1em,
 
-=== >7 missed doses
+      [
+        #phase-header(
+          "If in Build-up Phase",
+        )
+        #phase-body([
+          _Instructions based on your "Current Step" before missing doses_
+          #set list(indent: 1em)
+          #scenario-block("3 - 7 Days", [
+            *1: Go back one step, stay for at least 3-5 days*
+            #arrow-down
+            *2: Return to Original Step*
+            #list(
+              [Stay here for *at least 2-4 weeks*.],
+            )
+          ])
 
-- 160 mg 3-5 days, 240 mg 3-5 days, then 300 mg long term
+          #scenario-block("> 7 Days", [
+            *1: Go back two steps, stay for at least 3-5 days*
+            #arrow-down
+            *2: Increase one step, stay for at least 3-5 days*
+            #arrow-down
+            *Step 3: Return to Original Step*
+            #list(
+              [Stay here for *at least 2-4 weeks*.],
+            )
+          ])
+          #v(-0.2em)
+          #text(
+            size: 1em,
+            style: "italic",
+          )[If you were only on the very first step (step 1), just restart whenever the patient is well.]
+        ])
+      ],
+      [
+        #phase-header(
+          "If in Maintenance Phase",
+        )
+        #phase-body([
+          _Instructions based on protein amount_
+
+          #scenario-block("3 - 7 Days", [
+            *1: Reduce Dose (240 mg), stay for at least 3-5 days*
+            #arrow-down
+            *2: Return to Maintenance*
+            #list(
+              [If well, return to full *300 mg* dose long term.],
+            )
+          ])
+
+          #scenario-block("> 7 Days", [
+            *1: Go to low dose (160 mg), stay for at least 3-5 days*
+            #arrow-down
+            *2: Increase to medium dose (240 mg), stay for at least 3-5 days*
+            #arrow-down
+            *Step 3: Return to Maintenance*
+            #list(
+              [If well, return to full *300 mg* dose long term.],
+            )
+          ])
+        ])
+      ],
+    )
+
+  ]
+
+]
 
 #pagebreak()
 
 = Troubleshooting other problems with daily doses
 
-== Child dislikes the taste
-- *Masking:* Mix the dose with strong flavors like chocolate pudding, apple sauce, cranberry juice.
+== Patient dislikes the taste:
+- *Masking:* Mix the dose with strong flavours like chocolate pudding, apple sauce, cranberry juice, ketchup.
 - *Temperature:* Cold foods hide taste better.
+
+For older childen
+- Recommend against hiding doses from them, which can lead to mistrust
+- Use a rewards chart
 
 == Other
 
@@ -966,45 +1106,62 @@ Each step has a different _protein target_. In the example below, during Step 1 
 
 = OIT in general
 
-*Q: Is OIT a cure?*
-Not exactly. It is a treatment. If you stop taking the daily dose, the allergy may likely come back.
+*Q: Do I have to take a dose every single day?*\
+Yes! OIT does require a time commitment. Of course, doses might be held in the case of sickness or if it is unsafe.
 
-*Can multiple foods be treated together during OIT?*
-Yes, many children undergo OIT to multiple foods at the same time.
+*Q: What if one dose is missed? E.g. it is forgotten?*\
+Do not double-dose! Resume normal dosing the next day.
+
+*Q: Can multiple foods be treated together during OIT?*\
+Yes, many patients undergo OIT to multiple foods at the same time.
+
+*Q: Can vaccines be given during OIT?*\
+Yes, there are no barriers to receiving vaccines while on OIT. However, if a fever develops (> 38.5°C) the dose should be held.
+
+*Q: Is OIT a cure once it's finished?*\
+Not exactly. It is a treatment. After finishing OIT, if you stop regularly eating the food (e.g. every week), the body can 'forget' the protection it has built-up, and the allergy may likely come back.
+
+*Q: Can OIT be continued if I move to another province or country?*\
+Probably not due to safety and medical-legal reasons. Ask your doctor / allergy team.
 
 = About giving doses
 
-*Q: Can the immunotherapy dose be taken on an empty stomach?*
-NO. It is VERY IMPORTANT the dose NOT be taken with empty stomach. It MUST be taken with a snack or meal to slow digestion and absorption of the dose, which reduces the risk of reaction.
+*Q: Can the immunotherapy dose be taken on an empty stomach?*\
+NO. It is *VERY IMPORTANT the dose NOT be taken on an empty stomach*. Eating a dose with snack or meal will slow digestion and absorption of the dose, which reduces the risk of reaction.
 
-*Q: Why do I need to avoid exercise after the dose?*
-May increase allergen absroption speed and also make it easier for the body to react. This is a very common cause of reactions in OIT.
+*Q: Why do I need to avoid exercise before and after the dose?*\
+Vigorous exercise 2 hours before and after the dose can increase allergen absorption speed and make it easier for the body to react. This is a very common cause of reactions in OIT. For example: if the patient takes their dose at 9:00 am, they should not be exercising between 7:00 am - 11:00 am.
 
-*Q: Can I switch brands of food?*
-A: Ask us first. Different brands of food can have slightly different amounts of protein or degrees of processing.
+*Q: Can I switch brands of food?*\
+Ask us first. Different brands of food can have slightly different amounts of protein or degrees of processing.
 
-*Q: What if the patient spits out all or most of their dose?*
+*Q: What if the patient spits out all or most of their dose?*\
+This is not uncommon! Don't double-dose. Simply resume the regular daily dose the next day. If this is a recurring problem contact your doctor / allergy team to discuss.
 
-*Q: What if the patient is going to have an unrelated surgery?*
+*Q: Does the patient need an antihistamine EVERY time before their dose of OIT?*\
+No! It is not required. However, these are very well-tolerated medications that improve the patient's comfort from mild symptoms, which are expected and common during OIT, especially during the build-up phase.
 
-*Q: Should the patient avoid NSAIDs (Non-steroidal anti-inflammatory drugs) during OIT?*
+- Some patients have no symptoms at all from doses and don't need any antihistamines.
+- Some patients only take antihistamines before doses for the first few days of each new updose / step.
+- Some patients have very infrequent mild symptoms, and only take antihistamines after mild symptoms occur
 
-*Q: Does the patient need an antihistamine EVERY time before their dose of OIT?*
+*Q: Should the patient avoid NSAIDs (non-steroidal anti-inflammatory drugs) during OIT?*\
+In general, NSAIDs should be avoided. While good for pain, they can make it easier for reactions to OIT doses to occur in some patients. We suggest Tylenol instead. Examples of NSAIDs include: ibuprofen (Advil, Motrin) and naproxen (Aleve).
 
-*If you are getting on an airplane, ferry, or long form of transport*
+*Q: What if the patient is going to have an unrelated surgery?*\
+Contact your doctor / allergy team to discuss.
+
+*Q: What do we do if are getting on an airplane, ferry, or long form of transport*\
+Contact your doctor / allergy team to discuss.
+
 = About potential side effects
 
-*Q: Eczema worse*?
+*Q: Does OIT make eczema worse*?\
 
-- eczema more commonly worse from lots of non allergic triggers - dryness, irritants, stress, etc instead of food itself
-- existing food tests like SPT or sIgE don't test for this
-- benefits of OIT working tend to outweight any short term risk of flaring eczema
+- OIT is very unlikely to cause worsening of eczema. More commonly, it worsens because of non-allergic triggers - dryness, irritants, stress, etc. instead of food itself.
+- The eventual benefits of OIT tend to outweigh any small short-term risk of flaring eczema.
+- If eczema is severe, discuss with your primary care physician about strategies to improve it.
 
-Worsening eczema is unlikely to be caused by the OIT
-DOes not mean you have to stop
-
-Spits up most of all of their dose
-don't double dose, resume normal next day. if recurring contact team
 
 
 
