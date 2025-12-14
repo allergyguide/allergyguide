@@ -619,12 +619,11 @@ Each step has a different _protein target_. In the example below, during Step 1 
     #v(0.1pt)
     #line(length: 100%, stroke: 2pt)
   ]
+  = What if there are symptoms after a dose?
 
-  = What to do if there's symptoms after a dose?
+  Symptoms can be either MILD or SEVERE. Mild symptoms are expected especially in the beginning.
 
-  // Symptoms can be either MILD or SEVERE. Mild symptoms are expected especially in the beginning; however, they should be monitored in the rare case it progresses to a severe reaction. Record reactions in a diary.
-
-  #let height = 88%
+  #let height = 78%
   #let mild-card(body) = {
     rect(
       width: 100%,
@@ -684,6 +683,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 
     // --- MILD COLUMN ---
     mild-card([
+      #v(-1em)
       _Monitor closely. Usually resolves in 30-60 mins._
 
       #v(0.5em)
@@ -715,9 +715,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 
     // --- SEVERE COLUMN ---
     severe-card([
-      _Anaphylaxis: Act immediately._
-
-      #v(0.5em)
+      #v(-1em)
       *Look for ANY of the following:*
       #icon-item(
         "lungs.svg",
