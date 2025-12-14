@@ -621,7 +621,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
   ]
   = What if there are symptoms after a dose?
 
-  Symptoms can be either MILD or SEVERE. Mild symptoms are expected especially in the beginning.
+  Symptoms can be either MILD or SEVERE. Mild symptoms are expected, especially in the beginning.
 
   #let height = 78%
   #let mild-card(body) = {
@@ -917,7 +917,13 @@ Each step has a different _protein target_. In the example below, during Step 1 
 ]
 #pagebreak()
 
-= What if the patient misses doses?
+= What if daily doses are missed?
+
+- Missed for various reasons: being sick, life events, forgetting, etc.
+- Main point: if you miss too many doses, the body can lose its desensitization and 'forget' the food, making restarting more risky
+- We have different plans for how to restart based on both number of days missed and also what stage (build-up or maintenance) the patient is on
+
+
 
 #pagebreak()
 
