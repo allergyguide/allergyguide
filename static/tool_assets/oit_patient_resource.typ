@@ -223,7 +223,7 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 #let qr-code(path, label) = {
   figure(
     numbering: none,
-    image(path, width: 4cm),
+    image(path, width: 3.5cm),
     caption: text(size: 1em, label),
   )
 }
@@ -282,15 +282,53 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 )
 #line(length: 100%, stroke: 0.5pt + gray)
 
-== C) Medicines
+== C) Medications
 #v(0.5em)
 #block()[
   #set list(spacing: 0.8em)
   - *Epinephrine Auto-injector:* *#underline()[THIS IS MANDATORY]*. Must be up to date and nearby at each dose.
-  - *Non-drowsy antihistamine:* Optional but highly recommended. The following can be bought over the counter.
-    - Cetirizine, Loratadine, Desloratadine, Fexofenadine; of these, X availble for children < X
-    - Example: Reactine. For children under 2, give half of the smallest indicated dosage on the bottle. This usually is 2.5-5mg.
-    - *Avoid Benadryl* - it is less effective and comes with more side effects. It also makes many children sleepy, which can make it more difficult to see the early stages of a developing allergic reaction.
+  - *Non-drowsy antihistamine:* Optional but highly recommended. The following options can be bought over the counter at most pharmacies:
+  #v(-0.5em)
+  #grid(
+    columns: (1.8fr, 1fr),
+    gutter: 1.5em,
+    [
+      #set text(size: 0.9em)
+      #table(
+        columns: (1.5fr, 1fr, 4fr),
+        inset: (y: 0.5em, x: 0.25em),
+        stroke: (x, y) => if y == 0 { (bottom: 0.5pt + black) } else { none },
+        align: (x, y) => if x == 0 { left } else { left },
+
+        table.header([*Generic*], [*Brand*], [*Notes*]),
+        [Cetirizine], [Reactine], [Liquid form avail. for ages 2 years and up],
+        [Desloratadine], [Aerius], [Liquid form avail. for ages 2 years and up],
+        [Loratadine], [Claritin], [Liquid form avail. for ages 2 years and up],
+        [Fexofenadine], [Allegra], [Solid pill avail. for ages 12 years and up],
+      )
+      #text(size: 0.9em, style: "italic")[
+        *Infant Dosing (< 2y):* A off-label practice some doctors do is give *half* the smallest indicated dosage. _Confirm with your doctor._
+      ]
+    ],
+
+    align(horizon, block(
+      fill: luma(250), // Light grey background
+      stroke: (left: 2pt + black, top: 0.5pt, bottom: 0.5pt, right: 0.5pt),
+      inset: 1em,
+      radius: 4pt,
+      width: 100%,
+      [
+        #set text(size: 0.8em)
+        *NOTE: AVOID BENADRYL* \
+        *(Diphenhydramine)*
+        #v(0.1em)
+        It is less effective and has more side effects.
+        #v(0.1em)
+        *The Risk:* It causes sleepiness, which makes it difficult to detect the early signs of a severe reaction (anaphylaxis).
+      ],
+    )),
+  )
+
 ]
 
 #pagebreak()
