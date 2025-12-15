@@ -9,13 +9,13 @@
   margin: (x: 0.75in, y: 0.75in),
   numbering: "— 1 —",
   footer: {
-    [#text(style: "italic", size: 0.6em)[
-        version: #commit_hash
+    [#text(style: "italic", size: 0.5em)[
+        version: #commit_hash | Source: allergyguide | Content licensed under CC 4.0 BY
       ] #h(
         1fr,
       ) #text(
-        size: 0.7em,
-      )[NOT FOR USE WITHOUT DIRECT MEDICAL SUPERVISION. Source: allergyguide. Content licensed under CC 4.0 BY]
+        size: 0.8em,
+      )[NOT FOR USE WITHOUT DIRECT MEDICAL SUPERVISION]
     ]
   },
   header: context {
@@ -34,7 +34,7 @@
     } else if counter(page).get().first() in (10,) {
       align(right)[TROUBLESHOOTING: MISC - #counter(page).display("1")]
     } else {
-      align(right)[X - #counter(page).display("1")]
+      align(right)[FAQ - #counter(page).display("1")]
     }
   },
 )
