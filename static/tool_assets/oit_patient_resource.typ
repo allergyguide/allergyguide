@@ -227,7 +227,7 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 }
 
 #align(center)[
-  #text(size: 24pt, weight: "bold")[Equipment, and how to use them]\
+  #text(size: 24pt, weight: "bold")[Equipment and measuring doses]\
   #v(0.1pt)
   #line(length: 100%, stroke: 2pt)
 ]
@@ -1081,7 +1081,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
           "If in Build-up Phase",
         )
         #phase-body([
-          _Instructions based on your "Current Step" before missing doses_
+          _Instructions based on your "Current Step" (last tolerated dose given)_
           #set list(indent: 1em)
           #scenario-block("3 - 7 Days", [
             *1: Go back one step, stay for at least 3-5 days*
