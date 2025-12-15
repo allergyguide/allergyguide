@@ -311,7 +311,6 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
     + Turn on the scale, and place a small cup/bowl/cupcake liner or wax paper on the scale.
     + Press the *"Tare"* or "*Zero*" button so the scale reads `0.00`.
     + Slowly add the solid until you reach the target number.
-    + Mix the solid with a tasty wet food (applesauce, pudding, yogurt).
   ],
   [
     + Push the plunger of the syringe all the way down.
@@ -421,6 +420,7 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
   [
     *Mix Well*: \
     - Stir the mixture thoroughly until combined (no more large chunks). We recommend using a fork.
+    - *Sediment is normal:* For some high-fiber foods, you might see powder settle at the bottom of the mixture if you let it rest. This is safe to consume.
   ],
   [
     *Measure out the Daily Amount*: \
@@ -428,11 +428,7 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
     - *Important:* _Do not give more than the daily amount in a day_!
   ],
 )
-// #place(bottom)[
-//   #warning-box("Note:")[
-//     - *Sediment is normal:* For some high-fiber foods, you might see powder settle at the bottom of the mixture. This is safe to consume.
-//     - *Avoid the dust:* When preparing powders, //   ]
-// ]
+
 #pagebreak()
 
 #align(center)[
@@ -478,9 +474,9 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
 #enum(
   spacing: 1em,
   [*Optional*: consider giving a non-drowsy antihistamine 1 hour before the dose. This is purely for symptom relief and is not mandatory],
-  [*Prepare the daily dose*. Doses should be given around 22-26 hours apart, ideally at same time of day.],
-  [*TIP*: if you are a very messy eater or have chapped lips, consider Vaseline around the lips/mouth first],
-  [*Give the dose with a meal or light snack*! To improve the taste, we suggest mixing it with a strongly flavoured food.],
+  [*Prepare the daily dose*. Doses should be given around 22 - 26 hours apart, ideally at the same time of day. To improve the taste, *we also suggest mixing it with a strongly flavoured food* (e.g. applesauce, pudding, yogurt, etc).],
+  [*TIP*: if they are a very messy eater or have chapped lips, consider Vaseline around the lips/mouth first!],
+  [*Give the dose with a meal or light snack*! Do NOT give the dose on an empty stomach.],
   [*Space out doses*. If you are doing OIT to multiple foods, give each food sequentially at least 1 minute apart from each other.],
 )
 
