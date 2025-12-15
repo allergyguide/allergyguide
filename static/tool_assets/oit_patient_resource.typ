@@ -484,7 +484,7 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
 
 = What to expect from the first few weeks
 
-- Especially near the beginning of OIT, mild reactions are common, and expected. Examples of mild reactions may include mild hives around the mouth, an itchy mouth, or mild stomachache. Refer to page X for full details about what to do if there is a reaction.
+- Especially near the beginning of OIT, *mild reactions are common*. Examples of mild reactions may include mild hives around the mouth, an itchy mouth, or mild stomachache. *Refer to page 7 for full details* about what to do if there is a reaction.
 - Mild symptoms can be improved / potentially prevented by taking a non-drowsy antihistamine 1 hour before the dose. They do not prevent severe reactions.
 
 = When do we move onto the next step?
@@ -501,7 +501,6 @@ Each step has a different _protein target_. In the example below, during Step 1 
       (center, center, center, left, center, center).at(col) + horizon
     ),
     inset: 8pt,
-    // Global stroke for the standard cells
     stroke: 1pt + rgb("cccccc"),
     fill: (col, row) => if row == 0 { rgb("e6e6e6") } else { none },
 
@@ -540,10 +539,12 @@ Each step has a different _protein target_. In the example below, during Step 1 
           spacing: 0.5em,
           text(
             weight: "bold",
+            size: 2em,
           )[#sym.arrow.b],
-          [*For example, when should I start eating 2.5 mg of protein daily?*],
+          [*For example, when should the patient start eating 2.5 mg of protein daily?*],
           text(
             weight: "bold",
+            size: 2em,
           )[#sym.arrow.b],
         )
       ],
@@ -1057,7 +1058,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
             #arrow-down
             *2: Increase one step, stay for at least 3-5 days*
             #arrow-down
-            *Step 3: Return to Original Step*
+            *3: Return to Original Step*
             #list(
               [Stay here for *at least 2-4 weeks*.],
             )
@@ -1090,7 +1091,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
             #arrow-down
             *2: Increase to medium dose (240 mg), stay for at least 3-5 days*
             #arrow-down
-            *Step 3: Return to Maintenance*
+            *3: Return to Maintenance*
             #list(
               [If well, return to full *300 mg* dose long term.],
             )
