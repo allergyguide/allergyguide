@@ -25,13 +25,23 @@ Always consult a licensed healthcare provider for concerns about your health - t
 
 **No Warranties**: The software and tools are provided "as is," without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, and noninfringement.
 
-## 2. Limitation of Liability
+## 2. Third-Party Links and Product Examples
+
+This website and its downloadable materials (such as PDF handouts) may contain links or QR codes to third-party websites and specific products (e.g., scales, syringes on retailer sites). These links are provided solely for your convenience to illustrate the type of equipment required.
+
+No Endorsement: The inclusion of any link does not imply endorsement by allergyguide.ca of the specific vendor, brand, or website. You are free to purchase equivalent equipment from any vendor that meets the specifications outlined in the educational materials.
+
+No Financial Interest: The creators and maintainers of this website have no financial affiliation with these vendors and do not receive compensation (such as affiliate commissions) for these links.
+
+No Liability: We have no control over the content, privacy policies, or practices of third-party websites. We are not responsible for the availability, price, or quality of products purchased from external vendors.
+
+## 3. Limitation of Liability
 
 TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE WEBSITE CONTENT CREATORS, MAINTAINERS, OR CONTRIBUTORS BE LIABLE FOR ANY DAMAGES (INCLUDING, WITHOUT LIMITATION, INCIDENTAL AND CONSEQUENTIAL DAMAGES, PERSONAL INJURY/WRONGFUL DEATH, LOST PROFITS, OR DAMAGES RESULTING FROM LOST DATA OR BUSINESS INTERRUPTION) RESULTING FROM THE USE OF OR INABILITY TO USE THE WEBSITE OR ITS CONTENT, WHETHER BASED ON WARRANTY, CONTRACT, TORT, OR ANY OTHER LEGAL THEORY, AND WHETHER OR NOT WE ARE ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 THE TOTAL AGGREGATE LIABILITY FOR ALL CLAIMS ARISING FROM THE USE OF THE WEBSITE OR ITS CONTENT IS LIMITED TO ONE-HUNDRED CANADIAN DOLLARS ($100 CAD). SOME JURISDICTIONS DO NOT PERMIT CERTAIN EXCLUSIONS OR LIMITATIONS OF LIABILITY; IF LOCAL LAW PROHIBITS SOME OR ALL THE FOREGOING LIMITATIONS, THOSE PROVISIONS WILL APPLY ONLY TO THE MAXIMUM EXTENT PERMITTED BY LAW.
 
-## 3. Indemnification
+## 4. Indemnification
 
 You agree to indemnify, defend, and hold harmless the website content creators, maintainers, contributors, and distributors from all liabilities, losses, damages, claims, costs, and expenses (including legal fees), that arise from or are connected to:
 
@@ -39,11 +49,11 @@ You agree to indemnify, defend, and hold harmless the website content creators, 
 - Your violation or breach of these Terms of Use, or
 - Your violation of any third-party rights
 
-## 4. Governing Law
+## 5. Governing Law
 
 You agree these Terms are governed by the laws of the **Province of British Columbia** and the federal laws of **Canada**. You agree that any claims or disputes must be resolved exclusively by a court located in Vancouver, British Columbia.
 
-## 5. Open Source Licensing
+## 6. Open Source Licensing
 
 ### Software & Source Code (GNU GPLv3)
 
@@ -53,6 +63,6 @@ The underlying software (available on the GitHub repository) are licensed under 
 
 The educational text, documentation, and design assets on this website are licensed under [Creative Commons](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt the material for any purpose, even commercially, provided you give appropriate credit to allergyguide.ca.
 
-## 6. Severability
+## 7. Severability
 
 If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will remain in full force and effect.
