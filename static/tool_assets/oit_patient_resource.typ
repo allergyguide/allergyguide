@@ -1,7 +1,6 @@
 #import "@preview/cetz:0.4.2"
 #import "@preview/cetz-plot:0.1.3": chart, plot
 
-// --- DOCUMENT SETUP ---
 #let commit_hash = sys.inputs.at("commit_hash", default: "dev-build")
 
 #set page(
@@ -40,15 +39,14 @@
 )
 #show heading.where(level: 1): it => block(
   width: 100%,
-  stroke: (bottom: 0.5pt + gray), // The underline line
-  inset: (bottom: 0.5em), // Space between text and line
-  below: 1em, // Space after the line
+  stroke: (bottom: 0.5pt + gray),
+  inset: (bottom: 0.5em),
+  below: 1em,
   it,
 )
 #set text(font: "Arimo", size: 11pt, lang: "en")
 #set par(justify: true, leading: 0.65em)
 
-// --- CUSTOM STYLES ---
 #let warning-box(title, body) = {
   block(
     fill: luma(240),
@@ -78,22 +76,21 @@
 ]
 
 = What is OIT?
-OIT is a medical treatment for food allergies that helps patients gradually gain tolerance to the allergen. By slowly giving tiny amounts of the allergen and then slowly increasing the dose over time, the body gradually becomes used to the allergen. _In other words, the body becomes trained to tolerate doses of the allergen it previously could not_.
+OIT is a medical treatment for food allergies that helps patients gradually gain tolerance to the allergen. By slowly giving tiny amounts of the allergen, and then slowly increasing the dose over time, the body gradually becomes used to the allergen. _In other words, the body becomes trained to tolerate amounts of the allergen it previously could not_.
 
 *OIT has two main phases:*
 
-1. *Phase 1: Build-up.* Starting with a _*tiny*_ daily dose, every 2-4 weeks we slowly increase the dose until we reach a maintenance dose (usually a bit less than a serving size). This takes 6 - 12 months.
+1. *Phase 1: Build-up.* Starting with a _*tiny*_ daily dose, every 2-4 weeks we slowly increase the amount until we reach a maintenance dose (usually a bit less than a serving size). This takes about 6 - 12 months.
 2. *Phase 2: Maintenance.* Once your child reaches the maintenance dose, it will be eaten daily for 12 months.
 #v(0.5em)
-// --- CETZ DIAGRAM: OIT PHASES ---
-// https://www.csaci.ca/wp-content/uploads/2020/02/Key-concepts-teaching-tool.pdf
+
 #figure(
   cetz.canvas({
     import cetz.draw: *
 
     // Setup the plot area
     plot.plot(
-      size: (15, 5),
+      size: (15, 4.5),
       x-tick-step: none,
       y-tick-step: none,
       x-label: none,
@@ -130,19 +127,19 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
     )
 
     // Annotations for clarity
-    line((6.5, 0), (6.5, 5.5), stroke: (dash: "dashed", paint: gray))
-    content((2.5, 4), box(
+    line((6.5, 0), (6.5, 5), stroke: (dash: "dashed", paint: gray))
+    content((2.5, 3.5), box(
       fill: white,
       inset: 2pt,
     )[*Build-up Phase* \ (Slowly increasing)])
-    content((11, 4), box(
+    content((11, 3.5), box(
       fill: white,
       inset: 2pt,
     )[*Maintenance Phase* \ (Daily steady dose)])
 
     // Axis Labels
     content((7.5, -0.5), [*Time*])
-    content((-0.5, 2.8), [*Daily dose of food*], angle: 90deg)
+    content((-0.5, 2.5), [*Daily dose of food*], angle: 90deg)
   }),
 )
 
@@ -154,9 +151,9 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 
 3. *Stopping:* Sometimes, OIT is stopped. This may be due to taste aversion, lack of time to commit for patient/family, side effects, or other reasons. This is rare: only around 2% of preschoolers have to stop.
 
-#warning-box("Important Safety Note:")[
+#warning-box("'Use it or lose it'")[
   #v(0em)
-  *Remember:* Even after your child finishes the maintenance phase, if the food is not regularly consumed at least weekly to help the body 'remember' the food is not harmful, the allergy may return.
+  *Remember:* completing the maintenance phase is not the end. To keep the protection you worked for, your child must continue eating the food *at least once a week*. If regular consumption stops, the allergy may return.
 ]
 
 #pagebreak()
@@ -214,7 +211,8 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
   #warning-box(
     "Strict Food Avoidance Is Not “Risk Free” either:",
   )[
-    Even with strict avoidance, accidental allergic reactions are possible (despite trying to strictly avoid them, the author of this handout had two episodes of anaphylaxis to nuts in the past 5 years alone).
+    #v(0em)
+    Even with strict avoidance, accidental allergic reactions are possible (e.g. despite trying to strictly avoid nuts, the author of this handout had two episodes of anaphylaxis in the past 5 years alone).
   ]
   #v(2pt)
 ]
@@ -247,7 +245,7 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 #list(
   spacing: 0.8em,
   [Look for markings every *0.1 mL* for the 1ml syringes.],
-  [*Cleaning:* If used for liquid food (like milk), wash with hot soapy water within an hour of use, and air dry. If used only for water, just air dry.],
+  [*Cleaning:* If used for liquid food (like milk), to clean: remove the plunger and wash with hot soapy water within an hour of use, and air dry. If used only for water, just air dry.],
   [*Examples:* BD eclipse 1mL oral syringes or Terumo 1mL oral tuberculin syringes. We have also included more examples below:],
 )
 #v(-1em)
@@ -304,7 +302,9 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
         [Cetirizine], [Reactine], [Liquid form avail. for ages 2 years and up],
         [Desloratadine], [Aerius], [Liquid form avail. for ages 2 years and up],
         [Loratadine], [Claritin], [Liquid form avail. for ages 2 years and up],
-        [Fexofenadine], [Allegra], [Solid pill avail. for ages 12 years and up],
+        [Fexofenadine],
+        [Allegra],
+        [Solid tablet avail. for ages 12 years and up],
       )
       #text(size: 0.9em, style: "italic")[
         *Infant Dosing (< 2y):* A off-label practice some doctors do is give *half* the smallest indicated dosage. _Confirm with your doctor._
@@ -484,13 +484,13 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
 
 = Safety checklist before giving a dose
 
-== 1. THERE ARE NO COFACTORS
+== 1. MAKE SURE THERE ARE NO COFACTORS:
 #v(0.5em)
 *Cofactors* are things that increase the risk of severe allergic reactions. *If any of these are present, that dose should not be given*.
 
 #rect(width: 100%, stroke: 1pt, radius: 4pt, inset: 12pt)[
   #set list(marker: check-box)
-  - Fever or severe illness. *See page X* for what to do when your child is sick.
+  - Fever or severe illness. *See page 8* for what to do when your child is sick.
   - Uncontrolled asthma. If you’re unsure, please inform your doctor.
   - Heavy exercise (sweating) or hot showers/baths 2 hours before and after the dose: regular play is fine.
   - Getting the dose on an empty stomach.
@@ -498,7 +498,7 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
   - Symptoms of food-pipe inflammation (e.g. food getting stuck, chest pain, using more water to wash down food).
 ]
 
-== 2. I HAVE THE RIGHT TIMING, EQUIPMENT, AND FOOD
+== 2. I HAVE THE RIGHT TIMING, EQUIPMENT, AND FOOD:
 #rect(width: 100%, stroke: 1pt, radius: 4pt, inset: 12pt)[
   #set list(marker: check-box)
   - The protein content per serving on the food label matches the protocol.
@@ -599,7 +599,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 )
 
 #v(0.5em)
-== The answer: ask your doctor, it depends.
+== The answer - ask your doctor: it depends.
 #v(1em)
 - Usually, the daily dose is _escalated_ or _'updosed'_ (increased to the next step's dose) every 2-4 weeks *if there are no/minimal reactions*. _It may take more than 4 weeks for a step for some patients_.
 
@@ -801,9 +801,9 @@ Each step has a different _protein target_. In the example below, during Step 1 
         "anxiety, confusion, loss of consciousness",
       )
       #v(-0.5em)
-      #icon-item("gut.svg", "Stomach", "repetitive vomiting or nausea")
+      #icon-item("gut.svg", "Stomach*", "repetitive vomiting or nausea")
       #v(-0.5em)
-      #icon-item("skin.svg", "Skin", "body-wide hives")
+      #icon-item("skin.svg", "Skin*", "body-wide hives")
       #v(-0.5em)
 
       #text(size: 0.8em)[
@@ -905,8 +905,10 @@ Each step has a different _protein target_. In the example below, during Step 1 
       #line(length: 100%, stroke: (dash: "dashed"))
 
       *Action Plan:*
-      + #text(weight: "black")[GIVE THE DOSE]
-      + Give with a solid snack.
+      + #text(
+          weight: "black",
+        )[OK to give the dose! But make sure to do the below:]
+      + Make sure to give with a solid snack.
       + *Avoid* exercise for 2 hours after the dose.
       + Optional: give a non-drowsy antihistamine 1 hour prior.
     ]),
@@ -917,30 +919,30 @@ Each step has a different _protein target_. In the example below, during Step 1 
       _Do not dose if there is *ANY* of the following:_
       #v(0.5em)
 
-      #icon-item("fever.svg", "Fever", "Requiring treatment/medication")
+      #icon-item("fever.svg", "Fever", "requiring treatment/medication")
       #v(-0.2em)
       #icon-item(
         "inhaler.svg",
         "Asthma",
-        "Sickness causing flare, requiring >1 puff of rescue inhaler in a day",
+        "sickness causing flare, requiring >1 puff of rescue inhaler in a day",
       )
       #v(-0.2em)
       #icon-item(
         "throat.svg",
         "Throat/lungs",
-        "Sore throat, persistent cough, shortness of breath",
+        "sore throat, persistent cough, shortness of breath",
       )
       #v(-0.2em)
       #icon-item(
         "gut.svg",
         "Stomach",
-        "Vomiting, diarrhea, or severe stomach pain",
+        "vomiting, diarrhea, or severe stomach pain",
       )
       #v(-0.2em)
       #icon-item(
         "malaise.svg",
         "General",
-        "Fatigued/lethargic, poor sleep/appetite, muscle aches",
+        "fatigued/lethargic, poor sleep/appetite, muscle aches",
       )
 
       #v(1fr)
@@ -972,7 +974,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 
         - *Missed 3 or more days of doses consecutively:* \
           #v(0em)
-          #text(weight: "black")[STOP OIT.] See page X for how to safely restart.
+          *See page 9* for how to safely restart.
       ]
     ]),
   )
@@ -986,13 +988,13 @@ Each step has a different _protein target_. In the example below, during Step 1 
       block(
         width: 100%,
         fill: black,
-        inset: 1em,
+        inset: 0.8em,
         radius: (top: 5pt),
         stroke: 0.5pt + black,
         below: 0pt, // connects to the content box below
         [
           #set align(center)
-          #text(fill: white, size: 1.4em, weight: "black", title) \
+          #text(fill: white, size: 1.2em, weight: "black", title) \
         ],
       )
     }
@@ -1055,8 +1057,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
       columns: (2fr, 1fr),
       gutter: 2em,
       [
-        Tolerance to allergens drops quickly! If you miss doses, your body may slowly "forget" the protection it has built up.
-        Restarting at your current daily dose could cause a reaction.
+        Tolerance to allergens drops quickly! If your child misses too many doses, their body may slowly 'forget' the protection it has built up. Restarting at their current daily dose could cause a reaction.
 
         *General Rule:* If you missed only *1-2 consecutive days*, just resume the current daily dose.\
         *The restart strategy is different if you are in the BUILD-UP or MAINTENANCE phase.*
@@ -1105,7 +1106,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
           #text(
             size: 1em,
             style: "italic",
-          )[If you were only on the very first step (step 1), just restart whenever you child is well.]
+          )[If you were only on the very first step (step 1), just restart whenever your child is well.]
         ])
       ],
       [
@@ -1147,14 +1148,13 @@ Each step has a different _protein target_. In the example below, during Step 1 
 = Troubleshooting other problems with daily doses
 
 == Your child dislikes the taste:
-- *Masking:* Mix the dose with strong flavours like chocolate pudding, apple sauce, cranberry juice, ketchup.
+- *Masking:* Mix the dose with strong flavours like chocolate pudding, apple sauce, cranberry juice, ketchup, etc.
 - *Temperature:* Cold foods hide taste better.
-
-For older childen
-- Recommend against hiding doses from them, which can lead to mistrust
-- Use a rewards chart
+- For older children, we recommend against hiding doses from them. This can lead to mistrust.
+  - Use a rewards chart ...
 
 == Other
+- TBD
 
 #pagebreak()
 #align(center)[
@@ -1178,7 +1178,7 @@ Yes, many patients undergo OIT to multiple foods at the same time.
 Yes, there are no barriers to receiving vaccines while on OIT. However, if a fever develops (> 38.5°C) the dose should be held.
 
 *Q: Is OIT a cure once it's finished?*\
-Not exactly. It is a treatment. After finishing OIT, if you stop regularly eating the food (e.g. every week), the body can 'forget' the protection it has built-up, and the allergy may likely come back.
+Not exactly. It is a treatment. After finishing OIT, if your child stops regularly eating the food (e.g. every week), the body can 'forget' the protection it has built-up, and the allergy may likely come back.
 
 *Q: Can OIT be continued if I move to another province or country?*\
 Probably not due to safety and medical-legal reasons. Ask your doctor / allergy team.
@@ -1186,10 +1186,10 @@ Probably not due to safety and medical-legal reasons. Ask your doctor / allergy 
 = About giving doses
 
 *Q: Can the immunotherapy dose be taken on an empty stomach?*\
-NO. It is *VERY IMPORTANT the dose NOT be taken on an empty stomach*. Eating a dose with snack or meal will slow digestion and absorption of the dose, which reduces the risk of reaction.
+NO. It is *VERY IMPORTANT the dose IS NOT taken on an empty stomach*. Eating a dose with snack or meal will slow digestion and absorption of the dose, which reduces the risk of reaction.
 
 *Q: Why do I need to avoid exercise before and after the dose?*\
-Vigorous exercise 2 hours before and after the dose can increase allergen absorption speed and make it easier for the body to react. This is a very common cause of reactions in OIT. For example: if the patient takes their dose at 9:00 am, they should not be exercising between 7:00 am - 11:00 am.
+Vigorous exercise 2 hours before and after the dose can increase allergen absorption speed and make it easier for the body to react. This is a very common cause of reactions in OIT.
 
 *Q: Can I switch brands of food?*\
 Ask us first. Different brands of food can have slightly different amounts of protein or degrees of processing.
