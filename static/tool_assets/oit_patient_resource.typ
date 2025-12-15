@@ -15,7 +15,7 @@
         1fr,
       ) #text(
         size: 0.7em,
-      )[NOT FOR USE WITHOUT DIRECT MEDICAL SUPERVISION. Source: allergyguide. Content licensed under CC 4.0]
+      )[NOT FOR USE WITHOUT DIRECT MEDICAL SUPERVISION. Source: allergyguide. Content licensed under CC 4.0 BY]
     ]
   },
   header: context {
@@ -83,7 +83,7 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 *OIT has two main phases:*
 
 1. *Phase 1: Build-up.* Starting with a _*tiny*_ daily dose, every 2-4 weeks we slowly increase the dose until we reach a maintenance dose (usually a bit less than a serving size). This takes 6 - 12 months.
-2. *Phase 2: Maintenance.* Once you reach the maintenance dose, it will be eaten daily for 12 months.
+2. *Phase 2: Maintenance.* Once your child reaches the maintenance dose, it will be eaten daily for 12 months.
 #v(0.5em)
 // --- CETZ DIAGRAM: OIT PHASES ---
 // https://www.csaci.ca/wp-content/uploads/2020/02/Key-concepts-teaching-tool.pdf
@@ -142,21 +142,21 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 
     // Axis Labels
     content((7.5, -0.5), [*Time*])
-    content((-0.5, 3), [*Daily dose of food*], angle: 90deg)
+    content((-0.5, 2.8), [*Daily dose of food*], angle: 90deg)
   }),
 )
 
 = What are the possible outcomes with OIT?
 
-1. *Full Freedom (Tolerance):* you can eat a full serving of the food (like a whole glass of milk or a peanut butter sandwich) without reaction. Around 80% of preschoolers will get here.
+1. *Full Freedom (Tolerance):* your child can eat a full serving of the food (like a whole glass of milk or a peanut butter sandwich) without reaction. Around 80% of preschoolers will get here.
 
-2. *Safety (Bite-proof):* While you may still react if you eat a full serving, you can tolerate smaller amounts. This protects you from severe reactions if you accidentally eat the food. Around 18% of preschoolers will get here.
+2. *Safety (Bite-proof):* While your child may still react if they eat a full serving, they can tolerate smaller amounts. This protects them from severe reactions if they accidentally eat the food. Around 18% of preschoolers will get here.
 
 3. *Stopping:* Sometimes, OIT is stopped. This may be due to taste aversion, lack of time to commit for patient/family, side effects, or other reasons. This is rare: only around 2% of preschoolers have to stop.
 
 #warning-box("Important Safety Note:")[
   #v(0em)
-  *Remember:* Even after you finish the maintenance phase, if the food is not regularly consumed at least weekly to help the body 'remember' the food is not harmful, the allergy may return.
+  *Remember:* Even after your child finishes the maintenance phase, if the food is not regularly consumed at least weekly to help the body 'remember' the food is not harmful, the allergy may return.
 ]
 
 #pagebreak()
@@ -197,7 +197,7 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
   table.header([*Benefits (The Good)*], [*Risks (The Bad)*]),
   table.hline(stroke: 1pt),
   [
-    - *Diet:* At the best outcome, patients can eat a full serving size of allergen without reacting.
+    - *Diet:* At the best outcome, your child can eat a full serving size of allergen without reacting.
 
     - *Safety:* Much lower risk of a scary reaction from accidental bites.
 
@@ -456,7 +456,7 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
 
 #rect(width: 100%, stroke: 1pt, radius: 4pt, inset: 12pt)[
   #set list(marker: check-box)
-  - Fever or severe illness. *See page X* for what to do when the patient is sick.
+  - Fever or severe illness. *See page X* for what to do when your child is sick.
   - Uncontrolled asthma. If you’re unsure, please inform your doctor.
   - Heavy exercise (sweating) or hot showers/baths 2 hours before and after the dose: regular play is fine.
   - Getting the dose on an empty stomach.
@@ -469,8 +469,8 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
   #set list(marker: check-box)
   - The protein content per serving on the food label matches the protocol.
   - Have an Epinephrine Auto-injector (e.g. EpiPEN) available, that is up-to-date.
-  - Someone is available to watch the patient for at least 2 hours after the dose.
-  - The patient can avoid naps or bedtime within 2 hours of dose.
+  - Someone is available to watch your child for at least 2 hours after the dose.
+  - Your child can avoid naps or bedtime within 2 hours of dose.
 ]
 
 = How to give a daily dose, once it's safe
@@ -568,7 +568,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 #v(1em)
 - Usually, the daily dose is _escalated_ or _'updosed'_ (increased to the next step's dose) every 2-4 weeks *if there are no/minimal reactions*. _It may take more than 4 weeks for a step for some patients_.
 
-- There are four different approaches for dose escalation, based on patient/physician preference, risk profile, and resources available:
+- There are four different approaches for dose escalation, based on patient/family/physician preference, risk profile, and resources available:
 #v(1em)
 #[
   #set list(spacing: 0.9em)
@@ -780,7 +780,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
       *Action Plan:*
       + #text(weight: "black", size: 1.1em)[GIVE EPINEPHRINE]
       + Call 911 / Transport to ER.
-      + Lay patient flat (side if vomiting).
+      + Lay your child flat (side if vomiting).
       + *Stop OIT* & contact doctor.
     ]),
   )
@@ -789,7 +789,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 #pagebreak()
 
 #page(flipped: true)[
-  = What if the patient is sick? SICK DAY PLAN
+  = What if your child is sick? SICK DAY PLAN
 
   Being sick can make reactions more likely to happen. Use this guide to decide if you should give the daily dose.
 
@@ -1029,7 +1029,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
       [
         #set align(center + horizon)
         #rect(stroke: 1pt + black, radius: 4pt, inset: 8pt)[
-          *Important:* \ If patient is currently sick, \ *DO NOT* restart until well.
+          *Important:* \ If your child is currently sick, \ *DO NOT* restart until well.
         ]
       ],
     )
@@ -1070,7 +1070,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
           #text(
             size: 1em,
             style: "italic",
-          )[If you were only on the very first step (step 1), just restart whenever the patient is well.]
+          )[If you were only on the very first step (step 1), just restart whenever you child is well.]
         ])
       ],
       [
@@ -1111,7 +1111,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
 
 = Troubleshooting other problems with daily doses
 
-== Patient dislikes the taste:
+== Your child dislikes the taste:
 - *Masking:* Mix the dose with strong flavours like chocolate pudding, apple sauce, cranberry juice, ketchup.
 - *Temperature:* Cold foods hide taste better.
 
@@ -1159,20 +1159,20 @@ Vigorous exercise 2 hours before and after the dose can increase allergen absorp
 *Q: Can I switch brands of food?*\
 Ask us first. Different brands of food can have slightly different amounts of protein or degrees of processing.
 
-*Q: What if the patient spits out all or most of their dose?*\
+*Q: What if my child spits out all or most of their dose?*\
 This is not uncommon! Don't double-dose. Simply resume the regular daily dose the next day. If this is a recurring problem contact your doctor / allergy team to discuss.
 
-*Q: Does the patient need an antihistamine EVERY time before their dose of OIT?*\
-No! It is not required. However, these are very well-tolerated medications that improve the patient's comfort from mild symptoms, which are expected and common during OIT, especially during the build-up phase.
+*Q: Does my child need an antihistamine EVERY time before their dose of OIT?*\
+No! It is not required. However, these are very well-tolerated medications that improve your child's comfort from mild symptoms, which are expected and common during OIT, especially during the build-up phase.
 
 - Some patients have no symptoms at all from doses and don't need any antihistamines.
 - Some patients only take antihistamines before doses for the first few days of each new updose / step.
 - Some patients have very infrequent mild symptoms, and only take antihistamines after mild symptoms occur
 
-*Q: Should the patient avoid NSAIDs (non-steroidal anti-inflammatory drugs) during OIT?*\
+*Q: Should my child avoid NSAIDs (non-steroidal anti-inflammatory drugs) during OIT?*\
 In general, NSAIDs should be avoided. While good for pain, they can make it easier for reactions to OIT doses to occur in some patients. We suggest Tylenol instead. Examples of NSAIDs include: ibuprofen (Advil, Motrin) and naproxen (Aleve).
 
-*Q: What if the patient is going to have an unrelated surgery?*\
+*Q: What if my child is going to have an unrelated surgery?*\
 Contact your doctor / allergy team to discuss.
 
 *Q: What do we do if are getting on an airplane, ferry, or long form of transport*\
