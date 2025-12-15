@@ -99,11 +99,11 @@ async function fetchReviewSheet(): Promise<ArrayBuffer> {
   return res.arrayBuffer();
 }
 
-// async function fetchHandout(): Promise<ArrayBuffer> {
-//   const res = await fetch('/tool_assets/oit_patient_resource.pdf'); // TODO
-//   if (!res.ok) throw new Error("Failed to load handout PDF");
-//   return res.arrayBuffer();
-// }
+async function fetchHandout(): Promise<ArrayBuffer> {
+  const res = await fetch('/pdfs/oit_patient_resource.pdf');
+  if (!res.ok) throw new Error("Failed to load handout PDF");
+  return res.arrayBuffer();
+}
 
 // ============================================
 // PDF SECTION RENDERERS
@@ -246,8 +246,9 @@ export async function generatePdf(protocol: Protocol | null, customNote: string,
 
   try {
     // fetch
-    const [reviewSheetBytes, qrDataUrl] = await Promise.all([
+    const [reviewSheetBytes, handoutSheetBytes, qrDataUrl] = await Promise.all([
       fetchReviewSheet(),
+      fetchHandout(),
       generateCompressedQrCode()
     ]);
 
@@ -284,7 +285,7 @@ export async function generatePdf(protocol: Protocol | null, customNote: string,
     renderFooterAndQR(doc, qrDataUrl);
 
     // Merge & Download
-    await handlePdfMergeAndDownload(doc, reviewSheetBytes, PdfDocClass);
+    await handlePdfMergeAndDownload(doc, reviewSheetBytes, handoutSheetBytes, PdfDocClass);
 
   } catch (error) {
     console.error("PDF Generation Failed:", error);
@@ -292,12 +293,13 @@ export async function generatePdf(protocol: Protocol | null, customNote: string,
   }
 }
 
-async function handlePdfMergeAndDownload(doc: jsPDF, reviewSheetBytes: ArrayBuffer, PdfDocClass: typeof PDFDocument) {
+async function handlePdfMergeAndDownload(doc: jsPDF, reviewSheetBytes: ArrayBuffer, handoutSheetBytes: ArrayBuffer, PdfDocClass: typeof PDFDocument) {
   const jsPdfBytes = doc.output('arraybuffer');
 
   const mergedPdf = await PdfDocClass.create();
   const protocolPdf = await PdfDocClass.load(jsPdfBytes);
   const reviewSheetPdf = await PdfDocClass.load(reviewSheetBytes);
+  const handoutSheetPdf = await PdfDocClass.load(handoutSheetBytes);
 
   // Copy pages
   const reviewSheetPages = await mergedPdf.copyPages(reviewSheetPdf, reviewSheetPdf.getPageIndices());
@@ -305,6 +307,9 @@ async function handlePdfMergeAndDownload(doc: jsPDF, reviewSheetBytes: ArrayBuff
 
   const protocolPages = await mergedPdf.copyPages(protocolPdf, protocolPdf.getPageIndices());
   protocolPages.forEach((p) => mergedPdf.addPage(p));
+
+  const handoutSheetPages = await mergedPdf.copyPages(handoutSheetPdf, handoutSheetPdf.getPageIndices());
+  handoutSheetPages.forEach((p) => mergedPdf.addPage(p));
 
   const mergedPdfBytes = await mergedPdf.save();
   const blob = new Blob([mergedPdfBytes as Uint8Array<ArrayBuffer>], { type: "application/pdf" });
