@@ -73,7 +73,7 @@ pearls = [
   "Take with or without food (avoid grapefruit)",
   "Going more than OD is technically off-label",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 
@@ -106,7 +106,7 @@ pearls = [
   "Going beyond OD is technically off-label",
   "Take without food or juice otherwise absorption impaired",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 
@@ -142,7 +142,7 @@ pearls = [
   "**No QTc prolongation in humans noted in monographs or UpToDate**. _'Prolongation of QRS-interval was observed **in monkeys at a dose 200 times** the proposed clinical dose'_",
   "Mostly hepatically cleared. No renal adjustment required",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 
@@ -177,7 +177,7 @@ pearls = [
   "No significant effect on QTc seen with 60mg OD",
   "Comparatively to other 2nd-gen antihistamines, it has the highest drowsiness rates",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 
@@ -212,7 +212,7 @@ pearls = [
   "No QT-prolongation seen at 11x recommended dose",
   "Hard to OD; single doses up to 690mg BID x1mo did not show worse side effects than placebo in drug studies",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 
@@ -251,7 +251,7 @@ pearls = [
   "No dosage adjustment for hepatic or renal dysfunction. Take with or without food; no obvious drug interactions",
   "Not an absolute contraindication, but use with caution if seizure history",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 
@@ -288,7 +288,7 @@ pearls = [
   "<a target='blank' href='https://aacijournal.biomedcentral.com/articles/10.1186/s13223-019-0375-9'>CSACI position statement</a>: newer generation H1-antihistamines are safer than first-generation H1-antihistamines",
   "One of the few more common antihistamines that can be used IV",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 
@@ -564,7 +564,7 @@ pearls = [
   "**High** operator error; [see here for how to use](/handouts/incs/)",
   "OTC in the US; Rx in Canada",
 ]
-authors.primary = "Joshua Yu"
+authors.primary = "Resident lead"
 authors.editors = "TBD"
 authors.staff = "TBD"
 

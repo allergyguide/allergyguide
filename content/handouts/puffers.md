@@ -9,7 +9,7 @@ tags = ["handout"]
 
 [extra]
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 {{ wip() }}

@@ -7,7 +7,7 @@ in_search_index = false
 updated = "2025-03-17"
 [extra]
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 Thanks for checking us out! If you're interested in clinical allergy and immunology and would like to help out, connect with us (see the mail button at the bottom of the page). We are interested in recruiting medical students, residents, and allergy-immunology staff.
@@ -16,7 +16,6 @@ Thanks for checking us out! If you're interested in clinical allergy and immunol
 
 After exploring what options exist on the [contribution hub](https://docs.google.com/spreadsheets/d/1tm2AntOqbr0d6mDEJ-A_TqVjwmLKI67KboSagkZ9Au0/edit?usp=sharing):
 
-{{ img(src="/images/hub.png" class="ci" alt="Picture of the Google Sheets hub for topic/medication/research availability" link="https://docs.google.com/spreadsheets/d/1tm2AntOqbr0d6mDEJ-A_TqVjwmLKI67KboSagkZ9Au0/edit?usp=sharing") }}
 <br>
 The contribution process follows this rough timeline:
 
@@ -66,7 +65,6 @@ The contribution process follows this rough timeline:
 ## Website / coding
 
 - If you have experience with programming (reasonably comfortable with Markdown, html, js, scss/css, and git) and want to contribute, very happy to have you on board! To learn the structure of the website, please refer to the [Zola documentation](https://www.getzola.org/). Pages are written in Markdown with [Tera templating](https://keats.github.io/tera/)
-- Josh will be the main person approving pull requests for the time being
 - Re: adding content to website -- there are some formatting nuances, and a myriad of [shortcodes](/shortcodes) that can be used.
 - When adding images, they should all be .pngs; ideally before committing they should be compressed/optimized. Ie. with oxipng
 
@@ -77,5 +75,5 @@ oxipng -o 4 --strip all -a -Z *.png
 ## ROADMAP and TODO!:
 
 ```md
-{{ remote_text(src="https://raw.githubusercontent.com/jay-joshy/allergyguide/refs/heads/main/TODO.md") }}
+{{ remote_text(src="https://raw.githubusercontent.com/allergyguide/allergyguide/refs/heads/main/TODO.md") }}
 ```

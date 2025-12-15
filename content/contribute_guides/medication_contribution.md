@@ -5,7 +5,7 @@ draft = false
 
 [extra]
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 - Medications can be found in this [page here](/medications/) and are also accessible through popups {% popup() %}

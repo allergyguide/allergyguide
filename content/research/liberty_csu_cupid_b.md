@@ -9,5 +9,5 @@ tags = ["Research","CSU"]
 [extra]
 keywords = "CSU, chronic spontaneous urticaria"
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++

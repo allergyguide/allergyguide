@@ -10,7 +10,7 @@ tags = ["tools", "drug allergy"]
 keywords = "PENFAST, PEN-FAST, penicillin, drugs"
 toc = true
 series = "tools"
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 </br>

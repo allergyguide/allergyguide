@@ -6,7 +6,7 @@ draft = false
 [extra]
 keywords = "SPT, Skin prick test, intradermal test"
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 ## Purpose

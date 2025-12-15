@@ -9,7 +9,7 @@ tags = ["Research","Asthma"]
 [extra]
 keywords = "Asthma"
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
 +++
 
 <table style="margin:0rem">
@@ -29,10 +29,10 @@ authors = ["Joshua Yu"]
 {% admonition(type="note", icon="info", title="Contributors") %}
 
 <div class="contributor-group">
-<i class="fas fa-pen-nib"></i>  Primary Author: Joshua Yu</div>
+<i class="fas fa-pen-nib"></i>  Primary Author: Resident Lead</div>
   <div class="contributor-group">
 </div>
-<i class="fas fa-user-edit"></i> Editor: Adhora Mir
+<i class="fas fa-user-edit"></i> Editor: Resident Reviewer
   <div class="contributor-group">
 <i class="fas fa-star"></i>  Staff Reviewer: TBD
 </div>

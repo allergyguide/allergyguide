@@ -9,7 +9,7 @@ tags = ["hypersensitivity","airway and ent"]
 [extra]
 toc = true
 series = "airway and ent"
-authors = ["Author: JY", "Editor: AR", "Staff: TBD"]
+authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
 status="ready" # options include not-started, wip, or ready
 +++
 
@@ -684,7 +684,7 @@ For CRSsNP and CRSwNP, FESS is considered if medical therapy has failed. Excelle
 
 <h1>Contributors</h1>
 
-{{ contributors(authors=["Joshua Yu"], editors=["Adhora Mir"], staff_reviewers=["TBD"]) }}
+{{ contributors(authors=["Resident lead"], editors=["Resident reviewer"], staff_reviewers=["TBD"]) }}
 
 <script src="/js/tabs.js"></script>
 <script src="/js/popup.js"></script>

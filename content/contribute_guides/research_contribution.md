@@ -5,7 +5,7 @@ draft = false
 
 [extra]
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 <br>
@@ -59,17 +59,16 @@ See the page for the [SYGMA2 trial](/research/sygma2) for an example:
   - Primary: list
   - Reviewers: list
   - Editor: list
- 
+
 <!-- split -->
 
 - What's the clinical question?
 - PICO (in more depth)
 - Study design (will depend on if primary vs secondary evidence)
-- Results 
+- Results
 - Limitations
 - Conclusion
 - Study quality
-
 
 {% end %}
 
@@ -77,7 +76,7 @@ See the page for the [SYGMA2 trial](/research/sygma2) for an example:
 
 ### ROB-2 -- for randomized trials
 
-See [here](https://methods.cochrane.org/risk-bias-2) for the original tool, and [here](/tools/rob-2/) for easier to navigate tool that Josh built.
+See [here](https://methods.cochrane.org/risk-bias-2) for the original tool, and [here](/tools/rob-2/) for easier to navigate tool.
 
 ### AMSTAR 2 -- for systematic reviews / meta-analysis
 

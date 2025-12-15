@@ -5,7 +5,7 @@ draft = false
 
 [extra]
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 <br>
