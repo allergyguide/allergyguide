@@ -220,51 +220,78 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 ]
 
 #pagebreak()
+#let qr-code(path, label) = {
+  figure(
+    numbering: none,
+    image(path, width: 4cm),
+    caption: text(size: 1em, label),
+  )
+}
 
 #align(center)[
   #text(size: 24pt, weight: "bold")[Equipment, and how to use them]\
   #v(0.1pt)
   #line(length: 100%, stroke: 2pt)
 ]
+#text(size: 0.9em, style: "italic", fill: luma(30))[
+  *Disclaimer*: These product links are examples for your convenience.
+  We do not endorse specific brands. Any product meeting the specifications is acceptable. Let your doctor know if there are better deals!
+]
+#v(-0.5em)
 
 #counter(heading).update(0)
-= Equipment
+= Equipment and how to get them
 
-=== A) 1 ml and 10ml disposable oral syringes (without needles)
-
+== A) 1 ml, 5ml, and 10ml disposable oral syringes (without needles)
+#v(0.5em)
 #list(
-  spacing: 0.75em,
+  spacing: 0.8em,
   [Look for markings every *0.1 mL* for the 1ml syringes.],
   [*Cleaning:* If used for liquid food (like milk), wash with hot soapy water within an hour of use, and air dry. If used only for water, just air dry.],
-  [*Examples:* BD eclipse 1mL oral syringes or Terumo 1mL oral tuberculin syringes (available on amazon.ca or local pharmacies)],
+  [*Examples:* BD eclipse 1mL oral syringes or Terumo 1mL oral tuberculin syringes. We have also included more examples below:],
 )
+#v(-1em)
+#align(center)[
+  #grid(
+    columns: 3,
+    gutter: 3em,
+    qr-code("qr-1ml.png", "1 ml syringes"),
+    qr-code("qr-5ml.png", "5 ml syringes"),
 
-=== B) Digital Scale
-#list(
-  spacing: 0.75em,
-  [*Precision:* Must measure *0.01 grams* (two decimal places).],
-  [*Calibration:* Buy one that comes with a calibration weight (a little metal weight to test the scale).],
-  [*Cost:* Usually \$20 - \$30 online.],
-)
-
-=== C) Medicines
-
-#block()[
-  #set list(spacing: 0.75em)
-  - *Epinephrine Auto-injector:* Must be up to date and nearby at each dose.
-  - *Non-drowsy antihistamine:* Optional but highly recommended. These can be bought over the counter.
-    - Example: Reactine. For children under 2, give half of the smallest indicated dosage on the bottle. This usually is 2.5-5mg.
-    - Avoid Benadryl - it is less effective and comes with more side effects. It also makes many children sleepy, which can make it more difficult to see the early stages of a developing allergic reaction.
+    qr-code("qr-10ml.png", "10 ml syringes"),
+  )
 ]
+#line(length: 100%, stroke: 0.5pt + gray)
 
-= Supply examples
-#text()[Feel free to shop around for the best price!]
+#grid(
+  columns: (1fr, auto),
+  gutter: 1.5em,
+  [
+    == B) Digital Scale and measuring aids
+    #v(0.5em)
+    #list(
+      spacing: 0.8em,
+      [*Precision:* Must measure up to *0.01 grams* (two decimal places).],
+      [*Calibration:* Buy one that includes a calibration weight.],
+      [*Cost:* Usually \$20 - \$30 online.],
+      [*Measuring aids:* You will need cupcake liners, parchment paper, or small light containers to measure food on the scale.],
+    )
 
-== Syringes
+  ],
+  align(center + horizon, qr-code("qr-scale.png", "0.01g Precision Scale")),
+)
+#line(length: 100%, stroke: 0.5pt + gray)
 
-== Scales
-
-== Medications
+== C) Medicines
+#v(0.5em)
+#block()[
+  #set list(spacing: 0.8em)
+  - *Epinephrine Auto-injector:* *#underline()[THIS IS MANDATORY]*. Must be up to date and nearby at each dose.
+  - *Non-drowsy antihistamine:* Optional but highly recommended. The following can be bought over the counter.
+    - Cetirizine, Loratadine, Desloratadine, Fexofenadine; of these, X availble for children < X
+    - Example: Reactine. For children under 2, give half of the smallest indicated dosage on the bottle. This usually is 2.5-5mg.
+    - *Avoid Benadryl* - it is less effective and comes with more side effects. It also makes many children sleepy, which can make it more difficult to see the early stages of a developing allergic reaction.
+]
 
 #pagebreak()
 
@@ -918,10 +945,8 @@ Each step has a different _protein target_. In the example below, during Step 1 
 #pagebreak()
 
 #page(flipped: true)[
-
   #block()[
 
-    // A consistent header for the two main columns
     #let phase-header(title) = {
       block(
         width: 100%,
@@ -937,7 +962,6 @@ Each step has a different _protein target_. In the example below, during Step 1 
       )
     }
 
-    // The container for the column content
     #let phase-body(body) = {
       rect(
         width: 100%,
