@@ -52,4 +52,4 @@ NOTHING IN THIS DISCLAIMER SHALL LIMIT LIABILITY FOR GROSS NEGLIGENCE OR WILLFUL
 
 ---
 
-Use of this tool is further subject to the **Indemnification, Governing Law, and Severability clauses** outlined in the main website's [Terms of Use](/termsofuse).
+Use of this tool is further subject to the **Third-Party Links, Indemnification, Governing Law, and Severability clauses** outlined in the main website's [Terms of Use](/termsofuse).
