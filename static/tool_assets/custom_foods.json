@@ -1,8 +1,44 @@
 [
   {
+    "Food": "Nature’s Eats Cashew Flour Finely Ground",
+    "Mean protein in grams": 3,
+    "Serving size": 15,
+    "Type": "SOLID"
+  },
+  {
+    "Food": "Yupik Organic Raw Cashew Meal",
+    "Mean protein in grams": 3,
+    "Serving size": 15,
+    "Type": "SOLID"
+  },
+  {
+    "Food": "PB2 Cashew Powder",
+    "Mean protein in grams": 4,
+    "Serving size": 13,
+    "Type": "SOLID"
+  },
+  {
+    "Food": "Elmhurst Milked Cashews Unsweetened Beverage",
+    "Mean protein in grams": 4,
+    "Serving size": 250,
+    "Type": "LIQUID"
+  },
+  {
+    "Food": "PB2 Powdered Almond Butter",
+    "Mean protein in grams": 5,
+    "Serving size": 13,
+    "Type": "SOLID"
+  },
+  {
+    "Food": "Elmhurst Milked Almonds Unsweetened Beverage",
+    "Mean protein in grams": 5,
+    "Serving size": 250,
+    "Type": "LIQUID"
+  },
+  {
     "Food": "PB2 - Powdered Peanut Butter - Original",
-    "Mean protein in grams": 46.15,
-    "Serving size": 100,
+    "Mean protein in grams": 6,
+    "Serving size": 13,
     "Type": "SOLID"
   },
   {
