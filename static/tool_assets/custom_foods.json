@@ -1,5 +1,17 @@
 [
   {
+    "Food": "Compliments Skim Milk Powder",
+    "Mean protein in grams": 9,
+    "Serving size": 25,
+    "Type": "SOLID"
+  },
+  {
+    "Food": "Carnation Instant Skim Milk Powder",
+    "Mean protein in grams": 9,
+    "Serving size": 25,
+    "Type": "SOLID"
+  },
+  {
     "Food": "Neilson 3.25% milk",
     "Mean protein in grams": 8,
     "Serving size": 250,
