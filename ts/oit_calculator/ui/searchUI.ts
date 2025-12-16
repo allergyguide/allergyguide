@@ -40,21 +40,41 @@ export function initSearchEvents(appState: AppState): void {
     const input = document.getElementById(inputId) as HTMLInputElement;
     if (!input) return;
 
+    // Helper 
+    const triggerSearch = (query: string) => {
+      // no search on empty strings 
+      if (!query || !query.trim()) return;
+
+      const results = performSearch(query, type, appState.foodsIndex, appState.protocolsIndex);
+      showSearchDropdown(inputId, results, query, {
+        onSelectCustom: selectCustomFood,
+        onSelectProtocol: selectProtocol,
+        onSelectFoodA: selectFoodA,
+        onSelectFoodB: selectFoodB
+      });
+    };
+
+    // Debounced search while typing
     input.addEventListener("input", (e) => {
       const query = (e.target as HTMLInputElement).value;
       if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
 
       searchDebounceTimer = window.setTimeout(() => {
-        const results = performSearch(query, type, appState.foodsIndex, appState.protocolsIndex);
-        showSearchDropdown(inputId, results, query, {
-          onSelectCustom: selectCustomFood,
-          onSelectProtocol: selectProtocol,
-          onSelectFoodA: selectFoodA,
-          onSelectFoodB: selectFoodB
-        });
+        triggerSearch(query);
       }, 150);
     });
 
+    // FOCUS: Immediate search to reshow dropdown if returning to the field
+    input.addEventListener("focus", () => {
+      triggerSearch(input.value);
+    });
+
+    // CLICK: Immediate search to reshow dropdown if field is already focused but dropdown was closed 
+    input.addEventListener("click", () => {
+      triggerSearch(input.value);
+    });
+
+    // KEYDOWN: Navigation
     input.addEventListener("keydown", (e) => {
       if (e.key === "ArrowDown") { e.preventDefault(); navigateDropdown("down"); }
       else if (e.key === "ArrowUp") { e.preventDefault(); navigateDropdown("up"); }
@@ -62,8 +82,9 @@ export function initSearchEvents(appState: AppState): void {
       else if (e.key === "Escape") { hideSearchDropdown(inputId); }
     });
 
+    // BLUR: Hide
     input.addEventListener("blur", () => {
-      setTimeout(() => hideSearchDropdown(inputId), 200);
+      setTimeout(() => hideSearchDropdown(inputId), 150);
     });
   };
 

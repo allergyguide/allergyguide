@@ -23,6 +23,7 @@ authors = ["Joshua Yu"]
 ### Fixed
 
 - Fix bug where table sticky header stopped working
+- Fix bug where when the searchbar is refocused, the search results don't reappear if there's already text
 
 ### Security
 
