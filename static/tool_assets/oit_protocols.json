@@ -1,5 +1,199 @@
 [
   {
+    "name": "Cashew powder (PB2)",
+    "dosing_strategy": "STANDARD",
+    "food_a": {
+      "type": "SOLID",
+      "name": "PB2 Cashew Powder",
+      "gramsInServing": "4",
+      "servingSize": "13"
+    },
+    "food_a_strategy": "DILUTE_INITIAL",
+    "di_threshold": "0.15",
+    "table": [
+      {
+        "food": "A",
+        "protein": "1",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "60",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "2.5",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "25",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "5",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "12",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "10",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "6",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "20",
+        "method": "DILUTE",
+        "mix_amount": "0.4",
+        "water_amount": "6",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "40",
+        "method": "DIRECT",
+        "daily_amount": "0.15"
+      },
+      {
+        "food": "A",
+        "protein": "80",
+        "method": "DIRECT",
+        "daily_amount": "0.25"
+      },
+      {
+        "food": "A",
+        "protein": "120",
+        "method": "DIRECT",
+        "daily_amount": "0.4"
+      },
+      {
+        "food": "A",
+        "protein": "160",
+        "method": "DIRECT",
+        "daily_amount": "0.5"
+      },
+      {
+        "food": "A",
+        "protein": "240",
+        "method": "DIRECT",
+        "daily_amount": "0.8"
+      },
+      {
+        "food": "A",
+        "protein": "300",
+        "method": "DIRECT",
+        "daily_amount": "1.0"
+      }
+    ],
+    "custom_note": "Make a fresh mixture at least every 3 days. Refrigerate and mix well before giving."
+  },
+  {
+    "name": "Cashew powder (PB2), dilution only",
+    "dosing_strategy": "STANDARD",
+    "food_a": {
+      "type": "SOLID",
+      "name": "PB2 Cashew Powder",
+      "gramsInServing": "4",
+      "servingSize": "13"
+    },
+    "food_a_strategy": "DILUTE_ALL",
+    "di_threshold": "0.2",
+    "table": [
+      {
+        "food": "A",
+        "protein": "1",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "60",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "2.5",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "25",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "5",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "12",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "10",
+        "method": "DILUTE",
+        "mix_amount": "0.2",
+        "water_amount": "6",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "20",
+        "method": "DILUTE",
+        "mix_amount": "0.4",
+        "water_amount": "6",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "40",
+        "method": "DILUTE",
+        "mix_amount": "0.8",
+        "water_amount": "6",
+        "daily_amount": "1"
+      },
+      {
+        "food": "A",
+        "protein": "80",
+        "method": "DILUTE",
+        "mix_amount": "1.0",
+        "water_amount": "8",
+        "daily_amount": "2"
+      },
+      {
+        "food": "A",
+        "protein": "120",
+        "method": "DILUTE",
+        "mix_amount": "2.0",
+        "water_amount": "10",
+        "daily_amount": "2"
+      },
+      {
+        "food": "A",
+        "protein": "160",
+        "method": "DILUTE",
+        "mix_amount": "2.5",
+        "water_amount": "10",
+        "daily_amount": "2"
+      },
+      {
+        "food": "A",
+        "protein": "240",
+        "method": "DILUTE",
+        "mix_amount": "4.0",
+        "water_amount": "10",
+        "daily_amount": "2"
+      },
+      {
+        "food": "A",
+        "protein": "300",
+        "method": "DILUTE",
+        "mix_amount": "5.0",
+        "water_amount": "10",
+        "daily_amount": "2"
+      }
+    ],
+    "custom_note": "Make a fresh mixture at least every 3 days. Refrigerate and mix well before giving."
+  },
+  {
     "name": "Cashew milk to whole cashews",
     "dosing_strategy": "STANDARD",
     "food_a": {
