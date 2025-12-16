@@ -328,7 +328,7 @@ function attachDosingStrategyDelegation() {
  * Handles:
  * - Row Actions: Clicks on "Add Step" (+) and "Remove Step" (-) buttons
  * - Data Editing: Input events on editable cells (Target Mg, Daily Amount, Mix Food Amount)
- * - Uses a 150ms debounce timer for smoother typing
+ * - Uses a 300ms debounce timer for smoother typing
  * - Clamps negative values to 0
  * - UX: Handles 'Enter' keypresses to blur inputs
  */
@@ -394,7 +394,7 @@ function attachTableDelegation() {
       }
 
       protocolState.setProtocol(updated, label);
-    }, 150); // 150ms debounce
+    }, 300); // 300ms debounce
   });
 
   tableContainer.addEventListener("keydown", (e) => {
