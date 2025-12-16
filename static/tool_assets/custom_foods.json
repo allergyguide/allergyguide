@@ -1,5 +1,17 @@
 [
   {
+    "Food": "Neilson 3.25% milk",
+    "Mean protein in grams": 8,
+    "Serving size": 250,
+    "Type": "LIQUID"
+  },
+  {
+    "Food": "DairyLand 3.25% milk",
+    "Mean protein in grams": 8,
+    "Serving size": 250,
+    "Type": "LIQUID"
+  },
+  {
     "Food": "Nature’s Eats Walnut Flour Finely Ground Whole Walnuts",
     "Mean protein in grams": 2,
     "Serving size": 15,
