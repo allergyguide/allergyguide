@@ -131,6 +131,68 @@ describe('Core: Calculator', () => {
       const candidates = findDilutionCandidates(new Decimal(1), solidFood, impossibleConfig);
       expect(candidates).toHaveLength(0);
     });
+
+    describe('Water Resolution Snapping (0.5ml increments)', () => {
+      // Setup: 100mg/g food
+      const food = createFood(FoodType.SOLID, 10);
+
+      it('should return ONLY 0.5ml aligned water amounts when they satisfy tolerance', () => {
+        // Target: 11mg 
+        // Mix Candidate: 1g (100mg protein)
+        // Daily Amount: 1ml
+        // Ideal Servings = 100 / 11 = 9.0909...
+        // Ideal Water = 9.0909... ml
+
+        // 9.0ml water -> 100/9 = 11.11mg/ml -> 11.11mg dose. Error ~1%
+        // 9.5ml water -> 100/9.5 = 10.52mg/ml -> 10.52mg dose. Error ~4.3%
+        // Both satisfy default 5% tolerance.
+
+        const candidates = findDilutionCandidates(new Decimal(11), food, DEFAULT_CONFIG);
+
+        // Filter for this specific recipe mix
+        const matches = candidates.filter(c =>
+          c.mixFoodAmount.equals(1) && c.dailyAmount.equals(1)
+        );
+
+        expect(matches.length).toBeGreaterThan(0);
+
+        // Verify all matches are multiples of 0.5
+        matches.forEach(m => {
+          const isAligned = m.mixWaterAmount.mod(0.5).equals(0);
+          expect(isAligned).toBe(true);
+        });
+
+        // Verify the "perfect" but messy 9.0909 was NOT included
+        const hasMessy = matches.some(m => !m.mixWaterAmount.mod(0.5).equals(0));
+        expect(hasMessy).toBe(false);
+      });
+
+      it('should fallback to precise/messy water amounts when 0.5ml increments violate tolerance', () => {
+        // Same scenario: Target 11mg. Ideal water 9.0909...
+        // 9.0ml (1% error) and 9.5ml (4.3% error).
+
+        // tighten tolerance to 0.1% so 9.0 and 9.5 fail
+        const strictConfig: ProtocolConfig = {
+          ...DEFAULT_CONFIG,
+          PROTEIN_TOLERANCE: new Decimal(0.001) // 0.1%
+        };
+
+        const candidates = findDilutionCandidates(new Decimal(11), food, strictConfig);
+
+        const matches = candidates.filter(c =>
+          c.mixFoodAmount.equals(1) && c.dailyAmount.equals(1)
+        );
+
+        expect(matches.length).toBeGreaterThan(0);
+
+        // Should contain the messy value because the snapped ones failed
+        const preciseMatch = matches[0];
+        expect(preciseMatch.mixWaterAmount.toNumber()).toBeCloseTo(9.0909, 3);
+
+        // Ensure it is NOT 0.5 aligned
+        expect(preciseMatch.mixWaterAmount.mod(0.5).toNumber()).not.toBe(0);
+      });
+    });
   });
 
   describe('generateStepForTarget', () => {
