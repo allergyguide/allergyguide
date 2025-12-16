@@ -18,6 +18,8 @@ import type {
 export const SOLID_RESOLUTION: number = 2;
 export const LIQUID_RESOLUTION: number = 1;
 
+export const DILUTION_WATER_STEP_RESOLUTION = new Decimal(0.5);  // it would be easier for a patient to measure 13.5ml than 13.4 ml, especially if the final calculated protein remains within 5%
+
 // Dosing step target default options
 export const DOSING_STRATEGIES: { [key: string]: Decimal[] } = {
   STANDARD: [1, 2.5, 5, 10, 20, 40, 80, 120, 160, 240, 300].map(

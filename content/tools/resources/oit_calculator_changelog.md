@@ -15,6 +15,7 @@ authors = ["Joshua Yu"]
 ### Changed
 
 - Updated "Clear Optional Food" behaviour to preserve existing step protein targets, rather than resetting the entire protocol to the default standard dosing strategy.
+- Dilution candidate calculations: now it will try to obtain a water amount that is in 0.5 ml increments for ease of use, if the resulting calculated protein is within an acceptable amount of the target protein (e.g. 5%).
 
 ### Deprecated
 

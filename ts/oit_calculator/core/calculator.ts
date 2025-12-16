@@ -26,6 +26,7 @@ import type {
 } from "../types"
 
 import {
+  DILUTION_WATER_STEP_RESOLUTION,
   DOSING_STRATEGIES,
 } from "../constants"
 
@@ -40,11 +41,11 @@ import {
  * - for SOLID foods, prefer low w/v concentration based on MAX_SOLID_CONCENTRATION
  *
  * Liquid-in-liquid assumes additive volumes; solid-in-liquid assumes solid volume is negligible (validated separately via warnings) if w/v < certain amount
+ * It will also try to obtain a mix-water amount that is in 0.5ml increments, but will fall back to more precise values if needed.
  *
  * Returned candidates are sorted by:
  * - whether they meet low-concentration preference (SOLID only), then
  * - mixFoodAmount asc, dailyAmount asc, mixTotalVolume asc, mixWaterAmount asc
- *
  *
  * @param P Target protein per dose, in mg
  * @param food Food used for the dilution (determines unit logic)
@@ -78,75 +79,49 @@ export function findDilutionCandidates(
     for (const dailyAmountValue of config.DAILY_AMOUNT_CANDIDATES) {
       const dailyAmount: Decimal = dailyAmountValue;
 
+      // What is the ideal water amount? This may not be a practical amount for patients (ie. 11.2ml is less practical than 11, or 11.5 ml)
+      let idealWater: Decimal;
+      const totalMixProtein = mixFood.times(food.getMgPerUnit());
+
       if (food.type === FoodType.SOLID) {
-        // Solid in liquid - volume of solid is negligible
-        const totalMixProtein = mixFood.times(food.getMgPerUnit());
-        const servings = totalMixProtein.dividedBy(P);
-
-        if (servings.lessThan(config.minServingsForMix)) continue;
-
-        const mixTotalVolume = dailyAmount.times(servings);
-        const mixWaterAmount = mixTotalVolume;
-
-        // Validate constraints
-        if (mixFood.lessThan(config.minMeasurableMass)) continue;
-        if (dailyAmount.lessThan(config.minMeasurableVolume)) continue;
-        if (mixWaterAmount.greaterThan(config.MAX_MIX_WATER)) continue;
-        if (mixWaterAmount.lessThan(config.minMeasurableVolume)) continue;
-
-        // Check protein tolerance
-        const actualProteinPerMl = totalMixProtein.dividedBy(mixTotalVolume);
-        const actualProteinDelivered = actualProteinPerMl.times(dailyAmount);
-        if (
-          actualProteinDelivered
-            .dividedBy(P)
-            .minus(1)
-            .abs()
-            .greaterThan(config.PROTEIN_TOLERANCE)
-        )
-          continue;
-
-        candidates.push({
-          mixFoodAmount: mixFood,
-          mixWaterAmount,
-          dailyAmount,
-          mixTotalVolume,
-          servings,
-        });
+        // SOLID: Water ~= Total Volume
+        const idealServings = totalMixProtein.dividedBy(P);
+        idealWater = dailyAmount.times(idealServings);
       } else {
-        // Liquid in liquid - volumes are additive
-        const totalMixProtein = mixFood.times(food.getMgPerUnit());
-        const servings = totalMixProtein.dividedBy(P);
+        // LIQUID: Water = Total Volume - Food Amount
+        const idealServings = totalMixProtein.dividedBy(P);
+        const idealTotalVolume = dailyAmount.times(idealServings);
+        idealWater = idealTotalVolume.minus(mixFood);
+      }
+      if (idealWater.lessThan(0)) continue; // handle weird case
 
-        if (servings.lessThan(config.minServingsForMix)) continue;
+      // find up to two cases of water mix amounts (ie. let's say ml water is between 0.5ml incr) - want to check both
+      const steps = idealWater.dividedBy(DILUTION_WATER_STEP_RESOLUTION);
+      const floorWater = steps.floor().times(DILUTION_WATER_STEP_RESOLUTION);
+      const ceilWater = steps.ceil().times(DILUTION_WATER_STEP_RESOLUTION);
 
-        const mixTotalVolume = dailyAmount.times(servings);
-        const mixWaterAmount = mixTotalVolume.minus(mixFood);
+      const roundedOptionsToCheck: Decimal[] = [floorWater];
+      if (!ceilWater.equals(floorWater)) {
+        roundedOptionsToCheck.push(ceilWater);
+      }
 
-        if (mixWaterAmount.lessThan(0)) continue;
-        if (mixFood.lessThan(config.minMeasurableVolume)) continue;
-        if (dailyAmount.lessThan(config.minMeasurableVolume)) continue;
-        if (mixWaterAmount.greaterThan(config.MAX_MIX_WATER)) continue;
-        if (mixWaterAmount.lessThan(config.minMeasurableVolume)) continue;
+      // TEST OPTIONS
+      let foundValidSnap = false;
 
-        const actualProteinPerMl = totalMixProtein.dividedBy(mixTotalVolume);
-        const actualProteinDelivered = actualProteinPerMl.times(dailyAmount);
-        if (
-          actualProteinDelivered
-            .dividedBy(P)
-            .minus(1)
-            .abs()
-            .greaterThan(config.PROTEIN_TOLERANCE)
-        )
-          continue;
+      for (const testWater of roundedOptionsToCheck) {
+        const roundCandidate = checkCandidateValidity(food, P, totalMixProtein, mixFood, dailyAmount, testWater, config);
+        if (roundCandidate) {
+          candidates.push(roundCandidate);
+          foundValidSnap = true;
+        }
+      }
 
-        candidates.push({
-          mixFoodAmount: mixFood,
-          mixWaterAmount,
-          dailyAmount,
-          mixTotalVolume,
-          servings,
-        });
+      // if no valid rounded options are found
+      if (!foundValidSnap) {
+        const idealCandidate = checkCandidateValidity(food, P, totalMixProtein, mixFood, dailyAmount, idealWater, config);
+        if (idealCandidate) {
+          candidates.push(idealCandidate);
+        }
       }
     }
   }
@@ -166,7 +141,7 @@ export function findDilutionCandidates(
       if (!aMeetsRatio && bMeetsRatio) return 1;
     }
 
-    // Then apply existing sort criteria
+    // Then apply remaining sort criteria
     let cmp = a.mixFoodAmount.comparedTo(b.mixFoodAmount);
     if (cmp !== 0) return cmp;
     cmp = a.dailyAmount.comparedTo(b.dailyAmount);
@@ -177,6 +152,70 @@ export function findDilutionCandidates(
   });
 
   return candidates;
+}
+
+/**
+ * Helper to validate if a specific mix recipe (food + water + daily amount) meets all protocol constraints.
+ * * Checks:
+ * - Minimum servings (practicality)
+ * - Measurability limits (mass/volume resolution)
+ * - Max mix water limits
+ * - Protein tolerance (does the actual concentration delivered match the target P within tolerance?)
+ *
+ * @param food - The food object being used 
+ * @param P - The target protein amount (mg)
+ * @param totalMixProtein - Pre-calculated protein in the mixFood amount (mg)
+ * @param mixFood - Amount of food in the mix (g or ml)
+ * @param dailyAmount - Amount of the mix to take daily (ml)
+ * @param waterVal - Amount of water in the mix (ml)
+ * @param config - Protocol configuration containing constraints (minMeasurable, maxWater, tolerance, etc.)
+ * @returns A valid Candidate object if all checks pass, or null if any constraint is violated.
+ */
+function checkCandidateValidity(food: Food, P: Decimal, totalMixProtein: Decimal, mixFood: Decimal, dailyAmount: Decimal, waterVal: Decimal, config: ProtocolConfig): Candidate | null {
+  let mixTotalVolume: Decimal;
+
+  if (food.type === FoodType.SOLID) {
+    mixTotalVolume = waterVal;
+  } else {
+    mixTotalVolume = mixFood.plus(waterVal);
+  }
+
+  // Recalculate Servings based on this water volume, which may be different from the ideal water volume
+  const servings = mixTotalVolume.dividedBy(dailyAmount);
+
+  // --- Check Hard Constraints ---
+  // ------------------------------
+  if (servings.lessThan(config.minServingsForMix)) return null;
+  if (food.type === FoodType.SOLID) {
+    if (mixFood.lessThan(config.minMeasurableMass)) return null;
+  } else {
+    if (mixFood.lessThan(config.minMeasurableVolume)) return null;
+  }
+  if (dailyAmount.lessThan(config.minMeasurableVolume)) return null;
+  if (waterVal.greaterThan(config.MAX_MIX_WATER)) return null;
+  if (waterVal.lessThan(config.minMeasurableVolume)) return null;
+
+  // --- Check Protein Tolerance ---
+  const actualProteinPerMl = totalMixProtein.dividedBy(mixTotalVolume);
+  const actualProteinDelivered = actualProteinPerMl.times(dailyAmount);
+  if (
+    actualProteinDelivered
+      .dividedBy(P)
+      .minus(1)
+      .abs()
+      .greaterThan(config.PROTEIN_TOLERANCE)
+  ) {
+    return null;
+  }
+
+  // return good candidate if possible
+  return {
+    mixFoodAmount: mixFood,
+    mixWaterAmount: waterVal,
+    dailyAmount,
+    mixTotalVolume,
+    servings,
+  };
 }
 
 /**
