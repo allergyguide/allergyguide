@@ -58,10 +58,6 @@ oit_calculator/
 - Specific feature listeners (Search, Export) are initialized in their respective modules (`initSearchEvents`, `initExportEvents`) called by `main.ts`
 - Input events use **Debouncing** (150ms-300ms) to prevent excessive recalculations
 
-## Known Issues / Design Decisions
-
-- **Clear Button Behavior:** "Clear Food B" button is destructive and resets steps that were converted to Food B back to Food A steps (recalculating based on Food A settings); ? in future make it so that if steps are deleted and the food B is cleared, that the number of steps / targetMgs are preserved? TBD
-
 ## Roadmap to v1.0.0
 
 ### 1. Safety and Core Logic Validation
