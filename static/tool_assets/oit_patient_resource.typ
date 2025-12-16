@@ -698,6 +698,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
       #block(
         width: 100%,
         inset: 12pt,
+        radius: (top: 4pt),
         fill: luma(240), // Very light gray header
         stroke: (bottom: 0.5pt + black),
       )[
@@ -840,6 +841,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
       #block(
         width: 100%,
         inset: 12pt,
+        radius: (top: 4pt),
         fill: luma(240), // Very light gray header
         stroke: (bottom: 0.5pt + black),
       )[
@@ -1081,7 +1083,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
           "If in Build-up Phase",
         )
         #phase-body([
-          _Instructions based on your "Current Step" (last tolerated dose given)_
+          _Instructions based on "Current Step" (last tolerated dose given)_
           #set list(indent: 1em)
           #scenario-block("3 - 7 Days", [
             *1: Go back one step, stay for at least 3-5 days*

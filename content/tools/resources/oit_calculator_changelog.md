@@ -22,7 +22,9 @@ authors = ["Joshua Yu"]
 
 ### Security
 
-## [0.11.0]
+---
+
+## [0.11.0] - 2025-12-16
 
 ### Changed
 
