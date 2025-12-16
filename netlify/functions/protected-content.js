@@ -1,7 +1,4 @@
 // netlify/functions/protected-content.js
-
-const fetch = require('node-fetch'); // Only needed in local dev
-
 exports.handler = async (event) => {
   try {
     // Parse environment variables

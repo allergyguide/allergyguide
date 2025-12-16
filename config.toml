@@ -130,7 +130,7 @@ seo = true # enable or disable seo-related meta tags: opengraph, facebook, twitt
 ## TO ENABLE SOME OF THE ICONS YOU MUST GO INTO THE /sass/abridge.css to ENABLE THEM.
 
 # feed = true                 # this adds the RSS feed icon in the footer.
-mail = "josh.yu@medportal.ca"
+mail = "allergyguideca@gmail.com"
 # mastodon = "https://mastodon.example.com/@username"
 # element = "matrix.example.com"
 # buymeacoffee = "your-user-name"
@@ -140,7 +140,7 @@ mail = "josh.yu@medportal.ca"
 # facebook = "your-user-name"
 # linkedin = "your-user-name"
 # gitlab = "your-user-name"
-github = "jay-joshy/allergyguide"
+github = "allergyguide/allergyguide"
 # codeberg = "your-user-name" # Everything after https://codeberg.org/   eg: username  *or*  username/repository
 # github_sponsor = "your-user-name"
 # bitbucket = "your-user-name"

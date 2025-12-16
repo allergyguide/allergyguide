@@ -4,7 +4,7 @@ date = 2025-03-17
 draft = false
 [extra]
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 Example of a finished topic page: [Chronic rhinosinusitis](/topics/hypersensitivity/airway_ent/chronic-rhinosinusitis/).
@@ -133,13 +133,13 @@ Within a topic page, there are many ways to customize the text: in particular, *
   | Bob    | A good guy, who likes to communicate with Alice                         |
   | Malroy | Not so nice guy. Tries to mess with the communication of Alice and Bob. |
 
-  - This doesn't mean we can't accommodate more complex tables (ie with nesting), but it does mean Josh/editors need to manually code it in
+  - This doesn't mean we can't accommodate more complex tables (ie with nesting), but it does mean editors need to manually code it in
 
 ### Shortcodes
 
 - Shortcodes are custom pieces of styled HTML (and sometimes JavaScript). You can use any of the shortcodes below as you like for a topic
 - Each can serve a different purpose, and helps break up plain-text into more manageable sections
-- You don't have to know how to implement them -- one of the editors who knows how to code will do it for you. Just indicate in your draft document what shortcode you want, and the information you need in it. If you're interested in the actual code, [check out the GitHub](https://github.com/jay-joshy/allergyguide/tree/main/templates/shortcodes)
+- You don't have to know how to implement them -- one of the editors who knows how to code will do it for you. Just indicate in your draft document what shortcode you want, and the information you need in it. If you're interested in the actual code, [check out the GitHub](https://github.com/allergyguide/allergyguide/tree/main/templates/shortcodes)
 
 #### Admonitions
 
@@ -247,7 +247,7 @@ Here is a custom macro copy paste section
 
 #### load_macro
 
-You can also load any macros from the offical macro 'repo' [here](https://github.com/jay-joshy/allergyguide/blob/main/static/toml/topic_macros.toml)
+You can also load any macros from the offical macro 'repo' [here](https://github.com/allergyguide/allergyguide/blob/main/static/toml/topic_macros.toml)
 
 {{ load_macro(topic_name = "chronic_rhinosinusitis") }}
 

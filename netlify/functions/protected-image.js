@@ -1,6 +1,4 @@
 // netlify/functions/protected-image.js
-const fetch = require('node-fetch'); // Only needed in local dev
-
 exports.handler = async (event) => {
   try {
     // Parse environment variables

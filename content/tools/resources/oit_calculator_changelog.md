@@ -14,6 +14,8 @@ authors = ["Joshua Yu"]
 
 ### Changed
 
+- Updated "Clear Optional Food" behaviour to preserve existing step protein targets, rather than resetting the entire protocol to the default standard dosing strategy.
+
 ### Deprecated
 
 ### Removed
@@ -21,6 +23,7 @@ authors = ["Joshua Yu"]
 ### Fixed
 
 - Fix bug where table sticky header stopped working
+- Fix bug where when the searchbar is refocused, the search results don't reappear if there's already text
 
 ### Security
 

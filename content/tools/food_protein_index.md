@@ -9,7 +9,7 @@ tags = ["tools"]
 [extra]
 keywords = "Food challenge, food protein, health canada, oral challenge"
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 </br>

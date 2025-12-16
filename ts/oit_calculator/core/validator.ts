@@ -316,6 +316,7 @@ function checkDilutionStep({ step, protocol, food }: { step: Step, protocol: Pro
 
   // PROTEIN_MISMATCH:
   // NOTE: this uses ROUNDED values
+  // If the dilution is impossible (e.g. not enough mix amount) then the output here would be nonsensical
   const calculatedProtein = totalMixProteinBasedOnRounded
     .times(roundedDailyAmount)
     .dividedBy(mixTotalVolumeBasedOnRounded);
@@ -323,10 +324,17 @@ function checkDilutionStep({ step, protocol, food }: { step: Step, protocol: Pro
   if (!step.targetMg.isZero()) {
     const delta = calculatedProtein.dividedBy(step.targetMg).minus(1).abs();
     if (delta.greaterThan(protocol.config.PROTEIN_TOLERANCE)) {
+
+      let msg = `Step ${step.stepIndex}: Protein mismatch. Target ${formatNumber(step.targetMg, 1)} mg but calculated ${formatNumber(calculatedProtein, 1)} mg: ${formatNumber(delta.times(100), 0)}% difference.`;
+
+      if (step.servings?.lessThan(new Decimal(1))) {
+        msg = `Step ${step.stepIndex}: Protein mismatch. Valid dilution not possible to obtain target of (${formatNumber(step.targetMg, 1)} mg). Ensure the mixture contains enough food.`
+      }
+
       warnings.push({
         severity: getWarningSeverity(WarningCode.Red.PROTEIN_MISMATCH),
         code: WarningCode.Red.PROTEIN_MISMATCH,
-        message: `Step ${step.stepIndex}: Protein mismatch. Target ${formatNumber(step.targetMg, 1)} mg but calculated ${formatNumber(calculatedProtein, 1)} mg: ${formatNumber(delta.times(100), 0)}% difference.`,
+        message: msg,
         stepIndex: step.stepIndex,
       });
     }

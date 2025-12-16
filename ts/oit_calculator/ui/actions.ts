@@ -5,8 +5,8 @@
  */
 import Decimal from "decimal.js";
 import { protocolState } from "../state/instances";
-import { generateDefaultProtocol } from "../core/calculator";
-import { addFoodBToProtocol, recalculateProtocol } from "../core/protocol";
+import { generateDefaultProtocol, generateStepForTarget } from "../core/calculator";
+import { addFoodBToProtocol } from "../core/protocol";
 import type { FoodData, ProtocolData, Food, Protocol, Step, Unit } from "../types";
 import { FoodType, DosingStrategy, FoodAStrategy, Method } from "../types";
 import { DEFAULT_CONFIG } from "../constants";
@@ -219,8 +219,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
 
 /**
  * Remove Food B and its transition from the current protocol.
- *
- * Recomputes the protocol as Food A only and modifies global instance of protocolState
+ * Rebuilds the protocol using only Food A, but preserving the existing step target proteins.
  *
  * @returns void
  */
@@ -228,12 +227,66 @@ export function clearFoodB(): void {
   const current = protocolState.getProtocol();
   if (!current) return;
 
-  // remove food B and recalc
+  // if there's no food B to begin with return early so history stack isn't polluted
+  // and needless calculations are done
+  if (!current.foodB || !current.foodBThreshold) return;
+
+  // Create shallow copy without Food B
   const protocolWithoutB: Protocol = {
     ...current,
     foodB: undefined,
     foodBThreshold: undefined
   };
-  const updated = recalculateProtocol(protocolWithoutB);
-  protocolState.setProtocol(updated, "Cleared Food B");
+
+  const newSteps: Step[] = [];
+
+  // Filter out the redundant transition step if it exists
+  // e.g. food A 80mg -> food B 80mg, on clear food B the latter step should be removed...
+  // Criteria: Current step is Food B, Previous step is Food A, and Targets are identical
+  const filteredSteps = current.steps.filter((step, index) => {
+    if (index === 0) return true;
+    const prevStep = current.steps[index - 1];
+
+    if (
+      prevStep.food === "A" &&
+      step.food === "B" &&
+      step.targetMg.equals(prevStep.targetMg)
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  // Iterate over filtered steps to preserve their targetMg
+  filteredSteps.forEach((step, i) => {
+    // generate a step for Food A for this target
+    const newStep = generateStepForTarget(
+      step.targetMg,
+      i + 1, // 1-based index
+      protocolWithoutB.foodA,
+      protocolWithoutB.foodAStrategy,
+      protocolWithoutB.diThreshold,
+      protocolWithoutB.config
+    );
+
+    if (newStep) {
+      newSteps.push(newStep);
+    } else {
+      // Fallback if dilution fails (e.g. target too small for Food A config)
+      // force a DIRECT step so the data isn't lost
+      console.error("Unable to find new valid dilution for step:", step);
+      const unit = protocolWithoutB.foodA.type === FoodType.SOLID ? "g" : "ml";
+      newSteps.push({
+        stepIndex: i + 1,
+        targetMg: step.targetMg,
+        method: Method.DIRECT,
+        dailyAmount: step.targetMg.dividedBy(protocolWithoutB.foodA.getMgPerUnit()),
+        dailyAmountUnit: unit,
+        food: "A"
+      });
+    }
+  });
+
+  protocolWithoutB.steps = newSteps;
+  protocolState.setProtocol(protocolWithoutB, "Cleared Food B");
 }

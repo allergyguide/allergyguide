@@ -304,6 +304,7 @@ export function addFoodBToProtocol(
  * Recompute the entire protocol step sequence from current high-level settings
  *
  * Rebuilds Food A steps from the selected dosing strategy and Food A strategy, then re-applies Food B transition if present. Triggers UI updates
+ * It is DESTRUCTIVE: it will not respect any pre-existing target dose Mgs and will default to one of DOSING_STRATEGIES
  *
  * @param oldProtocol Protocol to recalculate based on its config
  * @returns New Protocol with recalculated steps

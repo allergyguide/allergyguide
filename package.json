@@ -15,6 +15,7 @@
     "test": "vitest run",
     "check:ts": "tsc --noEmit",
     "build:ts": "npm run check:ts && node build.mjs",
+    "serve": "npm run build:ts && zola build && vitest run && zola serve",
     "build": "npm run build:ts && npm run abridge --"
   },
   "dependencies": {

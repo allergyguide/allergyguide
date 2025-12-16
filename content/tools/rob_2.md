@@ -9,7 +9,7 @@ tags = ["tools", "research"]
 [extra]
 keywords = "RoB-2, research"
 toc = true
-authors = ["Joshua Yu"]
+authors = ["Allergyguide"]
 +++
 
 <div style="margin-top: 1rem;">

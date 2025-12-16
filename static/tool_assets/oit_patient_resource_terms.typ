@@ -1,8 +1,14 @@
+#let commit_hash = sys.inputs.at("commit_hash", default: "dev-build")
 #set page(
   paper: "us-letter",
   margin: (x: 0.75in, y: 0.75in),
+  header: {
+    align(right)[#text(style: "italic", size: 0.8em)[
+        version: #commit_hash]
+    ]
+  },
 )
-#set text(font: "Arial", size: 11pt, lang: "en")
+#set text(font: "Arimo", size: 11pt, lang: "en")
 #set par(justify: true, leading: 0.65em)
 
 
@@ -14,7 +20,7 @@
 ) = {
   // Header
   align(center)[
-    #text(weight: "bold", size: 16pt)[ORAL IMMUNOTHERAPY] \
+    #text(weight: "bold", size: 16pt)[ORAL IMMUNOTHERAPY]\
     #text(weight: "bold", size: 14pt)[PHYSICIAN REVIEW SHEET]
   ]
 
@@ -91,9 +97,11 @@
   align(center)[
     #text(size: 10pt, fill: gray)[
       GENERATED CONTENT WARNING:
-      This document was created using an open-source calculation tool. This tool does not exercise clinical judgment. This document is NOT valid until reviewed and signed by a licensed physician. Any use of this document without direct physician supervision is strictly prohibited.
+      This document was created using an open-source calculation tool. You should review available literature and local OIT guidelines, and decide if this protocol and general handout are applicable to your practice. This tool does not exercise clinical judgment. This document is NOT valid until reviewed and signed by a licensed physician. Any use of this document without direct physician supervision is strictly prohibited.
     ]
   ]
 }
 
 #physician-review-sheet()
+
+// Add parental checklist sheet too?
