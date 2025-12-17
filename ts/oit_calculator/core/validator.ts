@@ -317,13 +317,14 @@ function checkDilutionStep({ step, protocol, food }: { step: Step, protocol: Pro
   // PROTEIN_MISMATCH:
   // NOTE: this uses ROUNDED values
   // If the dilution is impossible (e.g. not enough mix amount) then the output here would be nonsensical
+  // it hedges the bet slightly: ie. a protein tolerance of 0.05 means that as long as the actual protein is within 5.1% then it's fine. this is simply for rounding purposes
   const calculatedProtein = totalMixProteinBasedOnRounded
     .times(roundedDailyAmount)
     .dividedBy(mixTotalVolumeBasedOnRounded);
 
   if (!step.targetMg.isZero()) {
     const delta = calculatedProtein.dividedBy(step.targetMg).minus(1).abs();
-    if (delta.greaterThan(protocol.config.PROTEIN_TOLERANCE)) {
+    if (delta.greaterThan(protocol.config.PROTEIN_TOLERANCE.times(1.02))) {
 
       let msg = `Step ${step.stepIndex}: Protein mismatch. Target ${formatNumber(step.targetMg, 1)} mg but calculated ${formatNumber(calculatedProtein, 1)} mg: ${formatNumber(delta.times(100), 0)}% difference.`;
 
@@ -443,7 +444,7 @@ function checkDirectStep({ step, protocol, food }: { step: Step, protocol: Proto
   // PROTEIN_MISMATCH
   if (!step.targetMg.isZero()) {
     const delta = calculatedProtein.dividedBy(step.targetMg).minus(1).abs();
-    if (delta.greaterThan(protocol.config.PROTEIN_TOLERANCE)) {
+    if (delta.greaterThan(protocol.config.PROTEIN_TOLERANCE.times(1.02))) {
       warnings.push({
         severity: getWarningSeverity(WarningCode.Red.PROTEIN_MISMATCH),
         code: WarningCode.Red.PROTEIN_MISMATCH,
