@@ -326,7 +326,7 @@ function checkDilutionStep({ step, protocol, food }: { step: Step, protocol: Pro
     const delta = calculatedProtein.dividedBy(step.targetMg).minus(1).abs();
     if (delta.greaterThan(protocol.config.PROTEIN_TOLERANCE.times(1.02))) {
 
-      let msg = `Step ${step.stepIndex}: Protein mismatch. Target ${formatNumber(step.targetMg, 1)} mg but calculated ${formatNumber(calculatedProtein, 1)} mg: ${formatNumber(delta.times(100), 0)}% difference.`;
+      let msg = `Step ${step.stepIndex}: Protein mismatch. Target ${formatNumber(step.targetMg, 1)} mg but calculated ${formatNumber(calculatedProtein, 1)} mg: ${formatNumber(delta.times(100), 1)}% difference.`;
 
       if (step.servings?.lessThan(new Decimal(1))) {
         msg = `Step ${step.stepIndex}: Protein mismatch. Valid dilution not possible to obtain target of (${formatNumber(step.targetMg, 1)} mg). Ensure the mixture contains enough food.`
@@ -448,7 +448,7 @@ function checkDirectStep({ step, protocol, food }: { step: Step, protocol: Proto
       warnings.push({
         severity: getWarningSeverity(WarningCode.Red.PROTEIN_MISMATCH),
         code: WarningCode.Red.PROTEIN_MISMATCH,
-        message: `Step ${step.stepIndex}: Protein mismatch. Target ${formatNumber(step.targetMg, 1)} mg but calculated ${formatNumber(calculatedProtein, 1)} mg: ${formatNumber(delta.times(100), 0)}% difference.`,
+        message: `Step ${step.stepIndex}: Protein mismatch. Target ${formatNumber(step.targetMg, 1)} mg but calculated ${formatNumber(calculatedProtein, 1)} mg: ${formatNumber(delta.times(100), 1)}% difference.`,
         stepIndex: step.stepIndex,
       });
     }
