@@ -36,8 +36,6 @@ authors = ["Joshua Yu"]
 - Fix bug where table sticky header stopped working
 - Fix bug where when the searchbar is refocused, the search results don't reappear if there's already text
 
-### Security
-
 ## [0.10.0] - 2025-12-11
 
 ### Added
