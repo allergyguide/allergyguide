@@ -3,7 +3,7 @@ import { FoodDataSchema, ProtocolDataSchema } from '../types';
 import Decimal from 'decimal.js';
 
 // Import JSONs
-import cnfFoods from '../../../static/tool_assets/typed_foods_rough.json';
+import cnfFoods from '../../../static/tool_assets/typed_foods.json';
 import customFoods from '../../../static/tool_assets/custom_foods.json';
 import protocols from '../../../static/tool_assets/oit_protocols.json';
 

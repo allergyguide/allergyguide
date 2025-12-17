@@ -68,7 +68,7 @@ function validateList<T>(list: unknown, schema: z.ZodSchema<T>, itemName: string
  * Load foods and protocol template databases and prepare fuzzy search indices.
  *
  * Fetches:
- * - /tool_assets/typed_foods_rough.json TODO! Change to not rough...
+ * - /tool_assets/typed_foods.json 
  * - /tool_assets/custom_foods.json
  * - /tool_assets/oit_protocols.json
  *
@@ -81,7 +81,7 @@ export async function loadDatabases(): Promise<LoadedData> {
   try {
     // Load databases
     const [cnfFoodsResponse, customFoodsResponse, protocolsResponse] = await Promise.all([
-      fetch("/tool_assets/typed_foods_rough.json"),
+      fetch("/tool_assets/typed_foods.json"),
       fetch("/tool_assets/custom_foods.json"),
       fetch("/tool_assets/oit_protocols.json")
     ]);

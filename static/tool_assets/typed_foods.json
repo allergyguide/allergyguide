@@ -48,18 +48,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Vinegar, cider",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vinegar, distilled (white)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Butter, whipped",
     "Mean protein in grams": 0.85,
     "Serving size": 100,
@@ -69,7 +57,7 @@
     "Food": "Butter oil, anhydrous",
     "Mean protein in grams": 0.28,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Cheese, blue",
@@ -291,13 +279,13 @@
     "Food": "Dessert topping (non dairy), powdered, prepared with whole milk",
     "Mean protein in grams": 3.61,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert topping (non dairy), pressurized",
     "Mean protein in grams": 0.98,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert topping (non dairy), frozen, semisolid",
@@ -327,7 +315,7 @@
     "Food": "Milk, dry, buttermilk, sweet cream",
     "Mean protein in grams": 34.3,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Milk, condensed, sweetened, canned",
@@ -339,7 +327,7 @@
     "Food": "Milk, fluid, chocolate, whole",
     "Mean protein in grams": 3.17,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Milk, fluid, chocolate, partly skimmed, 2% M.F.",
@@ -381,7 +369,7 @@
     "Food": "Milk shake, vanilla, thick",
     "Mean protein in grams": 3.86,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Whey, acid, fluid",
@@ -393,7 +381,7 @@
     "Food": "Whey, acid, dry",
     "Mean protein in grams": 11.73,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Whey, sweet, fluid",
@@ -447,7 +435,7 @@
     "Food": "Egg, goose, whole, fresh, raw",
     "Mean protein in grams": 13.87,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Egg, quail, whole, fresh, raw",
@@ -459,7 +447,7 @@
     "Food": "Egg, turkey, whole, fresh, raw",
     "Mean protein in grams": 13.68,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Butter, unsalted",
@@ -495,7 +483,7 @@
     "Food": "Cheese fondue",
     "Mean protein in grams": 14.23,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Cheese sauce, homemade",
@@ -597,7 +585,7 @@
     "Food": "Egg substitute, frozen (yolk replaced)",
     "Mean protein in grams": 11.29,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Butter, regular",
@@ -651,7 +639,7 @@
     "Food": "Egg, chicken, yolk, fresh or frozen, raw",
     "Mean protein in grams": 15.9,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Egg, chicken, whole, cooked, fried",
@@ -693,7 +681,7 @@
     "Food": "Cream, whipping, 32% M.F.",
     "Mean protein in grams": 2.07,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Cream, whipping, 35% M.F.",
@@ -723,7 +711,7 @@
     "Food": "Cream, cereal (half and half), 10% M.F.",
     "Mean protein in grams": 2.99,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Cream, table (coffee), 15% M.F.",
@@ -735,7 +723,7 @@
     "Food": "Cream, sour, cultured, 18% M.F.",
     "Mean protein in grams": 3.09,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Milk, evaporated, partly skimmed, canned, undiluted, 2% M.F.",
@@ -1026,12 +1014,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Salt, table",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Spices, thyme, fresh",
     "Mean protein in grams": 5.56,
     "Serving size": 100,
@@ -1110,62 +1092,8 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Animal fat, beef tallow",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Sandwich spread, with chopped pickle, regular, unspecified oil",
     "Mean protein in grams": 0.9,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, rice bran",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, wheat germ",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, peanut",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, soybean",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, coconut",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, olive",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, palm",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, sesame",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -1176,232 +1104,10 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Salad dressing, oil and vinegar, homemade",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, cocoa butter",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, cottonseed",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, safflower, linoleic (70% and over)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, safflower, oleic (70% and over)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, palm kernel",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, poppyseed",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, grapeseed",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, corn",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Animal fat, mutton tallow",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, walnut",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, almond",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, apricot kernel",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, soybean lecithin",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, hazelnut",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, babassu",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Animal fat, chicken",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, household, soybean (hydrogenated) and palm",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Animal fat, duck",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Animal fat, turkey",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Animal fat, goose",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, avocado",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, canola",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, mustard",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Vegetable oil, sunflower, oleic (70% and over)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Shortening, special purpose, cake and icing (frosting)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, special purpose, baking",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, oat",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Fish oil, cod liver",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Fish oil, herring",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Fish oil, menhaden",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Fish oil, menhaden, fully hydrogenated",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Fish oil, salmon",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Fish oil, sardine",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, multipurpose, hydrogenated soybean and palm",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Animal fat, lard (pork)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, for frying (liquid), soybean",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Salad dressing, russian, commercial, regular",
     "Mean protein in grams": 0.69,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, russian, commercial, low calorie",
@@ -1413,7 +1119,7 @@
     "Food": "Salad dressing, thousand island, commercial, regular",
     "Mean protein in grams": 1.09,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, mayonnaise type, commercial, regular",
@@ -1461,85 +1167,13 @@
     "Food": "Salad dressing, blue or roquefort cheese, commercial, regular",
     "Mean protein in grams": 1.37,
     "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Animal fat, native, seal oil",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, household, unspecified vegetable and animal oils",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, for frying (liquid), canola",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
     "Type": "LIQUID"
-  },
-  {
-    "Food": "Shortening, industrial, for frying (solid), canola",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, for frying (solid), soybean",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, for baking (cake), canola",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, for baking (cake), soybean",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, for baking (pastry), canola",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, for baking (pastry), soybean",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, all purpose, soy and palm",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, industrial, all purpose, canola and palm",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
   },
   {
     "Food": "Spread, 20% butter / 80% canola oil",
     "Mean protein in grams": 0.17,
     "Serving size": 100,
     "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, household, unspecified vegetable oil",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
   },
   {
     "Food": "Chicken, broiler, meat, skin, giblets and neck, raw",
@@ -1623,7 +1257,7 @@
     "Food": "Chicken, broiler, meat only, stewed",
     "Mean protein in grams": 27.29,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Chicken, broiler, skin only, batter dipped, fried",
@@ -1905,7 +1539,7 @@
     "Food": "Chicken, broiler, leg, meat, stewed",
     "Mean protein in grams": 26.26,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Chicken, broiler, neck, meat and skin, raw",
@@ -2883,13 +2517,13 @@
     "Food": "Poultry food products, chicken, flaked, canned, deboned with broth",
     "Mean protein in grams": 21.77,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Poultry food products, turkey, canned, boned, with broth",
     "Mean protein in grams": 23.68,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Poultry food products, turkey and gravy, frozen",
@@ -3165,7 +2799,7 @@
     "Food": "Soup, cream, asparagus, canned, condensed",
     "Mean protein in grams": 1.82,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, bean with bacon, canned, condensed",
@@ -3177,19 +2811,19 @@
     "Food": "Soup, bean with ham, ready-to-serve",
     "Mean protein in grams": 5.19,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, broth, beef, ready-to-serve",
     "Mean protein in grams": 0.91,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, beef noodle, canned, condensed",
     "Mean protein in grams": 3.85,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, celery, canned, condensed",
@@ -3201,7 +2835,7 @@
     "Food": "Soup, cheddar cheese, canned, condensed",
     "Mean protein in grams": 3.69,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, broth, chicken, canned, condensed",
@@ -3213,31 +2847,31 @@
     "Food": "Soup, chicken chowder (a la king), ready-to-serve",
     "Mean protein in grams": 2.79,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, chicken, canned, condensed",
     "Mean protein in grams": 2.19,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken gumbo, canned, condensed",
     "Mean protein in grams": 2.1,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken noodle,  ready-to-serve",
     "Mean protein in grams": 2.41,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken noodle, canned, condensed",
     "Mean protein in grams": 2.81,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken rice, ready-to-serve",
@@ -3249,19 +2883,19 @@
     "Food": "Soup, chicken rice, canned, condensed",
     "Mean protein in grams": 1.92,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken vegetable (includes gumbo), ready-to-serve",
     "Mean protein in grams": 2.85,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken vegetable, canned, condensed",
     "Mean protein in grams": 2.94,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, broth (consomme), beef, canned, condensed",
@@ -3273,19 +2907,19 @@
     "Food": "Soup, lentil with bacon, ready-to-serve",
     "Mean protein in grams": 3.03,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, minestrone, ready-to-serve",
     "Mean protein in grams": 1.61,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, minestrone, canned, condensed",
     "Mean protein in grams": 3.48,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, mushroom barley, canned, condensed",
@@ -3309,7 +2943,7 @@
     "Food": "Soup, cream, onion, canned, condensed",
     "Mean protein in grams": 2.2,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, potato, canned, condensed",
@@ -3321,7 +2955,7 @@
     "Food": "Soup, scotch broth, canned, condensed",
     "Mean protein in grams": 4.05,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, tomato rice, canned, condensed",
@@ -3345,13 +2979,13 @@
     "Food": "Soup, beef and vegetable, ready-to-serve",
     "Mean protein in grams": 3.09,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, vegetable with beef broth, canned, condensed",
     "Mean protein in grams": 2.27,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, asparagus, dehydrated",
@@ -3363,7 +2997,7 @@
     "Food": "Soup, bean with bacon, dehydrated",
     "Mean protein in grams": 19.38,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, broth, beef, dehydrated",
@@ -3405,13 +3039,13 @@
     "Food": "Soup, broth, chicken, cubed, dehydrated",
     "Mean protein in grams": 14.6,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, chicken, dehydrated",
     "Mean protein in grams": 7.25,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken rice, dehydrated",
@@ -3429,7 +3063,7 @@
     "Food": "Soup, consomme, dehydrated",
     "Mean protein in grams": 17.19,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, leek, dehydrated",
@@ -3465,7 +3099,7 @@
     "Food": "Soup, tomato, dehydrated",
     "Mean protein in grams": 8.63,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, tomato vegetable, dehydrated",
@@ -3477,13 +3111,13 @@
     "Food": "Soup, vegetable beef, dehydrated",
     "Mean protein in grams": 18.91,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, vegetable, dehydrated",
     "Mean protein in grams": 8.0,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sauce, Stroganoff, dehydrated",
@@ -3501,19 +3135,19 @@
     "Food": "Gravy, au jus, canned",
     "Mean protein in grams": 1.2,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Gravy, au jus, dehydrated",
     "Mean protein in grams": 9.2,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Gravy, beef, canned",
     "Mean protein in grams": 3.75,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Gravy, beef, dehydrated",
@@ -3525,7 +3159,7 @@
     "Food": "Gravy, chicken, canned",
     "Mean protein in grams": 1.93,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Gravy, chicken, dehydrated",
@@ -3537,7 +3171,7 @@
     "Food": "Gravy, mushroom, canned",
     "Mean protein in grams": 1.26,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Gravy, mushroom, dehydrated",
@@ -3561,7 +3195,7 @@
     "Food": "Gravy, turkey, canned",
     "Mean protein in grams": 2.6,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Gravy, turkey, dehydrated",
@@ -3591,7 +3225,7 @@
     "Food": "Sauce, salsa, ready-to-serve",
     "Mean protein in grams": 1.54,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sauce, white, thin, 2% milk, homemade",
@@ -3609,7 +3243,7 @@
     "Food": "Sauce, white, thick, homemade",
     "Mean protein in grams": 3.99,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sauce, pepper or hot, ready-to-serve",
@@ -3633,13 +3267,13 @@
     "Food": "Soup, bean with bacon, canned, condensed, water added",
     "Mean protein in grams": 3.45,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, beef noodle, canned, condensed, water added",
     "Mean protein in grams": 1.93,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, celery, canned, condensed, water added",
@@ -3669,25 +3303,25 @@
     "Food": "Soup, chicken gumbo, canned, condensed, water added",
     "Mean protein in grams": 1.08,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken noodle, canned, condensed, water added",
     "Mean protein in grams": 1.46,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken rice, canned, condensed, water added",
     "Mean protein in grams": 1.0,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken vegetable, canned, condensed, water added",
     "Mean protein in grams": 1.5,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, broth (consomme), beef, canned, condensed, water added",
@@ -3699,13 +3333,13 @@
     "Food": "Soup, minestrone, canned, condensed, water added",
     "Mean protein in grams": 1.77,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, mushroom barley, canned, condensed, water added",
     "Mean protein in grams": 0.77,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, mushroom, canned, condensed, water added",
@@ -3729,7 +3363,7 @@
     "Food": "Soup, cream, potato, canned, condensed, water added",
     "Mean protein in grams": 0.72,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, scotch broth, canned, condensed, water added",
@@ -3753,13 +3387,13 @@
     "Food": "Soup, cream, asparagus, dehydrated, water added",
     "Mean protein in grams": 0.88,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, bean with bacon, dehydrated, water added",
     "Mean protein in grams": 2.07,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, broth, beef, dehydrated, water added",
@@ -3777,13 +3411,13 @@
     "Food": "Soup, beef noodle, dehydrated, water added",
     "Mean protein in grams": 0.88,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cauliflower, dehydrated, water added",
     "Mean protein in grams": 1.13,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, celery, dehydrated, water added",
@@ -3813,13 +3447,13 @@
     "Food": "Soup, chicken rice, dehydrated, water added",
     "Mean protein in grams": 0.97,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, chicken vegetable, dehydrated, water added",
     "Mean protein in grams": 1.07,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, consomme, dehydrated, water added",
@@ -3837,7 +3471,7 @@
     "Food": "Soup, minestrone, dehydrated, water added",
     "Mean protein in grams": 1.75,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, mushroom, dehydrated, water added",
@@ -3855,7 +3489,7 @@
     "Food": "Soup, pea, green or split, dehydrated, water added",
     "Mean protein in grams": 2.83,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, tomato, dehydrated, water added",
@@ -3867,13 +3501,13 @@
     "Food": "Soup, tomato vegetable, dehydrated, water added",
     "Mean protein in grams": 0.79,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, vegetable beef, dehydrated, water added",
     "Mean protein in grams": 1.16,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, vegetable, dehydrated, water added",
@@ -3885,31 +3519,31 @@
     "Food": "Soup, chicken noodle, dehydrated, water added",
     "Mean protein in grams": 0.84,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, pea, green, canned, condensed",
     "Mean protein in grams": 6.54,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, split pea with ham, ready-to-serve",
     "Mean protein in grams": 3.34,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, split pea with ham, canned, condensed",
     "Mean protein in grams": 7.68,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, vegetable with beef (and barley), canned, condensed",
     "Mean protein in grams": 2.73,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, onion, dehydrated",
@@ -3927,25 +3561,25 @@
     "Food": "Soup, pea, green, canned, condensed, water added",
     "Mean protein in grams": 3.2,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, split pea with ham, canned, condensed, water added",
     "Mean protein in grams": 4.08,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, vegetable with beef (and barley), canned, condensed, water added",
     "Mean protein in grams": 1.41,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, onion, dehydrated, water added",
     "Mean protein in grams": 0.32,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, tomato, canned, condensed, water added",
@@ -3963,19 +3597,13 @@
     "Food": "Sauce, tartar, ready-to-serve",
     "Mean protein in grams": 1.0,
     "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Sauce, worcestershire, ready-to-serve",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sauce, mustard, brown, ready-to-serve",
     "Mean protein in grams": 5.9,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sausage, Beerwurst, beer salami, pork",
@@ -4251,7 +3879,7 @@
     "Food": "Cereal, hot, cream of rice, cooked",
     "Mean protein in grams": 0.9,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Cereal, hot, corn grits (yellow), dry",
@@ -4737,7 +4365,7 @@
     "Food": "Cereal, hot, cream of wheat, quick, dry",
     "Mean protein in grams": 12.86,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Cereal, hot, cream of wheat, quick, prepared",
@@ -4809,7 +4437,7 @@
     "Food": "Cereal, hot, oats, instant: maple and brown sugar, dry, Quaker",
     "Mean protein in grams": 8.81,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Cereal, hot, oats, instant: maple and brown sugar, prepared, Quaker",
@@ -5001,7 +4629,7 @@
     "Food": "Apple, canned, sweetened, sliced, heated",
     "Mean protein in grams": 0.18,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Apple, dehydrated (low moisture), sulphured, uncooked",
@@ -5055,7 +4683,7 @@
     "Food": "Apple juice, frozen concentrate, undiluted, without vitamin C",
     "Mean protein in grams": 0.51,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Apple juice, frozen concentrate, diluted, without added vitamin C",
@@ -5259,7 +4887,7 @@
     "Food": "Cherry sour, red, frozen, unsweetened",
     "Mean protein in grams": 0.92,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Cherry, sweet, raw",
@@ -5313,7 +4941,7 @@
     "Food": "Sauce, cranberry, canned, sweetened",
     "Mean protein in grams": 0.2,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Cranberry orange relish, canned",
@@ -5505,7 +5133,7 @@
     "Food": "Grapefruit juice, frozen concentrate, undiluted",
     "Mean protein in grams": 1.97,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Grapefruit juice, white, raw",
@@ -5559,7 +5187,7 @@
     "Food": "Guava sauce, cooked",
     "Mean protein in grams": 0.32,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Jackfruit, raw",
@@ -5913,7 +5541,7 @@
     "Food": "Pear, canned halves, juice pack, solids and liquid",
     "Mean protein in grams": 0.34,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Pear, canned, halves, extra light syrup pack, solids and liquid",
@@ -6351,7 +5979,7 @@
     "Food": "Grape juice, frozen concentrate, sugar and vitamin C added, undiluted",
     "Mean protein in grams": 0.65,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Grape juice, frozen concentrate, sugar and vitamin C added, diluted",
@@ -6381,7 +6009,7 @@
     "Food": "Orange juice, frozen concentrate, undiluted",
     "Mean protein in grams": 2.4,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Orange juice, frozen concentrate, diluted",
@@ -9093,7 +8721,7 @@
     "Food": "Squash, summer, zucchini in tomato juice, canned",
     "Mean protein in grams": 1.03,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Succotash, raw",
@@ -9255,7 +8883,7 @@
     "Food": "Tomato, red, ripe, canned with green chilies",
     "Mean protein in grams": 0.69,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Tomato products, canned, paste, no added salt",
@@ -9279,7 +8907,7 @@
     "Food": "Tomato products, canned, sauce, with onions",
     "Mean protein in grams": 1.56,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Turnip, boiled, drained",
@@ -9741,7 +9369,7 @@
     "Food": "Pickle relish, sweet",
     "Mean protein in grams": 0.37,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Pickles, cucumber, sour, low sodium",
@@ -10479,7 +10107,7 @@
     "Food": "Juice, tomato, canned",
     "Mean protein in grams": 0.85,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Tomato products, canned, sauce",
@@ -10491,25 +10119,25 @@
     "Food": "Tomato products, canned, sauce with mushrooms",
     "Mean protein in grams": 1.45,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Tomato products, canned, sauce with herbs and cheese",
     "Mean protein in grams": 2.13,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Tomato products, canned, sauce with onions, green peppers and celery",
     "Mean protein in grams": 0.94,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Tomato products, canned, sauce with tomato tidbits",
     "Mean protein in grams": 1.32,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Turnip, raw",
@@ -10671,7 +10299,7 @@
     "Food": "Tomato ketchup (catsup), low sodium",
     "Mean protein in grams": 1.04,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Seaweed, dulse (laver, nori), dried",
@@ -11031,7 +10659,7 @@
     "Food": "Nuts, coconut cream (liquid from grated meat), raw",
     "Mean protein in grams": 3.63,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Nuts, coconut cream (liquid from grated meat), sweetened, canned",
@@ -11043,13 +10671,13 @@
     "Food": "Nuts, coconut milk (liquid from grated meat and water), canned",
     "Mean protein in grams": 2.02,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Nuts, coconut water (liquid from coconut)",
     "Mean protein in grams": 0.72,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Nuts, filberts or hazelnuts, dried",
@@ -11223,7 +10851,7 @@
     "Food": "Seeds, sesame flour, high-fat",
     "Mean protein in grams": 30.78,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Seeds, sesame butter, tahini, unroasted kernels",
@@ -11247,7 +10875,7 @@
     "Food": "Nuts, coconut milk (liquid from grated meat and water), frozen",
     "Mean protein in grams": 1.61,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Nuts, coconut meat, desiccated, creamed",
@@ -11469,7 +11097,7 @@
     "Food": "Nuts, coconut milk (liquid from grated meat and water), raw",
     "Mean protein in grams": 2.29,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Nuts, pistachio nuts, raw",
@@ -11805,41 +11433,11 @@
     "Food": "Alcohol, cocktail, whisky sour mix, powder",
     "Mean protein in grams": 0.6,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Alcohol, cocktail, whisky sour mix, bottled",
     "Mean protein in grams": 0.1,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, liqueur, cr\u00cbme de menthe (36% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, whisky (40% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, rum  (40% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, vodka (40% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, whisky (43% alcohol by volume)",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "LIQUID"
   },
@@ -11874,56 +11472,8 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Carbonated drinks, club soda",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Carbonated drinks, cream soda",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Carbonated drinks, ginger ale",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Carbonated drinks, grape soda",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Carbonated drinks, lemon-lime soda",
     "Mean protein in grams": 0.05,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Carbonated drinks, orange soda",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Carbonated drinks, pepper type",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Carbonated drinks, tonic water (quinine)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Carbonated drinks, root beer",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "LIQUID"
   },
@@ -11937,7 +11487,7 @@
     "Food": "Beverage mix, carob flavour, powder, with whole milk",
     "Mean protein in grams": 3.16,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Beverage mix, chocolate flavour, powder",
@@ -11967,13 +11517,13 @@
     "Food": "Juice, tomato clam cocktail, canned",
     "Mean protein in grams": 0.6,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Hot chocolate, mix, powder",
     "Mean protein in grams": 6.67,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Hot chocolate, mix, powder, prepared with water",
@@ -12075,7 +11625,7 @@
     "Food": "Lemonade, white, frozen concentrate",
     "Mean protein in grams": 0.22,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Lemonade, white, frozen concentrate, water added",
@@ -12084,22 +11634,10 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Limeade, frozen concentrate",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Limeade, frozen concentrate, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Malted milk, natural flavour, enriched powder",
     "Mean protein in grams": 8.8,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Malted milk, natural flavour, powder",
@@ -12111,7 +11649,7 @@
     "Food": "Malted milk, natural flavour, powder, with whole milk",
     "Mean protein in grams": 3.86,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Malted milk, chocolate flavour, enriched powder",
@@ -12141,7 +11679,7 @@
     "Food": "Milk shake (fast food), chocolate",
     "Mean protein in grams": 3.4,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Milk shake (fast food), vanilla",
@@ -12159,25 +11697,19 @@
     "Food": "Strawberry flavour mix, powder, with whole milk",
     "Mean protein in grams": 3.0,
     "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Tea, brewed",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
     "Type": "LIQUID"
   },
   {
     "Food": "Tea, instant, unsweetened, powder",
     "Mean protein in grams": 20.21,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Tea, instant, unsweetened, powder, water added",
     "Mean protein in grams": 0.06,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Tea, instant, unsweetened, lemon flavour, powder",
@@ -12194,24 +11726,6 @@
   {
     "Food": "Tea, instant, sweetened, lemon flavour, powder, water added",
     "Mean protein in grams": 0.01,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Tea, brewed, herb",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Water, mineral, carbonated, bottled",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Water, mineral, \"POLAND SPRINGS\", bottled",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "LIQUID"
   },
@@ -12282,24 +11796,6 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Water, municipal",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, whisky (47% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, whisky (50% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Alcohol, liqueur, coffee (31.5% alcohol by volume)",
     "Mean protein in grams": 0.1,
     "Serving size": 100,
@@ -12312,12 +11808,6 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Carbonated drinks, non cola with aspartame",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Lemonade, pink, frozen concentrate",
     "Mean protein in grams": 0.22,
     "Serving size": 100,
@@ -12326,18 +11816,6 @@
   {
     "Food": "Lemonade, pink, frozen concentrate, water added",
     "Mean protein in grams": 0.05,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Tea, brewed with distilled water",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Tea, brewed, chamomile",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "LIQUID"
   },
@@ -12360,28 +11838,10 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Alcohol, cocktail, scotch and soda",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, gin (40% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Hot chocolate, with aspartame, mix, powder",
     "Mean protein in grams": 15.49,
     "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Juice drink, cranberry-apple, vitamin C added, bottled",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Juice drink, cranberry-grape, vitamin C added, bottled",
@@ -12390,74 +11850,20 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Juice, cocktail, cranberry, vitamin C added, bottled",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Drink, fruit punch flavour, vitamin C added, powder",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Drink, fruit punch flavour, vitamin C added, powder, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Drink, fruit punch, vitamin C added, ready-to-drink",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Juice drink, grape, vitamin C added, canned",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Drink, grape, vitamin C added, canned",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Lemonade with artificial sweetener, powder",
     "Mean protein in grams": 3.6,
     "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Lemonade with artificial sweetener, powder, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Drink, lemonade flavour, vitamin C added, powder",
     "Mean protein in grams": 0.1,
     "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Drink, lemonade flavour, vitamin C added, powder, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Malt beverage, includes non-alcoholic beer (<0.5% alcohol by volume)",
     "Mean protein in grams": 0.21,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Drink, orange, vitamin C added, canned",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "LIQUID"
   },
@@ -12480,18 +11886,6 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Drink, orange flavour, vitamin C added, powder",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Drink, orange flavour, vitamin C added, powder, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Drink, orange, with pulp, vitamin C added, frozen concentrate",
     "Mean protein in grams": 0.1,
     "Serving size": 100,
@@ -12510,18 +11904,6 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Juice, cocktail, cranberry, vitamin C added, frozen concentrate, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Alcohol, whisky (45% alcohol by volume)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Alcohol, wine cooler",
     "Mean protein in grams": 0.11,
     "Serving size": 100,
@@ -12532,30 +11914,6 @@
     "Mean protein in grams": 22.4,
     "Serving size": 100,
     "Type": "SOLID"
-  },
-  {
-    "Food": "Drink, fruit punch flavour, powder",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Drink, fruit punch flavour, powder, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Drink, lemonade flavour, powder",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Drink, lemonade flavour, powder, water added",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
   },
   {
     "Food": "Fish, anchovy, european, raw",
@@ -17790,12 +17148,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Leavening agent, baking powder, double acting, sodium, aluminium sulfate",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Leavening agent, baking powder, double acting, phosphate",
     "Mean protein in grams": 0.1,
     "Serving size": 100,
@@ -17804,18 +17156,6 @@
   {
     "Food": "Leavening agent, baking powder, low sodium",
     "Mean protein in grams": 0.1,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Leavening agent, baking soda",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Leavening agent, cream of tartar",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -18507,7 +17847,7 @@
     "Food": "Dessert, frozen, ice cream, light, vanilla",
     "Mean protein in grams": 4.78,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, frozen, ice cream, vanilla, rich, 16% M.F.",
@@ -18519,7 +17859,7 @@
     "Food": "Dessert, frozen, ice cream, French vanilla, soft serve",
     "Mean protein in grams": 4.1,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Candies, peppermint, chocolate coated, mint taste",
@@ -18537,13 +17877,13 @@
     "Food": "Dessert, frozen, ice cream, vanilla, 11% M.F.",
     "Mean protein in grams": 3.5,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, frozen, ice cream, low fat, vanilla, soft serve",
     "Mean protein in grams": 4.9,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, frozen, sherbet, orange",
@@ -18554,12 +17894,6 @@
   {
     "Food": "Candies, bars, 5th Avenue",
     "Mean protein in grams": 8.78,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Candies, fondant, homemade",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -18594,24 +17928,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Candies, gumdrops (jujubes)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Candies, hard",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Candies, jellybeans",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Candies, bars, Kit Kat wafer bar",
     "Mean protein in grams": 6.51,
     "Serving size": 100,
@@ -18632,12 +17948,6 @@
   {
     "Food": "Candies, Twizzlers (licorice), strawberry",
     "Mean protein in grams": 2.56,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrup, table blend, pancake with butter",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -18675,7 +17985,7 @@
     "Food": "Dessert, pudding, banana, dry mix, instant, prepared with 2% milk",
     "Mean protein in grams": 3.05,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, banana, dry mix, regular, prepared with 2% milk",
@@ -18687,7 +17997,7 @@
     "Food": "Dessert, pudding, chocolate, dry mix, instant, prepared with 2% milk",
     "Mean protein in grams": 3.26,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Candies, milk chocolate coated peanuts",
@@ -18698,18 +18008,6 @@
   {
     "Food": "Candies, milk chocolate coated raisins",
     "Mean protein in grams": 4.1,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrup, table blend, pancake, calorie-reduced",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrup, table blend, pancake",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -18747,7 +18045,7 @@
     "Food": "Sweets, topping, strawberry",
     "Mean protein in grams": 0.2,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Candies, M&M's peanut chocolate candies",
@@ -18864,12 +18162,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Candies, chewing gum",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Candies, bars, Special Dark",
     "Mean protein in grams": 5.54,
     "Serving size": 100,
@@ -18942,12 +18234,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Dessert, flan, caramel custard, dry mix, unprepared",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Dessert, pudding, chocolate, dry mix, regular, unprepared",
     "Mean protein in grams": 2.6,
     "Serving size": 100,
@@ -18963,19 +18249,19 @@
     "Food": "Dessert, pudding, chocolate, dry mix, regular, prepared with 2% milk",
     "Mean protein in grams": 3.29,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, coconut, dry mix, instant, prepared with 2% milk",
     "Mean protein in grams": 3.13,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, rice, ready to eat",
     "Mean protein in grams": 3.23,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, rice, dry mix, unprepared",
@@ -18987,7 +18273,7 @@
     "Food": "Dessert, pudding, rice, dry mix, prepared with whole milk",
     "Mean protein in grams": 3.16,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, tapioca, dry mix, unprepared",
@@ -19004,12 +18290,6 @@
   {
     "Food": "Dessert, pudding, vanilla, ready to eat",
     "Mean protein in grams": 1.45,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Dessert, pudding, vanilla, dry mix, instant, unprepared",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -19035,7 +18315,7 @@
     "Food": "Dessert, pudding, vanilla, dry mix, regular, prepared with whole milk",
     "Mean protein in grams": 2.94,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, rice, dry mix, prepared with 2% milk",
@@ -19047,19 +18327,19 @@
     "Food": "Dessert, pudding, tapioca, dry mix, prepared with 2% milk",
     "Mean protein in grams": 3.03,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, vanilla, dry mix, instant, prepared with 2% milk",
     "Mean protein in grams": 3.05,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, vanilla, dry mix, regular, prepared with 2% milk",
     "Mean protein in grams": 3.07,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, rennin, chocolate, dry mix, made with 2% milk",
@@ -19071,7 +18351,7 @@
     "Food": "Dessert, rennin, vanilla, dry mix, prepared with 2% milk",
     "Mean protein in grams": 3.06,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, frozen, gelatin pop",
@@ -19095,7 +18375,7 @@
     "Food": "Dessert, pudding, coconut, dry mix, regular, prepared with 2% milk",
     "Mean protein in grams": 3.14,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, rennin, chocolate, dry mix, unprepared",
@@ -19106,12 +18386,6 @@
   {
     "Food": "Dessert, rennin, chocolate, dry mix, prepared with whole milk",
     "Mean protein in grams": 3.2,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Dessert, rennin, vanilla, dry mix, unprepared",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -19125,7 +18399,7 @@
     "Food": "Dessert, rennin, tablets, unsweetened",
     "Mean protein in grams": 1.0,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, flan, caramel custard, dry mix, prepared with 2% milk",
@@ -19161,7 +18435,7 @@
     "Food": "Icing (frosting), vanilla (white), creamy, dry mix, prepared with butter",
     "Mean protein in grams": 0.2,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Icing (frosting), white, fluffy, dry mix, unprepared",
@@ -19200,12 +18474,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Dessert, frozen, ice pop",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Dessert, frozen yogourt, vanilla, soft-serve",
     "Mean protein in grams": 4.0,
     "Serving size": 100,
@@ -19221,7 +18489,7 @@
     "Food": "Sweets, honey, strained or extracted",
     "Mean protein in grams": 0.3,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sweets, jams and preserves",
@@ -19248,18 +18516,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Sweets, fancy molasses",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Sweets, molasses, blackstrap",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Sweets, pectin, unsweetened, dry mix",
     "Mean protein in grams": 0.3,
     "Serving size": 100,
@@ -19278,20 +18534,8 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Dessert, pudding, banana, dry mix, instant, unprepared",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Dessert, pudding, banana, dry mix, instant, prepared with whole milk",
     "Mean protein in grams": 2.91,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Dessert, pudding, banana, dry mix, regular, unprepared",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -19311,7 +18555,7 @@
     "Food": "Dessert, pudding, coconut, dry mix, instant, prepared with whole milk",
     "Mean protein in grams": 2.99,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, coconut, dry mix, regular, unprepared",
@@ -19326,16 +18570,10 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Dessert, pudding, lemon, dry mix, instant, unprepared",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Dessert, pudding, lemon, dry mix, instant, prepared with whole milk",
     "Mean protein in grams": 2.91,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, lemon, dry mix, regular, unprepared",
@@ -19356,18 +18594,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Sweets, sugars, granulated",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, sugars, icing (powdered)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Sweets, sugars, maple, hard",
     "Mean protein in grams": 0.1,
     "Serving size": 100,
@@ -19377,67 +18603,25 @@
     "Food": "Sweets, syrups, chocolate, fudge-type",
     "Mean protein in grams": 4.6,
     "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrups, corn, dark",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrups, corn light",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Sweets, syrups, corn, high-fructose",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
     "Type": "LIQUID"
   },
   {
     "Food": "Sweets, syrups, malt",
     "Mean protein in grams": 6.2,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sweets, syrups, maple, bulk",
     "Mean protein in grams": 0.04,
     "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrups, sorghum",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrups, table blends, pancake, with 2% maple",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
     "Type": "LIQUID"
-  },
-  {
-    "Food": "Sweets, syrups. table blends, cane and 15% maple",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Sweets, syrups, table blends, corn, refiner's syrup and sugar",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
   },
   {
     "Food": "Sweets, topping (spread), butterscotch or caramel",
     "Mean protein in grams": 1.5,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sweets,  topping, marshmallow cream",
@@ -19449,7 +18633,7 @@
     "Food": "Sweets, topping, pineapple",
     "Mean protein in grams": 0.1,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sweets, topping, nuts in syrup",
@@ -19610,12 +18794,6 @@
   {
     "Food": "Icing (frosting), sour cream flavour, ready to eat",
     "Mean protein in grams": 0.1,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Icing (frosting), vanilla (white), creamy, ready-to-eat",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -21207,7 +20385,7 @@
     "Food": "Cheese, cream, fat free",
     "Mean protein in grams": 15.69,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Spices, rosemary, fresh",
@@ -21249,19 +20427,19 @@
     "Food": "Sauce, hoisin, ready-to-serve",
     "Mean protein in grams": 3.31,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sauce, oyster, ready-to-serve",
     "Mean protein in grams": 1.35,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sauce, fish, ready-to-serve",
     "Mean protein in grams": 5.06,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sauce, cheese sauce mix, dry, unprepared",
@@ -21273,7 +20451,7 @@
     "Food": "Sauce, cheese, ready-to-serve",
     "Mean protein in grams": 6.71,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sauce, pasta, spaghetti or marinara, ready-to-serve",
@@ -21315,13 +20493,13 @@
     "Food": "Hot chocolate with marshmallows, powder, mix",
     "Mean protein in grams": 2.8,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Hot chocolate, rich, mix, powder",
     "Mean protein in grams": 3.0,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Hot chocolate, cocoa, without sugar, mix, powder",
@@ -21339,7 +20517,7 @@
     "Food": "Plant-based beverage, rice, enriched",
     "Mean protein in grams": 0.28,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Lamb, Canadian, composite cuts, lean and fat, 3mm (1/8\") trim, raw",
@@ -21567,7 +20745,7 @@
     "Food": "Jackfruit, canned, syrup pack",
     "Mean protein in grams": 0.36,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Durian, raw or frozen",
@@ -21840,12 +21018,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Tea, iced, lemon flavour, ready-to-drink",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Tofu, regular; soft or firm, prepared with magnesium chloride (nigari)",
     "Mean protein in grams": 9.89,
     "Serving size": 100,
@@ -22026,12 +21198,6 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Carbonated drinks, cola, decaffeinated",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Coffee, brewed, prepared with municipal water, decaffeinated",
     "Mean protein in grams": 0.1,
     "Serving size": 100,
@@ -22042,12 +21208,6 @@
     "Mean protein in grams": 3.1,
     "Serving size": 100,
     "Type": "SOLID"
-  },
-  {
-    "Food": "Tea, brewed, prepared with tap water, decaffeinated",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
   },
   {
     "Food": "Soybean, fermented products, Tempeh (tempe), cooked",
@@ -22611,13 +21771,13 @@
     "Food": "Soup, NISSIN, CUP NOODLES, ramen noodles, chicken flavour, dry, water added",
     "Mean protein in grams": 1.19,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, asparagus, canned, condensed, 2% M.F. milk added",
     "Mean protein in grams": 2.56,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, celery, canned, condensed, 2% M.F. milk added",
@@ -22671,7 +21831,7 @@
     "Food": "Beverage mix, carob flavour, powder, with 2% M.F. milk",
     "Mean protein in grams": 3.23,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Beverage mix, chocolate flavour, powder, with 2% M.F. milk",
@@ -22758,12 +21918,6 @@
     "Type": "LIQUID"
   },
   {
-    "Food": "Carbonated drinks, cola",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Tea, instant, unsweetened, powder, decaffeinated",
     "Mean protein in grams": 20.21,
     "Serving size": 100,
@@ -22774,18 +21928,6 @@
     "Mean protein in grams": 0.12,
     "Serving size": 100,
     "Type": "SOLID"
-  },
-  {
-    "Food": "Sports drink, fruit flavour, low calorie, ready-to-drink",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Carbonated drinks, chocolate",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
   },
   {
     "Food": "Non-alcoholic, wine",
@@ -22821,13 +21963,13 @@
     "Food": "Cream, sour, fat free",
     "Mean protein in grams": 3.1,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert topping (non dairy), fat free, Reddi Wip",
     "Mean protein in grams": 3.0,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, french, fat free",
@@ -22844,24 +21986,6 @@
   {
     "Food": "Butter, light, unsalted",
     "Mean protein in grams": 3.3,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Meat drippings (lard, beef tallow, mutton tallow)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Animal fat, bacon grease",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Shortening, household, composite",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -22923,25 +22047,25 @@
     "Food": "Soup, stock, beef, homemade",
     "Mean protein in grams": 1.97,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, stock, chicken, homemade",
     "Mean protein in grams": 2.52,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, minestrone, ready-to-serve, reduced sodium",
     "Mean protein in grams": 1.46,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, mushroom, canned, condensed, reduced sodium",
     "Mean protein in grams": 1.53,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, broth, chicken, ready to serve, reduced sodium",
@@ -22965,13 +22089,13 @@
     "Food": "Soup, broccoli cheese, canned, condensed",
     "Mean protein in grams": 2.1,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, tomato, canned, condensed, reduced sodium",
     "Mean protein in grams": 1.64,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Gravy, brown instant, dry",
@@ -23001,7 +22125,7 @@
     "Food": "Sauce, chili, peppers, hot, chili, immature green, canned",
     "Mean protein in grams": 0.7,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, broth, fish",
@@ -23019,7 +22143,7 @@
     "Food": "Soup, pea, low sodium, water added",
     "Mean protein in grams": 3.2,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream, mushroom, ready-to-serve, reduced sodium",
@@ -23061,7 +22185,7 @@
     "Food": "Soup, beef and mushroom, low sodium, chunky style",
     "Mean protein in grams": 4.3,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sauce, adobo fresco",
@@ -23097,7 +22221,7 @@
     "Food": "Pork and chicken, canned",
     "Mean protein in grams": 15.23,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sausage, breakfast links or rounds, pork, pre-cooked",
@@ -23235,7 +22359,7 @@
     "Food": "Pork, cured, bacon, rendered fat, cooked",
     "Mean protein in grams": 0.07,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Broccoli raab (rapini), raw",
@@ -23302,12 +22426,6 @@
     "Mean protein in grams": 14.42,
     "Serving size": 100,
     "Type": "SOLID"
-  },
-  {
-    "Food": "Drink, breakfast type, orange, ready-to-drink",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
   },
   {
     "Food": "Hot chocolate, low calorie, with aspartame, mix, powder, with added calcium and phosphorus, without added sodium or vitamin A",
@@ -23442,16 +22560,10 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Sweets, syrups, grenadine",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Drink, fruit flavour, powder, low calorie, vitamin C, with aspartame",
     "Mean protein in grams": 0.45,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, creamy, made with sour cream and/or buttermilk and oil, calorie-reduced",
@@ -23499,7 +22611,7 @@
     "Food": "Salad dressing, mayonnaise, reduced fat , cholesterol-free",
     "Mean protein in grams": 0.9,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, italian, calorie-reduced",
@@ -23547,7 +22659,7 @@
     "Food": "Salad dressing, creamy, made with sour cream and/or buttermilk and oil, calorie-reduced, cholesterol-free",
     "Mean protein in grams": 1.0,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, french, calorie-reduced",
@@ -23559,7 +22671,7 @@
     "Food": "Salad dressing, mayonnaise, made with tofu",
     "Mean protein in grams": 5.95,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Beverage, bean",
@@ -23622,12 +22734,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Salad dressing, coleslaw dressing, reduced fat",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Vegetable oil, flaxseed (linseed), cold pressed",
     "Mean protein in grams": 0.11,
     "Serving size": 100,
@@ -23658,22 +22764,10 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Vegetable oil, corn and canola",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Peanut butter, reduced sodium",
     "Mean protein in grams": 24.0,
     "Serving size": 100,
     "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil,  canola and soybean",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
   },
   {
     "Food": "Cheese, muenster, low fat",
@@ -23691,7 +22785,7 @@
     "Food": "Salad dressing, caesar dressing, regular",
     "Mean protein in grams": 2.17,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, coleslaw",
@@ -23715,7 +22809,7 @@
     "Food": "Salad dressing, blue or roquefort cheese, low calorie",
     "Mean protein in grams": 5.1,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Salad dressing, caesar, low Calorie",
@@ -23727,7 +22821,7 @@
     "Food": "Sweets, syrups, dietetic",
     "Mean protein in grams": 0.8,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sweets, jams and preserves, dietetic (with sodium saccharin), any flavour",
@@ -23748,26 +22842,8 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Candies, gum drops, lower in Calories (sorbitol)",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Candies, hard, sorbitol sweetened",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Candies, chocolate covered, dietetic or low calorie",
     "Mean protein in grams": 12.26,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Candies, chewing gum, sugarless",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -23775,7 +22851,7 @@
     "Food": "Milk shake, not chocolate, dry mix, unprepared",
     "Mean protein in grams": 23.5,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Sweets, pie fillings, cherry, low calorie",
@@ -23895,7 +22971,7 @@
     "Food": "Alcohol, table wine, light",
     "Mean protein in grams": 0.07,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Instant breakfast, powder, chocolate",
@@ -23919,7 +22995,7 @@
     "Food": "Salad dressing, buttermilk, light",
     "Mean protein in grams": 1.25,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Tomato sauce, unsalted",
@@ -23937,7 +23013,7 @@
     "Food": "Whipped cream substitute, dietetic, powder, prepared",
     "Mean protein in grams": 0.9,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, frozen, ice cream, sundae, prepackaged",
@@ -24033,13 +23109,13 @@
     "Food": "Salad dressing, mayonnaise and mayonnaise-type, low calorie",
     "Mean protein in grams": 0.9,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Salad dressing, bacon and tomato",
     "Mean protein in grams": 1.8,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Cheese, parmesan, low sodium",
@@ -24153,7 +23229,7 @@
     "Food": "Coffee, instant, powder, with whitener and artificial sweetener",
     "Mean protein in grams": 1.96,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Juice drink, cranberry-apple  low calorie, with vitamin C added",
@@ -24222,12 +23298,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Dessert, frozen, pop, with artificial sweetener",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Snacks, tortilla chips, light (baked with less oil)",
     "Mean protein in grams": 8.7,
     "Serving size": 100,
@@ -24254,18 +23324,6 @@
   {
     "Food": "Cheese, mozzarella, low sodium",
     "Mean protein in grams": 27.5,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Salad dressing, mayonnaise, no cholesterol",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, corn, peanut and olive",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -24303,7 +23361,7 @@
     "Food": "Cocktail mix, non-alcoholic, concentrated, frozen",
     "Mean protein in grams": 0.08,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Dessert, pudding, chocolate, dry mix, regular, low calorie, unprepared",
@@ -24320,12 +23378,6 @@
   {
     "Food": "Dessert, pudding, all flavours except chocolate, dry mix, instant, low calorie, unprepared",
     "Mean protein in grams": 0.81,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Drink, fruit flavour, powder, vitamin C, unsweetened",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -24843,7 +23895,7 @@
     "Food": "Dessert, pudding, chocolate, dry mix, instant, prepared with whole milk",
     "Mean protein in grams": 3.12,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, vanilla, dry mix, instant, prepared with whole milk",
@@ -24855,7 +23907,7 @@
     "Food": "Dessert, pudding, vanilla, ready-to-eat, fat free",
     "Mean protein in grams": 2.02,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, pudding, tapioca, ready-to-eat, fat free",
@@ -24867,7 +23919,7 @@
     "Food": "Dessert, pudding, chocolate, ready-to-eat, fat free",
     "Mean protein in grams": 1.93,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Candies, MILK CHOCOLATE WITH ALMOND BITES",
@@ -24894,12 +23946,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Pectin, liquid",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Dessert, frozen, ice cream, vanilla, light, no sugar added, chocolate coated",
     "Mean protein in grams": 6.4,
     "Serving size": 100,
@@ -24921,7 +23967,7 @@
     "Food": "Dessert, frozen, juice with cream",
     "Mean protein in grams": 1.41,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, frozen, ice cream, chocolate, rich",
@@ -24939,7 +23985,7 @@
     "Food": "Coffee substitute, cereal grain beverage, powder, with 2% milk",
     "Mean protein in grams": 3.33,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Game meat, native, bearded seal meat, raw",
@@ -24999,7 +24045,7 @@
     "Food": "Animal fat, native, beluga oil",
     "Mean protein in grams": 0.3,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Game meat, native, beluga, meat, dried",
@@ -25065,7 +24111,7 @@
     "Food": "Game meat, native, ringed seal, blubber, aged, liquid",
     "Mean protein in grams": 0.7,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Game meat, native, ringed seal, blubber, aged, solid",
@@ -25371,7 +24417,7 @@
     "Food": "Game meat, native, moose, blood, raw",
     "Mean protein in grams": 21.0,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Game meat, native, muskox, raw",
@@ -25532,12 +24578,6 @@
   {
     "Food": "Dessert, frozen, FUDGESICLE bar, low fat",
     "Mean protein in grams": 5.55,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Dessert, frozen, POPSICLE pop (orange, cherry, grape), sugar free",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -25794,12 +24834,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Animal fat, native, walrus, oil",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Game meat, native, bowhead, blubber",
     "Mean protein in grams": 0.4,
     "Serving size": 100,
@@ -25812,16 +24846,10 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Animal fat, native, bowhead, oil",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Willow, native, leaves in oil",
     "Mean protein in grams": 2.6,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Willow, native, young leaves, chopped",
@@ -26100,24 +25128,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Sports drink, orange flavour, powder",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sports drink, fruit flavour, ready-to-drink",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Sports drink, lemon-lime flavour, ready-to-drink",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
     "Food": "Fish, salmon, pink, canned, drained solids with bone",
     "Mean protein in grams": 23.1,
     "Serving size": 100,
@@ -26178,32 +25188,14 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Sweetener, sucralose, SPLENDA",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Sweetener, saccharin",
     "Mean protein in grams": 0.94,
     "Serving size": 100,
     "Type": "SOLID"
   },
   {
-    "Food": "Sweets, sugars, fructose, powder",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Dessert, frozen, ice cream, chocolate or caramel covered, with nuts",
     "Mean protein in grams": 4.4,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, sugars, fructose, liquid",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -26832,26 +25824,8 @@
     "Type": "SOLID"
   },
   {
-    "Food": "sweets, syrups, maple, prepackaged",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Sweets, sugars, maple, granulated",
     "Mean protein in grams": 0.1,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, butter, maple",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, maple taffy",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -26991,7 +25965,7 @@
     "Food": "Mango,  nectar, canned",
     "Mean protein in grams": 0.11,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Pork, pickled,  pork hocks",
@@ -27117,7 +26091,7 @@
     "Food": "Dessert, egg custard, baked, homemade",
     "Mean protein in grams": 5.02,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert, mousse, chocolate, homemade",
@@ -27357,7 +26331,7 @@
     "Food": "Agave, cooked",
     "Mean protein in grams": 0.99,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Agave, dried",
@@ -27519,7 +26493,7 @@
     "Food": "Salad dressing, honey mustard, calorie-reduced",
     "Mean protein in grams": 0.98,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Chicken patty, frozen, uncooked",
@@ -27561,13 +26535,13 @@
     "Food": "Sauce, spaghetti, with onion and garlic, ready-to-serve",
     "Mean protein in grams": 1.54,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, red pepper and black bean, ready-to-serve, reduced sodium",
     "Mean protein in grams": 1.75,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, butternut squash, ready-to-serve",
@@ -27586,12 +26560,6 @@
     "Mean protein in grams": 6.47,
     "Serving size": 100,
     "Type": "SOLID"
-  },
-  {
-    "Food": "Water, fruit flavour, sweetened with artificial sweetener",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "LIQUID"
   },
   {
     "Food": "Drink, breakfast type, orange, reduced sugar",
@@ -27675,7 +26643,7 @@
     "Food": "Dessert, frozen, light ice cream, soft serve, blended with cookie pieces",
     "Mean protein in grams": 3.97,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Burrito, bean and cheese, microwaved",
@@ -28401,7 +27369,7 @@
     "Food": "Oil, cooking spray",
     "Mean protein in grams": 0.26,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Okra (gumbo), boiled, drained, with salt",
@@ -28707,7 +27675,7 @@
     "Food": "Salad dressing, sesame seed, regular",
     "Mean protein in grams": 3.1,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Salad dressing, sweet and sour",
@@ -28743,7 +27711,7 @@
     "Food": "Soup, broth, chicken, ready-to-serve",
     "Mean protein in grams": 0.55,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soybeans, green (edamame), boiled, drained, with salt",
@@ -28938,12 +27906,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Tea, tundra, herb and labrador",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Tofu, fried",
     "Mean protein in grams": 17.19,
     "Serving size": 100,
@@ -28965,7 +27927,7 @@
     "Food": "Tomato products, canned, puree, with salt",
     "Mean protein in grams": 1.65,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Turkey pot pie, frozen",
@@ -29307,7 +28269,7 @@
     "Food": "Cream, whipping, 35% M.F., sweetened, whipped",
     "Mean protein in grams": 1.97,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dessert topping (non dairy), powdered, prepared with 2% milk",
@@ -29406,12 +28368,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Blueberry, wild, frozen",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Grape juice, canned or bottled, unsweetened, with added vitamin C",
     "Mean protein in grams": 0.37,
     "Serving size": 100,
@@ -29450,12 +28406,6 @@
   {
     "Food": "Plant-based beverage, soy, enriched, with Omega-3 fatty acids added",
     "Mean protein in grams": 2.88,
-    "Serving size": 100,
-    "Type": "LIQUID"
-  },
-  {
-    "Food": "Coffee whitener (non dairy), liquid, soy creamer",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "LIQUID"
   },
@@ -29547,7 +28497,7 @@
     "Food": "Chinese dish, soup, hot and sour, restaurant prepared",
     "Mean protein in grams": 2.58,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, wonton (won ton), restaurant prepared",
@@ -29787,13 +28737,13 @@
     "Food": "Soup, split pea with ham, homemade",
     "Mean protein in grams": 5.03,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, vegetable, homemade",
     "Mean protein in grams": 1.34,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, cream of vegetable, made with 2% M.F. milk, homemade",
@@ -29805,7 +28755,7 @@
     "Food": "Soup, chicken noodle, homemade",
     "Mean protein in grams": 7.42,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Soup, French onion, homemade (with bread and cheese)",
@@ -30087,7 +29037,7 @@
     "Food": "Dip, cream cheese base",
     "Mean protein in grams": 4.97,
     "Serving size": 100,
-    "Type": "LIQUID"
+    "Type": "SOLID"
   },
   {
     "Food": "Dip, spinach, sour cream base",
@@ -30128,12 +29078,6 @@
   {
     "Food": "Waffle, chocolate chip, frozen, ready-to-heat",
     "Mean protein in grams": 5.8,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, sugars, brown, contains sugar and sucralose",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -30210,12 +29154,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Candies, candy bits, yogourt covered",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Snacks, bagel chips",
     "Mean protein in grams": 12.34,
     "Serving size": 100,
@@ -30230,12 +29168,6 @@
   {
     "Food": "Egg roll, assorted, restaurant prepared",
     "Mean protein in grams": 8.28,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, turbinado",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -30579,7 +29511,7 @@
     "Food": "Sauce, Hollandaise (butter sauce)",
     "Mean protein in grams": 4.61,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Mushroom, shiitake, raw",
@@ -30789,7 +29721,7 @@
     "Food": "Soup, black bean, ready-to-serve",
     "Mean protein in grams": 5.1,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Spinach, canned, solids and liquids, unsalted",
@@ -30813,7 +29745,7 @@
     "Food": "Cream, 5%",
     "Mean protein in grams": 3.61,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Yogourt, plain, fat free (0-0.5% MF)",
@@ -31059,13 +29991,13 @@
     "Food": "Yogourt beverage, fruit flavoured",
     "Mean protein in grams": 2.62,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Yogourt beverage, vanilla flavoured",
     "Mean protein in grams": 2.62,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Yogourt, plain, fresh cheese-type (quark), fat free,  no salt added",
@@ -31095,13 +30027,13 @@
     "Food": "Kefir, plain, low fat (0.5-1.9% M.F.)",
     "Mean protein in grams": 3.09,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Kefir, fruit flavours, low fat (0.5-1.9% M.F.)",
     "Mean protein in grams": 2.71,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Yogourt, fruit flavoured, low fat, with added vitamin D (0.5-1.9% M.F.)",
@@ -31185,13 +30117,13 @@
     "Food": "Sauce, sweet and sour, ready to serve",
     "Mean protein in grams": 0.27,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Milk, fluid, buttermilk, cultured, whole",
     "Mean protein in grams": 3.21,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Dessert, frozen yogourt, flavours not chocolate, skim milk, with artificial sweetener",
@@ -31293,7 +30225,7 @@
     "Food": "Sauce, duck, ready-to-serve",
     "Mean protein in grams": 0.36,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Sauce, salsa, verde, ready-to-serve",
@@ -31305,19 +30237,19 @@
     "Food": "Salad dressing, honey mustard, regular",
     "Mean protein in grams": 0.87,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Salad dressing, poppyseed, creamy",
     "Mean protein in grams": 0.92,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Salad dressing, caesar, fat free",
     "Mean protein in grams": 1.47,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Dip, cheese with chili peppers, ready-to-serve",
@@ -31329,19 +30261,19 @@
     "Food": "Salad dressing, honey mustard, fat free",
     "Mean protein in grams": 1.07,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Vegetable oil, flaxseed, contains added sliced flaxseed",
     "Mean protein in grams": 0.37,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Orange pineapple juice",
     "Mean protein in grams": 0.41,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Corn, sweet, canned, drained solids, rinsed",
@@ -31362,12 +30294,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Drink, fruit flavour, vitamin C added, ready-to-drink",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Chinese dish, sweet and sour chicken, restaurant prepared",
     "Mean protein in grams": 10.1,
     "Serving size": 100,
@@ -31377,7 +30303,7 @@
     "Food": "Tea, hibiscus",
     "Mean protein in grams": 0.43,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Chinese dish, sweet and sour pork, restaurant prepared",
@@ -31425,7 +30351,7 @@
     "Food": "Juice drink, fruit, ready-to-drink",
     "Mean protein in grams": 0.13,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Bread, cheese",
@@ -31442,12 +30368,6 @@
   {
     "Food": "Cracker, honey sesame",
     "Mean protein in grams": 8.7,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Drink, fruit flavour, powder, low calorie, vitamin C",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -31503,7 +30423,7 @@
     "Food": "Sauce, cocktail, ready-to-serve",
     "Mean protein in grams": 1.36,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Beans, kidney, red, canned, drained and rinsed",
@@ -31665,13 +30585,13 @@
     "Food": "Yogourt beverage, fruit flavoured, with added Vitamin D",
     "Mean protein in grams": 2.62,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Yogourt beverage, vanilla flavoured, with added Vitamin D",
     "Mean protein in grams": 2.62,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Yogourt, goat, plain",
@@ -31790,12 +30710,6 @@
   {
     "Food": "Macaroni and cheese, box mix with cheese sauce, prepared",
     "Mean protein in grams": 6.68,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweets, syrups, cane",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -31965,101 +30879,65 @@
     "Food": "Energy drink, coffee flavours",
     "Mean protein in grams": 2.08,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, shot, sugar free",
     "Mean protein in grams": 0.25,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, various flavours",
     "Mean protein in grams": 0.26,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, coffee flavours, light",
     "Mean protein in grams": 1.17,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, sugar free/low calorie",
     "Mean protein in grams": 0.28,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, with fruit juice",
     "Mean protein in grams": 0.27,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, caffeine free",
     "Mean protein in grams": 0.25,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, tea flavoured",
     "Mean protein in grams": 0.25,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Alcohol, energy drink (7% alcohol by volume)",
     "Mean protein in grams": 0.25,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Energy drink, with electrolytes, sugar free/low calorie",
     "Mean protein in grams": 0.38,
     "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vitamin water, all flavours, sweetened",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vitamin water, all flavours, low Calorie",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vitamin water, lemon/orange flavours, sweetened",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vitamin water, lemon/orange flavours, low Calorie",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vitamin water, tropical citrus flavour, sweetened, with caffeine",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Ham, flaked, canned",
     "Mean protein in grams": 16.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vegetable oil, sunflower, mid-oleic",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -32145,7 +31023,7 @@
     "Food": "Sauce, peanut (made from coconut, water, sugar, peanuts)",
     "Mean protein in grams": 2.02,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Cereal, ready-to-eat, Krave, Kellogg's",
@@ -32241,25 +31119,25 @@
     "Food": "Beverage, coconut water, unsweetened, ready-to-drink",
     "Mean protein in grams": 0.22,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Plant-based beverage, almond, enriched, sweetened, vanilla flavoured",
     "Mean protein in grams": 0.42,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Plant-based beverage, almond, enriched, sweetened, chocolate flavoured",
     "Mean protein in grams": 0.63,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Beverage, protein drink, ready-to-drink, MUSCLE MLK, light",
     "Mean protein in grams": 4.68,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Beverage, whey protein isolate, powder",
@@ -32271,7 +31149,7 @@
     "Food": "Juice drink, orange, Calorie-reduced",
     "Mean protein in grams": 0.21,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Beverage, protein powder, whey based, powder",
@@ -32310,18 +31188,6 @@
     "Type": "SOLID"
   },
   {
-    "Food": "Vitamin water, flavours not lemon/orange, sweetened",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Vitamin water, flavours not lemon/orange, low Calorie",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
     "Food": "Bread, spelt, commercial",
     "Mean protein in grams": 8.96,
     "Serving size": 100,
@@ -32355,13 +31221,7 @@
     "Food": "Soy sauce (made with hydrolyzed vegetable protein), reduced sodium",
     "Mean protein in grams": 8.19,
     "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Sweetener, herbal extract powder from Stevia leaf",
-    "Mean protein in grams": 0.0,
-    "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Snacks, brown rice chips",
@@ -32385,7 +31245,7 @@
     "Food": "Sauce, peanut (made from peanut butter, water, soy sauce)",
     "Mean protein in grams": 6.31,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Indian, bread, chapati or roti, whole-wheat",
@@ -32991,7 +31851,7 @@
     "Food": "Soup (sauce), stock, cream, ready-to-serve",
     "Mean protein in grams": 0.73,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, beef barley, ready-to-serve",
@@ -33021,13 +31881,13 @@
     "Food": "Soup, broth, beef, ready-to-serve, reduced sodium",
     "Mean protein in grams": 0.75,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, broth, beef, ready-to-serve, no salt added",
     "Mean protein in grams": 0.37,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, split pea with ham, ready-to-serve, reduced sodium",
@@ -33039,13 +31899,13 @@
     "Food": "Soup, broth, vegetable, ready-to-serve",
     "Mean protein in grams": 0.07,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, butternut squash, ready-to-serve, reduced sodium",
     "Mean protein in grams": 0.53,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, chicken noodle, canned, condensed, reduced sodium",
@@ -33063,7 +31923,7 @@
     "Food": "Soup, broth, vegetable, ready-to-serve, reduced sodium",
     "Mean protein in grams": 0.13,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, chicken rice, ready-to-serve, reduced sodium",
@@ -33087,97 +31947,97 @@
     "Food": "Soup, cream, broccoli, canned, condensed",
     "Mean protein in grams": 1.45,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, broccoli, canned, condensed, water added",
     "Mean protein in grams": 0.74,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, broccoli, canned, condensed, 2% M.F. milk added",
     "Mean protein in grams": 2.37,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, broccoli, canned, condensed, reduced fat",
     "Mean protein in grams": 2.09,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, broccoli, canned, condensed, reduced fat, water added",
     "Mean protein in grams": 1.07,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, celery, canned, condensed, reduced fat",
     "Mean protein in grams": 1.42,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, broccoli, canned, condensed, reduced fat, 2% M.F. milk added",
     "Mean protein in grams": 2.69,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, chicken, canned, condensed, reduced fat",
     "Mean protein in grams": 2.24,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, chicken, canned, condensed, reduced fat, water added",
     "Mean protein in grams": 1.15,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, chicken, canned, condensed, reduced fat, 2% M.F. milk added",
     "Mean protein in grams": 2.76,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, chicken, ready-to-serve",
     "Mean protein in grams": 1.49,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, mushroom, canned, condensed, reduced sodium, water added",
     "Mean protein in grams": 0.79,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, mushroom, canned, condensed, reduced fat, 2% M.F. milk added",
     "Mean protein in grams": 2.19,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, mushroom, canned, condensed, reduced fat",
     "Mean protein in grams": 1.1,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, mushroom, canned, condensed, reduced sodium, 2% M.F. milk added",
     "Mean protein in grams": 2.4,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, mushroom, ready-to-serve",
     "Mean protein in grams": 1.19,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, mushroom barley, ready-to-serve, low sodium",
@@ -33189,13 +32049,13 @@
     "Food": "Soup, cream, potato, ready-to-serve",
     "Mean protein in grams": 1.4,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, Italian wedding, ready-to-serve",
     "Mean protein in grams": 2.87,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, lentil, ready-to-serve",
@@ -33207,7 +32067,7 @@
     "Food": "Soup, cream, asparagus, ready-to-serve",
     "Mean protein in grams": 1.13,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, split pea, ready-to-serve",
@@ -33225,43 +32085,43 @@
     "Food": "Soup, tomato, canned, condensed, reduced sodium, water added",
     "Mean protein in grams": 0.83,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, tomato, canned, condensed, reduced sodium, 2% M.F. milk added",
     "Mean protein in grams": 2.47,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Babyfood, juice, apple, all stages",
     "Mean protein in grams": 0.11,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Babyfood, juice, apple and prune",
     "Mean protein in grams": 0.2,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Babyfood, juice, pear, all stages",
     "Mean protein in grams": 0.12,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, tomato, ready-to-serve",
     "Mean protein in grams": 0.87,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, tomato and red pepper, ready-to-serve, low sodium",
     "Mean protein in grams": 0.9,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, wonton (won ton), canned, ready-to-serve",
@@ -33291,13 +32151,13 @@
     "Food": "Apple juice, canned or bottled, unsweetened, calcium and Vitamin C and D added",
     "Mean protein in grams": 0.12,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Vegetable juice cocktail, canned, low sodium",
     "Mean protein in grams": 0.91,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Spaghetti and meatballs, restaurant prepared",
@@ -33321,7 +32181,7 @@
     "Food": "Orange juice, frozen concentrate, undiluted, with added calcium and Vitamin D",
     "Mean protein in grams": 2.4,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Raspberry, frozen, unsweetened",
@@ -33332,12 +32192,6 @@
   {
     "Food": "Nuts, almonds, oil roasted, lightly salted",
     "Mean protein in grams": 21.23,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Carbonated drinks, lemon-lime soda, with caffeine",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
@@ -33465,31 +32319,31 @@
     "Food": "Soup, broth, chicken, canned, condensed, reduced sodium",
     "Mean protein in grams": 1.38,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, broth, chicken, canned, condensed, water added, reduced sodium",
     "Mean protein in grams": 0.71,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, celery, canned, condensed, reduced fat, 2% M.F. milk added",
     "Mean protein in grams": 2.35,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, celery, canned, condensed, reduced fat, water added",
     "Mean protein in grams": 0.73,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, cream, mushroom, canned, condensed, reduced fat, water added",
     "Mean protein in grams": 0.57,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Soup, broccoli cheese, canned, condensed, water added",
@@ -33615,19 +32469,19 @@
     "Food": "Plant-based beverage, coconut, enriched, sweetened, all flavours",
     "Mean protein in grams": 0.2,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Plant-based beverage, coconut, enriched, unsweetened",
     "Mean protein in grams": 0.08,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Plant-based beverage, cashew, enriched, sweetened",
     "Mean protein in grams": 0.19,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Babyfood, dessert, jarred, custard (includes vanilla custard)",
@@ -33915,7 +32769,7 @@
     "Food": "Plant-based beverage, cashew, enriched, unsweetened",
     "Mean protein in grams": 0.19,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Babyfood, snack, biscuit, wheat with milk powder",
@@ -34101,19 +32955,19 @@
     "Food": "Plant-based beverage, coconut, unenriched, unsweetened",
     "Mean protein in grams": 0.08,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Plant-based beverage, coconut, unenriched, sweetened, all flavours",
     "Mean protein in grams": 0.04,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Orange juice, frozen concentrate, diluted, with added calcium and Vitamin D",
     "Mean protein in grams": 0.65,
     "Serving size": 100,
-    "Type": "SOLID"
+    "Type": "LIQUID"
   },
   {
     "Food": "Margarine, tub, hydrogenated, soybean oil",
@@ -34124,12 +32978,6 @@
   {
     "Food": "Margarine, tub, hydrogenated, canola oil",
     "Mean protein in grams": 0.22,
-    "Serving size": 100,
-    "Type": "SOLID"
-  },
-  {
-    "Food": "Chocolate syrup, thin type, less sugar, with added vitamins and minerals",
-    "Mean protein in grams": 0.0,
     "Serving size": 100,
     "Type": "SOLID"
   },
