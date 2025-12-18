@@ -24,7 +24,8 @@ math_auto_render = true
 
 {{ oit_calculator() }}
 
-## How to Check Calculations:
+<details>
+<summary><b style="font-size: 1.7rem">How to Check Calculations</b></summary>
 
 First determine the **Protein Concentration ({% katex(block=false) %} C_{food} {% end %})** of the food being used.
 
@@ -75,6 +76,8 @@ P_{dose} \text{ (mg)} = \frac{P_{mix}}{V_{total}} \times \text{Daily Amount (ml)
 1. **Total Volume:** {% katex(block=false) %} 10 \text{ ml} {% end %}.
 2. **Mix Protein:** {% katex(block=false) %} P_{mix} = 0.20 \text{ g} \times 500 \text{ mg/g} = 100 \text{ mg} {% end %}.
 3. **Final Dose:** For a daily amount of 1 ml, the protein is {% katex(block=false) %} \frac{100 \text{ mg}}{10 \text{ ml}} \times 1 \text{ ml} = 10 \text{ mg} {% end %}.
+
+</details>
 
 ## References:
 
