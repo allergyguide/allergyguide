@@ -66,6 +66,102 @@ describe('Core: Validator', () => {
       const warnings = validateProtocol(protocol);
       expect(warnings.some(w => w.code === WarningCode.Red.INVALID_CONCENTRATION && w.message.includes("protein amount cannot be greater than a serving size of"))).toBe(true);
     });
+
+    it('should flag INVALID_TARGET for zero or negative targetMg', () => {
+      const protocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+      // Set target to 0
+      protocol.steps[0].targetMg = new Decimal(0);
+      let warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.INVALID_TARGET)).toBe(true);
+
+      // Set target to negative
+      protocol.steps[0].targetMg = new Decimal(-5);
+      warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.INVALID_TARGET)).toBe(true);
+    });
+
+    it('should flag INSUFFICIENT_MIX_PROTEIN when dilution mix has less protein than target', () => {
+      const protocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+      const diluteStepIndex = protocol.steps.findIndex(s => s.method === Method.DILUTE);
+      if (diluteStepIndex === -1) return;
+
+      const step = protocol.steps[diluteStepIndex];
+      // Set target to 100mg
+      step.targetMg = new Decimal(100);
+      // Set mix food to 0.5g (50mg protein) - less than target
+      step.mixFoodAmount = new Decimal(0.5);
+      // Ensure other fields are present to avoid other errors/crashes in calculation
+      step.mixWaterAmount = new Decimal(10);
+      step.servings = new Decimal(0.5); // 50mg / 100mg = 0.5 servings
+
+      const warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.INSUFFICIENT_MIX_PROTEIN)).toBe(true);
+    });
+
+    it('should flag PROTEIN_MISMATCH for dilution steps with incorrect proportions', () => {
+      // Test Case 4: Dilution-Specific PROTEIN_MISMATCH
+      const protocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+      const diluteStepIndex = protocol.steps.findIndex(s => s.method === Method.DILUTE);
+      // Ensure we have a dilute step
+      if (diluteStepIndex === -1) return;
+
+      const step = protocol.steps[diluteStepIndex];
+      step.targetMg = new Decimal(10);
+      step.mixFoodAmount = new Decimal(1);
+      step.mixWaterAmount = new Decimal(10);
+      step.dailyAmount = new Decimal(1); // 10mg delivered
+      step.servings = new Decimal(10);
+
+      // Verify baseline is valid (or at least doesn't trigger mismatch)
+      let warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.PROTEIN_MISMATCH)).toBe(false);
+
+      // Now corrupt it: Change water to 20ml (diluting it further)
+      step.mixWaterAmount = new Decimal(20);
+      warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.PROTEIN_MISMATCH)).toBe(true);
+    });
+
+    it('should flag INVALID_DILUTION_STEP_VALUES for negative physical values', () => {
+      const protocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+      const diluteStepIndex = protocol.steps.findIndex(s => s.method === Method.DILUTE);
+      if (diluteStepIndex === -1) return;
+
+      const step = protocol.steps[diluteStepIndex];
+
+      // Negative water
+      step.mixWaterAmount = new Decimal(-10);
+      let warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.INVALID_DILUTION_STEP_VALUES)).toBe(true);
+
+      // Reset water
+      step.mixWaterAmount = new Decimal(10);
+
+      // Zero daily amount
+      step.dailyAmount = new Decimal(0);
+      warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.INVALID_DILUTION_STEP_VALUES)).toBe(true);
+    });
+
+    it('should flag IMPOSSIBLE_VOLUME for Liquid-Specific additive volume issue', () => {
+      // Liquid-Specific IMPOSSIBLE_VOLUME
+      const liquidFood = createFood(FoodType.LIQUID);
+      const protocol = generateDefaultProtocol(liquidFood, DEFAULT_CONFIG);
+      const diluteStepIndex = protocol.steps.findIndex(s => s.method === Method.DILUTE);
+      if (diluteStepIndex === -1) return;
+
+      const step = protocol.steps[diluteStepIndex];
+
+      // Set mix: 5ml food + 5ml water = 10ml total
+      step.mixFoodAmount = new Decimal(5);
+      step.mixWaterAmount = new Decimal(5);
+
+      // Set daily amount to 12ml
+      step.dailyAmount = new Decimal(12);
+
+      const warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Red.IMPOSSIBLE_VOLUME)).toBe(true);
+    });
   });
 
   describe('Warnings (Yellow)', () => {
@@ -196,6 +292,35 @@ describe('Core: Validator', () => {
 
       const warnings = validateProtocol(protocol);
       expect(warnings.some(w => w.code === WarningCode.Yellow.RAPID_ESCALATION)).toBe(false);
+    });
+
+    it('should flag NO_TRANSITION_POINT when Food B is defined but no transition steps exist', () => {
+      const protocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+      // Add Food B definition but don't add steps for it
+      protocol.foodB = { ...food, name: 'Food B' };
+      // Manually ensure all steps are Food A
+      protocol.steps.forEach(s => s.food = 'A');
+
+      const warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Yellow.NO_TRANSITION_POINT)).toBe(true);
+    });
+
+    it('should flag BELOW_RESOLUTION for dilution mix ingredients', () => {
+      // Component-Level BELOW_RESOLUTION
+      const protocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+      const diluteStepIndex = protocol.steps.findIndex(s => s.method === Method.DILUTE);
+      if (diluteStepIndex === -1) return;
+
+      const step = protocol.steps[diluteStepIndex];
+
+      // Ensure daily amount is valid (> min)
+      step.dailyAmount = new Decimal(5);
+
+      // Set mix food amount to tiny (0.05g < 0.2g minMeasurableMass)
+      step.mixFoodAmount = new Decimal(0.05);
+
+      const warnings = validateProtocol(protocol);
+      expect(warnings.some(w => w.code === WarningCode.Yellow.BELOW_RESOLUTION)).toBe(true);
     });
   });
 });
