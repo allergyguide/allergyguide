@@ -1223,6 +1223,10 @@ Contact your doctor / allergy team to discuss.
 - The eventual benefits of OIT tend to outweigh any small short-term risk of flaring eczema.
 - If eczema is severe, discuss with your primary care physician about strategies to improve it.
 
+= Money saving tips
 
-
-
+*Q: can I freeze non-dairy milks?*
+Non-dairy milks are expensive and have a limited shelf-life. You can freeze them!
++ Pour liquid into an ice cube tray.
++ Once frozen, store cubes in a ziploc bag.
++ Thaw one cube at a time in the fridge to use for doses. Do not reuse the milk once thawed.
