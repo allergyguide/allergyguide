@@ -3,6 +3,8 @@
  *
  * Collection of utility functions
  */
+import Decimal from "decimal.js";
+
 import {
   FoodType,
 } from "./types"
@@ -83,7 +85,7 @@ export function formatNumber(value: any, decimals: number): string {
  *
  * @param value Amount to format (g/ml)
  * @param unit Measuring unit: "g" or "ml"
- * @returns Formatted string
+ * @returns Formatted string, for example 0.1, or 0.12
  */
 export function formatAmount(value: any, unit: Unit): string {
   if (value === null || value === undefined) return "";
@@ -108,4 +110,17 @@ export function getMeasuringUnit(food: Food): Unit {
   } else {
     return "g";
   }
+}
+
+/**
+ * Get the absolute percentage difference between a test value and a base reference value.
+ * @param test - the value being evaluated.
+ * @param base - the reference value used as the denominator
+ * @returns Decimal obj representing the percentage difference (e.g., 0.1 = 10%)
+ */
+export function findPercentDifference(test: Decimal, base: Decimal): Decimal {
+  return test
+    .dividedBy(base)
+    .minus(1)
+    .abs();
 }
