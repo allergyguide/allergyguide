@@ -534,26 +534,15 @@
     width: 100%;
     border-collapse: collapse;
     background-color: var(--oit-bg-secondary);
-    /* border-radius moved to container */
     overflow: visible;
-    /* box-shadow moved to container */
 
     thead {
-      background-color: var(--oit-table-header-bg);
-      position: sticky;
-      top: var(--oit-sticky-offset);
-      z-index: 11;
-
-      &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-bottom: 0.2rem solid var(--oit-button-primary);
-      }
-
       th {
+        position: sticky;
+        top: var(--oit-sticky-offset);
+        z-index: 11;
+        background-color: var(--oit-table-header-bg);
+
         padding: 1rem;
         text-align: left;
         font-weight: 700;
@@ -562,6 +551,10 @@
         font-size: 0.9rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+
+        border-bottom: 0.1rem solid var(--oit-button-primary);
+        box-shadow: inset 0 -0.1rem 0 var(--oit-button-primary);
+        ;
       }
     }
 
