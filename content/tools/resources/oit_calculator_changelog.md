@@ -14,6 +14,8 @@ authors = ["Joshua Yu"]
 
 ### Changed
 
+- For dilutions, changed how the Water Amounts are calculated when the user manually edits the table. Manual adjustments to protein targets, daily amounts, or mix amounts now automatically attempt to find more user-friendly water volumes (e.g., 0.5 ml increments) that maintain the protein target within a tolerance of 5% of the target Mg. If not possible, will fall back to the original water volume.
+
 ### Deprecated
 
 ### Removed

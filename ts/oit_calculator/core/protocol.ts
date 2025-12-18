@@ -25,6 +25,7 @@ import {
 } from "../constants"
 
 import {
+  findRoundedMixWaterAmount,
   generateStepForTarget
 } from "./calculator"
 
@@ -434,13 +435,14 @@ export function updateStepTargetMg(oldProtocol: Protocol, stepIndex: number, new
     // DILUTE - keep mixFoodAmount and dailyAmount, recalculate servings and water
     const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
     step.servings = totalMixProtein.dividedBy(step.targetMg);
+    const mixTotalVolume = step.dailyAmount.times(step.servings);
 
     if (food.type === FoodType.SOLID) {
-      const mixTotalVolume = step.dailyAmount.times(step.servings);
-      step.mixWaterAmount = mixTotalVolume;
+      const idealWaterAmount = mixTotalVolume;
+      updateStepWaterWithRounding(step, food, idealWaterAmount, oldProtocol.config.PROTEIN_TOLERANCE)
     } else {
-      const mixTotalVolume = step.dailyAmount.times(step.servings);
-      step.mixWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
+      const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
+      updateStepWaterWithRounding(step, food, idealWaterAmount, oldProtocol.config.PROTEIN_TOLERANCE)
     }
   }
 
@@ -484,12 +486,13 @@ export function updateStepDailyAmount(oldProtocol: Protocol, stepIndex: number, 
     const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
     step.servings = totalMixProtein.dividedBy(step.targetMg);
 
+    const mixTotalVolume = step.dailyAmount.times(step.servings);
     if (food.type === FoodType.SOLID) {
-      const mixTotalVolume = step.dailyAmount.times(step.servings);
-      step.mixWaterAmount = mixTotalVolume;
+      const idealWaterAmount = mixTotalVolume;
+      updateStepWaterWithRounding(step, food, idealWaterAmount, oldProtocol.config.PROTEIN_TOLERANCE)
     } else {
-      const mixTotalVolume = step.dailyAmount.times(step.servings);
-      step.mixWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
+      const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
+      updateStepWaterWithRounding(step, food, idealWaterAmount, oldProtocol.config.PROTEIN_TOLERANCE)
     }
   }
 
@@ -532,12 +535,13 @@ export function updateStepMixFoodAmount(
   const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
   step.servings = totalMixProtein.dividedBy(step.targetMg);
 
+  const mixTotalVolume = step.dailyAmount.times(step.servings);
   if (food.type === FoodType.SOLID) {
-    const mixTotalVolume = step.dailyAmount.times(step.servings);
-    step.mixWaterAmount = mixTotalVolume;
+    const idealWaterAmount = mixTotalVolume;
+    updateStepWaterWithRounding(step, food, idealWaterAmount, oldProtocol.config.PROTEIN_TOLERANCE)
   } else {
-    const mixTotalVolume = step.dailyAmount.times(step.servings);
-    step.mixWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
+    const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
+    updateStepWaterWithRounding(step, food, idealWaterAmount, oldProtocol.config.PROTEIN_TOLERANCE)
   }
 
   newSteps[stepIndex - 1] = step;
@@ -682,4 +686,25 @@ export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean): Protoco
   });
 
   return newProtocol;
+}
+
+/**
+ * Internal helper to update a step's mix water amount by attempting to find a rounded measurement that remains within protein tolerance.
+ * Calls findRoundedMixWaterAmount() to check if water amounts in standard increments (defined by DILUTION_WATER_STEP_RESOLUTION) satisfy the target protein delivery. If no suitable rounded value is found, it falls back to the provided ideal (precise) water amount.
+ * @param step - The protocol step to update
+ * @param food - The food definition (A or B) associated with this step
+ * @param idealWater - The mathematically precise water amount required for the target dose
+ * @param protein_tolerance - The allowable percentage deviation from the target protein (e.g., 0.05 for 5%)
+ * @sideeffect This function mutates the `step.mixWaterAmount` property directly
+ */
+function updateStepWaterWithRounding(step: Step, food: Food, idealWater: Decimal, protein_tolerance: Decimal) {
+  const rounded = findRoundedMixWaterAmount(
+    step.targetMg,
+    food,
+    step.mixFoodAmount!,
+    idealWater,
+    step.dailyAmount,
+    protein_tolerance
+  );
+  step.mixWaterAmount = rounded !== null ? rounded : idealWater;
 }
