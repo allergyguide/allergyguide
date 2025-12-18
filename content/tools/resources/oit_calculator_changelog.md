@@ -22,6 +22,8 @@ authors = ["Joshua Yu"]
 
 ### Fixed
 
+- fixed bug where users could change the food serving size to less than the protein amount, which is impossible
+
 ### Security
 
 ---

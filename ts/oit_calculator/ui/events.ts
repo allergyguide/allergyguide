@@ -155,6 +155,8 @@ function attachSettingsDelegation() {
       if (target.id === "food-a-serving-size") {
         let value = parseFloat((target as HTMLInputElement).value);
         // validation of input
+        // also have to clamp so serving size cannot be less than the protein amount
+        if (value < current.foodA.gramsInServing.toNumber()) value = current.foodA.gramsInServing.toNumber();
         if (value <= 0) value = 1;
         if (value > 1000) value = 1000;
         if (Number.isNaN(value)) value = 1;
@@ -255,6 +257,7 @@ function attachSettingsDelegation() {
 
       if (target.id === "food-b-serving-size") {
         let value = parseFloat((target as HTMLInputElement).value);
+        if (value < current.foodB.gramsInServing.toNumber()) value = current.foodB.gramsInServing.toNumber();
         if (value <= 0) value = 1;
         if (value > 1000) value = 1000;
         if (Number.isNaN(value)) value = 1;
