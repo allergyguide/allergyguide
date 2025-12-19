@@ -159,7 +159,7 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
 
 #pagebreak()
 
-= Is OIT right for the patient?
+= Is OIT right for your child?
 #table(
   columns: (1fr, 1fr),
   inset: 10pt,
@@ -168,20 +168,22 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
   table.header([*Who is a GOOD candidate?*], [*Who might NOT be?*]),
   table.hline(stroke: 1pt),
   [
-    - *Confirmed food allergy:* convincing story of reaction + either positive skin or blood testing.
+    - *Confirmed food allergy:* A clear history of a reaction, plus a positive skin or blood test.
 
-    - *Young children:* Infants and preschoolers (under age 6) have immune systems that more easily 'unlearn' allergies.They are much less likely to have severe reactions during OIT than older children (imagine 1% versus 14%).
+    - *Young age:* Infants and preschoolers (under age 6) have immune systems that "unlearn" allergies more easily. Severe reactions during OIT are very rare for this group (about 1% risk).
 
-    - *Ability to be consistent:* The ideal patient eats their dose every day at around the same time. Their family must be willing, able, and ready to recognize and treat allergic reactions, including using self-injectable epinephrine properly.
+    - *Consistent schedule:* The ideal patient eats their dose every day at the same time.
+
+    - *Family readiness:* You must be able to recognize and treat allergic reactions. This includes knowing how to use an epinephrine injector properly.
   ],
   [
-    - *Have uncontrolled asthma:* asthma *must* be well-managed before starting. Badly controlled asthma is a strong risk factor for severe allergic reactions during OIT.
+    - *Uncontrolled asthma:* Asthma *_must_* be well-managed before starting. Poorly controlled asthma increases the risk of severe reactions during OIT.
 
-    - *Severe active eczema:* Severe eczema can make it hard to tell when an allergic reaction is happening.
+    - *Severe eczema:* Severe eczema makes it hard to see if an allergic reaction (like hives) is happening.
 
-    - *Older patients:* while not a strict rule, once over 6 years old, patients are more likely to have anaphylaxis, and less likely to be consistent with doses.
+    - *Older age:* Children over 6 years old are more likely to have severe reactions (anaphylaxis) and may struggle to keep up with daily dosing. OIT is still done with older children, but has a different level of risk.
 
-    - *Inability to obtain required equipment, language barriers, or inconsistent schedule*
+    - *Other barriers:* Families who cannot get the necessary supplies, have language barriers, or have a schedule that changes too often.
   ],
 )
 
@@ -197,14 +199,16 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
   [
     - *Diet:* At the best outcome, your child can eat a full serving size of allergen without reacting.
 
-    - *Safety:* Much lower risk of a scary reaction from accidental bites.
+    - *Safety:* There is a much lower risk of a scary reaction from accidental bites.
 
     - *Anxiety:* Less fear when going to restaurants or school.
   ],
   [
-    - *Allergic reactions:* Mild reactions (itchy mouth, mild hives) *are common and expected, especially during the build-up phase*. Severe life-threatening reactions are rare, especially in preschoolers.
+    - *Allergic reactions:* Mild reactions (e.g. itchy mouth, mild hives) *are common and expected*, especially at the start. Life-threatening reactions are rare, especially in preschoolers.
 
-    - *Food pipe (esophagus) inflammation:*\ During OIT, around 3% develop inflammation of their esophagus. This condition is more common in those with food allergies in general, and we're not sure if OIT causes this, or is simply a bystander. If this occurs, we consider stopping OIT and involving our Gastroenterology specialists. In the majority of patients, this inflammation is transient and goes away when OIT is stopped.
+    - *Food pipe inflammation (EoE):* About 3% of patients develop inflammation in their food pipe (esophagus) during OIT. It can cause stomach pain or trouble swallowing.
+      - We stop OIT if this happens.
+      - In most cases, the inflammation is temporary and goes away when OIT stops.
   ],
 )
 
@@ -213,7 +217,7 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
     "Strict Food Avoidance Is Not “Risk Free” either:",
   )[
     #v(0em)
-    Even with strict avoidance, accidental allergic reactions are possible (e.g. despite trying to strictly avoid nuts, the author of this handout had two episodes of anaphylaxis in the past 5 years alone).
+    Even with strict avoidance, accidental allergic reactions are possible (e.g. despite trying to strictly avoid nuts, the author of this handout had two episodes of anaphylaxis in the past 5 years).
   ]
   #v(2pt)
 ]
@@ -234,20 +238,20 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
 ]
 #text(size: 0.9em, style: "italic", fill: luma(30))[
   *Disclaimer*: These product links are examples for your convenience.
-  We do not endorse specific brands. Any product meeting the specifications is acceptable. Let your doctor know if there are better deals!
+  We do not endorse specific brands. You can use any product that matches the description. Let your doctor know if you find better deals!
 ]
 #v(-0.5em)
 
 #counter(heading).update(0)
-= Equipment and how to get them
+= Equipment and how to get it
 
-== A) 1 ml, 5ml, and 10ml disposable oral syringes (without needles)
+== A) 1 ml, 5ml, and 10ml disposable oral syringes (no needles)
 #v(0.5em)
 #list(
   spacing: 0.8em,
-  [Look for markings every *0.1 mL* for the 1ml syringes.],
-  [*Cleaning:* If used for liquid food (like milk), to clean: remove the plunger and wash with hot soapy water within an hour of use, and air dry. If used only for water, just air dry.],
-  [*Examples:* BD eclipse 1mL oral syringes or Terumo 1mL oral tuberculin syringes. We have also included more examples below:],
+  [Look for markings every *0.1 mL* on the 1ml syringes.],
+  [*Cleaning:* If used for liquid food (like milk), remove the plunger and wash with hot soapy water within an hour of use, and air dry. If used only for water, just air dry.],
+  [*Examples:* BD eclipse 1mL oral syringes or Terumo 1mL oral tuberculin syringes. We have included more examples below:],
 )
 #v(-1em)
 #align(center)[
@@ -270,10 +274,10 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
     #v(0.5em)
     #list(
       spacing: 0.8em,
-      [*Precision:* Must measure up to *0.01 grams* (two decimal places).],
-      [*Calibration:* Buy one that includes a calibration weight.],
+      [*Precision:* Must measure in increments of *0.01 grams* (two decimal places).],
+      [*Calibration:* Buy a scale that includes a calibration weight.],
       [*Cost:* Usually \$20 - \$30 online.],
-      [*Measuring aids:* You will need cupcake liners, parchment paper, or small light containers to measure food on the scale.],
+      [*Measuring aids:* You will need cupcake liners, parchment paper, or small light containers to hold the food while weighing it.],
     )
 
   ],
@@ -285,8 +289,8 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
 #v(0.5em)
 #block()[
   #set list(spacing: 0.8em)
-  - *Epinephrine Auto-injector:* *#underline()[THIS IS MANDATORY]*. Must be up to date and nearby at each dose.
-  - *Non-drowsy antihistamine:* Optional but highly recommended. The following options can be bought over the counter at most pharmacies:
+  - *Epinephrine Auto-injector:* *#underline()[THIS IS MANDATORY]*. It must be up to date and nearby at each dose.
+  - *Non-drowsy antihistamine:* Optional but highly recommended. You can buy the following options over the counter at most pharmacies:
   #v(-0.5em)
   #grid(
     columns: (1.8fr, 1fr),
@@ -303,12 +307,10 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
         [Cetirizine], [Reactine], [Liquid form avail. for ages 2 years and up],
         [Desloratadine], [Aerius], [Liquid form avail. for ages 2 years and up],
         [Loratadine], [Claritin], [Liquid form avail. for ages 2 years and up],
-        [Fexofenadine],
-        [Allegra],
-        [Solid tablet avail. for ages 12 years and up],
+        [Fexofenadine], [Allegra], [Tablet avail. for ages 12 years and up],
       )
       #text(size: 0.9em, style: "italic")[
-        *Infant Dosing (< 2y):* A off-label practice some doctors do is give *half* the smallest indicated dosage. _Confirm with your doctor._
+        *Infant Dosing \(< 2y\)*: Doctors sometimes suggest giving *half* the smallest dose listed. _Confirm with your doctor first._
       ]
     ],
 
@@ -325,11 +327,10 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
         #v(0.1em)
         It is less effective and has more side effects.
         #v(0.1em)
-        *The Risk:* It causes sleepiness, which makes it difficult to detect the early signs of a severe reaction (anaphylaxis).
+        *The Risk:* It causes sleepiness. This makes it hard to see the early signs of a severe reaction (anaphylaxis).
       ],
     )),
   )
-
 ]
 
 #pagebreak()
