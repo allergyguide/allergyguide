@@ -348,14 +348,14 @@ OIT is a medical treatment for food allergies. It helps the body get used to the
   ),
   table.hline(stroke: 1pt),
   [
-    + Turn on the scale, and place a small cup/bowl/cupcake liner or wax paper on the scale.
-    + Press the *"Tare"* or "*Zero*" button so the scale reads `0.00`.
-    + Slowly add the solid until you reach the target number.
+    + Turn on the scale. Place a small cup, bowl, or cupcake liner on it.
+    + Press the *"Tare"* or "*Zero*" button. The scale should read `0.00`.
+    + Slowly add the food until you reach the target number.
   ],
   [
     + Push the plunger of the syringe all the way down.
     + Put the tip into the liquid.
-    + Pull back slowly to the line matching your dose. If you pull too fast, too much air can enter the syringe.
+    + Pull back slowly until the liquid reaches the line for your dose. If you pull too fast, air bubbles can get inside.
   ],
 )
 #v(-1em)
@@ -448,11 +448,13 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
 
   [
     *Measure the Water*: \
-    - Measure the exact water amount listed in "*How to make mix*" (e.g., 15.3 ml), and place in a small container. Note: you can use a combination of syringe sizes to measure. For example, to measure 15.3 ml you could use a 10 ml syringe and 1 ml syringe.
+    - Look at the "*How to make mix*" column to see how much water you need.
+    - Measure that exact amount, and place into a small container.
+    - *Tip:* you can use multiple syringes to get the exact amount (e.g., a 10 mL syringe and a 1 mL syringe).
   ],
   [
     *Add the Food*: \
-    - *If solid:* weigh the amount (e.g., 0.50 g). If possible, do this in a different room from the patient.
+    - *If solid:* weigh the amount (e.g., 0.50 g). Handle powders in a different room from the patient so they don't breathe them in.
     - *If liquid:* Use a syringe to measure the volume (e.g., 0.5 ml).
 
     Add the food to the water you prepared in step 1.
@@ -464,8 +466,8 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
   ],
   [
     *Measure out the Daily Amount*: \
-    - Measure the *Daily Amount* using a syringe, immediately after the mixture is thoroughly combined to prevent particles from settling. This is the amount that will actually be eaten.
-    - *Important:* _Do not give more than the daily amount in a day_!
+    - Stir the mix again, then use a syringe to pull up the *Daily Amount*. _This is the amount that will actually be eaten_.
+    - Do this within a minute so the food doesn't settle at the bottom.
   ],
 )
 
