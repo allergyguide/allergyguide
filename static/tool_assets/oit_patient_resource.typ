@@ -528,12 +528,12 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
 
 = What to expect from the first few weeks
 
-- Especially near the beginning of OIT, *mild reactions are common*. Examples of mild reactions may include mild hives around the mouth, an itchy mouth, or mild stomachache. *Refer to page 7 for full details* about what to do if there is a reaction.
-- Mild symptoms can be improved / potentially prevented by taking a non-drowsy antihistamine 1 hour before the dose. They do not prevent severe reactions.
+- *Mild reactions are common*, especially at the start. You might see mild hives around the mouth, an itchy mouth, or a mild stomachache. *See page 7 for details* on what to do if there is a reaction.
+- You can often prevent or treat mild symptoms by taking a non-drowsy antihistamine 1 hour before the dose. (Note: Antihistamines do not prevent severe reactions).
 
 = When do we move onto the next step?
 
-Each step has a different _protein target_. In the example below, during Step 1 the patient will eat 1.0 mg of allergen protein daily for 2-4 weeks. At some point, they will increase the dose to Step 2, which is 2.5 mg of protein daily. But when exactly are they supposed to move from one step to the next step?
+Each step has a specific amount of protein per daily dose. In the example below, Step 1 is 1.0 mg daily. Step 2 is 2.5 mg daily. But when exactly do you switch from Step 1 to Step 2?
 
 #figure(
   kind: table,
@@ -608,7 +608,6 @@ Each step has a different _protein target_. In the example below, during Step 1 
 == The answer - ask your doctor: it depends.
 #v(1em)
 - Usually, the daily dose is _escalated_ or _'updosed'_ (increased to the next step's dose) every 2-4 weeks *if there are no/minimal reactions*. _It may take more than 4 weeks for a step for some patients_.
-
 - There are four different approaches for dose escalation, based on patient/family/physician preference, risk profile, and resources available:
 #v(1em)
 #[
@@ -629,8 +628,8 @@ Each step has a different _protein target_. In the example below, during Step 1 
       [
         *A. In-clinic supervision*
         #v(0em)
-        - You come to the clinic for _every_ dose increase, every 2-4 weeks.\
-        - You do the rest of the step's daily maintenance doses at home.
+        - You come to the clinic for _every_ dose increase (every 2-4 weeks).\
+        - You give the daily maintenance doses at home.
       ],
     ),
 
@@ -645,7 +644,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
         *B. Virtual-assistance*
         #v(0em)
         - You increase the dose at home, but on a video call with the allergy team.
-        - You do the daily maintenance doses at home.
+        - You give the daily maintenance doses at home.
       ],
     ),
 
@@ -660,7 +659,7 @@ Each step has a different _protein target_. In the example below, during Step 1 
         *C. Home-based*
         #v(0em)
         - The very first dose is done in the clinic.
-        - After that, you increase the dose at home on your own, and do the maintenance doses at home too.
+        - After that, you increase the dose at home on your own, and give the maintenance doses at home too.
       ],
     ),
 
