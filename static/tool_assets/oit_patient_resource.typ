@@ -1173,7 +1173,7 @@ Each step has a specific amount of protein per daily dose. In the example below,
 = OIT in general
 
 *Q: Do I have to take a dose every single day?*\
-Yes! OIT does require a time commitment. Of course, doses might be held in the case of sickness or if it is unsafe.
+Yes! It is most effective when taken regularly and consistently. OIT does require a significant time commitment. Of course, doses might be held in the case of sickness or if it is unsafe.
 
 *Q: What if one dose is missed? E.g. it is forgotten?*\
 Do not double-dose! Resume normal dosing the next day.
@@ -1211,8 +1211,9 @@ No! It is not required. However, these are very well-tolerated medications that 
 - Some patients only take antihistamines before doses for the first few days of each new updose / step.
 - Some patients have very infrequent mild symptoms, and only take antihistamines after mild symptoms occur
 
+= About giving doses
 *Q: Should my child avoid NSAIDs (non-steroidal anti-inflammatory drugs) during OIT?*\
-In general, NSAIDs should be avoided. While good for pain, they can make it easier for reactions to OIT doses to occur in some patients. We suggest Tylenol instead. Examples of NSAIDs include: ibuprofen (Advil, Motrin) and naproxen (Aleve).
+Yes. In general, NSAIDs should be avoided. While good for pain, they can make it easier for reactions to OIT doses to occur in some patients. Examples of NSAIDs include: ibuprofen (Advil, Motrin) and naproxen (Aleve). We suggest Tylenol instead.
 
 *Q: What if my child is going to have an unrelated surgery?*\
 Contact your doctor / allergy team to discuss.
@@ -1230,7 +1231,7 @@ Contact your doctor / allergy team to discuss.
 
 = Money saving tips
 
-*Q: can I freeze non-dairy milks?*
+*Q: can I freeze non-dairy milks?*\
 Non-dairy milks are expensive and have a limited shelf-life. You can freeze them!
 + Pour liquid into an ice cube tray.
 + Once frozen, store cubes in a ziploc bag.
