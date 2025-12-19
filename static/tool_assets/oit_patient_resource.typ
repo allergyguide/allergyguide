@@ -482,15 +482,14 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
   #line(length: 100%, stroke: 2pt)
 ]
 #warning-box("READ THIS SECTION CAREFULLY.")[
-  - While consistency is important for OIT, *safety is always a priority*.
-  - *It is OK to miss or postpone doses if required.*
+  - While consistency is important, *safety comes first. It is OK to miss/postpone a dose if required.*
 ]
 
 = Safety checklist before giving a dose
 
 == 1. MAKE SURE THERE ARE NO COFACTORS:
 #v(0.5em)
-*Cofactors* are things that increase the risk of severe allergic reactions. *If any of these are present, that dose should not be given*.
+*Cofactors* are things that increase the risk of severe allergic reactions. *If any of these are present, do not give the dose*.
 
 #rect(width: 100%, stroke: 1pt, radius: 4pt, inset: 12pt)[
   #set list(marker: check-box)
@@ -499,27 +498,30 @@ Sometimes the daily dose is too tiny to measure directly with a scale or syringe
   - Heavy exercise (sweating) or hot showers/baths 2 hours before and after the dose: regular play is fine.
   - Getting the dose on an empty stomach.
   - Sleep deprivation (e.g. overnight flight).
-  - Symptoms of food-pipe inflammation (e.g. food getting stuck, chest pain, using more water to wash down food).
+  - Symptoms of food-pipe inflammation (e.g. food getting stuck, chest pain, or needing to drink water to wash food down.).
 ]
 
 == 2. I HAVE THE RIGHT TIMING, EQUIPMENT, AND FOOD:
 #rect(width: 100%, stroke: 1pt, radius: 4pt, inset: 12pt)[
   #set list(marker: check-box)
   - The protein content per serving on the food label matches the protocol.
-  - Have an Epinephrine Auto-injector (e.g. EpiPEN) available, that is up-to-date.
-  - Someone is available to watch your child for at least 2 hours after the dose.
-  - Your child can avoid naps or bedtime within 2 hours of dose.
+  - I have an *unexpired* Epinephrine Auto-injector (e.g., EpiPen) nearby.
+  - An adult can watch my child for at least 2 hours after the dose.
+  - My child will be awake for at least 2 hours after the dose (no naps or bedtime).
 ]
 
 = How to give a daily dose, once it's safe
 
 #enum(
-  spacing: 1em,
-  [*Optional*: consider giving a non-drowsy antihistamine 1 hour before the dose. This is purely for symptom relief and is not mandatory],
-  [*Prepare the daily dose*. Doses should be given around 22 - 26 hours apart, ideally at the same time of day. To improve the taste, *we also suggest mixing it with a strongly flavoured food* (e.g. applesauce, pudding, yogurt, etc).],
-  [*TIP*: if they are a very messy eater or have chapped lips, consider Vaseline around the lips/mouth first!],
+  spacing: 0.9em,
+  [*Optional (Antihistamine)*: you can give a non-drowsy antihistamine 1 hour before the dose. This helps reduce mild symptoms, but it is not required.],
+  [*Prepare the daily dose*:
+    - Give the dose at the same time every day (roughly every 22-26 hours).
+    - *Taste Tip:* mix the dose with a strong-tasting food (like applesauce, pudding, yogurt, etc.) to hide the flavour.
+  ],
+  [*Skin Protection*: if your child is a messy eater, put Vaseline around their mouth before eating. This prevents skin rashes.],
   [*Give the dose with a meal or light snack*! Do NOT give the dose on an empty stomach.],
-  [*Space out doses*. If you are doing OIT to multiple foods, give each food sequentially at least 1 minute apart from each other.],
+  [*Multiple Foods*: if you are doing OIT for more than one food, give them one after another. Wait at least 1 minute between foods.],
 )
 
 #pagebreak()
