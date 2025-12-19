@@ -76,12 +76,13 @@
 ]
 
 = What is OIT?
-OIT is a medical treatment for food allergies that helps patients gradually gain tolerance to the allergen. By slowly giving tiny amounts of the allergen, and then slowly increasing the dose over time, the body gradually becomes used to the allergen. _In other words, the body becomes trained to tolerate amounts of the allergen it previously could not_.
+OIT is a medical treatment for food allergies. It helps the body get used to the allergen by "training" the immune system. We do this by giving your child tiny amounts of the allergen and slowly increasing the dose over time.
 
 *OIT has two main phases:*
 
-1. *Phase 1: Build-up.* Starting with a _*tiny*_ daily dose, every 2-4 weeks we slowly increase the amount until we reach a maintenance dose (usually a bit less than a serving size). This takes about 6 - 12 months.
-2. *Phase 2: Maintenance.* Once your child reaches the maintenance dose, it will be eaten daily for 12 months.
+1. *Phase 1: Build-up.* We start with a _*tiny*_ daily dose. Every 2-4 weeks, we increase the amount until we reach a maintenance dose (usually slightly less than a serving size). This takes about 6–12 months.
+
+2. *Phase 2: Maintenance.* Once your child reaches the maintenance dose, they will eat it daily for at least 12 months.
 #v(0.5em)
 
 #figure(
@@ -145,15 +146,15 @@ OIT is a medical treatment for food allergies that helps patients gradually gain
 
 = What are the possible outcomes with OIT?
 
-1. *Full Freedom (Tolerance):* your child can eat a full serving of the food (like a whole glass of milk or a peanut butter sandwich) without reaction. Around 80% of preschoolers will get here.
+1. *Full Freedom (Tolerance):* your child can eat a full serving of the food (like a whole glass of milk or a peanut butter sandwich) without reacting. Around 80% of preschoolers reach this stage.
 
-2. *Safety (Bite-proof):* While your child may still react if they eat a full serving, they can tolerate smaller amounts. This protects them from severe reactions if they accidentally eat the food. Around 18% of preschoolers will get here.
+2. *Safety (Bite-proof):* your child might still react to a full serving, but they can tolerate smaller amounts. This protects them from severe reactions if they accidentally eat the food. Around 18% of preschoolers reach this stage.
 
-3. *Stopping:* Sometimes, OIT is stopped. This may be due to taste aversion, lack of time to commit for patient/family, side effects, or other reasons. This is rare: only around 2% of preschoolers have to stop.
+3. *Stopping:* sometimes, we decide to stop OIT. This might happen if the child really dislikes the taste, the schedule is too hard to manage, or side effects occur. This is rare: only around 2% of preschoolers stop.
 
 #warning-box("'Use it or lose it'")[
   #v(0em)
-  *Remember:* completing the maintenance phase is not the end. To keep the protection you worked for, your child must continue eating the food *at least once a week*. If regular consumption stops, the allergy may return.
+  *Remember:* completing the maintenance phase is not the end. To keep the protection you worked for, your child must continue eating the food *at least once a week*. If they stop eating it regularly, the allergy may return.
 ]
 
 #pagebreak()
