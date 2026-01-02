@@ -12,20 +12,36 @@
     "elasticlunr": "npm run abridge -- elasticlunr",
     "pagefind": "npm run abridge -- pagefind",
     "tinysearch": "npm run abridge -- tinysearch",
+    "test": "vitest run",
     "check:ts": "tsc --noEmit",
-    "build:ts": "npm run check:ts && esbuild static/ts/**/*.ts --bundle --outdir=static/js/ --format=esm --splitting --target=es2017 --minify --chunk-names=chunks/[name]-[hash]"
+    "build:ts": "tsx build-fetch-secure-assets.mts && npm run check:ts && tsx build.mts",
+    "serve": "npm i && npm run build:ts && zola build && vitest run && netlify dev",
+    "build": "npm run build:ts && npm run abridge --"
   },
   "dependencies": {
+    "@netlify/functions": "^5.1.2",
+    "decimal.js": "^10.6.0",
+    "dotenv": "^17.2.3",
     "fast-toml": "^0.5.4",
     "fuzzysort": "^3.1.0",
     "jsonminify": "^0.4.2",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "pagefind": "^1.1.0",
+    "pako": "^2.1.0",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
     "replace-in-file": "^8.1.0",
-    "uglify-js": "^3.17.4"
+    "uglify-js": "^3.17.4",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "@types/qrcode": "^1.5.6",
     "esbuild": "^0.27.0",
-    "typescript": "^5.9.3"
+    "jsdom": "^27.2.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
   }
 }

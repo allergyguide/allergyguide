@@ -1,22 +1,27 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": [
-      "ES2017",
-      "DOM"
+    "types": [
+      "vitest/importMeta",
+      "node"
     ],
-    "module": "ES2020",
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "rootDir": "./static/ts",
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true, // for Esbuild compatibility
+    "rootDir": "./ts",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
   "include": [
-    "static/ts/**/*"
+    "ts/**/*"
   ],
   "exclude": [
     "node_modules"

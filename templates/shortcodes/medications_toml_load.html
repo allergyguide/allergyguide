@@ -144,7 +144,7 @@
           {% for link in details.monograph_links %}
           {% set parts = link | split(pat="/") %}
           {% set filename = parts | last | split(pat="_") %}
-          <li><a href="{{ link }}" target="_blank">
+          <li><a href="{{ link }}" target="_blank" rel="noopener noreferrer">
               {% for a in filename %}
               {% if loop.index == 1 %}{{a | capitalize }}
               {% elif loop.index == 2 %} ({{a | trim }}

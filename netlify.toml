@@ -1,6 +1,16 @@
 [build]
 publish = "public"
-command = "npm run abridge -- '--base-url /' || (npm ci && npm run abridge -- '--base-url /')"
+# For some reason this has to be done for the site to build properly. Not quite sure why
+# If you try to change this make sure to review the netlify build logs
+# Much of the problems likely stem from the package abridge js and the underlying theme
+# the build-patch-sw is required because otherwise the sw will intercept POST requests to the .netlify functions and cause them not to work...
+command = "(npm run build -- '--base-url /' || (npm ci && npm run abridge -- '--base-url /')) && node build-patch-sw.js"
+
+[dev]
+framework = "#custom"
+command = "zola serve --base-url /"
+port = 8888
+targetPort = 1111
 
 [build.environment]
 ZOLA_VERSION = "0.20.0"
@@ -8,6 +18,9 @@ ZOLA_VERSION = "0.20.0"
 # [context.deploy-preview]
 # command = "npm run abridge -- '--drafts --base-url https://abridge.netlify.app'"
 
+[functions]
+node_bundler = "esbuild"
+included_files = ["secure_assets/**"]
 
 [[redirects]]
 from = "https://allergyguidenetlify.netlify.app/*"
@@ -26,7 +39,7 @@ Strict-Transport-Security = "max-age=63072000; includeSubdomains"
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy (disabled everything except autoplay, local-fonts, screen-wake-lock, speaker-selection)
 # opt out of Federated Learning of Cohorts (aka "FLoC") - https://amifloced.org/
 Permissions-Policy = "interest-cohort=(), accelerometer=(), ambient-light-sensor=(), battery=(), bluetooth=(), browsing-topics=(), camera=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), identity-credentials-get=(), idle-detection=(), magnetometer=(), microphone=(), midi=(), otp-credentials=(), payment=(), picture-in-picture=(), publickey-credentials-create=(), publickey-credentials-get=(), serial=(), storage-access=(), sync-xhr=(), usb=(), web-share=(), window-management=(), xr-spatial-tracking=()"
-Content-Security-Policy = "default-src 'none'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'; connect-src 'self' *.hyvor.com ws://*.hyvor.com https://cdn.jsdelivr.net; script-src 'self' talk.hyvor.com https://cdn.jsdelivr.net; img-src 'self' data: talk.hyvor.com cdn.cloudflare.com; frame-src 'self' www.youtube-nocookie.com player.vimeo.com streamable.com www.streamable.com; media-src 'self' data: cdn.cloudflare.com www.youtube-nocookie.com player.vimeo.com; font-src 'self' cdn.cloudflare.com cdn.jsdelivr.net fonts.gstatic.com; style-src 'self' talk.hyvor.com cdn.cloudflare.com cdn.jsdelivr.net fonts.googleapis.com 'unsafe-inline';"
+Content-Security-Policy = "default-src 'none'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'; connect-src 'self' *.hyvor.com ws://*.hyvor.com https://cdn.jsdelivr.net; script-src 'self' talk.hyvor.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: talk.hyvor.com cdn.cloudflare.com; frame-src 'self' www.youtube-nocookie.com player.vimeo.com streamable.com www.streamable.com; media-src 'self' data: cdn.cloudflare.com www.youtube-nocookie.com player.vimeo.com; font-src 'self' cdn.cloudflare.com cdn.jsdelivr.net fonts.gstatic.com; style-src 'self' talk.hyvor.com cdn.cloudflare.com cdn.jsdelivr.net fonts.googleapis.com 'unsafe-inline';"
 [[headers]]
 for = "*.js" #javascript
 [headers.values]

@@ -1,10 +1,9 @@
 // netlify/functions/protected-image.js
-
 exports.handler = async (event) => {
   try {
     // Parse environment variables
     const users = JSON.parse(process.env.AUTH_USERS || "{}");
-    const githubToken = process.env.GITHUB_TOKEN;
+    const githubToken = process.env.PRIVATE_TOKEN;
     const githubOwner = process.env.GITHUB_OWNER;
     const githubRepo = process.env.GITHUB_REPO;
 

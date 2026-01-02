@@ -1,12 +1,11 @@
 // netlify/functions/protected-content.js
-
 exports.handler = async (event) => {
   try {
     // Parse environment variables
     // These need to be present in Netlify and secure
     const users = JSON.parse(process.env.AUTH_USERS || "{}");
     const tokenExpiryHours = parseInt(process.env.TOKEN_EXPIRY_HOURS || "24");
-    const githubToken = process.env.GITHUB_TOKEN;
+    const githubToken = process.env.PRIVATE_TOKEN;
     const githubOwner = process.env.GITHUB_OWNER; // e.g., "your-username"
     const githubRepo = process.env.GITHUB_REPO;   // e.g., "private-content"
 
