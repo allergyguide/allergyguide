@@ -14,9 +14,9 @@
     "tinysearch": "npm run abridge -- tinysearch",
     "test": "vitest run",
     "check:ts": "tsc --noEmit",
-    "build:ts": "tsx build-fetch-secure-assets.mts && npm run check:ts && tsx build.mts",
-    "serve": "npm i && npm run build:ts && zola build && vitest run && netlify dev",
-    "build": "npm run build:ts && npm run abridge --"
+    "build:core": "tsx build-fetch-secure-assets.mts && npm run check:ts && tsx build.mts",
+    "serve": "npm i && npm run build:core && zola build && vitest run && netlify dev",
+    "build": "npm run build:core && npm run abridge --"
   },
   "dependencies": {
     "@netlify/functions": "^5.1.2",
