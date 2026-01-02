@@ -8,19 +8,26 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
-## [Unreleased]
+## [0.13.0] - 2026-01-02
 
 ### Added
 
+- Secure Authentication: Added a login system allowing authorized users to sign in and access private, practice-specific resources
+- Custom Asset Support: Signed-in users can now load custom food databases and private protocol templates alongside the standard public library
+- The PDF export tool now supports private user-specific headers, footers, and supplementary handouts (e.g., merging a specific clinic's contact info or consent forms automatically)
+- Session Persistence: Login sessions now persist for 24 hours via secure cookies, so frequent re-authentication is not required (24h may be adjusted in the future)
+
 ### Changed
 
-### Deprecated
-
-### Removed
+- Toolbar UI: Updated the main toolbar to include Login/Logout controls and a "Signed In" user badge
 
 ### Fixed
 
+- Fixed specific caching issues where the application would sometimes fail to recognize a valid login state after an update
+
 ### Security
+
+- Implemented rate-limiting on authentication endpoints to mitigate malicious attacks
 
 ---
 
