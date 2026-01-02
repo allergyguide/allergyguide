@@ -20,7 +20,7 @@ For further details re: contributing process, formatting, content for topics/mac
 
 ## Nitty gritty about site function:
 
-Site is deployed from Netlify from GitHub. It is built using Zola, an excellent open-source static site generator with the Abridge theme as a base (with some custom JavaScript, HTML, and SCSS along the way). It uses Tera templating for the webpages. It is all open-source.
+Site is deployed from Netlify from GitHub. It is built using Zola, an excellent open-source static site generator with the Abridge theme as a base (with some custom JavaScript, HTML, and SCSS along the way). It uses Tera templating for the webpages. It is all open-source. See [docs/](/docs/) for documentation about the development process.
 
 See the following links for more details:
 https://www.getzola.org/
