@@ -11,9 +11,8 @@ This project uses **Zola** (SSG) hosted on Netlify, with a custom build pipeline
   - [Typst](https://github.com/typst/typst) (markup-based typesetting system for PDF creation)
 
 - **To test the site locally**: `npm run serve`
-  - _Note: This runs the full build pipeline (TS, Assets) before starting Zola. Do not commit the artifacts in `static/js` or `secure_assets`._
-
-- To create an online deploy preview for private sharing use the Netlify cli: `netlify deploy`
+  - _Note: This runs the full build pipeline (TS, Assets) before starting Zola. This currently requires a `PRIVATE_TOKEN` and access to the private assets repository to succeed._
+  - _Do not commit the artifacts in `static/js` or `secure_assets`._
 
 ---
 
@@ -127,6 +126,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 - **Auth/Permissions:** Update `AUTH_USERS` and `USER_PERMISSIONS` in Netlify.
 - **User Configs:** Ensure the private repository contains the matching `user_configs/{username}_config.json` files.
+- **Build Logic:** If adding a new tool that requires private assets, you must manually add a `generateSecureAssets` call to `build-fetch-secure-assets.mts` to ensure the files are downloaded during build.
 - **Structure:** secure assets are flattened into `secure_assets/` locally during build.
 
 ## Netlify Functions & Auth
@@ -146,3 +146,11 @@ Private assets (PDFs, JSON data) are **not** served statically. They reside in t
 
 - **Endpoint:** `/.netlify/functions/get-secure-asset?file={filename}`
 - **Logic:** The function verifies the `nf_jwt` cookie and checks if the user has permission for the requested file before streaming it.
+
+---
+
+## Contributing
+
+Most contributions are expected to be focused on medical content in the `content/` directory. 
+
+Because the full build pipeline requires access to private repositories, non-core contributors should focus on markdown edits and rely on Netlify Deploy Previews for verification, or seek guidance from the maintainer for local environment setup.
