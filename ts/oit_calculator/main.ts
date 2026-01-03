@@ -29,7 +29,7 @@ import { initSearchEvents } from "./ui/searchUI";
 import { attachClickwrapEventListeners, attachLoginModalListeners } from "./ui/modals";
 import { initGlobalEvents } from "./ui/events";
 import { initExportEvents, triggerPdfGeneration } from "./ui/exports";
-import { handleUserLoad, loadPublicDatabases } from "./data/loader";
+import { handleUserLoad, loadPublicDatabases, loadUserConfiguration } from "./data/loader";
 import { logout } from "./data/auth";
 
 // Configure Decimal.js
@@ -45,19 +45,38 @@ export let appState: AppState;
  * Initialize the OIT calculator after DOM is ready
  */
 async function initializeCalculator(): Promise<void> {
-  // Load public databases
-  const publicData = await loadPublicDatabases();
-
   // Get URL for rules page
   const urlContainer = document.getElementById('url-container');
   const rulesUrl = urlContainer ? urlContainer.dataset.targetUrl! : "";
 
+  // Parallel load public and user data (if user already signed in)
+  const publicDataPromise = loadPublicDatabases();
+  const userDataPromise = loadUserConfiguration().catch(() => null);
+  const [publicData, userData] = await Promise.all([publicDataPromise, userDataPromise]);
+
   // set up appState
   appState = new AppState(publicData, rulesUrl);
 
-  // Auto-login on init attempt
-  // will succeed if cookie exists
-  await handleUserLoad();
+  if (userData) {
+    console.log("Session restored: Loading custom assets.");
+    appState.addSecureData(
+      userData.customFoods,
+      userData.protocols,
+      userData.handouts
+    );
+
+    // Update UI to show logged-in state immediately
+    const loginBtn = document.getElementById("btn-login-trigger");
+    const logoutBtn = document.getElementById("btn-logout-trigger");
+    const badge = document.getElementById("user-badge");
+
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (badge) {
+      badge.textContent = `User: ${userData.user}`;
+      badge.style.display = 'inline-block';
+    }
+  }
 
   // Initialize global delegated events (settings, table, dosing, misc)
   initGlobalEvents();
