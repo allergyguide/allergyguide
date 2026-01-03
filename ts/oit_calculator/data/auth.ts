@@ -17,7 +17,7 @@ export async function login(username: string, password: string): Promise<boolean
     }
 
     if (response.ok) {
-      console.log("Logged in! Cookie is set automatically.");
+      console.log("Logged in!");
       return true
     } else if (response.status === 405) {
       throw new HttpError('Method not allowed', 405)
