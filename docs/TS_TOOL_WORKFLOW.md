@@ -1,8 +1,6 @@
-# TypeScript Architecture & Setup
+# TypeScript Architecture
 
-For complex tools and interactive components, we use **TypeScript** and **esbuild**.
-
-`tsconfig.json` exists in the root directory.
+For complex tools (like the OIT Calculator) and interactive components requiring auth, we use **TypeScript** and **esbuild**.
 
 ## Directory Structure
 
@@ -22,14 +20,12 @@ For complex tools and interactive components, we use **TypeScript** and **esbuil
 │       └── chunks/            # Shared code (e.g. libraries)
 │
 ├── tools_versioning.json      # Configuration: Maps tool names to versions
-├── build.mjs                  # Build script
-└── package.json
+├── build-ts.mts                  # Build script
 ```
 
 ## Build System
 
 - **Bundler**: `esbuild`
-- **Glue**: `build.mjs`
 - **Type Checking**: `tsc`
 - **Configuration**: `tools_versioning.json`
 
@@ -38,13 +34,17 @@ For complex tools and interactive components, we use **TypeScript** and **esbuil
 ```json
 ...,
 "scripts": {
-  "check:ts": "tsc --noEmit",
-  "build:ts": "npm run check:ts && node build.mjs"
+    "test": "vitest run",
+    "check:ts": "tsc --noEmit",
+    "build:core": "tsx build-fetch-secure-assets.mts && npm run check:ts && tsx build.mts",
+    "serve": "npm i && npm run build:core && zola build && vitest run && netlify dev",
 },
 ...
 ```
 
-### `build.mjs` Configuration
+## What happens during build
+
+See build-ts.mts
 
 The build script is dynamic. It does **not** require manual entry of paths in the script itself. Instead, it reads `tools_versioning.json` from the root directory.
 
@@ -56,7 +56,7 @@ For each key in `tools_versioning.json` (e.g., `"oit_calculator"`), the script l
 
 It generates an output file in `static/js/` with the format: `{tool_name}.{version}-{commit_hash}.js`.
 
-## Workflow: Adding New TS Code
+## Workflow: Creating a new TS project
 
 ### 1. Create Source Code
 
@@ -77,33 +77,75 @@ Open `tools_versioning.json` in the root directory and add your tool with a vers
 }
 ```
 
-### 3. Build
+### 3. Integrate with Zola
 
-Run the build command:
+In your shortcode or HTML template, dynamically load the hashed filename:
 
-```bash
-npm run build:ts
+```html
+{%/* set tools = load_data(path="/js/tools_versioning.json") */%}
+{%/* set tool_info = tools.oit_calculator */%}
+
+... html stuff ...
+
+<script type="module" src="/js/{{/* tool_info.file */}}"></script>
 ```
 
-This will:
+### 4. Build
 
-1. Type-check your code.
-2. Bundle the code using `esbuild`.
-3. Output the file to `static/js/`.
-4. Generate/Update `static/js/tools_versioning.json` containing the exact filename (including the hash) for the site generator to use.
+Run `npm run serve`. This will:
 
-### 4. Git & Deployment
+1. Compile TS to `static/js/my_tool.{hash}.js`.
+2. Update `static/js/tools_versioning.json`.
+3. Start the Zola server.
+
+## Netlify Functions & Auth
+
+The tools rely on Serverless Functions for authentication and data access.
+
+### 1. Authentication Flow
+
+- **Login:** POST to `/.netlify/functions/auth-login`. Returns an `httpOnly` cookie (`nf_jwt`).
+- **Logout:** POST to `/.netlify/functions/auth-logout` (clears cookie).
+- **Security:**
+- Rate limited via Cloudflare (WAF).
+- JWT signed with `JWT_SECRET`.
+- Strict `SameSite` cookie policy.
+
+### 2. Fetching Secure Assets
+
+- **Endpoint:** `/.netlify/functions/get-secure-asset?file={filename}`.
+- **Logic:** The function validates the JWT cookie and checks `USER_PERMISSIONS` before streaming the file (JSON or PDF) from the `secure_assets/` folder.
+
+### 3. The Service Worker Patch (`patch-sw.js`)
+
+The Abridge theme automatically generates a Service Worker (`sw.min.js`) for PWA capabilities. By default, this SW tries to cache everything.
+
+**The Problem:** Service Workers cannot cache `POST` requests, causing Login to fail. They also interfere with Auth headers on 401/403 responses.
+
+**The Solution:**
+We run `node patch-sw.js` at the end of the build. This injects a guard clause at the top of the Service Worker:
+
+```javascript
+self.addEventListener("fetch", (event) => {
+  // Force Netlify functions and POSTs to bypass the Service Worker
+  if (
+    event.request.url.includes("/.netlify/") || event.request.method === "POST"
+  ) {
+    event.respondWith(fetch(event.request));
+    event.stopImmediatePropagation();
+  }
+});
+```
+
+_Dev Note: If you see "Failed to execute 'put' on 'Cache'", the patch is missing._
+
+## Git & Deployment
 
 **Note on Versioning:**
 The output filenames include the Git commit hash (e.g., `tool.0.8.0-a1b2c3d.js`). This ensures cache busting but means filenames change with every commit.
 
 - **Locally:** You may accumulate multiple versions of the JS files in `static/js/` as you work; don't commit the generated files in `static/js/`
 - **Netlify:** The site is built from a fresh clone, so `static/js/` starts 'empty' and is populated only with the artifacts for the current commit.
-
-### 5. Integration with Zola
-
-Zola needs to know the generated filename (which changes with every commit due to the hash).
-Ensure shortcode or template reads `static/js/tools_versioning.json` to find the correct script source.
 
 ## Dependencies
 
@@ -116,3 +158,12 @@ Dependencies are installed via `npm` and bundled automatically by esbuild. Code 
 - `typescript`
 - `esbuild`
 - `@types/node`
+
+### **Testing**
+
+Unit tests are implemented using **Vitest**.
+
+- **Run Tests:** `npm test` (Runs `vitest run`).
+-
+
+**In-Source Testing:** Configured in `tsconfig.json` and `build-ts.mts` via `define: { 'import.meta.vitest': 'undefined' }` so test code is stripped from production bundles.
