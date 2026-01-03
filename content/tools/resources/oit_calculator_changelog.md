@@ -8,6 +8,14 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
+## []
+
+### Added
+
+- hCaptcha to login flow to mitigate malicious attacks on the secure login endpoint
+
+---
+
 ## [0.13.0] - 2026-01-02
 
 ### Added
@@ -28,8 +36,6 @@ authors = ["Joshua Yu"]
 ### Security
 
 - Implemented rate-limiting on authentication endpoints to mitigate malicious attacks
-
----
 
 ## [0.12.0] - 2025-12-17
 

@@ -1,11 +1,11 @@
 import { HttpError } from "../types";
 
-export async function login(username: string, password: string): Promise<boolean> {
+export async function login(username: string, password: string, captchaToken: string): Promise<boolean> {
 
   try {
     const response = await fetch('/.netlify/functions/auth-login', {
       method: 'POST',
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password, captchaToken })
     });
 
     // make sure its a SON - if it's not... then you're getting a malformed response, or the netlify function is not up and running properly?
@@ -24,6 +24,10 @@ export async function login(username: string, password: string): Promise<boolean
     }
     else if (response.status === 401) {
       throw new HttpError('Invalid credentials', 401)
+    }
+    else if (response.status === 400) {
+      const data = await response.json();
+      throw new HttpError(data.message || 'Captcha failed', 400);
     }
     else if (response.status === 500) {
       throw new HttpError('Internal server err', 500)

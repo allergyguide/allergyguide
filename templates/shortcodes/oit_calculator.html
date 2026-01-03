@@ -1,212 +1,212 @@
 {% set tools = load_data(path="/js/tools_versioning.json") %}
 {% set tool_info = tools.oit_calculator %}
 <div class="oit_calculator">
-  <div class="oit-toolbar">
-    <div class="oit-version">
-      <a href="{{ get_url(path='@/tools/resources/oit_calculator_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span>v{{ tool_info.version }}</span></a>
-      <span class="separator">•</span>
-      <button id="btn-login-trigger" class="login-link-btn" title="Login" aria-label="Login">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-        </svg>
-      </button>
-      <span id="user-badge" class="user-badge" style="display: none;"></span>
-      <button id="btn-logout-trigger" class="login-link-btn" style="display: none;" title="Logout" aria-label="Logout">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
-          <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-        </svg>
-      </button>
-    </div>
-    <button id="btn-undo" class="btn-secondary" disabled title="Undo (Ctrl+z)">
-      ↶ Undo
-      <span class="oit-mobile-hidden-shortcut">(Ctrl-z)</span>
-    </button>
-    <button id="btn-redo" class="btn-secondary" disabled title="Redo (Ctrl+y)">
-      ↷ Redo
-      <span class="oit-mobile-hidden-shortcut">(Ctrl-y)</span>
-    </button>
-  </div>
-  <!-- Food Selection and Settings -->
-  <div class="settings-container">
-    <!-- Food A Container -->
-    <div class="food-a-container">
-      <div class="search-container">
-        <input
-        type="text"
-        id="food-a-search"
-        placeholder="Search for foods, protocols, or make custom food..."
-        class="search-input"
-        autocomplete="off"
-      >
-      </div>
-      <!-- Food A settings will be dynamically inserted here -->
-    </div>
-    <!-- Food B Container -->
-    <div class="food-b-container disabled">
-      <h3>Optional Transition Food</h3>
-      <div class="search-container">
-        <input
-        type="text"
-        id="food-b-search"
-        placeholder="Search for food or create one to transition to..."
-        class="search-input"
-        autocomplete="off"
-        disabled
-      >
-        <button id="clear-food-b" class="clear-food-b" disabled>
-          Clear
-        </button>
-      </div>
-      <!-- Food B settings will be dynamically inserted here -->
-    </div>
-  </div>
-  <!-- Dosing Strategy Selection -->
-  <div class="dosing-strategy-container oit-hidden-on-init">
-    <!-- Dosing strategy buttons will be dynamically inserted here -->
-  </div>
-  <div class="step-controls-footer oit-hidden-on-init">
-    <span class="subtle-text">Use
-      <span class="mini-btn-add">+</span>
-      <span class="mini-btn-remove">−</span>
-      buttons to add/remove steps</span>
-  </div>
-  <!-- Protocol Output -->
-  <div class="output-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Step</th>
-          <th>Protein (mg)</th>
-          <th>Method</th>
-          <th>Amount for mixture</th>
-          <th>Water for mixture</th>
-          <th>Daily amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td
-            colspan="6"
-            style="
+	<div class="oit-toolbar">
+		<div class="oit-version">
+			<a href="{{ get_url(path='@/tools/resources/oit_calculator_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span>v{{ tool_info.version }}</span></a>
+			<span class="separator">•</span>
+			<button id="btn-login-trigger" class="login-link-btn" title="Login" aria-label="Login">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+					<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+					<path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+				</svg>
+			</button>
+			<span id="user-badge" class="user-badge" style="display: none;"></span>
+			<button id="btn-logout-trigger" class="login-link-btn" style="display: none;" title="Logout" aria-label="Logout">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+					<path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+					<path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+				</svg>
+			</button>
+		</div>
+		<button id="btn-undo" class="btn-secondary" disabled title="Undo (Ctrl+z)">
+			↶ Undo
+			<span class="oit-mobile-hidden-shortcut">(Ctrl-z)</span>
+		</button>
+		<button id="btn-redo" class="btn-secondary" disabled title="Redo (Ctrl+y)">
+			↷ Redo
+			<span class="oit-mobile-hidden-shortcut">(Ctrl-y)</span>
+		</button>
+	</div>
+	<!-- Food Selection and Settings -->
+	<div class="settings-container">
+		<!-- Food A Container -->
+		<div class="food-a-container">
+			<div class="search-container">
+				<input type="text"
+				       id="food-a-search"
+				       placeholder="Search for foods, protocols, or make custom food..."
+				       class="search-input"
+				       autocomplete="off"
+				>
+			</div>
+			<!-- Food A settings will be dynamically inserted here -->
+		</div>
+		<!-- Food B Container -->
+		<div class="food-b-container disabled">
+			<h3>Optional Transition Food</h3>
+			<div class="search-container">
+				<input type="text"
+				       id="food-b-search"
+				       placeholder="Search for food or create one to transition to..."
+				       class="search-input"
+				       autocomplete="off"
+				       disabled
+				>
+				<button id="clear-food-b" class="clear-food-b" disabled>
+					Clear
+				</button>
+			</div>
+			<!-- Food B settings will be dynamically inserted here -->
+		</div>
+	</div>
+	<!-- Dosing Strategy Selection -->
+	<div class="dosing-strategy-container oit-hidden-on-init">
+		<!-- Dosing strategy buttons will be dynamically inserted here -->
+	</div>
+	<div class="step-controls-footer oit-hidden-on-init">
+		<span class="subtle-text">Use
+			<span class="mini-btn-add">+</span>
+			<span class="mini-btn-remove">−</span>
+			buttons to add/remove steps</span>
+	</div>
+	<!-- Protocol Output -->
+	<div class="output-container">
+		<table>
+			<thead>
+				<tr>
+					<th>Step</th>
+					<th>Protein (mg)</th>
+					<th>Method</th>
+					<th>Amount for mixture</th>
+					<th>Water for mixture</th>
+					<th>Daily amount</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="6"
+					    style="
                             text-align: center;
                             color: var(--oit-text-secondary);
                             padding: 1rem;
                         "
-          >
-            <div class="startup-instructions">
-              <h3>Quick Start</h3>
-              <ol>
-                <li><b>Select:</b>
-                  Search for a food, pre-made protocol (e.g. "Almond milk to whole almonds") or create a custom food from the search bar.<br>
-                  <em>Estimate food data is aggregated from Health Canada
-                    <a href='https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/nutrient-data/canadian-nutrient-file-about-us.html' target="_blank" rel="noopener noreferrer">(Canadian Nutrient File, 2015).</a></em></li>
-                <li><b>Verify:</b>
-                  Always confirm the protein content matches your specific product label.
-                  <i>We cannot guarantee the protein contents remain up-to-date or accurate</i>: manufacturers change formulations and products may become discontinued.</li>
-                <li><b>Customize:</b>
-                  Adjust dose progression, food parameters, and specific steps.</li>
-                <li><b>Transition (Optional):</b>
-                  Search for a food to create a transition protocol (e.g. almond milk → almonds).</li>
-                <li><b>Export:</b>
-                  Obtain a concise copy-pasteable ASCII for the EMR or a PDF with the protocol.</li>
-              </ol>
-              <p class="empty-footer">
-                <em>Calculations run entirely in your browser (client-side).
-                  <b><u>No PHI is collected or transmitted.</u></b></em>
-              </p>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-      <!-- Protocol table will be dynamically generated -->
-    </table>
-    <div class="bottom-section">
-      <!-- Export buttons will be dynamically inserted here -->
-      <!-- Warnings Sidebar -->
-      <div class="warnings-container oit-hidden-on-init">
-        <div class="no-warnings">Protocol passes internal checks.</div>
-      </div>
-    </div>
-  </div>
+					>
+						<div class="startup-instructions">
+							<h3>Quick Start</h3>
+							<ol>
+								<li><b>Select:</b>
+								Search for a food, pre-made protocol (e.g. "Almond milk to whole almonds") or create a custom food from the search bar.<br>
+								<em>Estimate food data is aggregated from Health Canada
+									<a href='https://www.canada.ca/en/health-canada/services/food-nutrition/healthy-eating/nutrient-data/canadian-nutrient-file-about-us.html' target="_blank" rel="noopener noreferrer">(Canadian Nutrient File, 2015).</a></em></li>
+								<li><b>Verify:</b>
+								Always confirm the protein content matches your specific product label.
+								<i>We cannot guarantee the protein contents remain up-to-date or accurate</i>: manufacturers change formulations and products may become discontinued.</li>
+								<li><b>Customize:</b>
+								Adjust dose progression, food parameters, and specific steps.</li>
+								<li><b>Transition (Optional):</b>
+								Search for a food to create a transition protocol (e.g. almond milk → almonds).</li>
+								<li><b>Export:</b>
+								Obtain a concise copy-pasteable ASCII for the EMR or a PDF with the protocol.</li>
+							</ol>
+							<p class="empty-footer">
+								<em>Calculations run entirely in your browser (client-side).
+									<b><u>No PHI is collected or transmitted.</u></b></em>
+							</p>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+			<!-- Protocol table will be dynamically generated -->
+		</table>
+		<div class="bottom-section">
+			<!-- Export buttons will be dynamically inserted here -->
+			<!-- Warnings Sidebar -->
+			<div class="warnings-container oit-hidden-on-init">
+				<div class="no-warnings">Protocol passes internal checks.</div>
+			</div>
+		</div>
+	</div>
 </div>
 <div id="oit-login-modal" class="oit-modal-overlay" style="display: none;">
-  <div class="oit-modal-content oit-login-content">
-    <h2>Custom Access</h2>
-    <p class="login-instruction">Sign in to securely load your custom protocols, foods, and exports.</p>
-    <form id="oit-login-form">
-      <div class="oit-form-group">
-        <label for="login-username">Username</label>
-        <input type="text" id="login-username" class="search-input" required autocomplete="username" placeholder="Enter username">
-      </div>
-      <div class="oit-form-group">
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" class="search-input" required autocomplete="current-password" placeholder="Enter password">
-      </div>
-      <div id="oit-login-error" class="oit-error-message"></div>
-      <div class="oit-modal-buttons">
-        <button type="button" id="btn-login-cancel" class="btn-secondary">Cancel</button>
-        <button type="submit" class="btn-export">Login</button>
-      </div>
-    </form>
-  </div>
+	<div class="oit-modal-content oit-login-content">
+		<h2>Custom Access</h2>
+		<p class="login-instruction">Sign in to securely load your custom protocols, foods, and exports.</p>
+		<form id="oit-login-form">
+			<div class="oit-form-group">
+				<label for="login-username">Username</label>
+				<input type="text" id="login-username" class="search-input" required autocomplete="username" placeholder="Enter username">
+			</div>
+			<div class="oit-form-group">
+				<label for="login-password">Password</label>
+				<input type="password" id="login-password" class="search-input" required autocomplete="current-password" placeholder="Enter password">
+			</div>
+			<div id="oit-login-error" class="oit-error-message"></div>
+			<div class="oit-form-group">
+				<div class="h-captcha" data-sitekey="eb228250-c24c-4114-bc68-7430c89ae0b0"></div>
+			</div>
+			<div class="oit-modal-buttons">
+				<button type="button" id="btn-login-cancel" class="btn-secondary">Cancel</button>
+				<button type="submit" class="btn-export">Login</button>
+			</div>
+		</form>
+	</div>
 </div>
 <!-- Clickwrap Modal -->
 <div id="oit-clickwrap-modal" class="oit-modal-overlay" style="display: none;">
-  <div class="oit-modal-content">
-    <h2>Provider Attestation</h2>
-    <p><i>This tool is strictly for use by licensed healthcare professionals. It does not replace professional medical advice.</i>
-      The generated PDF is a draft and
-      <b>must be reviewed and approved by a qualified healthcare professional before use</b>. To generate the PDF, you must confirm the following:</p>
-    <div class="oit-modal-checkbox-container">
-      <label>
-        <input type="checkbox" id="clickwrap-checkbox-0">
-        <b>I have reviewed the
-          <a href="{{ get_url(path='@/tools/resources/oit_calculator_terms.md') }}" target="_blank" rel="noopener noreferrer">Terms of Use</a>.</b>
-      </label>
-      <label>
-        <input type="checkbox" id="clickwrap-checkbox-1">
-        <span><b>I certify that I am a licensed physician or a healthcare professional acting under the direct supervision of a licensed physician.</b>
-          I understand that
-          <i>OIT carries a risk of life-threatening anaphylaxis and other harms</i>
-          and that attempting these protocols without emergency equipment and medical oversight is dangerous. I understand that using this tool without professional medical credentials or using it to self-treat without the supervision of a qualified healthcare professional is a violation of the Terms of Use.</span>
-      </label>
-      <label>
-        <input type="checkbox" id="clickwrap-checkbox-2">
-        <span><b>I acknowledge this tool is a calculation and documentation aid only.</b>
-          It provides mathematical support for dosing schedules, but does not exercise clinical judgment or detect all input or output errors. I assume full responsibility for assessing the patient as an appropriate candidate for OIT, verifying all calculations, and reviewing any associated patient educational material before clinical use.</span>
-      </label>
-      <label>
-        <input type="checkbox" id="clickwrap-checkbox-3">
-        <span><b>I have verified the protein content(s) on the specific food nutrition label(s) matches the values used in this protocol.</b>
-          Searchable foods are estimates, and manufacturers can change formulations. It is my responsibility to ensure the protein content is accurate.</span>
-      </label>
-      <label>
-        <input type="checkbox" id="clickwrap-checkbox-4">
-        <span><b>I understand this produces a draft document.</b>
-          I must physically review its contents.</span>
-      </label>
-    </div>
-    <div class="oit-modal-buttons">
-      <button id="clickwrap-cancel-btn" class="btn-secondary">Cancel</button>
-      <button id="clickwrap-generate-btn" class="btn-export" disabled>Generate PDF</button>
-    </div>
-  </div>
+	<div class="oit-modal-content">
+		<h2>Provider Attestation</h2>
+		<p><i>This tool is strictly for use by licensed healthcare professionals. It does not replace professional medical advice.</i>
+		The generated PDF is a draft and
+		<b>must be reviewed and approved by a qualified healthcare professional before use</b>. To generate the PDF, you must confirm the following:</p>
+		<div class="oit-modal-checkbox-container">
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-0">
+				<b>I have reviewed the
+					<a href="{{ get_url(path='@/tools/resources/oit_calculator_terms.md') }}" target="_blank" rel="noopener noreferrer">Terms of Use</a>.</b>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-1">
+				<span><b>I certify that I am a licensed physician or a healthcare professional acting under the direct supervision of a licensed physician.</b>
+				I understand that
+				<i>OIT carries a risk of life-threatening anaphylaxis and other harms</i>
+				and that attempting these protocols without emergency equipment and medical oversight is dangerous. I understand that using this tool without professional medical credentials or using it to self-treat without the supervision of a qualified healthcare professional is a violation of the Terms of Use.</span>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-2">
+				<span><b>I acknowledge this tool is a calculation and documentation aid only.</b>
+				It provides mathematical support for dosing schedules, but does not exercise clinical judgment or detect all input or output errors. I assume full responsibility for assessing the patient as an appropriate candidate for OIT, verifying all calculations, and reviewing any associated patient educational material before clinical use.</span>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-3">
+				<span><b>I have verified the protein content(s) on the specific food nutrition label(s) matches the values used in this protocol.</b>
+				Searchable foods are estimates, and manufacturers can change formulations. It is my responsibility to ensure the protein content is accurate.</span>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-4">
+				<span><b>I understand this produces a draft document.</b>
+				I must physically review its contents.</span>
+			</label>
+		</div>
+		<div class="oit-modal-buttons">
+			<button id="clickwrap-cancel-btn" class="btn-secondary">Cancel</button>
+			<button id="clickwrap-generate-btn" class="btn-export" disabled>Generate PDF</button>
+		</div>
+	</div>
 </div>
 <!-- Hidden div to get URL for warnings to pass into JS using zola -->
-<div
-  id="url-container"
-  data-target-url="{{ get_url(path='@/tools/resources/oit_calculator_validation.md') }}"
-  style="display: none;"
+<div id="url-container"
+     data-target-url="{{ get_url(path='@/tools/resources/oit_calculator_validation.md') }}"
+     style="display: none;"
 ></div>
 <div id="oit-debug-panel" class="oit-debug-panel">
-  <h4>payload decoder</h4>
-  <div class="debug-controls">
-    <input type="text" id="debug-input" placeholder="b64 here">
-    <button id="debug-btn">Decode</button>
-  </div>
-  <div id="debug-result-container"></div>
+	<h4>payload decoder</h4>
+	<div class="debug-controls">
+		<input type="text" id="debug-input" placeholder="b64 here">
+		<button id="debug-btn">Decode</button>
+	</div>
+	<div id="debug-result-container"></div>
 </div>
 <!-- Load main script -->
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 <script type="module" src="/js/{{ tool_info.file }}"></script>

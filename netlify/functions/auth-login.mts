@@ -1,6 +1,37 @@
 import type { Handler, HandlerResponse } from '@netlify/functions';
 import jwt from 'jsonwebtoken';
+import querystring from 'querystring';
 import cookie from 'cookie';
+
+export async function verifyCaptcha(hcaptcha_secret: string, captchaTokenResponse: string): Promise<boolean> {
+	const verifyParams = querystring.stringify({
+		secret: hcaptcha_secret,
+		response: captchaTokenResponse,
+		sitekey: "eb228250-c24c-4114-bc68-7430c89ae0b0"
+	});
+
+	let captchaVerify: Response;
+	try {
+		captchaVerify = await fetch('https://hcaptcha.com/siteverify', {
+			method: 'POST', // MUST be POST
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: verifyParams
+		});
+	}
+	catch (err) {
+		console.error("Not able to reach hcaptcha.com to verify captcha", err)
+		return false;
+	}
+
+	const captchaData = await captchaVerify.json();
+
+	if (!captchaData.success) {
+		return false
+	} else {
+		return true
+	}
+}
+
 
 /**
  * Netlify Function: Login Handler
@@ -16,7 +47,18 @@ export const handler: Handler = async (event) => {
 
 	try {
 		const body = event.body ? JSON.parse(event.body) : {};
-		const { username, password } = body;
+		const { username, password, captchaToken } = body;
+
+		// VERIFY CAPTCHA FIRST
+		// We do this before checking passwords to prevent brute force timing attacks
+		if (!process.env.HCAPTCHA_SECRET) throw new Error("No HCAPTCHA_SECRET set in environment variables")
+		if (!captchaToken) {
+			return { statusCode: 400, body: JSON.stringify({ message: "Captcha missing" }) };
+		}
+		const captchaVerified = await verifyCaptcha(process.env.HCAPTCHA_SECRET, captchaToken)
+		if (!captchaVerified) {
+			return { statusCode: 400, body: JSON.stringify({ message: "Invalid Captcha" }) };
+		}
 
 		// LOAD + PARSE USERS
 		// AUTH_USERS={"test":"testpassword","test1":"testpassword1"}

@@ -3,12 +3,12 @@
  *
  * Modal dialog management (Clickwrap, etc.)
  */
+///<reference types="@hcaptcha/types"/>
 import { OIT_CLICKWRAP_ACCEPTED_KEY, CLICKWRAP_EXPIRY_DAYS } from "../constants";
 import {
   HttpError
 } from "../types"
 import { login } from "../data/auth";
-
 
 let clickwrapModal: HTMLElement | null = null;
 let clickwrapCheckbox0: HTMLInputElement | null = null;
@@ -135,12 +135,14 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
   loginBtn.addEventListener("click", () => {
     modal.style.display = "flex";
     if (errorMsg) errorMsg.textContent = "";
+    if (window.hcaptcha) window.hcaptcha.reset();
   });
 
   // Hide Modal
   const hide = () => {
     modal.style.display = "none";
     form.reset();
+    if (window.hcaptcha) window.hcaptcha.reset();
   };
 
   if (cancelBtn) cancelBtn.addEventListener("click", hide);
@@ -152,13 +154,20 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
     const password = (document.getElementById("login-password") as HTMLInputElement).value;
     const submitBtn = form.querySelector("button[type='submit']") as HTMLButtonElement;
 
+    // GET CAPTCHA TOKEN
+    const captchaToken = window.hcaptcha ? window.hcaptcha.getResponse() : "";
+    if (!captchaToken) {
+      if (errorMsg) errorMsg.textContent = "Please complete the captcha verification.";
+      return;
+    }
+
     try {
       submitBtn.textContent = "Logging in...";
       submitBtn.disabled = true;
       if (errorMsg) errorMsg.textContent = "";
 
       // AUTH password
-      const authSuccess = await login(username, password);
+      const authSuccess = await login(username, password, captchaToken);
 
       if (authSuccess) {
         const loadSuccess = await onLoginAttempt();
@@ -168,17 +177,28 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
           // FAIL: Keep modal open, show error to user
           // This implies auth worked, but they don't have the OIT tool config or lacks permissions
           if (errorMsg) errorMsg.textContent = "Login successful, but this account lacks access to the OIT Calculator.";
+          // Reset captcha because the token is single-use
+          window.hcaptcha.reset();
         }
       }
     } catch (error) {
+      // ALWAYS RESET CAPTCHA ON ERROR (Token cannot be reused)
+      if (window.hcaptcha) window.hcaptcha.reset();
+
       if (errorMsg) {
-        if (error instanceof HttpError && (error.status === 401 || error.status === 403)) {
-          errorMsg.textContent = "Invalid username or password.";
-        }
-        else if (error instanceof HttpError && (error.status === 500)) {
-          errorMsg.textContent = "Configuration Error: Netlify function API unavailable or internal err";
-        }
-        else {
+        if (error instanceof HttpError) {
+          if (error.status === 401 || error.status === 403) {
+            errorMsg.textContent = "Invalid username or password.";
+          }
+          else if (error.status === 400) {
+            errorMsg.textContent = "Captcha validation failed. Please try again.";
+          }
+          else if (error.status === 500) {
+            errorMsg.textContent = "Configuration Error: Netlify function API unavailable or internal err";
+          } else {
+            errorMsg.textContent = "Login failed. Please try again.";
+          }
+        } else {
           console.log(error);
           errorMsg.textContent = "Login failed. Please try again.";
         }
