@@ -1,6 +1,7 @@
 import type { Handler } from '@netlify/functions';
-import { resolve } from 'path';
+import { normalize, resolve } from 'path';
 import { promises as fs } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
 
@@ -13,6 +14,31 @@ interface UserToken {
   exp: number;
 }
 
+// Helper to check if a value is a likely file path 
+const isFilePath = (str: string) => str.includes('/') || str.includes('.');
+
+/**
+ * Recursively traverses an arbitrary configuration object (JSON) to collect all strings that appear to be file paths
+ * It normalizes paths (e.g., resolving 'foo//bar' to 'foo/bar') to ensure consistent comparison against requested filenames.
+ *
+ * @param {any} config - The user configuration object (can be string, array, or nested object)
+ * @param {Set<string>} [paths] - An accumulator Set used during recursion. Defaults to a new Set
+ * @returns {Set<string>} A Set containing all unique, normalized file paths found within the config
+ */
+function getAllFilePaths(config: any, paths: Set<string> = new Set()): Set<string> {
+  if (typeof config === 'string') {
+    // Normalize the path (resolves '..', '//', and converts slashes for OS)
+    if (isFilePath(config)) {
+      paths.add(normalize(config));
+    }
+  } else if (Array.isArray(config)) {
+    config.forEach(item => getAllFilePaths(item, paths));
+  } else if (config && typeof config === 'object') {
+    Object.values(config).forEach(val => getAllFilePaths(val, paths));
+  }
+  return paths;
+}
+
 /**
  * Netlify Function: Secure Asset Handler
  * Serves private assets (e.g. .jsons, .pdfs) from within a protected directory secure_assets/ which is built during run-time
@@ -23,7 +49,7 @@ interface UserToken {
  * @returns A response containing the base64 encoded file or an error status
  */
 export const handler: Handler = async (event) => {
-  // EXTRACT COOKIE
+  // EXTRACT COOKIE and JWT TOKEN
   const cookies = cookie.parse(event.headers.cookie || '');
   const token = cookies.nf_jwt;
 
@@ -43,30 +69,60 @@ export const handler: Handler = async (event) => {
     return { statusCode: 403, body: "Forbidden: Session expired or invalid" };
   }
 
-  // PARSE FILENAME
+  // PARSE REQUESTED FILENAME, AND MAKE SURE IT'S VALID
+  // Normalize it too
   let filename = event.queryStringParameters?.file;
-
   if (!filename || filename.includes('..') || filename.includes('\\')) {
     return { statusCode: 400, body: "Invalid filename" };
   }
+  filename = normalize(filename);
 
   // CHANGE FILENAME IF GENERIC `me.json` REQUESTED TO GRAB USER CONFIG
   if (filename === 'me.json') {
     filename = `user_configs/${user}_config.json`;
   }
 
-  // Authorization, check against permissions for user
-  // Format: { "username": ["file1.json", "file2.pdf"] } or { "admin": ["*"] }
-  const allPermissions = JSON.parse(process.env.USER_PERMISSIONS || '{}');
-  const userFiles = allPermissions[user] || [];
+  // AUTHORIZATION LOGIC
+  let hasAccess = false;
+  // ---
+  // A. Check if User in Admin 
+  const adminUsers = JSON.parse(process.env.ADMIN_USERS || '[]');
+  if (adminUsers.includes(user)) {
+    hasAccess = true;
+  }
+  // B. everyone should have access to their own config file
+  else if (filename === `user_configs/${user}_config.json`) {
+    hasAccess = true;
+  }
+  // C. Check if the requested file is listed INSIDE their config file
+  // This serves as their source of truth for user permissions
+  else {
+    try {
+      // Load their config from disk
+      const configPath = resolve(`./secure_assets/user_configs/${user}_config.json`);
 
-  // Check if user has wildcard "*" OR explicit file access
-  const hasAccess = userFiles.includes('*') || userFiles.includes(filename);
+      if (existsSync(configPath)) {
+        const configRaw = readFileSync(configPath, 'utf-8');
+        const configJson = JSON.parse(configRaw);
+
+        const allowedFiles = getAllFilePaths(configJson);
+
+        // Check if the requested filename appears anywhere in their config
+        if (allowedFiles.has(filename)) {
+          hasAccess = true;
+        }
+      }
+    } catch (e) {
+      console.error(`Error reading config for authorization: ${e}`);
+      hasAccess = false; // should be false anyway but this is to be safe
+    }
+  }
 
   if (!hasAccess) {
-    console.log(`User ${user} tried to access ${filename} but was denied.`);
-    return { statusCode: 403, body: "Forbidden: You do not have access to this resource." };
+    console.log(`User ${user} denied access to ${filename}`);
+    return { statusCode: 403, body: "Forbidden: Access Denied" };
   }
+
   // ============================================================
 
   // RESOLVE FILE PATH

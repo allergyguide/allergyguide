@@ -15,7 +15,6 @@ dotenv.config({ override: true });
 const GITHUB_TOKEN = process.env.PRIVATE_TOKEN;
 const GITHUB_REPO = `${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}`;   // e.g., "username/repo-name"
 const AUTH_USERS = process.env.AUTH_USERS;
-const USER_PERMISSIONS = process.env.USER_PERMISSIONS;
 const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY_HOURS = process.env.TOKEN_EXPIRY_HOURS;
 
@@ -24,16 +23,11 @@ if (!GITHUB_REPO || !GITHUB_TOKEN) {
   process.exit(1);
 }
 
-if (!AUTH_USERS || !USER_PERMISSIONS || !JWT_SECRET || !TOKEN_EXPIRY_HOURS) {
-  console.error("Check your .env and netlify env vars, missing at least one of auth users, user permissions, jwt token stuff")
+if (!AUTH_USERS || !JWT_SECRET || !TOKEN_EXPIRY_HOURS) {
+  console.error("Check your .env and netlify env vars, missing at least one of auth users, jwt token stuff")
   process.exit(1);
 
 }
-
-// VERIFY USER SECURITY CONFIGURATION
-console.log("---------------------------");
-verifyUsersData();
-console.log("---------------------------\n");
 
 // GET GIT COMMIT HASH FOR VERSION STAMPING
 let commit_hash: string;
@@ -54,6 +48,12 @@ const toolVersioning = JSON.parse(readFileSync('./tools_versioning.json', 'utf-8
 // ==========================================
 // BUILD PROCESS
 // ==========================================
+
+// VERIFY USER SECURITY CONFIGURATION
+// By this time the secure_assets/ folder should already be built
+console.log("---------------------------");
+verifyUsersData();
+console.log("---------------------------\n");
 
 // TYPST
 // Download binary if required, compile .typ to .pdf

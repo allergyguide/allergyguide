@@ -66,7 +66,7 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 
 3. **Secure Assets:**
 
-- **Gating:** `get-secure-asset.mts` verifies the JWT and checks `USER_PERMISSIONS` to ensure the user is allowed to access the requested file.
+- **Gating:** `get-secure-asset.mts` verifies the JWT and checks the user config fetched from secure_assets to ensure the user is allowed to access the requested file.
 - **Configuration:** The user loads a virtual `me.json`, which the backend maps to `user_configs/{username}_config.json`. This config tells the frontend which specific custom food and protocol lists to fetch.
 - **Merging:** `AppState` merges the public foods/protocols with the private ones fetched via `api.ts`, rebuilding search indices.
 
@@ -88,7 +88,6 @@ Deployment requires the following Netlify environment variables (and ideally wit
 
 - `JWT_SECRET`: Secret key for signing session tokens.
 - `AUTH_USERS`: JSON map of valid users `{"user": "password"}`.
-- `USER_PERMISSIONS`: JSON map of file access `{"user": ["file.json"]}`.
 - `TOKEN_EXPIRY_HOURS`: Session duration (default 24).
 
 ## Roadmap to v1.0.0

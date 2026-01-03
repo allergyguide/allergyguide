@@ -53,7 +53,6 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 | `GITHUB_OWNER`       | Owner of the repo (e.g., `john-doe`).                       |
 | `GITHUB_REPO`        | Repository name (e.g. `repo-name`).                         |
 | `AUTH_USERS`         | JSON object of allowed users/passwords: `{"user": "pass"}`. |
-| `USER_PERMISSIONS`   | JSON object mapping users to tool permissions/files.        |
 | `JWT_SECRET`         | Secret key used to sign Auth Cookies.                       |
 | `TOKEN_EXPIRY_HOURS` | Duration of the session in hours (Default: 24).             |
 
@@ -124,8 +123,8 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 ### Generating secure content for tools
 
-- **Auth/Permissions:** Update `AUTH_USERS` and `USER_PERMISSIONS` in Netlify.
-- **User Configs:** Ensure the private repository contains the matching `user_configs/{username}_config.json` files.
+- **Auth/Permissions:** Update `AUTH_USERS` in Netlify.
+- **User Configs:** Ensure the private repository contains the matching `user_configs/{username}_config.json` files and the files you want the user to be able to access.
 - **Build Logic:** If adding a new tool that requires private assets, you must manually add a `generateSecureAssets` call to `build-fetch-secure-assets.mts` to ensure the files are downloaded during build.
 - **Structure:** secure assets are flattened into `secure_assets/` locally during build.
 
@@ -151,6 +150,6 @@ Private assets (PDFs, JSON data) are **not** served statically. They reside in t
 
 ## Contributing
 
-Most contributions are expected to be focused on medical content in the `content/` directory. 
+Most contributions are expected to be focused on medical content in the `content/` directory.
 
 Because the full build pipeline requires access to private repositories, non-core contributors should focus on markdown edits and rely on Netlify Deploy Previews for verification, or seek guidance from the maintainer for local environment setup.

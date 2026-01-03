@@ -1,21 +1,7 @@
 import dotenv from "dotenv";
+import { existsSync } from 'fs';
+import { resolve } from 'path';
 dotenv.config();
-
-/**
- * Interface representing the structure of the AUTH_USERS environment variable
- * Keys are usernames, values are password hashes or similar credentials
- */
-interface AuthUsers {
-  [username: string]: string;
-}
-
-/**
- * Interface representing the structure of the USER_PERMISSIONS environment variable
- * Keys are usernames, values are lists of permissions or roles
- */
-interface UserPermissions {
-  [username: string]: string[];
-}
 
 /**
  * Fetches a raw file from a private GitHub repository as a binary buffer
@@ -93,51 +79,65 @@ export async function getPathsUsingGitTree(token: string, repo: string, branch: 
 }
 
 /**
- * Verifies the integrity of the `AUTH_USERS` and `USER_PERMISSIONS` environment variables
- * Ensures that every authenticated user has a defined permissions entry and vice-versa
- * if the security config is invalid, the build terminates
+ * Verifies the integrity of the `AUTH_USERS` environment variables.
+ * Ensures that every non-admin user has an associated config file in secure_assets.
+ * If the security config is invalid, the build terminates.
  */
 export function verifyUsersData() {
   console.log("Verifying Users Configuration...");
+
+  // Verify AUTH_USERS exists and is valid JSON
   const authUsersEnv = process.env.AUTH_USERS!;
-  const userPermsEnv = process.env.USER_PERMISSIONS!;
-  if (!authUsersEnv || !userPermsEnv) {
-    console.error("Build Failed: Missing AUTH_USERS or USER_PERMISSIONS environment variables.");
+  if (!authUsersEnv) {
+    console.error("Build Failed: Missing AUTH_USERS environment variable.");
     process.exit(1);
   }
+
   let authUsersKeys: string[] = [];
-  let userPermsKeys: string[] = [];
   try {
-    // Parse the JSON strings
     const authUsers = JSON.parse(authUsersEnv);
-    const userPerms = JSON.parse(userPermsEnv);
     authUsersKeys = Object.keys(authUsers);
-    userPermsKeys = Object.keys(userPerms);
+  } catch (e: any) {
+    console.error("Build Failed: Could not parse AUTH_USERS as JSON.", e.message);
+    process.exit(1);
+  }
+
+  // Load ADMIN_USERS (Optional exception list)
+  let adminUsers: string[] = [];
+  try {
+    adminUsers = JSON.parse(process.env.ADMIN_USERS || '[]');
   } catch (e) {
-    console.error("Build Failed: Could not parse AUTH_USERS or USER_PERMISSIONS as JSON.", e.message);
+    console.warn("Warning: Could not parse ADMIN_USERS. Treating as empty list.");
+  }
+
+  // Check for File Existence
+  const usersMissingConfig: string[] = [];
+
+  // Resolve path relative to project root
+  const configBaseDir = resolve('secure_assets/user_configs');
+
+  authUsersKeys.forEach(user => {
+    // If user is an Admin, they have implicit wildcard access, so no config file is strictly required.
+    if (adminUsers.includes(user)) {
+      return;
+    }
+
+    const configPath = resolve(configBaseDir, `${user}_config.json`);
+
+    if (!existsSync(configPath)) {
+      usersMissingConfig.push(user);
+    }
+  });
+
+  // Fail if any regular users are missing their config
+  if (usersMissingConfig.length > 0) {
+    console.error("Build Failed: The following users are in AUTH_USERS but missing a configuration file:");
+    console.error(JSON.stringify(usersMissingConfig, null, 2));
+    console.error(`>> Expected file path on client: secure_assets/user_configs/{username}_config.json`);
     process.exit(1);
   }
 
-  // Check for Users without Permissions
-  const usersMissingPerms = authUsersKeys.filter(user => !userPermsKeys.includes(user));
-
-  if (usersMissingPerms.length > 0) {
-    console.error("Build Failed: The following users are in AUTH_USERS but missing from USER_PERMISSIONS:");
-    console.error(JSON.stringify(usersMissingPerms, null, 2));
-    console.error(">> Every user who can login must have an entry (even if empty) in the permission list.");
-    process.exit(1);
-  }
-
-  // Check for Orphaned Permissions 
-  // Users listed in permissions but have no login credentials
-  const orphans = userPermsKeys.filter(user => !authUsersKeys.includes(user));
-
-  if (orphans.length > 0) {
-    console.warn("Error: The following users have permissions defined but are NOT in AUTH_USERS (they cannot log in):");
-    console.warn(JSON.stringify(orphans, null, 2));
-    process.exit(1);
-  }
-  console.log("Security Config Verified: All users have associated permissions.");
+  console.log(`Security Config Verified: ${authUsersKeys.length} users checked.`);
 }
 
 
