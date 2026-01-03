@@ -2,6 +2,7 @@
   "compilerOptions": {
     "types": [
       "vitest/importMeta",
+      "vite/client",
       "node"
     ],
     "target": "ES2022",
