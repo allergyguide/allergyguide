@@ -53,7 +53,7 @@ You agree to indemnify, defend, and hold harmless the website content creators, 
 
 You agree these Terms are governed by the laws of the **Province of British Columbia** and the federal laws of **Canada**. You agree that any claims or disputes must be resolved exclusively by a court located in Vancouver, British Columbia.
 
-## 6. Open Source Licensing
+## 6. Intellectual Property and Licensing
 
 ### Software & Source Code (GNU GPLv3)
 
@@ -61,7 +61,14 @@ The underlying software (available on the GitHub repository) are licensed under 
 
 ### Website Content (CC BY 4.0)
 
-The educational text, documentation, and design assets on this website are licensed under [Creative Commons](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt the material for any purpose, even commercially, provided you give appropriate credit to allergyguide.ca.
+Unless otherwise noted, the educational text, documentation, and design assets hosted on this website are licensed under [Creative Commons](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt the material for any purpose, even commercially, provided you give appropriate credit to allergyguide.ca.
+
+### Subscriber-Only Materials (Proprietary)
+
+**Exceptions to the above:** All downloadable PDF handouts, generated protocols, and resources labelled as "**Copyright © 2025 AllergyGuide**" are **NOT** open source. They are strictly proprietary and protected by copyright law.
+
+- **Authorized Use:** These materials are licensed for use solely by the authorized subscriber for their direct clinical practice(s).
+- **No Redistribution:** You may NOT redistribute, resell, republish, or post these files on any public-facing website or repository.
 
 ## 7. Severability
 

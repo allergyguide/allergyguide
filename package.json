@@ -1,10 +1,10 @@
 {
-  "name": "abridge-bundle",
-  "version": "2.0.0",
-  "description": "Abridge - set PWA cache files list, bundle and minify js",
-  "author": "Jake G <106644+Jieiku@users.noreply.github.com>",
-  "license": "MIT",
-  "homepage": "https://github.com/Jieiku/abridge",
+  "name": "allergyguide",
+  "version": "0.8.0",
+  "description": "allergyguide build",
+  "author": "Joshua Yu <allergyguideca@gmail.com>",
+  "license": "GPL-3.0",
+  "homepage": "https://allergyguide.ca",
   "scripts": {
     "abridge": "node -e \"if ( require('fs').existsSync('./themes/abridge/package_abridge.js')) {require('fs').copyFileSync('./themes/abridge/package_abridge.js', './package_abridge.js')}\" && node package_abridge.js",
     "offline": "npm run abridge -- offline",
