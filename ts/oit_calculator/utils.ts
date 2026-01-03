@@ -226,6 +226,6 @@ export const SAMPLE_PROTOCOL: ProtocolData = {
       daily_amount: "1.4"
     }
   ],
-  custom_note: "Make a new almond milk mixture at least every 3 days. Refrigerate and mix well before giving. Please purchase Elmhurst Milked Almonds Unsweetened Beverage with 5 grams of protein per 1 cup (250mL) serving."
+  custom_note: "This is an example of a pre-defined protocol."
 }
 
