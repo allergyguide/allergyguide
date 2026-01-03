@@ -11,7 +11,14 @@ in_search_index = false
 
 ## 1. Data Collection
 
-This website is a static site designed for educational purposes. We do not use cookies, trackers, or analytics software to monitor your behaviour. We do not knowingly collect, store, or sell any personal information or Patient Health Information.
+This website is a static site designed for educational purposes. We do not use third-party trackers, advertising cookies, or analytics software to monitor your behaviour.
+
+Cookies:
+
+- General Visitors: No cookies are set for general visitors browsing the public content of the site.
+- Authorized Tool Users: If you have an authorized login for certain tools (such as the OIT Calculator), we use a single secure cookie strictly to maintain your authenticated login session. This is classified as a "Strictly Necessary" cookie: it contains no personal tracking data and is used solely to verify your permissions.
+
+We do not knowingly collect, store, or sell any personal information or Patient Health Information.
 
 ## 2. Hosting
 
