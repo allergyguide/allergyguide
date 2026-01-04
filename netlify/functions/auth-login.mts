@@ -4,6 +4,18 @@ import querystring from 'querystring';
 import cookie from 'cookie';
 import bcrypt from 'bcryptjs';
 
+/**
+ * Verifies a user's hCaptcha response token against the hCaptcha API.
+ *
+ * This function sends a POST request to `https://hcaptcha.com/siteverify` with the provided secret and token. It internally handles network errors by logging them and returning `false`.
+ *
+ * @param hcaptcha_secret - from .env
+ * @param captchaTokenResponse - solution token returned from the frontend hCaptcha widget (e.g., `h-captcha-response`).
+ * 
+ * @returns A `Promise` that resolves to:
+ * - `true` if the captcha was successfully verified.
+ * - `false` if the verification failed, the token was invalid, or the API request encountered an error.
+ */
 export async function verifyCaptcha(hcaptcha_secret: string, captchaTokenResponse: string): Promise<boolean> {
 	const verifyParams = querystring.stringify({
 		secret: hcaptcha_secret,
@@ -42,6 +54,14 @@ export async function verifyCaptcha(hcaptcha_secret: string, captchaTokenRespons
  * @returns JSON success message with Set-Cookie header or error status
  */
 export const handler: Handler = async (event) => {
+	// WARM UP HANDLER if the frontend sends an OPTIONS request (or a specific ping)
+	if (event.httpMethod === 'OPTIONS' || event.headers['x-warmup'] === 'true') {
+		return {
+			statusCode: 200,
+			body: 'Warmed up'
+		};
+	}
+
 	if (event.httpMethod !== 'POST') {
 		return {
 			statusCode: 405,

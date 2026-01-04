@@ -136,6 +136,12 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
     modal.style.display = "flex";
     if (errorMsg) errorMsg.textContent = "";
     if (window.hcaptcha) window.hcaptcha.reset();
+
+    // PING auth-login, warm up netlify function
+    fetch('/.netlify/functions/auth-login', {
+      method: 'OPTIONS',
+    }).catch(() => {
+    });
   });
 
   // Hide Modal
