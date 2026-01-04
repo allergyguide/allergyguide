@@ -47,14 +47,14 @@ The Abridge theme generates a Service Worker (`sw.min.js`) that caches aggressiv
 
 These must be set in Netlify (Site Settings > Environment Variables) and locally in a `.env` file for the build to succeed.
 
-| Variable             | Purpose                                                     |
-| :------------------- | :---------------------------------------------------------- |
-| `PRIVATE_TOKEN`      | GitHub Personal Access Token to fetch private assets/tools. |
-| `GITHUB_OWNER`       | Owner of the repo (e.g., `john-doe`).                       |
-| `GITHUB_REPO`        | Repository name (e.g. `repo-name`).                         |
-| `AUTH_USERS`         | JSON object of allowed users/passwords: `{"user": "pass"}`. |
-| `JWT_SECRET`         | Secret key used to sign Auth Cookies.                       |
-| `TOKEN_EXPIRY_HOURS` | Duration of the session in hours (Default: 24).             |
+| Variable             | Purpose                                                        |
+| :------------------- | :------------------------------------------------------------- |
+| `PRIVATE_TOKEN`      | GitHub Personal Access Token to fetch private assets/tools.    |
+| `GITHUB_OWNER`       | Owner of the repo (e.g., `john-doe`).                          |
+| `GITHUB_REPO`        | Repository name (e.g. `repo-name`).                            |
+| `AUTH_USERS`         | JSON object of allowed users/hashes: `{"user": "$2a$10$..."}`. |
+| `JWT_SECRET`         | Secret key used to sign Auth Cookies.                          |
+| `TOKEN_EXPIRY_HOURS` | Duration of the session in hours (Default: 24).                |
 
 ## Project structure
 
@@ -69,6 +69,8 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 ├── netlify.toml               # Netlify Configuration (Headers, Redirects)
 ├── package.json               # NPM Scripts & Dependencies
 ├── tools_versioning.json      # Configuration: Maps tool names to versions
+├── tools/                     # Developer utilities (not part of site build)
+│   └── hash_password.ts       # Utility to generate bcrypt hashes
 │
 ├── content/                   # Markdown content
 │   ├── tools/
@@ -145,6 +147,16 @@ Private assets (PDFs, JSON data) are **not** served statically. They reside in t
 
 - **Endpoint:** `/.netlify/functions/get-secure-asset?file={filename}`
 - **Logic:** The function verifies the `nf_jwt` cookie and checks if the user has permission for the requested file before streaming it.
+
+### 3. Managing Users
+
+Passwords in `AUTH_USERS` are stored as **bcrypt hashes** for security.
+
+1. **Generate Hash:** Run the helper script locally:
+   ```bash
+   npx tsx tools/hash_password.ts "MyNewPassword123"
+   ```
+2. **Update Env:** copy the hash `$2a$10...` into AUTH_USERS.
 
 ---
 

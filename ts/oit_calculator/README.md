@@ -87,7 +87,7 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 Deployment requires the following Netlify environment variables (and ideally within local .env):
 
 - `JWT_SECRET`: Secret key for signing session tokens.
-- `AUTH_USERS`: JSON map of valid users `{"user": "password"}`.
+- `AUTH_USERS`: JSON map of valid users `{"user": "bcrypt_hash"}`. Use `tools/hash_password.ts` to generate these hashes.
 - `TOKEN_EXPIRY_HOURS`: Session duration (default 24).
 
 ## Roadmap to v1.0.0

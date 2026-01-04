@@ -2,6 +2,7 @@ import type { Handler, HandlerResponse } from '@netlify/functions';
 import jwt from 'jsonwebtoken';
 import querystring from 'querystring';
 import cookie from 'cookie';
+import bcrypt from 'bcryptjs';
 
 export async function verifyCaptcha(hcaptcha_secret: string, captchaTokenResponse: string): Promise<boolean> {
 	const verifyParams = querystring.stringify({
@@ -61,11 +62,13 @@ export const handler: Handler = async (event) => {
 		}
 
 		// LOAD + PARSE USERS
-		// AUTH_USERS={"test":"testpassword","test1":"testpassword1"}
+		// AUTH_USERS={"test":"$2a$10$..."}
 		const validUsers = JSON.parse(process.env.AUTH_USERS || '{}');
+		const storedHash = validUsers[username];
 
 		// VERIFY CREDENTIALS
-		if (!validUsers[username] || validUsers[username] !== password) {
+		// bcrypt.compare returns a promise
+		if (!storedHash || !(await bcrypt.compare(password, storedHash))) {
 			return {
 				statusCode: 401,
 				headers: { 'Content-Type': 'application/json' },
