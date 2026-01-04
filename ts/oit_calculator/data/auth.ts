@@ -1,41 +1,60 @@
 import { HttpError } from "../types";
 
+/**
+ * Authenticates a user via the Netlify login function.
+ *
+ * Use this function to validate credentials and the captcha token against the backend.
+ *
+ * @param username - The user's login identifier.
+ * @param password - The raw password string.
+ * @param captchaToken - The verification token received from the client-side captcha widget.
+ *
+ * @returns A Promise that resolves to `true` only upon successful authentication.
+ *
+ * @throws {HttpError} on 400, 401, 405, 500, or HTML/Network failures.
+ */
 export async function login(username: string, password: string, captchaToken: string): Promise<boolean> {
+  const response = await fetch('/.netlify/functions/auth-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password, captchaToken })
+  });
 
-  try {
-    const response = await fetch('/.netlify/functions/auth-login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password, captchaToken })
-    });
-
-    // make sure its a SON - if it's not... then you're getting a malformed response, or the netlify function is not up and running properly?
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      const text = await response.text();
-      console.error("Received non-JSON response from login NF:", text.substring(0, 100)); // Log first 100 chars
-      throw new HttpError('Configuration Error: Login API unavailable', 500);
-    }
-
-    if (response.ok) {
-      console.log("Logged in!");
-      return true
-    } else if (response.status === 405) {
-      throw new HttpError('Method not allowed', 405)
-    }
-    else if (response.status === 401) {
-      throw new HttpError('Invalid credentials', 401)
-    }
-    else if (response.status === 400) {
-      const data = await response.json();
-      throw new HttpError(data.message || 'Captcha failed', 400);
-    }
-    else if (response.status === 500) {
-      throw new HttpError('Internal server err', 500)
-    }
-  } catch (err) {
-    throw err
+  // Handle HTML/Crash responses 
+  // make sure its a JSON - if it's not... then you're getting a malformed response, or the netlify function is not up and running properly
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await response.text();
+    console.error("Received non-JSON response from login NF:", text.substring(0, 100)); // Log first 100 chars
+    throw new HttpError('Configuration Error: Login API unavailable', 500);
   }
-  return false
+
+  // Handle success
+  if (response.ok) {
+    console.log("Logged in!");
+    return true
+  }
+
+  // Handle errs
+  let serverMessage = '';
+  try {
+    const data = await response.json();
+    serverMessage = data.message || data.error || JSON.stringify(data) || '';
+  } catch (e) {
+    // Body was JSON but malformed, or empty
+  }
+  if (response.status === 400) {
+    throw new HttpError(serverMessage || 'Captcha failed', 400);
+  }
+  if (response.status === 401) {
+    throw new HttpError('Invalid credentials', 401)
+  }
+  if (response.status === 405) {
+    throw new HttpError('Method not allowed', 405)
+  }
+  // Catch-all for 500s or other unknown errors
+  // Use the server message if we found one, otherwise a generic fallback
+  throw new HttpError(serverMessage || `Unknown login error (${response.status})`, response.status);
 }
 
 /**

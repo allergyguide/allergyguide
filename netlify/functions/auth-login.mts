@@ -43,7 +43,11 @@ export async function verifyCaptcha(hcaptcha_secret: string, captchaTokenRespons
  */
 export const handler: Handler = async (event) => {
 	if (event.httpMethod !== 'POST') {
-		return { statusCode: 405, body: 'Method Not Allowed' };
+		return {
+			statusCode: 405,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ message: "Method Not Allowed" })
+		};
 	}
 
 	try {
@@ -54,11 +58,19 @@ export const handler: Handler = async (event) => {
 		// We do this before checking passwords to prevent brute force timing attacks
 		if (!process.env.HCAPTCHA_SECRET) throw new Error("No HCAPTCHA_SECRET set in environment variables")
 		if (!captchaToken) {
-			return { statusCode: 400, body: JSON.stringify({ message: "Captcha missing" }) };
+			return {
+				statusCode: 400,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ message: "Captcha missing" })
+			};
 		}
 		const captchaVerified = await verifyCaptcha(process.env.HCAPTCHA_SECRET, captchaToken)
 		if (!captchaVerified) {
-			return { statusCode: 400, body: JSON.stringify({ message: "Invalid Captcha" }) };
+			return {
+				statusCode: 400,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ message: "Invalid Captcha" })
+			};
 		}
 
 		// LOAD + PARSE USERS
@@ -112,6 +124,10 @@ export const handler: Handler = async (event) => {
 
 	} catch (error) {
 		console.error("Login error:", error);
-		return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: "Internal Server Error" };
+		return {
+			statusCode: 500,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ message: "Internal Server Error" })
+		};
 	}
 };

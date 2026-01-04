@@ -54,7 +54,11 @@ export const handler: Handler = async (event) => {
   const token = cookies.nf_jwt;
 
   if (!token) {
-    return { statusCode: 401, body: "Unauthorized: No session found" };
+    return {
+      statusCode: 401,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: "Unauthorized: No session found" })
+    };
   }
 
   let user = '';
@@ -66,14 +70,22 @@ export const handler: Handler = async (event) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UserToken;
     user = decoded.user;
   } catch (err) {
-    return { statusCode: 403, body: "Forbidden: Session expired or invalid" };
+    return {
+      statusCode: 403,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: "Forbidden: Session expired or invalid" })
+    };
   }
 
   // PARSE REQUESTED FILENAME, AND MAKE SURE IT'S VALID
   // Normalize it too
   let filename = event.queryStringParameters?.file;
   if (!filename || filename.includes('..') || filename.includes('\\')) {
-    return { statusCode: 400, body: "Invalid filename" };
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: "Invalid filename" })
+    };
   }
   filename = normalize(filename);
 
@@ -120,7 +132,11 @@ export const handler: Handler = async (event) => {
 
   if (!hasAccess) {
     console.log(`User ${user} denied access to ${filename}`);
-    return { statusCode: 403, body: "Forbidden: Access Denied" };
+    return {
+      statusCode: 403,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: "Forbidden: Access Denied" })
+    };
   }
 
   // ============================================================
@@ -134,14 +150,22 @@ export const handler: Handler = async (event) => {
     // security check
     if (!filePath.startsWith(secureRoot)) {
       console.error(`Path traversal attempt by ${user}: ${filename}`);
-      return { statusCode: 403, body: "Forbidden" };
+      return {
+        statusCode: 403,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "Forbidden" })
+      };
     }
 
     // Check existence asynchronously
     try {
       await fs.access(filePath);
     } catch {
-      return { statusCode: 404, body: "File not found" };
+      return {
+        statusCode: 404,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "File not found" })
+      };
     }
 
     // file exists, so serve file as b64
@@ -163,6 +187,10 @@ export const handler: Handler = async (event) => {
 
   } catch (err) {
     console.error(`Error serving file ${filename}:`, err);
-    return { statusCode: 500, body: "Internal Server Error" };
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: "Internal Server Error" })
+    };
   }
 };

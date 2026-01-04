@@ -107,9 +107,13 @@ async function fetchSecurePdfBytes(path: string): Promise<ArrayBuffer> {
     return res.arrayBuffer();
   }
 
-  const result = await loadSecureAsset(path, 'buffer');
-  if (result instanceof HttpError) throw new Error(`Failed to load PDF asset: ${path}`);
-  return result as ArrayBuffer;
+  try {
+    const result = await loadSecureAsset(path, 'buffer');
+    return result as ArrayBuffer;
+  } catch (err) {
+    console.error("Unable to fetch secure asset in exports.ts")
+    throw err
+  }
 }
 
 // ============================================

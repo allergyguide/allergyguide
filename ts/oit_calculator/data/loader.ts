@@ -116,10 +116,6 @@ export async function loadUserConfiguration(): Promise<UserDataResult> {
       loadSecureAsset(oitConfig.custom_protocols, 'json')
     ]);
 
-    // Handle Auth Errors 
-    if (customFoodsResult instanceof HttpError) throw customFoodsResult;
-    if (protocolsResult instanceof HttpError) throw protocolsResult;
-
     // Validate Data
     const customFoods = validateList<FoodData>(customFoodsResult, FoodDataSchema, "Custom Food");
     const protocols = validateList<ProtocolData>(protocolsResult, ProtocolDataSchema, "Protocol");
@@ -131,18 +127,16 @@ export async function loadUserConfiguration(): Promise<UserDataResult> {
       handouts: oitConfig.handouts
     };
   } catch (error) {
-    if (error instanceof HttpError && (error.status === 401 || error.status === 403)) {
-      throw error;
+    if (error instanceof HttpError) {
+      throw error
     }
     if (error instanceof Error && error.message === "OIT_NO_PERMISSION") {
       throw new Error("User credentials valid, but account does not have permission to access extra resources. If you think this is a mistake, please contact us.");
     }
-
     console.error("Error loading user configuration:", error);
     throw error;
   }
 }
-
 
 /**
  * Shared logic to load user data and update the UI
