@@ -92,20 +92,18 @@ Deployment requires the following Netlify environment variables (and ideally wit
 
 ## Roadmap to v1.0.0
 
-### 1. Safety and Core Logic Validation
+### Safety and Core Logic Validation
 
-- The logic in `calculator.ts` and `protocol.ts` (dose calculations, dilution determination) must be **stabilized** and very thoroughly tested.
+- The logic in `calculator.ts` and `protocol.ts` (dose calculations, dilution determination) must be **stabilized**.
 - `validator.ts` must be robust and comprehensive as possible. Current warnings should be reviewed and other possible warnings should be brainstormed and implemented if valid.
 - Disclaimer/Liability language should be solidified.
 
 ### 2. Data Integrity and "Rough" Assets
 
-- Clean `typed_foods_rough.json`. Likely remove foods with protein of 0. Have more accurate generated food types. Rename 'final' to `cnf_foods_v1.json`.
 - Ensure bounds in `data_integrity.test.ts` are comprehensive (e.g., ensure no food has 0g protein unless intended, check for duplicates).
 
 ### 3. Development of export content / format
 
-- Make sure PDF resource for static patient handout is comprehensive and peer-reviewed
 - Make sure ASCII export works well in EMRs
 
 ### 4. Testing, QA
@@ -116,6 +114,8 @@ Deployment requires the following Netlify environment variables (and ideally wit
   - Floating point precision (round-trip verification).
 - **User Testing:** Stress testing by non-developers to try and generate nonsensical protocols or any bugs. Making sure the UI is intuitive and there are no further breaking features to implement.
 - **Mobile Testing:** while this is intended for desktop, it should still work as expected on mobile.
+
+---
 
 # OIT Calculator Overview and Rationale (Non-Technical)
 
