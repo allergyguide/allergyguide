@@ -72,7 +72,3 @@ date = "2025-04-29"
 - Ingredients:
 - Tools:
 - Steps: <span class="references">desrosiers_canadian_2011,head_topical_2018,afdslkjjk</span>
-
-# Further reading:
-
-{{ references(showBib=true, path="content/josh/meals.bib") }}
