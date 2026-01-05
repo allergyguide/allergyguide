@@ -34,7 +34,8 @@ export async function fetchFromGithubBinary(token: string, repo: string, filePat
 }
 
 /**
- * Fetches all files with a specific extension using the Git Tree API
+ * Fetches all filesnames with a specific extension using the Git Tree API
+ *
  * @param {string} token - GitHub PAT
  * @param {string} repo - "user/repo"
  * @param {string} branch - The branch to scan (e.g., "main")

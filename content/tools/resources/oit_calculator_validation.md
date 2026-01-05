@@ -10,10 +10,11 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
-Each time a protocol is loaded or edited in the OIT Calculator, it is validated against a set of rules that assess for both **critical issues** and **practical cautions**. These checks are **NOT EXHAUSTIVE** and **DO NOT GUARANTEE** the protocol is 'correct' - it _does not replace clinical judgement_. The protocol should always be checked by the physician.
+Each time a protocol is loaded or edited in the OIT Calculator, it is validated against a set of rules that assess for both **critical issues** and **practical cautions**. These checks are **NOT EXHAUSTIVE** and **DO NOT GUARANTEE** the protocol is 'correct' - they _do not replace clinical judgement_. The protocol should always be checked by the physician.
 
-- **Critical issues** represent potential serious flaws in the protocol that could compromise safety or make the protocol impossible to follow.
-- **Practical cautions** are potential non-threatening issues that could be acceptable under the right clinical context, but in many circumstances may hinder implementation of the protocol or violate assumptions made by the tool.
+- **Critical issues** represent potential serious flaws in the protocol that could impact safety or make the protocol impossible to follow.
+
+- **Practical cautions** are potential minor issues that could be acceptable under the right clinical context, but in many circumstances may hinder implementation of the protocol or violate assumptions made by the tool.
 
 <br>
 

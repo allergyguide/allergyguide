@@ -41,8 +41,8 @@ function getAllFilePaths(config: any, paths: Set<string> = new Set()): Set<strin
 
 /**
  * Netlify Function: Secure Asset Handler
- * Serves private assets (e.g. .jsons, .pdfs) from within a protected directory secure_assets/ which is built during run-time
- * NOTE: ONLY WORKS FOR JSONS AND PDFS AT THIS TIME
+ * Serves private assets (.jsons, .pdfs) from within a protected directory secure_assets/ which is built during build-time
+ * NOTE: ONLY WORKS FOR JSONS AND PDFS AT THIS TIME.
  *
  * It authenticates the user via a JWT cookie and checks specific file permissions before serving the content
  * @param event - The Netlify event object containing headers and query parameters

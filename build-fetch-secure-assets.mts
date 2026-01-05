@@ -19,8 +19,9 @@ if (!GITHUB_REPO || !GITHUB_TOKEN) {
 }
 
 /**
- * Fetches secure assets from a private repo folder. 
- * If 'subdir' is provided, it looks inside 'private-tools/subdir' remotely and saves to 'secure_assets/subdir' locally.
+ * Fetches secure assets from a private repo folder.
+ * If 'subdir' is provided, it looks inside 'private-tools/subdir' remotely and saves to 'secure_assets/subdir' locally; all content within the subdir is flattened within 'private-tools/subdir'.
+ *
  * @param {string} token - PAT token
  * @param {string} repo - "username/repo"
  * @param {string | null} subdir specific subdirectory inside `private-tools` to fetch, e.g. "oit_calculator"
