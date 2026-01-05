@@ -141,20 +141,31 @@ author: Joshua Yu
 
 - **<span style="color: yellow">Food Data:</span>** Uses Health Canada data as base; custom foods are addable.
 
-```json
-{
-  "Food": "PB&Me Powdered Natural Peanut Butter",
-  "Mean protein in grams": 6,
-  "Serving size": 12,
-  "Type": "Solid"
-}
-```
-
-- **<span style="color: yellow">Dosing Strategies:</span>** Provides three default progressions (Standard, Slow) as starting points; more are easily addable.
+- **<span style="color: yellow">Dosing Strategies:</span>** Provides two default progressions (Standard, Slow) as starting points; more could be addable.
 
 ```ts
-STANDARD: [1, 2.5, 5, 10, 20, 40, 80, 120, 160, 240, 300] 
-SLOW: [ 0.5, 1, 1.5, 2.5, 5, 10, 20, 30, 40, 60, 80, 100, 120, 140, 160, 190, 220, 260, 300, ]
+STANDARD: [1, 2.5, 5, 10, 20, 40, 80, 120, 160, 240, 300];
+SLOW: [
+  0.5,
+  1,
+  1.5,
+  2.5,
+  5,
+  10,
+  20,
+  30,
+  40,
+  60,
+  80,
+  100,
+  120,
+  140,
+  160,
+  190,
+  220,
+  260,
+  300,
+];
 ```
 
 <!-- end_slide -->
@@ -197,10 +208,7 @@ These checks are NOT EXHAUSTIVE. They do NOT GUARANTEE that the protocol is 'cor
 ## 1. Remaining features to add:
 
 - Review validation rules, ? others to add
-  - Add yellow warnings for excessively high target protein doses (e.g., >5000mg)
-- Complete patient instructions in PDF handout
-  - <span style="color: #ff0000">Am I OK to adapt the current FAIT handout?</span>
-- Implement current BCCH protocols and custom foods for all foods (time-intensive, wait until structure of tool solidified)
+- Add yellow warnings for excessively high target protein doses (e.g., >5000mg)
 
 ## 2. Beta test: iron out bugs / unexpected behaviours
 
@@ -219,9 +227,7 @@ These checks are NOT EXHAUSTIVE. They do NOT GUARANTEE that the protocol is 'cor
 
 ### What I need:
 
-- Direction on setting up a QI project structure wise, logistically, red-tape hoops to be aware of, connection with interested allergists (BCCH, BCSAI, ARISE), etc.
-  - I don't know what I don't know
-- Any direction towards financial backing? Applying for Resident Innovation Fund
+- Assistance in implementation of QI project, logistically red-tape hoops to be aware of, connection with interested allergists (BCCH, BCSAI, ARISE), etc.
 
 <!-- end_slide -->
 

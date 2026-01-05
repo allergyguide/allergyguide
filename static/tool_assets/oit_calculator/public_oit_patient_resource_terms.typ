@@ -35,7 +35,7 @@
         #set align(center + horizon)
         #text(fill: gray, style: "italic")[
           \
-          [ Patient Label / Sticker if available]
+          [ Patient Label / Sticker ]
           \ \
         ]
       ],
@@ -85,7 +85,7 @@
     ],
   )
 
-  v(1em)
+  v(4em)
   [
     #line(length: 100%, stroke: 0.5pt)
     *Printed Name / Stamp*
@@ -102,5 +102,3 @@
 }
 
 #physician-review-sheet()
-
-// Add parental checklist sheet too?
