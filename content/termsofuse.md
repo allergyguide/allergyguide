@@ -63,11 +63,11 @@ The underlying software (available on the GitHub repository) are licensed under 
 
 Unless otherwise noted, the educational text, documentation, and design assets hosted on this website are licensed under [Creative Commons](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt the material for any purpose, even commercially, provided you give appropriate credit to allergyguide.ca.
 
-### Subscriber-Only Materials (Proprietary)
+### Authorized User Materials (Proprietary)
 
 **Exceptions to the above:** All downloadable PDF handouts, generated protocols, and resources labelled as "**Copyright © 2025 allergyguide**" are **NOT** open source. They are strictly proprietary and protected by copyright law.
 
-- **Authorized Use:** These materials are licensed for use solely by the authorized subscriber for their direct clinical practice(s).
+- **Authorized Use:** These materials are licensed for use solely by the authorized user for their direct clinical practice(s).
 - **No Redistribution:** You may NOT redistribute, resell, republish, or post these files on any public-facing website or repository.
 
 ## 7. Severability
