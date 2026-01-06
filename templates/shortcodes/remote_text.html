@@ -3,7 +3,7 @@
 
 {#- load_data uses different arguments based on whether it's a remote or local file -#}
 {%- if src is starting_with("http") -%}
-    {%- set response = load_data(url=src, format="plain") -%}
+    {%- set response = load_data(url=src, format="plain", required=false) -%}
 {%- else -%}
     {#- Try to load the file from a relative path -#}
     {%- set colocated_path = page.colocated_path | default(value="") -%}
@@ -15,16 +15,20 @@
     {%- endif -%}
 {%- endif -%}
 
-{%- set lines = response | trim_end | split(pat="\n") -%}
+{%- if response -%}
+    {%- set lines = response | trim_end | split(pat="\n") -%}
 
-{%- if start > 0 -%}
-    {%- set start = start - 1 -%}
+    {%- if start > 0 -%}
+        {%- set start = start - 1 -%}
+    {%- endif -%}
+
+    {%- if end == 0 or end > lines | length -%}
+        {%- set end = lines | length -%}
+    {%- endif -%}
+
+    {%- set lines = lines | slice(start=start, end=end) -%}
+
+    {{- lines | join(sep="\n") | safe -}}
+{%- else -%}
+    <!-- Remote content unavailable -->
 {%- endif -%}
-
-{%- if end == 0 or end > lines | length -%}
-    {%- set end = lines | length -%}
-{%- endif -%}
-
-{%- set lines = lines | slice(start=start, end=end) -%}
-
-{{- lines | join(sep="\n") | safe -}}
