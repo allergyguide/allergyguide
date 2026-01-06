@@ -1,6 +1,7 @@
 +++
 title = "OIT CALCULATOR TERMS OF USE"
 date = 2025-11-10
+updated = 2026-01-05
 draft = false
 
 [extra]
@@ -24,13 +25,19 @@ This tool is provided for clinical calculation and documentation purposes only. 
 
 ## Data Privacy and Local Processing
 
-To ensure compliance with data privacy standards, this tool is designed to function **entirely as a client-side application**.
+To ensure compliance with data privacy standards, the **clinical calculations and data processing** portions of this tool function **entirely as a client-side application**.
 
 - **Local Processing**: All calculations, including the "Undo/Redo" history stack, are processed and stored temporarily in your browser's memory. This data is cleared when you refresh the page.
-- **No Server Transmission**: Data entered into input fields, custom notes, and your interaction history are never transmitted to our servers, analytics providers, or stored in external databases.
+- **No Server Transmission of Protocol Data**: data entered into tool input fields, custom notes, and your interaction history are never transmitted to our servers, analytics providers, or stored in external databases.
+- **User Authentication**: User authentication credentials (username/password) are transmitted securely to our backend solely for the purpose of verifying access permissions and retrieving authorized user-custom assets. These credentials are not used for any other purpose.
 - **PDF Exports & QR Codes**: When generating a PDF, the file is created locally on your device. The PDF includes a QR code designed for technical debugging and verification. This QR code encodes the specific protocol parameters (e.g., food choices, target doses), the version of the tool used to make it, and a log of settings changes.
-  - The QR code information explicitly excludes the "Custom Notes" field. **It contains NO Patient Health Information.**
-  - You acknowledge that by saving or sharing the generated PDF, you are responsible for the security of any data contained within the visible text of the document.
+  - The QR code information explicitly excludes the "Custom Notes" field to minimize data exposure.
+  - **User Responsibility**: You agree not to enter Patient Identifiers (names, DOBs) into any input field. **The tool is not intended to process ANY PHI.** You acknowledge that by downloading a PDF, you become the custodian of any data visible within it.
+
+## User Accounts and Security
+
+- **Access Credentials**: You are responsible for maintaining the confidentiality of your login credentials. You acknowledge that your account provides access to proprietary clinical assets licensed specifically for your use.
+- **Unauthorized Use**: You must immediately notify us of any unauthorized use of your account or any other breach of security.
 
 ## Intellectual Property and Licensing
 
