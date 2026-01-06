@@ -1,4 +1,4 @@
-import type { Handler } from '@netlify/functions';
+import type { Handler, HandlerResponse } from '@netlify/functions';
 import { normalize, resolve } from 'path';
 import { promises as fs } from 'fs';
 import { readFileSync, existsSync } from 'fs';
@@ -183,7 +183,7 @@ export const handler: Handler = async (event) => {
       },
       body: fileBuffer.toString('base64'),
       isBase64Encoded: true,
-    };
+    } as HandlerResponse;
 
   } catch (err) {
     console.error(`Error serving file ${filename}:`, err);
