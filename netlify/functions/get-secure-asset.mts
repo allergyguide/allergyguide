@@ -170,7 +170,15 @@ export const handler: Handler = async (event) => {
 
     // file exists, so serve file as b64
     const ext = filename.split('.').pop()?.toLowerCase();
-    const contentType = ext === 'pdf' ? 'application/pdf' : 'application/json';
+    const contentTypes: Record<string, string> = {
+      'pdf': 'application/pdf',
+      'json': 'application/json',
+      'png': 'image/png',
+      'jpg': 'image/jpeg',
+      'jpeg': 'image/jpeg',
+      'svg': 'image/svg+xml'
+    };
+    const contentType = contentTypes[ext || ''] || 'application/octet-stream';
 
     // read and return
     const fileBuffer = await fs.readFile(filePath);

@@ -44,7 +44,7 @@ async function generateSecureAssets(token: string, repo: string, subdir: string 
     const secure_dir_path = subdir ? `private-tools/${subdir}` : "private-tools";
     console.log(`Scanning remote: ${secure_dir_path}...`);
 
-    const extensions = [".json", ".typ", ".png", ".jpg", ".svg"];
+    const extensions = [".json", ".typ", ".png", ".jpg", ".svg", ".pdf"];
 
     const fileListPromises = extensions.map(ext =>
       getPathsUsingGitTree(token, repo, "main", secure_dir_path, ext)
