@@ -154,6 +154,9 @@ export async function handleUserLoad(): Promise<boolean> {
       userData.protocols,
       userData.handouts
     );
+    
+    appState.isLoggedIn = true;
+    appState.username = userData.user;
 
     // update ui to show logged-in state
     const loginBtn = document.getElementById("btn-login-trigger");

@@ -19,6 +19,9 @@ export class AppState {
 
   public readonly warningsPageURL: string;
 
+  public isLoggedIn: boolean = false;
+  public username: string | null = null;
+
   constructor(publicData: { foods: FoodData[], protocols: ProtocolData[] }, warningsUrl: string) {
     this.warningsPageURL = warningsUrl;
 

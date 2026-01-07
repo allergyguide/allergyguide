@@ -59,6 +59,8 @@ async function initializeCalculator(): Promise<void> {
 
   if (userData) {
     console.log("Session restored: Loading custom assets.");
+    appState.isLoggedIn = true;
+    appState.username = userData.user;
     appState.addSecureData(
       userData.customFoods,
       userData.protocols,
