@@ -163,8 +163,8 @@ async function abridge() {
 
                 var arrayLength = pwa_IGNORE_FILES.length;
                 for (var i = 0; i < arrayLength; i++) {
-                    regex = new RegExp(`^\/${pwa_IGNORE_FILES[i]}`, `i`);
-                    item = item.replace(regex, '');// dont cache files in the pwa_IGNORE_FILES array
+                  regex = new RegExp(`^\/${pwa_IGNORE_FILES[i]}`, `i`);
+                  item = item.replace(regex, '');// dont cache files in the pwa_IGNORE_FILES array
                 }
 
                 // if formatted output is not empty line then append it to cache var
@@ -346,7 +346,7 @@ function minify(fileA, outfile) {
   if (!outfile) {// outfile parameter omitted, infer based on input
     outfile = fileA[0].slice(0, -2) + 'min.js';
   }
-  var filesContents = fileA.map(function (file) {// array input to support multiple files
+  var filesContents = fileA.map(function(file) {// array input to support multiple files
     return fs.readFileSync(file, 'utf8');
   });
 
@@ -477,12 +477,15 @@ async function sync() {
       try {
         const localFile = path.join(staticFolder, file);
         const submoduleFile = path.join(submoduleFolder, file);
-        const localFileContent = fs.readFileSync(localFile, "utf-8");
-        const submoduleFileContent = fs.readFileSync(submoduleFile, "utf-8");
 
-        if (localFileContent !== submoduleFileContent) {
-          console.log(`Updating ${file} from submodule`);
-          fs.copyFileSync(submoduleFile, localFile);
+        if (fs.existsSync(submoduleFile)) {
+          const localFileContent = fs.readFileSync(localFile, "utf-8");
+          const submoduleFileContent = fs.readFileSync(submoduleFile, "utf-8");
+
+          if (localFileContent !== submoduleFileContent) {
+            console.log(`Updating ${file} from submodule`);
+            fs.copyFileSync(submoduleFile, localFile);
+          }
         }
       } catch (error) {
         console.log(`Skipping ${file} due to error: ${error}`);
@@ -498,7 +501,7 @@ async function sync() {
   const submodulePackageJsonContent = fs.readFileSync(submodulePackageJson, "utf-8");
 
   // Check for changes in dependencies - prompting an npm update
-  let checkPackageVersion = function (content) {
+  let checkPackageVersion = function(content) {
     let matches = content.match(/"dependencies": \{([^}]+)\}/)[1]; // Look in the dependencies section
     return [...matches.matchAll(/"(\w+-\w+|\w+)": "[^0-9]*([0-9])/g)].map(match => ({ // Extract all packages and their major version number (aka for breaking changes which need an update)
       name: match[1],
@@ -525,7 +528,7 @@ async function sync() {
   const configToml = path.join(__dirname, "config.toml");
   const submoduleConfigToml = path.join(__dirname, "themes/abridge/config.toml");
 
-  let adjustTomlContent = function (content) {
+  let adjustTomlContent = function(content) {
     content = content.replace(/^\s+|\s+$|\s+(?=\s)/g, ""); // Remove all leading and trailing whitespaces and multiple whitespaces
     content = content.replace(/(^#)(?=\s*\w+\s*=\s*)|[[:blank:]]*#.*$/gm, ""); // A regex to selectively remove all comments, and to uncomment all commented config lines
     content = content.replace(/(\[([^]]*)\])|(\{([^}]*)\})/gs, ""); // A regex to remove all tables and arrays
