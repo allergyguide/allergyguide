@@ -9,20 +9,20 @@ import {
   DosingStrategy,
   FoodAStrategy,
   FoodType,
+  Method,
+  WarningCode,
   type ProtocolData,
-} from "./types"
-
-import {
   type Unit,
   type Food,
+  type Protocol,
+  type RowData,
+  type SpecificWarningCode
 } from "./types"
 
 import {
   SOLID_RESOLUTION,
   LIQUID_RESOLUTION,
 } from "./constants"
-
-import { WarningCode, type SpecificWarningCode } from "./types";
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -127,6 +127,71 @@ export function findPercentDifference(test: Decimal, base: Decimal): Decimal {
     .minus(1)
     .abs();
 }
+
+/**
+ * Serializes the runtime Protocol object + custom notes into the clean ProtocolData JSON schema suitable for export/email.
+ */
+export function serializeProtocol(protocol: Protocol, notes: string): ProtocolData {
+  // Map steps to RowData
+  const table: RowData[] = protocol.steps.map((step) => {
+    const foodType = step.food === "A" ? protocol.foodA.type : protocol.foodB!.type;
+    const measureUnit: Unit = foodType === FoodType.SOLID ? "g" : "ml";
+
+    const base = {
+      food: step.food,
+      protein: step.targetMg.toString(), // ProtocolData expects strings
+      daily_amount: formatAmount(step.dailyAmount, step.dailyAmountUnit),
+    };
+
+    if (step.method === Method.DIRECT) {
+      return {
+        ...base,
+        method: "DIRECT",
+      };
+    } else {
+      return {
+        ...base,
+        method: "DILUTE",
+        mix_amount: formatAmount(step.mixFoodAmount!, measureUnit),
+        water_amount: formatAmount(step.mixWaterAmount!, "ml"),
+      };
+    }
+  });
+
+  // Construct ProtocolData
+  const data: ProtocolData = {
+    name: "Custom Protocol Request", // Default name for the request
+    dosing_strategy: protocol.dosingStrategy,
+    food_a: {
+      type: protocol.foodA.type,
+      name: protocol.foodA.name,
+      gramsInServing: protocol.foodA.gramsInServing.toString(),
+      servingSize: protocol.foodA.servingSize.toString(),
+    },
+    food_a_strategy: protocol.foodAStrategy,
+    di_threshold: protocol.diThreshold.toString(),
+    table: table,
+    custom_note: notes,
+  };
+
+  // Add Food B if present
+  if (protocol.foodB) {
+    data.food_b = {
+      type: protocol.foodB.type,
+      name: protocol.foodB.name,
+      gramsInServing: protocol.foodB.gramsInServing.toString(),
+      servingSize: protocol.foodB.servingSize.toString(),
+    };
+  }
+
+  if (protocol.foodBThreshold) {
+    // ProtocolDataSchema expects food_b_threshold as string (NumericString)
+    data.food_b_threshold = protocol.foodBThreshold.amount.toString();
+  }
+
+  return data;
+}
+
 
 export const SAMPLE_PROTOCOL: ProtocolData = {
   name: "Almond milk to whole almonds",
