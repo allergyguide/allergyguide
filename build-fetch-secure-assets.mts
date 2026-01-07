@@ -80,7 +80,6 @@ async function generateSecureAssets(token: string, repo: string, subdir: string 
     }
 
     console.log(`Secure assets (${subdir || 'root'}) downloaded.`);
-
   } catch (error) {
     console.error("Failed to generate secure assets:", error.message);
     process.exit(1);
@@ -90,6 +89,9 @@ async function generateSecureAssets(token: string, repo: string, subdir: string 
 // ==========================================
 // GENERATE SECURE ASSETS ENTRY POINT
 // ==========================================
+console.log("\n-----CREATING SECURE_ASSETS-----");
 await generateSecureAssets(GITHUB_TOKEN, GITHUB_REPO, "user_configs");
 await generateSecureAssets(GITHUB_TOKEN, GITHUB_REPO, "oit_calculator");
+console.log("---------------------------\n");
+
 
