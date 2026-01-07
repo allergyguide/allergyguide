@@ -155,26 +155,11 @@ export async function handleUserLoad(): Promise<boolean> {
       userData.handouts
     );
     
-    appState.isLoggedIn = true;
-    appState.username = userData.user;
+    appState.setAuthState(true, userData.user);
 
-    // update ui to show logged-in state
-    const loginBtn = document.getElementById("btn-login-trigger");
-    const logoutBtn = document.getElementById("btn-logout-trigger");
-    const badge = document.getElementById("user-badge");
-
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'inline-block'; // SHOW LOGOUT
-    if (badge) {
-      badge.textContent = `User: ${userData.user}`;
-      badge.style.display = 'inline-block';
-    }
     return true;
   } catch (e) {
-    const loginBtn = document.getElementById("btn-login-trigger");
-    const logoutBtn = document.getElementById("btn-logout-trigger");
-    if (loginBtn) loginBtn.style.display = 'inline-block';
-    if (logoutBtn) logoutBtn.style.display = 'none'; // HIDE LOGOUT
+    appState.setAuthState(false, null);
 
     if (e instanceof HttpError && e.status !== 401 && e.status !== 403) {
       console.warn("User load failed (Non-Auth Error):", e);

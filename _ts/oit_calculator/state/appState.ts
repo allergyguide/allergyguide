@@ -3,6 +3,8 @@ import { type FoodData, type ProtocolData } from "../types";
 // Helper type: Takes any object T and adds the 'prepared' property from Fuzzysort
 type PreparedItem<T> = T & { prepared: Fuzzysort.Prepared };
 
+type AuthListener = (isLoggedIn: boolean) => void;
+
 export class AppState {
   // raw data loaded 
   public foodsDatabase: FoodData[] = [];
@@ -19,8 +21,10 @@ export class AppState {
 
   public readonly warningsPageURL: string;
 
+  // FOR AUTH
   public isLoggedIn: boolean = false;
   public username: string | null = null;
+  private authListeners: AuthListener[] = [];
 
   constructor(publicData: { foods: FoodData[], protocols: ProtocolData[] }, warningsUrl: string) {
     this.warningsPageURL = warningsUrl;
@@ -30,6 +34,33 @@ export class AppState {
     this.protocolsDatabase = [...publicData.protocols];
 
     this.rebuildIndices();
+  }
+
+  /**
+   * Updates the application's authentication state and notifies all subscribed listeners.
+   * @param isLoggedIn - Whether the user is currently authenticated.
+   * @param username - The username of the authenticated user, or null if logged out.
+   */
+  public setAuthState(isLoggedIn: boolean, username: string | null) {
+    this.isLoggedIn = isLoggedIn;
+    this.username = username;
+    this.notifyAuthListeners();
+  }
+
+  /**
+   * Registers a callback function to be executed whenever the authentication state changes.
+   * The listener will be called immediately upon future state changes triggered by `setAuthState`.
+   * @param listener - A callback function that receives the new `isLoggedIn` boolean status.
+   */
+  public subscribeToAuth(listener: AuthListener) {
+    this.authListeners.push(listener);
+  }
+
+  /**
+   * Internal helper to broadcast the current login status to all registered listeners.
+   */
+  private notifyAuthListeners() {
+    this.authListeners.forEach((l) => l(this.isLoggedIn));
   }
 
   /**

@@ -57,27 +57,44 @@ async function initializeCalculator(): Promise<void> {
   // set up appState
   appState = new AppState(publicData, rulesUrl);
 
+  // Subscribe appState (Login Status) to UI Refresh
+  appState.subscribeToAuth((isLoggedIn) => {
+    const loginBtn = document.getElementById("btn-login-trigger");
+    const logoutBtn = document.getElementById("btn-logout-trigger");
+    const badge = document.getElementById("user-badge");
+
+    if (isLoggedIn) {
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
+      if (badge) {
+        badge.textContent = `User: ${appState.username}`;
+        badge.style.display = 'inline-block';
+      }
+    } else {
+      // Public Mode
+      if (loginBtn) loginBtn.style.display = 'inline-block';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+      if (badge) badge.style.display = 'none';
+    }
+
+    // Force UI refresh if protocol exists (preparing for future secure features)
+    const p = protocolState.getProtocol();
+    if (p) {
+      renderProtocolTable(p, protocolState.getCustomNote());
+    }
+  });
+
+  // If successful auth in
   if (userData) {
     console.log("Session restored: Loading custom assets.");
-    appState.isLoggedIn = true;
-    appState.username = userData.user;
     appState.addSecureData(
       userData.customFoods,
       userData.protocols,
       userData.handouts
     );
 
-    // Update UI to show logged-in state immediately
-    const loginBtn = document.getElementById("btn-login-trigger");
-    const logoutBtn = document.getElementById("btn-logout-trigger");
-    const badge = document.getElementById("user-badge");
-
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'inline-block';
-    if (badge) {
-      badge.textContent = `User: ${userData.user}`;
-      badge.style.display = 'inline-block';
-    }
+    // Set Auth State (Triggers listeners)
+    appState.setAuthState(true, userData.user);
   }
 
   // Initialize global delegated events (settings, table, dosing, misc)
