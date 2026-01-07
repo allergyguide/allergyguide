@@ -54,7 +54,8 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 | `GITHUB_REPO`        | Repository name (e.g. `repo-name`).                            |
 | `AUTH_USERS`         | JSON object of allowed users/hashes: `{"user": "$2a$10$..."}`. |
 | `JWT_SECRET`         | Secret key used to sign Auth Cookies.                          |
-| `TOKEN_EXPIRY_HOURS` | Duration of the session in hours (Default: 24).                |
+| `TOKEN_EXPIRY_HOURS` | Duration of the user session in hours (Default: 24).           |
+| `TURNSTILE_SECRET`   | Secret key from Cloudflare Turnstile for server-side verify    |
 
 ## Project structure
 

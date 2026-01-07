@@ -3,21 +3,21 @@ import { HttpError } from "../types";
 /**
  * Authenticates a user via the Netlify login function.
  *
- * Use this function to validate credentials and the captcha token against the backend.
+ * Use this function to validate credentials and the turnstile token against the backend.
  *
  * @param username - The user's login identifier.
  * @param password - The raw password string.
- * @param captchaToken - The verification token received from the client-side captcha widget.
+ * @param turnstileToken - The verification token received from the client-side turnstile widget.
  *
  * @returns A Promise that resolves to `true` only upon successful authentication.
  *
  * @throws {HttpError} on 400, 401, 405, 500, or HTML/Network failures.
  */
-export async function login(username: string, password: string, captchaToken: string): Promise<boolean> {
+export async function login(username: string, password: string, turnstileToken: string): Promise<boolean> {
   const response = await fetch('/.netlify/functions/auth-login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password, captchaToken })
+    body: JSON.stringify({ username, password, turnstileToken: turnstileToken })
   });
 
   // Handle HTML/Crash responses 
@@ -44,7 +44,7 @@ export async function login(username: string, password: string, captchaToken: st
     // Body was JSON but malformed, or empty
   }
   if (response.status === 400) {
-    throw new HttpError(serverMessage || 'Captcha failed', 400);
+    throw new HttpError(serverMessage || 'Turnstile failed', 400);
   }
   if (response.status === 401) {
     throw new HttpError('Invalid credentials', 401)

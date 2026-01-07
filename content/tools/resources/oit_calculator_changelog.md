@@ -12,7 +12,7 @@ authors = ["Joshua Yu"]
 
 ### Added
 
-- hCaptcha to login flow to mitigate malicious attacks on the secure login endpoint
+- Cloudflare turnstile added to login flow to mitigate malicious attacks on the secure login endpoint
 
 ---
 

@@ -3,13 +3,16 @@
  *
  * Modal dialog management (Clickwrap, etc.)
  */
-///<reference types="@hcaptcha/types"/>
+/// <reference types="cloudflare-turnstile" />
+
 import { OIT_CLICKWRAP_ACCEPTED_KEY, CLICKWRAP_EXPIRY_DAYS } from "../constants";
 import {
   HttpError
 } from "../types"
 import { login } from "../data/auth";
 
+// STATE
+// ------------------
 let clickwrapModal: HTMLElement | null = null;
 let clickwrapCheckbox0: HTMLInputElement | null = null;
 let clickwrapCheckbox1: HTMLInputElement | null = null;
@@ -18,6 +21,13 @@ let clickwrapCheckbox3: HTMLInputElement | null = null;
 let clickwrapCheckbox4: HTMLInputElement | null = null;
 let clickwrapGenerateBtn: HTMLButtonElement | null = null;
 let clickwrapCancelBtn: HTMLButtonElement | null = null;
+
+let turnstileWidgetId: string | null | undefined = null;
+// ------------------
+
+// Official Cloudflare Testing Key (Always Passes)
+// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+const TURNSTILE_TEST_SITE_KEY = "1x00000000000000000000AA";
 
 /**
  * Checks if the user has a valid, non-expired clickwrap acceptance token
@@ -119,6 +129,37 @@ export function attachClickwrapEventListeners(onGenerate: () => Promise<void>): 
 }
 
 /**
+ * Renders the Turnstile widget if it hasn't been rendered yet.
+ */
+function ensureTurnstileRendered() {
+  const widgetContainer = document.getElementById("turnstile-widget");
+  if (!widgetContainer || !turnstile) return;
+
+  // If already rendered, just reset it
+  if (turnstileWidgetId) {
+    turnstile.reset(turnstileWidgetId);
+    return;
+  }
+
+  let sitekey = "0x4AAAAAACK7_weh_BsWxOhN";
+
+  // for private netlify deploys
+  if (window.location.hostname.includes("netlify.app")) {
+    sitekey = TURNSTILE_TEST_SITE_KEY;
+  }
+
+  // Render
+  try {
+    turnstileWidgetId = turnstile.render("#turnstile-widget", {
+      sitekey: sitekey,
+    });
+  } catch (err) {
+    console.error("Failed to render Turnstile:", err);
+  }
+}
+
+
+/**
  * Attach listeners to the login modal.
  * @param onLoginAttempt - Callback that triggers data loading. Must return TRUE if load succeeded, FALSE otherwise.
  */
@@ -135,7 +176,9 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
   loginBtn.addEventListener("click", () => {
     modal.style.display = "flex";
     if (errorMsg) errorMsg.textContent = "";
-    if (window.hcaptcha) window.hcaptcha.reset();
+
+    // init turnstile
+    ensureTurnstileRendered();
 
     // PING auth-login, warm up netlify function
     fetch('/.netlify/functions/auth-login', {
@@ -148,7 +191,7 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
   const hide = () => {
     modal.style.display = "none";
     form.reset();
-    if (window.hcaptcha) window.hcaptcha.reset();
+    if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
   };
 
   if (cancelBtn) cancelBtn.addEventListener("click", hide);
@@ -160,10 +203,10 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
     const password = (document.getElementById("login-password") as HTMLInputElement).value;
     const submitBtn = form.querySelector("button[type='submit']") as HTMLButtonElement;
 
-    // GET CAPTCHA TOKEN
-    const captchaToken = window.hcaptcha ? window.hcaptcha.getResponse() : "";
-    if (!captchaToken) {
-      if (errorMsg) errorMsg.textContent = "Please complete the captcha verification.";
+    // GET TURNSTILE TOKEN
+    const turnstileToken = turnstileWidgetId ? turnstile.getResponse(turnstileWidgetId) : "";
+    if (!turnstileToken) {
+      if (errorMsg) errorMsg.textContent = "Please complete the Turnstile verification.";
       return;
     }
 
@@ -173,7 +216,7 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
       if (errorMsg) errorMsg.textContent = "";
 
       // AUTH password
-      const authSuccess = await login(username, password, captchaToken);
+      const authSuccess = await login(username, password, turnstileToken);
 
       if (authSuccess) {
         const loadSuccess = await onLoginAttempt();
@@ -183,13 +226,13 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
           // FAIL: Keep modal open, show error to user
           // This implies auth worked, but they don't have the OIT tool config or lacks permissions
           if (errorMsg) errorMsg.textContent = "Login successful, but this account lacks access to the OIT Calculator.";
-          // Reset captcha because the token is single-use
-          window.hcaptcha.reset();
+          // Reset turnstile because the token is single-use
+          if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
         }
       }
     } catch (error) {
-      // ALWAYS RESET CAPTCHA ON ERROR (Token cannot be reused)
-      if (window.hcaptcha) window.hcaptcha.reset();
+      // ALWAYS RESET TURNSTILE ON ERROR (Token cannot be reused)
+      if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
 
       if (errorMsg) {
         if (error instanceof HttpError) {
@@ -197,7 +240,7 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
             errorMsg.textContent = "Invalid username or password.";
           }
           else if (error.status === 400) {
-            errorMsg.textContent = "Captcha validation failed. Please try again.";
+            errorMsg.textContent = "Turnstile validation failed. Please try again.";
           }
           else if (error.status === 500) {
             errorMsg.textContent = "Configuration Error: Netlify function API unavailable or internal err";

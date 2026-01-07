@@ -143,7 +143,7 @@
 			</div>
 			<div id="oit-login-error" class="oit-error-message"></div>
 			<div class="oit-form-group">
-				<div class="h-captcha" data-sitekey="eb228250-c24c-4114-bc68-7430c89ae0b0"></div>
+				<div id="turnstile-widget"></div>
 			</div>
 			<div class="oit-modal-buttons">
 				<button type="button" id="btn-login-cancel" class="btn-secondary">Cancel</button>
@@ -208,5 +208,7 @@
 	<div id="debug-result-container"></div>
 </div>
 <!-- Load main script -->
-<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        defer
+></script>
 <script type="module" src="/js/{{ tool_info.file }}"></script>

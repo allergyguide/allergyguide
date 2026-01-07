@@ -1,47 +1,37 @@
 import type { Handler, HandlerResponse } from '@netlify/functions';
 import jwt from 'jsonwebtoken';
-import querystring from 'querystring';
 import cookie from 'cookie';
 import bcrypt from 'bcryptjs';
 
 /**
- * Verifies a user's hCaptcha response token against the hCaptcha API.
+ * Verifies a user's turnstile response token against the cloudflare API.
  *
- * This function sends a POST request to `https://hcaptcha.com/siteverify` with the provided secret and token. It internally handles network errors by logging them and returning `false`.
+ * This function sends a POST request to `https://challenges.cloudflare.com/turnstile/v0/siteverify` with the provided secret and token. It internally handles network errors by logging them and returning `false`.
  *
- * @param hcaptcha_secret - from .env
- * @param captchaTokenResponse - solution token returned from the frontend hCaptcha widget (e.g., `h-captcha-response`).
+ * @param turnstile_secret - from .env
+ * @param turnstileTokenResponse - solution token returned from the frontend turnstile widget
  * 
  * @returns A `Promise` that resolves to:
- * - `true` if the captcha was successfully verified.
+ * - `true` if the turnstile was successfully verified.
  * - `false` if the verification failed, the token was invalid, or the API request encountered an error.
  */
-export async function verifyCaptcha(hcaptcha_secret: string, captchaTokenResponse: string): Promise<boolean> {
-	const verifyParams = querystring.stringify({
-		secret: hcaptcha_secret,
-		response: captchaTokenResponse,
-		sitekey: "eb228250-c24c-4114-bc68-7430c89ae0b0"
-	});
+export async function verifyTurnstile(turnstile_secret: string, turnstileTokenResponse: string): Promise<boolean> {
+	const body = new URLSearchParams();
+	body.append('secret', turnstile_secret);
+	body.append('response', turnstileTokenResponse);
 
-	let captchaVerify: Response;
 	try {
-		captchaVerify = await fetch('https://hcaptcha.com/siteverify', {
-			method: 'POST', // MUST be POST
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: verifyParams
+		const turnstileVerify = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+			method: 'POST',
+			body: body
 		});
+
+		const turnstileData = await turnstileVerify.json();
+		return turnstileData.success === true;
 	}
 	catch (err) {
-		console.error("Not able to reach hcaptcha.com to verify captcha", err)
+		console.error('Turnstile validation error:', err);
 		return false;
-	}
-
-	const captchaData = await captchaVerify.json();
-
-	if (!captchaData.success) {
-		return false
-	} else {
-		return true
 	}
 }
 
@@ -72,24 +62,36 @@ export const handler: Handler = async (event) => {
 
 	try {
 		const body = event.body ? JSON.parse(event.body) : {};
-		const { username, password, captchaToken } = body;
+		const { username, password, turnstileToken } = body;
 
-		// VERIFY CAPTCHA FIRST
+		// VERIFY TURNSTILE FIRST
 		// We do this before checking passwords to prevent brute force timing attacks
-		if (!process.env.HCAPTCHA_SECRET) throw new Error("No HCAPTCHA_SECRET set in environment variables")
-		if (!captchaToken) {
+		if (!process.env.TURNSTILE_SECRET) throw new Error("No TURNSTILE_SECRET set in environment variables")
+		if (!turnstileToken) {
 			return {
 				statusCode: 400,
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ message: "Captcha missing" })
+				body: JSON.stringify({ message: "Turnstile missing" })
 			};
 		}
-		const captchaVerified = await verifyCaptcha(process.env.HCAPTCHA_SECRET, captchaToken)
-		if (!captchaVerified) {
+
+		// For debugging and use in private deploys, use dummy secret
+		// see https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+		const CLOUDFLARE_TEST_SECRET = "1x0000000000000000000000000000000AA";
+		let turnstile_secret = process.env.TURNSTILE_SECRET;
+
+		// If we are on a netlify.app URL (deploy preview) 
+		const host = event.headers['host'] || "";
+		if (host.includes("netlify.app")) {
+			turnstile_secret = CLOUDFLARE_TEST_SECRET;
+		}
+
+		const turnstileVerified = await verifyTurnstile(turnstile_secret, turnstileToken)
+		if (!turnstileVerified) {
 			return {
 				statusCode: 400,
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ message: "Invalid Captcha" })
+				body: JSON.stringify({ message: "Invalid Turnstile" })
 			};
 		}
 
