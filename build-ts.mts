@@ -37,18 +37,18 @@ export async function buildTS(toolVersioning: ToolVersioning, commit_hash: strin
     define[`__VERSION_${toolName.toUpperCase()}__`] = JSON.stringify(version);
 
     // find TS script paths
-    // Priority 1: ts/{toolName}/main.ts (Component folder structure)
-    // Priority 2: ts/{toolName}.ts      (Simple file structure)
-    // Assumes ts/ is at root
+    // Priority 1: _ts/{toolName}/main.ts (Component folder structure)
+    // Priority 2: _ts/{toolName}.ts      (Simple file structure)
+    // Assumes _ts/ is at root
     let inputPath: string;
-    if (existsSync(`ts/${toolName}/main.ts`)) {
-      inputPath = `ts/${toolName}/main.ts`;
+    if (existsSync(`_ts/${toolName}/main.ts`)) {
+      inputPath = `_ts/${toolName}/main.ts`;
     }
-    else if (existsSync(`ts/${toolName}.ts`)) {
-      inputPath = `ts/${toolName}.ts`;
+    else if (existsSync(`_ts/${toolName}.ts`)) {
+      inputPath = `_ts/${toolName}.ts`;
     }
     else {
-      console.error(`Error: No source for ${toolName} in ts/`);
+      console.error(`Error: No source for ${toolName} in _ts/`);
       process.exit(1);
     }
 

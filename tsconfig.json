@@ -14,7 +14,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true, // for Esbuild compatibility
-    "rootDir": "./ts",
+    "rootDir": "./_ts",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -22,7 +22,7 @@
     "resolveJsonModule": true
   },
   "include": [
-    "ts/**/*"
+    "_ts/**/*"
   ],
   "exclude": [
     "node_modules"

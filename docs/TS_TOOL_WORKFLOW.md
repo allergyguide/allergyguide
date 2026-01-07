@@ -6,7 +6,7 @@ For complex tools (like the OIT Calculator) and interactive components, we use *
 
 ```text
 .
-├── ts/                        # Source TypeScript
+├── _ts/                       # Source TypeScript
 │   ├── simple_script.ts       # Standalone script example
 │   └── oit_calculator/        # Complex Project 
 │       ├── main.ts            # Entry point 
@@ -27,10 +27,10 @@ For complex tools (like the OIT Calculator) and interactive components, we use *
 ### 1. Create Source Code
 
 **Option A: Simple Script**
-Create a single file: `ts/my_script.ts`.
+Create a single file: `_ts/my_script.ts`.
 
 **Option B: Complex Tool**
-Create a folder `ts/my_tool/` and ensure it has a `main.ts` file as the entry point.
+Create a folder `_ts/my_tool/` and ensure it has a `main.ts` file as the entry point.
 
 ### 2. Register the Tool
 
@@ -76,4 +76,4 @@ Note:
 - **Bundler:** `esbuild`
 - **Hashing:** Output filenames include a commit hash (e.g., `tool.1.0.0-a1b2c3d.js`) for cache busting.
 - **Code Splitting:** Shared libraries (like `decimal.js`) are automatically extracted into `static/js/chunks/` to prevent code duplication between tools.
-- **Testing:** Run `npm test` to execute Vitest unit tests located inside `ts/`.
+- **Testing:** Run `npm test` to execute Vitest unit tests located inside `_ts/`.

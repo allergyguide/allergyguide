@@ -107,7 +107,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │   ├──  abridge.scss
 │   └──  shortcodes 
 │
-├── ts/                        # Source TypeScript for client-side tools
+├── _ts/                       # Source TypeScript for client-side tools
 │   ├── oit_calculator/        # Complex Tool (Folder-based)
 │   └── simple_script.ts       # Standalone script
 │
