@@ -26,11 +26,11 @@ Because we use private assets and dynamic TypeScript bundling, we cannot rely so
 
 Defined in `package.json` and orchestrated by `build.mts`.
 
-1. **Legacy JS Sync:** Copies raw JavaScript files from `legacy_js/` to `static/js/`. This ensures custom scripts are present before the build continues.
+1. **Legacy JS Sync:** Copies raw JavaScript files from `_legacy_js/` to `static/js/`. This ensures custom scripts are present before the build continues.
 2. **Secure Assets:** `build-fetch-secure-assets.mts` uses `PRIVATE_TOKEN` to fetch strictly controlled assets (PDFs, JSON) from the private repository into the local `secure_assets/` folder.
-2. **Type Checking:** Runs `tsc --noEmit` to ensure TypeScript integrity.
-3. **Typst Compilation:** `build-typ.mts` checks for/downloads the Typst binary and compiles `.typ` source files into PDFs.
-4. **TypeScript Bundling:** `build-ts.mts` reads `tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
+3. **Type Checking:** Runs `tsc --noEmit` to ensure TypeScript integrity.
+4. **Typst Compilation:** `build-typ.mts` checks for/downloads the Typst binary and compiles `.typ` source files into PDFs.
+5. **TypeScript Bundling:** `build-ts.mts` reads `tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
 
 ### Stage 2: Site Generation (Zola)
 
@@ -89,7 +89,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │
 ├── netlify/functions/         # Serverless functions (Auth, Asset Proxy)
 │
-├── legacy_js/                 # Source for raw JS files (copied to static/js at build)
+├── _legacy_js/                 # Source for raw JS files (copied to static/js at build)
 ├── secure_assets/             # (GitIgnored) Downloaded private assets
 │
 ├── static/
@@ -121,7 +121,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 ### Simple shortcodes
 
 - Create an HTML file in `templates/shortcodes/`.
-- For JS/SCSS: Place files in `legacy_js/{name}.js` (if simple) or `sass/shortcodes/_{name}.scss`.
+- For JS/SCSS: Place files in `_legacy_js/{name}.js` (if simple) or `sass/shortcodes/_{name}.scss`.
 - See Zola docs for syntax.
 
 ### TypeScript shortcodes

@@ -5,16 +5,16 @@ dotenv.config();
 
 
 /**
- * Copies static/legacy JavaScript files from the root `legacy_js/` folder to `static/js/`.
+ * Copies static/legacy JavaScript files from the root `_legacy_js/` folder to `static/js/`.
  * This allows keeping source JS files separate from build artifacts.
  * Cleans destination first to ensure exact mirroring.
  */
 export function copyLegacyJS() {
-  const src = resolve('legacy_js');
+  const src = resolve('_legacy_js');
   const dest = resolve('static/js');
 
   if (!existsSync(src)) {
-    console.warn("Warning: legacy_js/ directory not found. Failing build");
+    console.warn("Warning: _legacy_js/ directory not found. Failing build");
     process.exit(1);
   }
 
@@ -28,7 +28,7 @@ export function copyLegacyJS() {
     mkdirSync(dest, { recursive: true });
 
     cpSync(src, dest, { recursive: true, force: true });
-    console.log(`Successfully synced legacy_js to static/js`);
+    console.log(`Successfully synced _legacy_js to static/js`);
   } catch (error: any) {
     console.error("Failed to copy legacy JS files:", error.message);
     process.exit(1);
