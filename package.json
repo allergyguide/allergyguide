@@ -6,7 +6,7 @@
   "license": "GPL-3.0",
   "homepage": "https://allergyguide.ca",
   "scripts": {
-    "abridge": "node -e \"if ( require('fs').existsSync('./themes/abridge/package_abridge.js')) {require('fs').copyFileSync('./themes/abridge/package_abridge.js', './package_abridge.js')}\" && node package_abridge.js",
+    "abridge": "node package_abridge.js",
     "offline": "npm run abridge -- offline",
     "elasticlunrjava": "npm run abridge -- elasticlunrjava",
     "elasticlunr": "npm run abridge -- elasticlunr",

@@ -41,6 +41,14 @@ Zola generates the static HTML/CSS from markdown content and templates.
 **Command:** `node build-patch-sw.js`
 The Abridge theme generates a Service Worker (`sw.min.js`) that caches aggressively. This script injects a guard clause to ensure **Netlify Function calls** and **POST requests** bypass the cache, which is critical for Netlify Functions to work.
 
+### Theme Management (Abridge Divergence)
+
+The project uses a modified build process for the Abridge theme to allow for custom scripts and dependencies.
+
+- **No Automatic Sync:** The `npm run abridge` command executes the local `package_abridge.js` directly. It **does not** overwrite `package.json` or `package_abridge.js` with the versions from `themes/abridge/`.
+- **Custom `package_abridge.js`:** The root build script has been patched to handle custom files in `static/js` (e.g., our TypeScript bundles) without erroring.
+- **Updating the Theme:** When updating the `themes/abridge` submodule, you must manually check `themes/abridge/package_abridge.js` and `themes/abridge/package.json` for breaking changes or improvements and merge them into the root files cautiously.
+
 ---
 
 ## Environment Variables

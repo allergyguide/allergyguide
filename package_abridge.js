@@ -494,36 +494,39 @@ async function sync() {
   });
 
   // Check for changes in package.json
-  const packageJson = path.join(__dirname, "package.json");
-  const submodulePackageJson = path.join(__dirname, "themes/abridge/package.json");
+  // const packageJson = path.join(__dirname, "package.json");
+  // const submodulePackageJson = path.join(__dirname, "themes/abridge/package.json");
 
-  const packageJsonContent = fs.readFileSync(packageJson, "utf-8");
-  const submodulePackageJsonContent = fs.readFileSync(submodulePackageJson, "utf-8");
+  // const packageJsonContent = fs.readFileSync(packageJson, "utf-8");
+  // const submodulePackageJsonContent = fs.readFileSync(submodulePackageJson, "utf-8");
 
   // Check for changes in dependencies - prompting an npm update
-  let checkPackageVersion = function(content) {
-    let matches = content.match(/"dependencies": \{([^}]+)\}/)[1]; // Look in the dependencies section
-    return [...matches.matchAll(/"(\w+-\w+|\w+)": "[^0-9]*([0-9])/g)].map(match => ({ // Extract all packages and their major version number (aka for breaking changes which need an update)
-      name: match[1],
-      majorVersion: match[2]
-    })).sort((a, b) => a.name.localeCompare(b.name));
-  };
+  // let checkPackageVersion = function(content) {
+  //   let matches = content.match(/"dependencies": \{([^}]+)\}/)[1]; // Look in the dependencies section
+  //   return [...matches.matchAll(/"(\w+-\w+|\w+)": "[^0-9]*([0-9])/g)].map(match => ({ // Extract all packages and their major version number (aka for breaking changes which need an update)
+  //     name: match[1],
+  //     majorVersion: match[2]
+  //   })).sort((a, b) => a.name.localeCompare(b.name));
+  // };
 
-  if (packageJsonContent !== submodulePackageJsonContent) {
-    console.log("Updating package.json from submodule");
-    fs.copyFileSync(submodulePackageJson, packageJson);
-  }
+  // BUG-FIX! DO NOT WANT TO OVERWRITE MY CUSTOM PACKAGE.JSON 
+  // if (packageJsonContent !== submodulePackageJsonContent) {
+  //   console.log("Updating package.json from submodule");
+  //   fs.copyFileSync(submodulePackageJson, packageJson);
+  // }
 
-  const packageVersionLocal = checkPackageVersion(packageJsonContent);
-  const packageVersionSubmodule = checkPackageVersion(submodulePackageJsonContent);
-  if (JSON.stringify(packageVersionLocal) !== JSON.stringify(packageVersionSubmodule)) {
-    console.log(
-      "\x1b[31m%s\x1b[0m",
-      "warning:",
-      "The packages are out of date, please run `npm install` to update them."
-    );
-    exit(1);
-  }
+  // const packageVersionLocal = checkPackageVersion(packageJsonContent);
+  // const packageVersionSubmodule = checkPackageVersion(submodulePackageJsonContent);
+
+  // BUG-FIX! I AM USING MY OWN CUSTOM PACKAGE.JSON
+  // if (JSON.stringify(packageVersionLocal) !== JSON.stringify(packageVersionSubmodule)) {
+  //   console.log(
+  //     "\x1b[31m%s\x1b[0m",
+  //     "warning:",
+  //     "The packages are out of date, please run `npm install` to update them."
+  //   );
+  //   exit(1);
+  // }
 
   const configToml = path.join(__dirname, "config.toml");
   const submoduleConfigToml = path.join(__dirname, "themes/abridge/config.toml");
