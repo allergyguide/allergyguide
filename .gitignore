@@ -8,3 +8,4 @@ node_modules
 *static/.DS_Store
 .netlify/
 secure_assets
+static/js/*

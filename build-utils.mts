@@ -1,7 +1,39 @@
 import dotenv from "dotenv";
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync, cpSync, rmSync } from 'fs';
 import { resolve } from 'path';
 dotenv.config();
+
+
+/**
+ * Copies static/legacy JavaScript files from the root `legacy_js/` folder to `static/js/`.
+ * This allows keeping source JS files separate from build artifacts.
+ * Cleans destination first to ensure exact mirroring.
+ */
+export function copyLegacyJS() {
+  const src = resolve('legacy_js');
+  const dest = resolve('static/js');
+
+  if (!existsSync(src)) {
+    console.warn("Warning: legacy_js/ directory not found. Failing build");
+    process.exit(1);
+  }
+
+  try {
+    // Clean destination first to prevent stale files
+    if (existsSync(dest)) {
+      rmSync(dest, { recursive: true, force: true });
+    }
+
+    // Create fresh destination
+    mkdirSync(dest, { recursive: true });
+
+    cpSync(src, dest, { recursive: true, force: true });
+    console.log(`Successfully synced legacy_js to static/js`);
+  } catch (error: any) {
+    console.error("Failed to copy legacy JS files:", error.message);
+    process.exit(1);
+  }
+}
 
 /**
  * Fetches a raw file from a private GitHub repository as a binary buffer

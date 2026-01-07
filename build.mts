@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { loadTypstBinary, compileTypst } from './build-typ.mjs'
 import { buildTS } from './build-ts.mjs'
-import { verifyUsersData } from './build-utils.mjs';
+import { verifyUsersData, copyLegacyJS } from './build-utils.mjs';
 import dotenv from "dotenv";
 
 dotenv.config({ override: true });
@@ -17,14 +17,15 @@ const GITHUB_REPO = `${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}`;   
 const AUTH_USERS = process.env.AUTH_USERS;
 const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY_HOURS = process.env.TOKEN_EXPIRY_HOURS;
+const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET;
 
 if (!GITHUB_REPO || !GITHUB_TOKEN) {
   console.error("No GitHub repo or token found. Check netlify settings")
   process.exit(1);
 }
 
-if (!AUTH_USERS || !JWT_SECRET || !TOKEN_EXPIRY_HOURS) {
-  console.error("Check your .env and netlify env vars, missing at least one of auth users, jwt token stuff")
+if (!AUTH_USERS || !JWT_SECRET || !TOKEN_EXPIRY_HOURS || !TURNSTILE_SECRET) {
+  console.error("Check your .env and netlify env vars, missing at least one of auth users, jwt token stuff, turnstile secret")
   process.exit(1);
 
 }
@@ -51,18 +52,23 @@ const toolVersioning = JSON.parse(readFileSync('./tools_versioning.json', 'utf-8
 
 // VERIFY USER SECURITY CONFIGURATION
 // By this time the secure_assets/ folder should already be built
-console.log("---------------------------");
+console.log("-----VERIFY USER SECURITY CONFIGURATION-----");
 verifyUsersData();
 console.log("---------------------------\n");
 
 // TYPST
 // Download binary if required, compile .typ to .pdf
-console.log("---------------------------");
+console.log("-----TYPST LOAD AND COMPILE-----");
 loadTypstBinary();
 compileTypst(commit_hash);
 console.log("---------------------------\n");
 
+// MOVE LEGACY JS INTO static/js
+console.log("-----COPY LEGACY JS INTO JS/-----");
+copyLegacyJS(); // for the future, this MUST remain sync; don't want it to clear /js during TS compilation
+console.log("---------------------------\n");
+
 // TS COMPILE AND BUILD
-console.log("---------------------------");
+console.log("-----TS COMPILE AND BUILD-----");
 await buildTS(toolVersioning, commit_hash);
 console.log("---------------------------\n");
