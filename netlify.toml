@@ -2,7 +2,7 @@
 publish = "public"
 # the build-patch-sw is required because otherwise the sw will intercept POST requests to the .netlify functions and cause them not to work...
 
-command = "npm run build -- '--base-url /' && node build-patch-sw.js"
+command = "npm ci && npm run build -- '--base-url /' && node build-patch-sw.js"
 
 # This is the old command with very heavy handed retry. It works if required. This is legacy from when the package.json was overwritten by Abridge package_abridge.js
 # command = "(npm run build -- '--base-url /' || (npm ci && npm run abridge -- '--base-url /')) && node build-patch-sw.js"
