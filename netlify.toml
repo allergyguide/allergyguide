@@ -1,10 +1,12 @@
 [build]
 publish = "public"
-# For some reason this has to be done for the site to build properly. Not quite sure why
-# If you try to change this make sure to review the netlify build logs
-# Much of the problems likely stem from the package abridge js and the underlying theme
 # the build-patch-sw is required because otherwise the sw will intercept POST requests to the .netlify functions and cause them not to work...
-command = "(npm run build -- '--base-url /' || (npm ci && npm run abridge -- '--base-url /')) && node build-patch-sw.js"
+
+command = "npm run build -- '--base-url /' && node build-patch-sw.js"
+
+# This is the old command with very heavy handed retry. It works if required. This is legacy from when the package.json was overwritten by Abridge package_abridge.js
+# command = "(npm run build -- '--base-url /' || (npm ci && npm run abridge -- '--base-url /')) && node build-patch-sw.js"
+
 
 [dev]
 framework = "#custom"
