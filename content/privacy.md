@@ -13,9 +13,9 @@ in_search_index = false
 
 This website is a static site designed for educational purposes. We do not use third-party trackers, advertising cookies, or analytics software to monitor your behaviour.
 
-Cookies:
+Cookies and Third-Party Signals:
 
-- General Visitors: No cookies are set for general visitors browsing the public content of the site.
+- General Visitors: We do not use advertising or analytics cookies. However, we use Cloudflare Turnstile to protect our login forms from spam and abuse. Turnstile may collect information such as your browser characteristics, and may set a strictly necessary cookie to validate that you are a human. Please see their [Privacy Policy](https://www.cloudflare.com/turnstile-privacy-policy/).
 - Authorized Tool Users: If you have an authorized login for certain tools (such as the OIT Calculator), we use a single secure cookie strictly to maintain your authenticated login session. This is classified as a "Strictly Necessary" cookie: it contains no personal tracking data and is used solely to verify your permissions.
 
 We do not knowingly collect, store, or sell any personal information or Patient Health Information.
