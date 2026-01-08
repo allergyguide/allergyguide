@@ -18,7 +18,7 @@ math_auto_render = true
 <br>
 {% admonition(type="danger", icon="info", title="TERMS OF USE") %}
 
-**This tool is strictly for informational and planning support by qualified clinicians. It does not replace professional medical advice**. _All dosing decisions must be reviewed and confirmed by the physician responsible for the patient’s care._ See [full terms of use](/tools/resources/oit-calculator-terms/). This tool does not collect or transmit any PHI.
+**This tool is strictly for informational and planning support by qualified clinicians. It does not replace professional medical advice**. _All dosing decisions must be reviewed and confirmed by the physician responsible for the patient’s care._ See [full terms of use](/tools/resources/oit-calculator-terms/). This tool is explicitly not intended to process any PHI. **Do NOT enter any PHI**.
 
 {% end %}
 

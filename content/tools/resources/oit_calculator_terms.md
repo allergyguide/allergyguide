@@ -27,7 +27,7 @@ This tool is provided for clinical calculation and documentation purposes only. 
 
 To ensure compliance with data privacy standards, the **clinical calculations and data processing** portions of this tool function **entirely as a client-side application**.
 
-This tool is **_explicitly_** not intended to process any Patient Health Information (PHI) such as patient names, dates of birth, or medical record numbers.
+This tool is **_explicitly_** not intended to process any Patient Health Information (PHI) such as patient names, dates of birth, or medical record numbers. **Any PHI entered by the user into the tool is done so in violation of our Terms of Use and is at the user's own risk.**
 
 - **Local Processing**: All calculations, including the "Undo/Redo" history stack, are processed and stored temporarily in your browser's memory. This data is cleared when you refresh the page.
 - **No Server Transmission of Protocol Data (Standard Use)**: During standard calculation and PDF generation, data entered into tool input fields, custom notes, and your interaction history are never transmitted to our servers, analytics providers, or stored in external databases.

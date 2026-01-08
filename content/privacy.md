@@ -19,7 +19,7 @@ Cookies and Third-Party Signals:
 - Authorized Tool Users: If you have an authorized login for certain tools (such as the OIT Calculator), we use a single secure cookie strictly to maintain your authenticated login session. This is classified as a "Strictly Necessary" cookie: it contains no personal tracking data and is used solely to verify your permissions.
 - Save Requests: For authorized users who choose to use the "Request Save Protocol" feature in the OIT Calculator, we collect the provided email address and protocol details to fulfill the request and send a confirmation receipt. This data is processed through **Resend**, our email service provider. We do not use this email for marketing purposes. Please see their [Privacy Policy](https://resend.com/legal/privacy-policy).
 
-We do not sell any personal information or Patient Health Information. Aside from the specific functional requirements mentioned above, we do not collect or store personal data.
+We do not knowingly collect, store, or process PHI. Aside from the specific functional requirements mentioned above, we do not collect or store personal data. We do not sell any personal information.
 
 ## 2. Hosting
 
