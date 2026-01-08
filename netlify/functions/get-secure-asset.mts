@@ -61,14 +61,14 @@ export const handler: Handler = async (event) => {
     };
   }
 
-  let user = '';
+  let username = '';
 
   // VERIFY JWT & GET USER
   try {
     if (!process.env.JWT_SECRET) throw new Error("Missing JWT_SECRET");
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UserToken;
-    user = decoded.user;
+    username = decoded.user;
   } catch (err) {
     return {
       statusCode: 403,
@@ -91,7 +91,7 @@ export const handler: Handler = async (event) => {
 
   // CHANGE FILENAME IF GENERIC `me.json` REQUESTED TO GRAB USER CONFIG
   if (filename === 'me.json') {
-    filename = `user_configs/${user}_config.json`;
+    filename = `user_configs/${username}_config.json`;
   }
 
   // AUTHORIZATION LOGIC
@@ -99,11 +99,11 @@ export const handler: Handler = async (event) => {
   // ---
   // A. Check if User in Admin 
   const adminUsers = JSON.parse(process.env.ADMIN_USERS || '[]');
-  if (adminUsers.includes(user)) {
+  if (adminUsers.includes(username)) {
     hasAccess = true;
   }
   // B. everyone should have access to their own config file
-  else if (filename === `user_configs/${user}_config.json`) {
+  else if (filename === `user_configs/${username}_config.json`) {
     hasAccess = true;
   }
   // C. Check if the requested file is listed INSIDE their config file
@@ -111,7 +111,7 @@ export const handler: Handler = async (event) => {
   else {
     try {
       // Load their config from disk
-      const configPath = resolve(`./secure_assets/user_configs/${user}_config.json`);
+      const configPath = resolve(`./secure_assets/user_configs/${username}_config.json`);
 
       if (existsSync(configPath)) {
         const configRaw = readFileSync(configPath, 'utf-8');
@@ -131,7 +131,7 @@ export const handler: Handler = async (event) => {
   }
 
   if (!hasAccess) {
-    console.log(`User ${user} denied access to ${filename}`);
+    console.log(`User ${username} denied access to ${filename}`);
     return {
       statusCode: 403,
       headers: { 'Content-Type': 'application/json' },
@@ -149,7 +149,7 @@ export const handler: Handler = async (event) => {
 
     // security check
     if (!filePath.startsWith(secureRoot)) {
-      console.error(`Path traversal attempt by ${user}: ${filename}`);
+      console.error(`Path traversal attempt by ${username}: ${filename}`);
       return {
         statusCode: 403,
         headers: { 'Content-Type': 'application/json' },

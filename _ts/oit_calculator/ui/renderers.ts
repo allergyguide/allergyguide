@@ -404,17 +404,15 @@ export function renderDosingStrategy(protocol: Protocol | null): void {
 }
 
 /**
- * Renders main protocol table into DOM with diffing strategy: aim to stop always doing destructive full DOM updates with patching
+ * Renders the main protocol table into the DOM using a diffing/patching strategy.
  * 
- * 1. Runs `validateProtocol` 
- * 2. makes array of `RowSpec` objects representing the ideal table state 
- * 3. compares `RowSpec` structure against the current `tbody` children
- * 4. Check if Full Rebuild needed: if row counts differ, headers are misplaced, or input types change (e.g., Direct → Dilute): destroys and recreates the table 
- * Otherwise: patching if structure is stable. Updates text content, input values, and CSS classes in-place
+ * This function calculates the expected layout, compares it to the current DOM,
+ * and either patches specific values in-place (to preserve focus) or rebuilds 
+ * the table if the structure has changed.
  *
- * @param protocol - current protocol state to render If `null` return early
- * @param customNote - current custom note text
- * @param isLoggedIn - Whether the user is currently authenticated (controls Save Request visibility)
+ * @param protocol - The current protocol state. If null, rendering is skipped.
+ * @param customNote - The current text content of the custom note.
+ * @param isLoggedIn - Authentication status; used to determine if restricted controls are visible.
  */
 export function renderProtocolTable(protocol: Protocol | null, customNote: string, isLoggedIn: boolean): void {
   if (!protocol) return;

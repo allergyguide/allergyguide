@@ -39,7 +39,9 @@ oit_calculator/
 Serverless Functions (Netlify)
 ├── auth-login.mts          # Authenticates user & issues JWT (HttpOnly cookie)
 ├── auth-logout.mts         # Clears session cookie
-└── get-secure-asset.mts    # Serves permission-gated assets (JSON/PDF) from secure storage
+├── get-secure-asset.mts    # Serves permission-gated assets (JSON/PDF) from secure storage
+├── request-save-oit-protocol.mts # Processes protocol save requests via Resend API
+└── utils.mts               # Shared utilities for serverless functions (e.g. escaping)
 ```
 
 ## Patterns

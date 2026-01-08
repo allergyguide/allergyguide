@@ -13,6 +13,7 @@ authors = ["Joshua Yu"]
 ### Added
 
 - Cloudflare turnstile added to login flow to mitigate malicious attacks on the secure login endpoint
+- Protocol save requests: logged in users can now request to have custom built protocols saved to their account under a specific name
 
 ---
 

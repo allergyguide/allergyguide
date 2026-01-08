@@ -215,6 +215,34 @@
 		</div>
 	</div>
 </div>
+<!-- Request to save protocol modal -->
+<div id="oit-save-request-modal" class="oit-modal-overlay" style="display: none;">
+	<div class="oit-modal-content">
+		<h3>Request to Save Protocol</h3>
+		<div class="warning-box" style="background: #ffe6e6; border: 1px solid #cc0000; padding: 10px; margin-bottom: 15px; color: #cc0000;">
+			<strong>WARNING:</strong>
+			Do NOT include any Patient Health Information such as patient names, dates of birth, MRN, etc. in these fields.
+		</div>
+		<form id="save-request-form">
+			<div class="oit-form-group">
+				<label for="req-protocol-name">Protocol Name (Required)</label>
+				<input type="text" id="req-protocol-name" class="search-input" required placeholder="e.g. MyName Peanut Standard">
+			</div>
+			<div class="oit-form-group">
+				<label for="req-email">Your Email for Request Receipt (Required)</label>
+				<input type="email" id="req-email" class="search-input" required placeholder="name@example.com">
+			</div>
+			<div class="oit-form-group">
+				<label for="req-context">Additional Context (Optional)</label>
+				<textarea id="req-context" class="custom-note-textarea" rows="3" placeholder="Any specific instructions or context..."></textarea>
+			</div>
+			<div class="oit-modal-buttons">
+				<button type="button" id="btn-save-req-cancel" class="btn-secondary">Cancel</button>
+				<button type="submit" id="btn-save-req-submit" class="btn-export">Send Request</button>
+			</div>
+		</form>
+	</div>
+</div>
 <!-- Hidden div to get URL for warnings to pass into JS using zola -->
 <div id="url-container"
      data-target-url="{{ get_url(path='@/tools/resources/oit_calculator_validation.md') }}"

@@ -1,4 +1,4 @@
-import { HttpError } from "../types";
+import { HttpError, type ProtocolData } from "../types";
 
 /**
  * Fetcher for secure assets
@@ -71,4 +71,49 @@ export async function loadSecureAsset(filepath: string, format: 'auto' | 'buffer
   }
 
   return await response.text();
+}
+
+/**
+ * Data payload for requesting a protocol to be saved on the backend.
+ */
+export interface SaveRequestPayload {
+  /** The full serialized protocol object including food settings and steps. */
+  protocolData: ProtocolData;
+  /** User-defined name for this protocol (e.g., "John Doe - Peanut Standard"). */
+  protocolName: string;
+  /** The email address where the user wants to receive the request receipt. */
+  userEmail: string;
+  /** Optional additional instructions or clinical context for the request. */
+  context: string;
+  /** A formatted ASCII representation of the protocol for administrative review. */
+  ascii: string;
+}
+
+
+/**
+ * Sends a request to save a protocol through netlify function.
+ * 
+ * This triggers an email workflow via the Resend API to notify administrators and provide a confirmation receipt to the user.
+ * 
+ * @param payload - The protocol data and user metadata.
+ * @returns A Promise that resolves to true if the request was successfully accepted.
+ * @throws {HttpError} If the server returns a non-200 status or if the session is invalid.
+ */
+export async function requestSaveProtocol(payload: SaveRequestPayload): Promise<boolean> {
+  const response = await fetch('/.netlify/functions/request-save-oit-protocol', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    let msg = "Failed to send request";
+    try {
+      const data = await response.json();
+      msg = data.message || msg;
+    } catch (e) { }
+    throw new HttpError(msg, response.status);
+  }
+
+  return true;
 }

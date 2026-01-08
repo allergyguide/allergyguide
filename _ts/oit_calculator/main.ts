@@ -26,7 +26,7 @@ import {
   updateUndoRedoButtons
 } from "./ui/renderers";
 import { initSearchEvents } from "./ui/searchUI";
-import { attachClickwrapEventListeners, attachLoginModalListeners } from "./ui/modals";
+import { attachClickwrapEventListeners, attachLoginModalListeners, attachSaveRequestListeners } from "./ui/modals";
 import { initGlobalEvents } from "./ui/events";
 import { initExportEvents, triggerPdfGeneration } from "./ui/exports";
 import { handleUserLoad, loadPublicDatabases, loadUserConfiguration } from "./data/loader";
@@ -137,6 +137,9 @@ async function initializeCalculator(): Promise<void> {
       }
     });
   }
+
+  // wire up protocol save request modal
+  attachSaveRequestListeners()
 
   // Check for debug mode
   const urlParams = new URLSearchParams(window.location.search);

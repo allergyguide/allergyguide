@@ -9,6 +9,10 @@ import { OIT_CLICKWRAP_ACCEPTED_KEY, CLICKWRAP_EXPIRY_DAYS } from "../constants"
 import {
   HttpError
 } from "../types"
+import { requestSaveProtocol } from "../data/api";
+import { protocolState } from "../state/instances";
+import { serializeProtocol } from "../utils";
+import { generateAsciiContent } from "../export/exports";
 import { login } from "../data/auth";
 
 // STATE
@@ -257,4 +261,74 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
       submitBtn.disabled = false;
     }
   });
+}
+
+/**
+ * Attaches event listeners for the "Request Save Protocol" feature.
+ * 
+ * This includes:
+ * 1. Event delegation for the trigger button (since it's toggled by renderers).
+ * 2. Modal cancellation and form resetting.
+ * 3. Form submission handling, which serializes the active state and calls the API.
+ */
+export function attachSaveRequestListeners() {
+  const modal = document.getElementById("oit-save-request-modal");
+  const cancelBtn = document.getElementById("btn-save-req-cancel");
+  const form = document.getElementById("save-request-form") as HTMLFormElement;
+
+  document.body.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target && target.id === 'btn-trigger-save-request') {
+      if (modal) modal.style.display = 'flex';
+    }
+  });
+
+  if (cancelBtn && modal) {
+    cancelBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+      form.reset();
+    });
+  }
+
+  if (form && modal) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById("btn-save-req-submit") as HTMLButtonElement;
+      const originalText = submitBtn.textContent;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
+
+        const currentProtocol = protocolState.getProtocol();
+        const currentNote = protocolState.getCustomNote();
+
+        if (!currentProtocol) throw new Error("No active protocol");
+
+        const protocolData = serializeProtocol(currentProtocol, currentNote);
+        const ascii = generateAsciiContent(currentProtocol, currentNote);
+
+        const name = (document.getElementById("req-protocol-name") as HTMLInputElement).value;
+        const email = (document.getElementById("req-email") as HTMLInputElement).value;
+        const context = (document.getElementById("req-context") as HTMLInputElement).value;
+
+        await requestSaveProtocol({
+          protocolData: protocolData,
+          ascii: ascii,
+          protocolName: name,
+          userEmail: email,
+          context: context
+        });
+
+        console.log("Request sent successfully.");
+        modal.style.display = 'none';
+        form.reset();
+      } catch (err: any) {
+        console.error(`Error with Protocol Save Request submission: ${err.message}`);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
+  }
 }
