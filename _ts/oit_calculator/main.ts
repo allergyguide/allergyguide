@@ -80,7 +80,7 @@ async function initializeCalculator(): Promise<void> {
     // Force UI refresh if protocol exists (preparing for future secure features)
     const p = protocolState.getProtocol();
     if (p) {
-      renderProtocolTable(p, protocolState.getCustomNote());
+      renderProtocolTable(p, protocolState.getCustomNote(), isLoggedIn);
     }
   });
 
@@ -112,7 +112,7 @@ async function initializeCalculator(): Promise<void> {
       showProtocolUI();
       renderFoodSettings(protocol); // renders settings blocks (uses patching)
       renderDosingStrategy(protocol); // renders strategy buttons
-      renderProtocolTable(protocol, note); // renders table (uses patching)
+      renderProtocolTable(protocol, note, appState.isLoggedIn); // renders table (uses patching)
       updateWarnings(protocol, appState.warningsPageURL);
       updateFoodBDisabledState(protocol);
       updateUndoRedoButtons(protocolState.getCanUndo(), protocolState.getCanRedo());

@@ -119,10 +119,31 @@
 			</tbody>
 			<!-- Protocol table will be dynamically generated -->
 		</table>
-		<div class="bottom-section">
-			<!-- Export buttons will be dynamically inserted here -->
-			<!-- Warnings Sidebar -->
-			<div class="warnings-container oit-hidden-on-init">
+		<div class="bottom-section oit-hidden-on-init">
+			<div class="export-container">
+
+				<div class="export-buttons">
+					<button class="btn-export" id="export-ascii">Copy ASCII</button>
+					<button class="btn-export" id="export-pdf">Export PDF</button>
+				</div>
+
+				<div id="save-request-wrapper" style="display: none; margin-top: 1rem;">
+					<button id="btn-trigger-save-request" class="btn-save-protocol-action" style="width: 100%;">
+						Request Save Protocol
+					</button>
+				</div>
+
+				<div class="custom-note-container">
+					<label for="custom-note">Notes:</label>
+					<textarea id="custom-note"
+					          class="custom-note-textarea"
+					          placeholder="Add any custom notes or instructions ..."
+					          rows="8"
+					></textarea>
+				</div>
+			</div>
+
+			<div class="warnings-container">
 				<div class="no-warnings">Protocol passes internal checks.</div>
 			</div>
 		</div>

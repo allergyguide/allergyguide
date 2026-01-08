@@ -412,10 +412,11 @@ export function renderDosingStrategy(protocol: Protocol | null): void {
  * 4. Check if Full Rebuild needed: if row counts differ, headers are misplaced, or input types change (e.g., Direct → Dilute): destroys and recreates the table 
  * Otherwise: patching if structure is stable. Updates text content, input values, and CSS classes in-place
  *
- * * @param protocol - current protocol state to render If `null` return early
+ * @param protocol - current protocol state to render If `null` return early
  * @param customNote - current custom note text
+ * @param isLoggedIn - Whether the user is currently authenticated (controls Save Request visibility)
  */
-export function renderProtocolTable(protocol: Protocol | null, customNote: string): void {
+export function renderProtocolTable(protocol: Protocol | null, customNote: string, isLoggedIn: boolean): void {
   if (!protocol) return;
 
   const tableContainer = document.querySelector(
@@ -424,7 +425,9 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
   const tbody = tableContainer.querySelector("tbody");
 
   // Get warnings, need to know which steps / rows to highlight
+  // See if there are any red warnings too for later
   const warnings = validateProtocol(protocol);
+  const hasSevereWarnings = warnings.some(w => w.severity === 'red');
   const stepWarnings = new Map<number, "red" | "yellow">();
   for (const warning of warnings) {
     if (warning.stepIndex !== undefined) {
@@ -506,7 +509,10 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
   }
 
   if (needsFullRebuild) {
-    renderFullTable(tableContainer, expectedRows, customNote);
+    renderFullTable(tableContainer, expectedRows);
+    // Update Notes and Exports (Bottom Section)
+    // this needs to occur here to remove the hidden on init
+    updateBottomSection(customNote, isLoggedIn, hasSevereWarnings);
     return;
   }
 
@@ -580,8 +586,7 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
   }
 
   // Update Notes and Exports (Bottom Section)
-  // TODO! Move out to separate module
-  renderBottomSection(customNote);
+  updateBottomSection(customNote, isLoggedIn, hasSevereWarnings);
 }
 
 /**
@@ -589,9 +594,8 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
  *
  * @param tableContainer - DOM element (table) where the HTML will be injected
  * @param expectedRows 
- * @param customNote - current custom note text
  */
-function renderFullTable(tableContainer: HTMLElement, expectedRows: RowSpec[], customNote: string) {
+function renderFullTable(tableContainer: HTMLElement, expectedRows: RowSpec[]) {
   let html = `
     <thead>
       <tr>
@@ -702,41 +706,71 @@ function renderFullTable(tableContainer: HTMLElement, expectedRows: RowSpec[], c
   }
   html += `</tbody>`;
   tableContainer.innerHTML = html;
-
-  // TODO! decouple custom notes section from this all
-  // But also requires removing the export stuff
-  renderBottomSection(customNote);
 }
 
-// renders the export buttons and custom note
-// ideally in future the export buttons are rendered separately
-function renderBottomSection(customNote: string) {
-  const bottomSection = document.querySelector(".bottom-section") as HTMLElement;
+/**
+ * Updates the visibility and state of the bottom section controls (Exports, Save Request, Notes).
+ * Decouples layout generation from logic by manipulating static HTML.
+ *
+ * @param customNote - The current custom note text.
+ * @param isLoggedIn - User authentication status.
+ * @param hasSevereWarnings - If true, disables the "Save Request" button.
+ */
+export function updateBottomSection(customNote: string, isLoggedIn: boolean, hasSevereWarnings: boolean) {
+  const bottomSection = document.querySelector(".bottom-section");
   if (!bottomSection) return;
 
-  let exportContainer = bottomSection.querySelector(".export-container");
-  if (!exportContainer) {
-    const exportHTML = `
-      <div class="export-container">
-        <div class="export-buttons">
-          <button class="btn-export" id="export-ascii">Copy ASCII</button>
-          <button class="btn-export" id="export-pdf">Export PDF</button>
-        </div>
-        <div class="custom-note-container">
-          <label for="custom-note">Notes:</label>
-          <textarea
-            id="custom-note"
-            class="custom-note-textarea"
-            placeholder="Add any custom notes or instructions ..."
-            rows="8"
-          ></textarea>
-        </div>
-      </div>
-    `;
-    bottomSection.insertAdjacentHTML("afterbegin", exportHTML);
+  // Ensure the section is visible (handles the oit-hidden-on-init class removal)
+  bottomSection.classList.remove("oit-hidden-on-init");
 
-    const textarea = document.getElementById("custom-note") as HTMLTextAreaElement;
-    if (textarea) textarea.value = customNote;
+  // Delegate to specific renderers
+  updatePublicExports(customNote);
+  updateRestrictedControls(isLoggedIn, hasSevereWarnings);
+}
+
+/**
+ * Updates public export controls (specifically the custom note textarea).
+ *
+ * @param customNote - New note text to display.
+ */
+function updatePublicExports(customNote: string) {
+  const textarea = document.getElementById("custom-note") as HTMLTextAreaElement;
+  // Only update if changed to avoid cursor jumping if user is typing
+  if (textarea && textarea.value !== customNote) {
+    textarea.value = customNote;
+  }
+}
+
+/**
+ * Updates the Restricted "Request to Save Protocol" button state.
+ *
+ * @param isLoggedIn - Determines visibility of the wrapper.
+ * @param hasSevereWarnings - Determines disabled state of the button.
+ */
+function updateRestrictedControls(isLoggedIn: boolean, hasSevereWarnings: boolean) {
+  const wrapper = document.getElementById("save-request-wrapper");
+  const btn = document.getElementById("btn-trigger-save-request") as HTMLButtonElement;
+
+  if (!wrapper || !btn) return;
+
+  if (!isLoggedIn) {
+    wrapper.style.display = "none";
+    return;
+  }
+
+  // Is Logged In
+  wrapper.style.display = "block";
+
+  if (hasSevereWarnings) {
+    btn.disabled = true;
+    btn.textContent = "Fix Critical Warnings First";
+    btn.title = "Protocol has red warnings";
+    btn.classList.add("disabled-state");
+  } else {
+    btn.disabled = false;
+    btn.textContent = "Request to Save Protocol";
+    btn.title = "";
+    btn.classList.remove("disabled-state");
   }
 }
 
