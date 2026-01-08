@@ -217,16 +217,17 @@
 </div>
 <!-- Request to save protocol modal -->
 <div id="oit-save-request-modal" class="oit-modal-overlay" style="display: none;">
-	<div class="oit-modal-content">
+	<div class="oit-modal-content oit-save-request-content">
 		<h3>Request to Save Protocol</h3>
-		<div class="warning-box" style="background: #ffe6e6; border: 1px solid #cc0000; padding: 10px; margin-bottom: 15px; color: #cc0000;">
-			<strong>WARNING:</strong>
-			Do NOT include any Patient Health Information such as patient names, dates of birth, MRN, etc. in these fields.
+		<p class="login-instruction">Submit the current protocol for review. Once approved, it will be added to your profile for future use. Requests are usually processed within 3-5 business days.</p>
+		<div class="oit-warning-banner">
+			<strong>No PHI Allowed</strong>
+			Do NOT include any Patient Health Information in these fields, or the protocol itself.
 		</div>
 		<form id="save-request-form">
 			<div class="oit-form-group">
 				<label for="req-protocol-name">Protocol Name (Required)</label>
-				<input type="text" id="req-protocol-name" class="search-input" required placeholder="e.g. MyName Peanut Standard">
+				<input type="text" id="req-protocol-name" class="search-input" required placeholder="i.e. MyName Peanut Standard">
 			</div>
 			<div class="oit-form-group">
 				<label for="req-email">Your Email for Request Receipt (Required)</label>

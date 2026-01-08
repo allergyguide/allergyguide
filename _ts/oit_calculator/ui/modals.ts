@@ -280,16 +280,31 @@ export function attachSaveRequestListeners() {
   document.body.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (target && target.id === 'btn-trigger-save-request') {
-      if (modal) modal.style.display = 'flex';
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Lock scroll
+      }
     }
   });
 
-  if (cancelBtn && modal) {
-    cancelBtn.addEventListener('click', () => {
+  const closeModal = () => {
+    if (modal) {
       modal.style.display = 'none';
+      document.body.style.overflow = ''; // Restore scroll
       form.reset();
-    });
+    }
+  };
+
+  if (cancelBtn && modal) {
+    cancelBtn.addEventListener('click', closeModal);
   }
+
+  // Allow ESC to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape" && modal && modal.style.display === 'flex') {
+      closeModal();
+    }
+  });
 
   if (form && modal) {
     form.addEventListener('submit', async (e) => {
@@ -327,8 +342,7 @@ export function attachSaveRequestListeners() {
         });
 
         console.log("Request sent successfully.");
-        modal.style.display = 'none';
-        form.reset();
+        closeModal();
       } catch (err: any) {
         console.error(`Error with Protocol Save Request submission: ${err.message}`);
       } finally {

@@ -1374,6 +1374,41 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; // Reset font from Times (used in clickwrap)
 }
 
+.oit-save-request-content {
+  max-width: 500px !important;
+  width: 90%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--oit-text);
+  }
+}
+
+.oit-warning-banner {
+  background-color: var(--oit-warning-red-bg);
+  color: var(--oit-warning-red-text);
+  border: 1px solid var(--oit-warning-red-border);
+  border-left-width: 5px;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+
+  strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    font-weight: 800;
+  }
+}
+
 .login-instruction {
   color: var(--oit-text-secondary);
   font-size: 0.95rem;
