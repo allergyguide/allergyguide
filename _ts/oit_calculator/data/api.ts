@@ -87,6 +87,8 @@ export interface SaveRequestPayload {
   context: string;
   /** A formatted ASCII representation of the protocol for administrative review. */
   ascii: string;
+  /** A formatted representation of the warnings of the protocol. */
+  warnings: string;
 }
 
 

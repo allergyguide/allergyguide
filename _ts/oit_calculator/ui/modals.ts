@@ -14,6 +14,7 @@ import { protocolState } from "../state/instances";
 import { serializeProtocol } from "../utils";
 import { generateAsciiContent } from "../export/exports";
 import { login } from "../data/auth";
+import { validateProtocol } from "../core/validator";
 
 // STATE
 // ------------------
@@ -302,8 +303,12 @@ export function attachSaveRequestListeners() {
 
         const currentProtocol = protocolState.getProtocol();
         const currentNote = protocolState.getCustomNote();
-
         if (!currentProtocol) throw new Error("No active protocol");
+        const warnings = validateProtocol(currentProtocol);
+
+        const warningsString = warnings.length > 0
+          ? warnings.map(w => `[${w.severity.toUpperCase()}] ${w.stepIndex !== undefined ? `Step ${w.stepIndex}: ` : ""}${w.message}`).join("\n")
+          : "No active warnings.";
 
         const protocolData = serializeProtocol(currentProtocol, currentNote);
         const ascii = generateAsciiContent(currentProtocol, currentNote);
@@ -317,7 +322,8 @@ export function attachSaveRequestListeners() {
           ascii: ascii,
           protocolName: name,
           userEmail: email,
-          context: context
+          context: context,
+          warnings: warningsString
         });
 
         console.log("Request sent successfully.");

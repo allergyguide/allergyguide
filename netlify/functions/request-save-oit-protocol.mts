@@ -46,7 +46,7 @@ export const handler: Handler = async (event) => {
     return { statusCode: 400, body: "Invalid JSON" };
   }
 
-  const { protocolData, protocolName, userEmail, context, ascii } = payload;
+  const { protocolData, protocolName, userEmail, context, ascii, warnings } = payload;
 
   // ensure we have the minimum data needed
   // TODO! consider zod validation, though if it is validated beforehand client side, is there a point?
@@ -63,6 +63,11 @@ User: ${username}
 User Email: ${userEmail}
 Protocol Name: ${protocolName}
 Context: ${context || "None provided"}
+
+WARNINGS:
+------------------------------------------------
+${warnings || "No warnings info provided"}
+------------------------------------------------
 
 ASCII PREVIEW:
 ${ascii}
