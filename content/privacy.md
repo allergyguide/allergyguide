@@ -17,8 +17,9 @@ Cookies and Third-Party Signals:
 
 - General Visitors: We do not use advertising or analytics cookies. However, we use Cloudflare Turnstile to protect our login forms from spam and abuse. Turnstile may collect information such as your browser characteristics, and may set a strictly necessary cookie to validate that you are a human. Please see their [Privacy Policy](https://www.cloudflare.com/turnstile-privacy-policy/).
 - Authorized Tool Users: If you have an authorized login for certain tools (such as the OIT Calculator), we use a single secure cookie strictly to maintain your authenticated login session. This is classified as a "Strictly Necessary" cookie: it contains no personal tracking data and is used solely to verify your permissions.
+- Save Requests: For authorized users who choose to use the "Request Save Protocol" feature in the OIT Calculator, we collect the provided email address and protocol details to fulfill the request and send a confirmation receipt. This data is processed through **Resend**, our email service provider. We do not use this email for marketing purposes. Please see their [Privacy Policy](https://resend.com/legal/privacy-policy).
 
-We do not knowingly collect, store, or sell any personal information or Patient Health Information.
+We do not sell any personal information or Patient Health Information. Aside from the specific functional requirements mentioned above, we do not collect or store personal data.
 
 ## 2. Hosting
 
