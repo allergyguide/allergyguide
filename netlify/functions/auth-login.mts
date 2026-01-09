@@ -2,6 +2,9 @@ import type { Handler, HandlerResponse } from '@netlify/functions';
 import jwt from 'jsonwebtoken';
 import cookie from 'cookie';
 import bcrypt from 'bcryptjs';
+import { resolve } from 'path';
+import { promises as fs } from 'fs';
+import { getAllFilePaths } from './utils.mts';
 
 /**
  * Verifies a user's turnstile response token against the cloudflare API.
@@ -110,6 +113,24 @@ export const handler: Handler = async (event) => {
 			} as HandlerResponse;
 		}
 
+		// READ USER CONFIG & EXTRACT PERMISSIONS
+		let permissions: string[] = [];
+		try {
+			const configPath = resolve(`./secure_assets/user_configs/${username}_config.json`);
+			const configRaw = await fs.readFile(configPath, 'utf-8');
+			const userConfig = JSON.parse(configRaw);
+
+			// Flatten config to just a list of allowed paths
+			permissions = Array.from(getAllFilePaths(userConfig));
+		} catch (e) {
+			console.error(`Could not load config for ${username} during login:`, e);
+			return {
+				statusCode: 403,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ message: `Could not load config for ${username} during login.` }),
+			} as HandlerResponse;
+		}
+
 		// GENERATE JWT
 		const secret = process.env.JWT_SECRET;
 		if (!secret) {
@@ -122,7 +143,9 @@ export const handler: Handler = async (event) => {
 		}
 
 		const expiryHours = parseInt(process.env.TOKEN_EXPIRY_HOURS || '24', 10);
-		const token = jwt.sign({ user: username }, secret, {
+
+		// Sign with 'permissions' array instead of full 'config' object
+		const token = jwt.sign({ user: username, permissions: permissions }, secret, {
 			expiresIn: expiryHours * 3600 // expiresIn is in seconds so need to convert
 		});
 

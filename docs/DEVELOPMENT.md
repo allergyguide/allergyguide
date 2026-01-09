@@ -148,7 +148,7 @@ Some tools rely on Serverless Functions for authentication and data access.
 ### 1. Authentication Flow
 
 - **Login:** The client `POST`s credentials to `/.netlify/functions/auth-login`.
-- **Session:** On success, the function returns a `nf_jwt` **HttpOnly cookie**.
+- **Session:** On success, the function reads the user's config file (`user_configs/{user}_config.json`), extracts all valid file paths, and embeds this flattened **permissions list** into the `nf_jwt` **HttpOnly cookie**.
   - The JWT is signed with `JWT_SECRET`.
 - **Logout:** `POST` to `/.netlify/functions/auth-logout` clears the cookie.
 
@@ -157,7 +157,10 @@ Some tools rely on Serverless Functions for authentication and data access.
 Private assets (PDFs, JSON data) are **not** served statically. They reside in the `secure_assets/` folder, which is excluded from the public build but included in the function bundle.
 
 - **Endpoint:** `/.netlify/functions/get-secure-asset?file={filename}`
-- **Logic:** The function verifies the `nf_jwt` cookie and checks if the user has permission for the requested file before streaming it.
+- **Logic:**
+  - The function verifies the `nf_jwt` cookie.
+  - **Authorization:** It checks if the requested `{filename}` exists in the **permissions list** embedded in the JWT. This allows for instant, stateless verification without reading the user's config from disk on every request.
+  - **Exception:** For requests to `me.json`, the function reads the original structured config file from disk to ensure the frontend receives the full configuration object (which cannot be fully reconstructed from the flat permissions list).
 
 ### 3. Managing Users
 

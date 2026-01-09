@@ -1,7 +1,6 @@
 import type { Handler, HandlerResponse } from '@netlify/functions';
 import { normalize, resolve } from 'path';
 import { promises as fs } from 'fs';
-import { readFileSync, existsSync } from 'fs';
 import cookie from 'cookie';
 import jwt from 'jsonwebtoken';
 
@@ -10,34 +9,11 @@ import jwt from 'jsonwebtoken';
  */
 interface UserToken {
   user: string;
+  permissions: string[];
   iat: number;
   exp: number;
 }
 
-// Helper to check if a value is a likely file path 
-const isFilePath = (str: string) => str.includes('/') || str.includes('.');
-
-/**
- * Recursively traverses an arbitrary configuration object (JSON) to collect all strings that appear to be file paths
- * It normalizes paths (e.g., resolving 'foo//bar' to 'foo/bar') to ensure consistent comparison against requested filenames.
- *
- * @param {any} config - The user configuration object (can be string, array, or nested object)
- * @param {Set<string>} [paths] - An accumulator Set used during recursion. Defaults to a new Set
- * @returns {Set<string>} A Set containing all unique, normalized file paths found within the config
- */
-function getAllFilePaths(config: any, paths: Set<string> = new Set()): Set<string> {
-  if (typeof config === 'string') {
-    // Normalize the path (resolves '..', '//', and converts slashes for OS)
-    if (isFilePath(config)) {
-      paths.add(normalize(config));
-    }
-  } else if (Array.isArray(config)) {
-    config.forEach(item => getAllFilePaths(item, paths));
-  } else if (config && typeof config === 'object') {
-    Object.values(config).forEach(val => getAllFilePaths(val, paths));
-  }
-  return paths;
-}
 
 /**
  * Netlify Function: Secure Asset Handler
@@ -62,6 +38,7 @@ export const handler: Handler = async (event) => {
   }
 
   let username = '';
+  let tokenPermissions: string[];
 
   // VERIFY JWT & GET USER
   try {
@@ -69,6 +46,7 @@ export const handler: Handler = async (event) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UserToken;
     username = decoded.user;
+    tokenPermissions = decoded.permissions;
   } catch (err) {
     return {
       statusCode: 403,
@@ -106,27 +84,11 @@ export const handler: Handler = async (event) => {
   else if (filename === `user_configs/${username}_config.json`) {
     hasAccess = true;
   }
-  // C. Check if the requested file is listed INSIDE their config file
-  // This serves as their source of truth for user permissions
+  // C. Check permissions
   else {
-    try {
-      // Load their config from disk
-      const configPath = resolve(`./secure_assets/user_configs/${username}_config.json`);
-
-      if (existsSync(configPath)) {
-        const configRaw = readFileSync(configPath, 'utf-8');
-        const configJson = JSON.parse(configRaw);
-
-        const allowedFiles = getAllFilePaths(configJson);
-
-        // Check if the requested filename appears anywhere in their config
-        if (allowedFiles.has(filename)) {
-          hasAccess = true;
-        }
-      }
-    } catch (e) {
-      console.error(`Error reading config for authorization: ${e}`);
-      hasAccess = false; // should be false anyway but this is to be safe
+    // Check Flattened Permissions in Token 
+    if (tokenPermissions && tokenPermissions.includes(filename)) {
+      hasAccess = true;
     }
   }
 
