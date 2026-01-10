@@ -8,14 +8,18 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
-## []
+## [0.14.0] - 2026-01-10
 
 ### Added
 
-- Cloudflare turnstile added to login flow to mitigate malicious attacks on the secure login endpoint
-- Protocol save requests: logged in users can now request to have custom built protocols saved to their account under a specific name
+- Optimistic UI: Login state is reflected immediately upon page load, eliminating visual flicker while waiting for server verification.
+- Data Sync Indicator: The user badge now displays a syncing state while custom protocols and foods are being loaded from the server.
+- Cloudflare Turnstile added to login flow to mitigate malicious attacks on the secure login endpoint.
+- Protocol save requests: logged in users can now request to have custom built protocols added to their account under a specific protocol name.
 
----
+### Changed
+
+- Performance Optimization: Significantly improved the initial loading speed for signed-in users.
 
 ## [0.13.0] - 2026-01-02
 
