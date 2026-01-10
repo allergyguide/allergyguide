@@ -1,3 +1,7 @@
+/**
+ * @module
+ * Global application state management (User, Auth, Databases).
+ */
 import fuzzysort from "fuzzysort";
 import { type FoodData, type ProtocolData } from "../types";
 // Helper type: Takes any object T and adds the 'prepared' property from Fuzzysort

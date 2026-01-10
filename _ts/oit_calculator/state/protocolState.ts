@@ -1,3 +1,7 @@
+/**
+ * @module
+ * State management for the active protocol, including history (undo/redo).
+ */
 import type { Protocol, HistoryItem } from "../types";
 
 type Listener = (protocol: Protocol | null, note: string) => void;

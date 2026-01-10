@@ -1,3 +1,7 @@
+/**
+ * @module
+ * Serverless function to clear authentication cookies.
+ */
 import type { Handler } from '@netlify/functions';
 import cookie from 'cookie';
 

@@ -1,3 +1,7 @@
+/**
+ * @module
+ * Serverless function to serve protected assets (JSON/PDF) securely.
+ */
 import type { Handler, HandlerResponse } from '@netlify/functions';
 import { normalize, resolve } from 'path';
 import { promises as fs } from 'fs';

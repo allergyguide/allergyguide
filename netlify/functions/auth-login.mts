@@ -1,3 +1,7 @@
+/**
+ * @module
+ * Serverless function to authenticate users and issue JWT cookies.
+ */
 import type { Handler, HandlerResponse } from '@netlify/functions';
 import jwt from 'jsonwebtoken';
 import cookie from 'cookie';

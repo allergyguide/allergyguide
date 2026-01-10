@@ -1,3 +1,7 @@
+/**
+ * @module
+ * Serverless function to handle protocol save requests via email.
+ */
 import { Handler } from '@netlify/functions';
 import jwt from 'jsonwebtoken';
 import cookie from 'cookie';

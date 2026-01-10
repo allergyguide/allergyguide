@@ -1,3 +1,7 @@
+/**
+ * @module
+ * Orchestrates loading of public food databases and user-specific config and secure assets.
+ */
 import { z } from "zod";
 import {
   type FoodData,

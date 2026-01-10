@@ -1,3 +1,7 @@
+/**
+ * @module
+ * Authentication functions for logging in and out via Netlify functions.
+ */
 import { HttpError, type AuthLoginResult } from "../types";
 
 /**
