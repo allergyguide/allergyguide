@@ -28,8 +28,8 @@ export const handler: Handler = async (event) => {
   try {
     if (!process.env.JWT_SECRET) throw new Error("Missing JWT_SECRET");
     const secret = process.env.JWT_SECRET!;
-    const decoded = jwt.verify(token, secret) as { user: string };
-    username = decoded.user;
+    const decoded = jwt.verify(token, secret) as { username: string };
+    username = decoded.username;
   } catch (err) {
     return {
       statusCode: 403,

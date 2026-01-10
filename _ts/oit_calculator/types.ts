@@ -182,7 +182,6 @@ const NumericString = z.string().refine((val) => !isNaN(parseFloat(val)) && isFi
   message: "Must be a valid number string",
 });
 
-// TODO! Clean up the CNF file; some of the SOLID/LIQUID distinctions are wrong still
 /**
  * Food database record (as loaded from JSON containing with data from Canadian Nutrient File, Health Canada, 2015).
  * Raw values are UI-facing and will be converted to internal Decimal where needed later.
@@ -240,23 +239,6 @@ export const ProtocolDataSchema = z.strictObject({
   custom_note: z.string().optional(),
 });
 export type ProtocolData = z.infer<typeof ProtocolDataSchema>;
-
-export const OITToolConfigSchema = z.strictObject({
-  custom_foods: z.string(), // path, e.g., "oit_calculator/alice_foods.json", assume 'root' is secure_assets/
-  custom_protocols: z.string(), // path
-  handouts: z.array(z.string()), // e.g., ["header.pdf", "protocol", "footer.pdf"]
-});
-export type OITToolConfig = z.infer<typeof OITToolConfigSchema>;
-
-export const UserConfigSchema = z.object({
-  user: z.string(),
-  tools: z.object({
-    oit_calculator: OITToolConfigSchema,
-  })
-    // use catchall to allow "any other keys" (matches [key: string]: any)
-    .catchall(z.any())
-});
-export type UserConfig = z.infer<typeof UserConfigSchema>;
 
 // ============================================
 // HISTORY INTERFACES
@@ -316,6 +298,17 @@ export interface UserHistoryPayload {
   p: MProtocol;   // Current Protocol State
   w?: MWarning[]; // Warnings
   h: string[];    // History of action labels only (stripped timestamps)
+}
+
+/**
+ * Result of a successful authentication attempt.
+ */
+export interface AuthLoginResult {
+  /** Indicates if the authentication was successful. */
+  valid: boolean;
+  /** Unix timestamp (milliseconds) when the session expires. */
+  expiresAt: number;
+  username: string;
 }
 
 // ============================================

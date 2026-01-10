@@ -89,7 +89,7 @@
     margin-top: -0.5em;
     align-items: center;
 
-    .oit-version {
+    .oit-version-auth {
       margin-right: auto;
       font-size: 0.85rem;
       color: var(--oit-text-secondary);
@@ -100,6 +100,11 @@
       .separator {
         opacity: 0.5;
       }
+    }
+
+    .oit-data-syncing {
+      opacity: 0.6;
+      cursor: progress;
     }
   }
 
@@ -1357,12 +1362,34 @@
 
 .user-badge {
   font-weight: 600;
+  vertical-align: middle;
+  text-align: center;
   color: var(--oit-success-text);
   border: 1px solid var(--oit-success-border);
   background-color: var(--oit-success-bg);
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
   font-size: 0.8rem;
+
+  /* If name too long cut off*/
+  max-width: 7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  animation: badgeEnter 0.3s ease-out forwards;
+}
+
+@keyframes badgeEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+    /* Slides down slightly */
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // --- Login Modal Specifics ---
@@ -1462,4 +1489,6 @@
     color: var(--oit-warning-red-text);
     background-color: var(--oit-warning-highlight-red);
   }
+
+  animation: badgeEnter 0.3s ease-out forwards;
 }

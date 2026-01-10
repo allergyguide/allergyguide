@@ -4,8 +4,6 @@ import {
   type ProtocolData,
   FoodDataSchema,
   ProtocolDataSchema,
-  type UserConfig,
-  UserConfigSchema,
 } from "../types";
 import { HttpError } from "../types";
 import { SAMPLE_PROTOCOL } from "../utils"
@@ -21,7 +19,7 @@ export interface PublicData {
 
 // Return type for the secure load
 export interface UserDataResult {
-  user: string;
+  username: string;
   customFoods: FoodData[];
   protocols: ProtocolData[];
   handouts: string[];
@@ -90,49 +88,35 @@ export async function loadPublicDatabases(): Promise<PublicData> {
 }
 
 /**
- * Orchestrates loading the user config and then the specific assets defined in it.
- * Call after auth signal
+ * Orchestrates loading the user configuration and consolidated assets via a bootstrap endpoint.
+ * Call after auth signal.
  */
 export async function loadUserConfiguration(): Promise<UserDataResult> {
   try {
-    // Fetch User Config
-    const rawConfig = await loadSecureAsset('me.json', 'json');
+    // Fetch everything in one go via the `oit_calculator-bootstrap`
+    const bootstrapData = await loadSecureAsset('oit_calculator-bootstrap', 'json');
 
-    const meConfigResult = UserConfigSchema.safeParse(rawConfig);
-
-    let meConfig: UserConfig;
-
-    if (!meConfigResult.success) {
-      throw new Error("OIT_NO_PERMISSION");
-    } else {
-      meConfig = meConfigResult.data;
+    // Basic structure check
+    if (!bootstrapData || typeof bootstrapData !== 'object') {
+      throw new Error("Invalid bootstrap data");
     }
 
-    const oitConfig = meConfig.tools.oit_calculator;
-
-    // Fetch the specific data files defined in the config
-    const [customFoodsResult, protocolsResult] = await Promise.all([
-      loadSecureAsset(oitConfig.custom_foods, 'json'),
-      loadSecureAsset(oitConfig.custom_protocols, 'json')
-    ]);
-
     // Validate Data
-    const customFoods = validateList<FoodData>(customFoodsResult, FoodDataSchema, "Custom Food");
-    const protocols = validateList<ProtocolData>(protocolsResult, ProtocolDataSchema, "Protocol");
+    // fallback to [] if the call fails
+    const customFoods = validateList<FoodData>(bootstrapData.customFoods || [], FoodDataSchema, "Custom Food");
+    const protocols = validateList<ProtocolData>(bootstrapData.protocols || [], ProtocolDataSchema, "Protocol");
 
     return {
-      user: meConfig.user,
+      username: bootstrapData.username || "Unknown",
       customFoods,
       protocols,
-      handouts: oitConfig.handouts
+      handouts: bootstrapData.handouts || []
     };
   } catch (error) {
     if (error instanceof HttpError) {
       throw error
     }
-    if (error instanceof Error && error.message === "OIT_NO_PERMISSION") {
-      throw new Error("User credentials valid, but account does not have permission to access extra resources. If you think this is a mistake, please contact us.");
-    }
+    // Generic fallback for other errors
     console.error("Error loading user configuration:", error);
     throw error;
   }
@@ -145,7 +129,7 @@ export async function loadUserConfiguration(): Promise<UserDataResult> {
 export async function handleUserLoad(): Promise<boolean> {
   try {
     // load user config and assets
-    // This throws if me.json is missing or lacks oit_calculator config
+    // This throws if the bootstrap request fails or lacks oit_calculator config
     const userData = await loadUserConfiguration();
 
     // update state (foods, protocols, and pdf order)
@@ -154,8 +138,8 @@ export async function handleUserLoad(): Promise<boolean> {
       userData.protocols,
       userData.handouts
     );
-    
-    appState.setAuthState(true, userData.user);
+
+    appState.setAuthState(true, userData.username);
 
     return true;
   } catch (e) {

@@ -227,6 +227,11 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
         const loadSuccess = await onLoginAttempt();
         if (loadSuccess) {
           hide();
+          localStorage.setItem('oit_session_active', JSON.stringify({
+            valid: true,
+            expiresAt: authSuccess.expiresAt,
+            username: authSuccess.username
+          }));
         } else {
           // FAIL: Keep modal open, show error to user
           // This implies auth worked, but they don't have the OIT tool config or lacks permissions

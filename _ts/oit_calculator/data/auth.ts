@@ -1,4 +1,4 @@
-import { HttpError } from "../types";
+import { HttpError, type AuthLoginResult } from "../types";
 
 /**
  * Authenticates a user via the Netlify login function.
@@ -9,11 +9,11 @@ import { HttpError } from "../types";
  * @param password - The raw password string.
  * @param turnstileToken - The verification token received from the client-side turnstile widget.
  *
- * @returns A Promise that resolves to `true` only upon successful authentication.
+ * @returns A Promise that resolves to an `AuthLoginResult` upon successful authentication.
  *
  * @throws {HttpError} on 400, 401, 405, 500, or HTML/Network failures.
  */
-export async function login(username: string, password: string, turnstileToken: string): Promise<boolean> {
+export async function login(username: string, password: string, turnstileToken: string): Promise<AuthLoginResult> {
   const response = await fetch('/.netlify/functions/auth-login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -31,8 +31,15 @@ export async function login(username: string, password: string, turnstileToken: 
 
   // Handle success
   if (response.ok) {
-    console.log("Logged in!");
-    return true
+    const data = await response.json();
+    const expiryHours = data.expiryHours || 24; // Default if missing
+    const expiresAt = Date.now() + (expiryHours * 60 * 60 * 1000);
+
+    return {
+      valid: true,
+      expiresAt: expiresAt,
+      username: username
+    }
   }
 
   // Handle errs
@@ -50,7 +57,7 @@ export async function login(username: string, password: string, turnstileToken: 
     throw new HttpError('Invalid credentials', 401)
   }
   if (response.status === 403) {
-    throw new HttpError('No config available for user', 401)
+    throw new HttpError('No config available for user', 403)
   }
   if (response.status === 405) {
     throw new HttpError('Method not allowed', 405)
@@ -62,11 +69,12 @@ export async function login(username: string, password: string, turnstileToken: 
 
 /**
  * Terminates the current user session.
- * This function sends a POST request to the `/.netlify/functions/auth-logout` endpoint, instructing the backend to clear the `nf_jwt` HTTP-only cookie.
+ * This function sends a POST request to the `/.netlify/functions/auth-logout` endpoint, instructing the backend to clear the `nf_jwt` HTTP-only cookie, and removes the `oit_session_active` flag from local storage.
  * @returns A Promise that resolves to `true` if the logout request was sent successfully, or `false` if a network error occurred.
  */
 export async function logout() {
   try {
+    localStorage.removeItem('oit_session_active');
     await fetch('/.netlify/functions/auth-logout', {
       method: 'POST', // Use POST to prevent browser pre-fetching from logging you out
     });

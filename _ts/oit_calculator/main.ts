@@ -49,15 +49,16 @@ async function initializeCalculator(): Promise<void> {
   const urlContainer = document.getElementById('url-container');
   const rulesUrl = urlContainer ? urlContainer.dataset.targetUrl! : "";
 
-  // Parallel load public and user data (if user already signed in)
+  // Start Loads
   const publicDataPromise = loadPublicDatabases();
   const userDataPromise = loadUserConfiguration().catch(() => null);
-  const [publicData, userData] = await Promise.all([publicDataPromise, userDataPromise]);
 
-  // set up appState
+  // Await Public Data (Required for AppState init)
+  const publicData = await publicDataPromise;
+
+  // Init AppState and Subscribers
   appState = new AppState(publicData, rulesUrl);
 
-  // Subscribe appState (Login Status) to UI Refresh
   appState.subscribeToAuth((isLoggedIn) => {
     const loginBtn = document.getElementById("btn-login-trigger");
     const logoutBtn = document.getElementById("btn-logout-trigger");
@@ -67,7 +68,7 @@ async function initializeCalculator(): Promise<void> {
       if (loginBtn) loginBtn.style.display = 'none';
       if (logoutBtn) logoutBtn.style.display = 'inline-block';
       if (badge) {
-        badge.textContent = `User: ${appState.username}`;
+        badge.textContent = `${appState.username}`;
         badge.style.display = 'inline-block';
       }
     } else {
@@ -84,6 +85,28 @@ async function initializeCalculator(): Promise<void> {
     }
   });
 
+  // OPTIMISTIC UI 
+  // Check if we expect to be logged in based on local flag
+  let optimisticLogin = false;
+  try {
+    const sessionRaw = localStorage.getItem('oit_session_active');
+    if (sessionRaw) {
+      const session = JSON.parse(sessionRaw);
+      if (session.valid && session.expiresAt > Date.now()) {
+        optimisticLogin = true;
+        appState.setAuthState(true, session.username || "..."); // Show "User: Loading..." immediately
+      } else {
+        // removes old cookie that's expired...? redundant if we do this again below
+        localStorage.removeItem('oit_session_active');
+      }
+    }
+  } catch (e) {
+    // Ignore corrupt localstorage
+  }
+
+  // Await User Data (The actual auth check + data load)
+  const userData = await userDataPromise;
+
   // If successful auth in
   if (userData) {
     console.log("Session restored: Loading custom assets.");
@@ -93,8 +116,19 @@ async function initializeCalculator(): Promise<void> {
       userData.handouts
     );
 
-    // Set Auth State (Triggers listeners)
-    appState.setAuthState(true, userData.user);
+    // Set Real Auth State (Triggers listeners again with real name)
+    appState.setAuthState(true, userData.username);
+
+    // remove sync loading indicator from the optimistic UI
+    const badge = document.getElementById('user-badge');
+    if (badge) badge.classList.remove('oit-data-syncing');
+  } else {
+    // If we optimistically showed login but the request failed (cookie expired, network err), revert to public
+    if (optimisticLogin) {
+      console.log("Session invalid or expired. Reverting to public mode.");
+      appState.setAuthState(false, null);
+      localStorage.removeItem('oit_session_active'); // Cleanup
+    }
   }
 
   // Initialize global delegated events (settings, table, dosing, misc)

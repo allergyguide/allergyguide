@@ -69,8 +69,8 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 3. **Secure Assets:**
 
 - **Gating:** `get-secure-asset.mts` verifies the JWT and checks the user config fetched from secure_assets to ensure the user is allowed to access the requested file.
-- **Configuration:** The user loads a virtual `me.json`, which the backend maps to `user_configs/{username}_config.json`. This config tells the frontend which specific custom food and protocol lists to fetch.
-- **Merging:** `AppState` merges the public foods/protocols with the private ones fetched via `api.ts`, rebuilding search indices.
+- **Configuration:** The tool uses an `oit_calculator-bootstrap` request, which the backend handles by reading `user_configs/{username}_config.json` and then aggregating the required food and protocol lists into a single JSON response for the frontend.
+- **Merging:** `AppState` merges the public foods/protocols with the private ones received from the bootstrap payload, rebuilding search indices.
 
 ### HTML DOM Patching
 
@@ -89,7 +89,7 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 Deployment requires the following Netlify environment variables (and ideally within local .env):
 
 - `JWT_SECRET`: Secret key for signing session tokens.
-- `AUTH_USERS`: JSON map of valid users `{"user": "bcrypt_hash"}`. Use `tools/hash_password.ts` to generate these hashes.
+- `AUTH_USERS`: JSON map of valid users `{"username": "bcrypt_hash"}`. Use `tools/hash_password.ts` to generate these hashes.
 - `TOKEN_EXPIRY_HOURS`: Session duration (default 24).
 
 ## Roadmap to v1.0.0

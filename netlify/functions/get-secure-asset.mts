@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
  * Interface representing the decoded JWT payload.
  */
 interface UserToken {
-  user: string;
+  username: string;
   permissions: string[];
   iat: number;
   exp: number;
@@ -45,7 +45,7 @@ export const handler: Handler = async (event) => {
     if (!process.env.JWT_SECRET) throw new Error("Missing JWT_SECRET");
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UserToken;
-    username = decoded.user;
+    username = decoded.username;
     tokenPermissions = decoded.permissions;
   } catch (err) {
     return {
@@ -70,6 +70,74 @@ export const handler: Handler = async (event) => {
   // CHANGE FILENAME IF GENERIC `me.json` REQUESTED TO GRAB USER CONFIG
   if (filename === 'me.json') {
     filename = `user_configs/${username}_config.json`;
+  }
+
+  // HANDLE BOOTSTRAP REQUEST (Server-Side Aggregation)
+  if (filename === 'oit_calculator-bootstrap') {
+    try {
+      const secureRoot = resolve('./secure_assets');
+      const configPath = resolve(secureRoot, `user_configs/${username}_config.json`);
+
+      // A. Read User Config
+      const configRaw = await fs.readFile(configPath, 'utf-8');
+      const userConfig = JSON.parse(configRaw);
+
+      if (!userConfig.tools?.oit_calculator) {
+        console.warn(`User ${username} logged in but lacks oit_calculator config.`);
+        return {
+          statusCode: 403,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: "Forbidden: No OIT Configuration found" })
+        };
+      }
+
+      const oitConfig = userConfig.tools.oit_calculator;
+
+      // B. Read Assets Parallel
+      // Use catch() to return empty array if a specific file is missing/broken
+
+      // path traversal security check
+      const foodsPath = resolve(secureRoot, oitConfig.custom_foods);
+      if (!foodsPath.startsWith(secureRoot)) throw new Error("Invalid custom foods path");
+      const protocolsPath = resolve(secureRoot, oitConfig.custom_protocols);
+      if (!protocolsPath.startsWith(secureRoot)) throw new Error("Invalid custom protocols path");
+
+      const [foodsRaw, protocolsRaw] = await Promise.all([
+
+        fs.readFile(foodsPath, 'utf-8').catch(e => {
+          console.error(`Failed to load foods for ${username}:`, e);
+          return "[]";
+        }),
+        fs.readFile(protocolsPath, 'utf-8').catch(e => {
+          console.error(`Failed to load protocols for ${username}:`, e);
+          return "[]";
+        })
+      ]);
+
+      const responseData = {
+        username: username,
+        customFoods: JSON.parse(foodsRaw),
+        protocols: JSON.parse(protocolsRaw),
+        handouts: oitConfig.handouts || []
+      };
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        },
+        body: JSON.stringify(responseData)
+      };
+
+    } catch (err) {
+      console.error(`Error in oit_calculator bootstrap for ${username}:`, err);
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "Bootstrap failed" })
+      };
+    }
   }
 
   // AUTHORIZATION LOGIC

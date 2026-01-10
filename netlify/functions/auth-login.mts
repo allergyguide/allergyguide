@@ -145,7 +145,7 @@ export const handler: Handler = async (event) => {
 		const expiryHours = parseInt(process.env.TOKEN_EXPIRY_HOURS || '24', 10);
 
 		// Sign with 'permissions' array instead of full 'config' object
-		const token = jwt.sign({ user: username, permissions: permissions }, secret, {
+		const token = jwt.sign({ username: username, permissions: permissions }, secret, {
 			expiresIn: expiryHours * 3600 // expiresIn is in seconds so need to convert
 		});
 
@@ -164,7 +164,7 @@ export const handler: Handler = async (event) => {
 				'Set-Cookie': authCookie,
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ success: true, user: username }),
+			body: JSON.stringify({ success: true, username: username, expiryHours: expiryHours }),
 		};
 
 	} catch (error) {

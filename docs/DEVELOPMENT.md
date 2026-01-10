@@ -56,15 +56,15 @@ The project uses a modified build process for the Abridge theme to allow for cus
 
 These must be set in Netlify (Site Settings > Environment Variables) and locally in a `.env` file for the build to succeed.
 
-| Variable             | Purpose                                                        |
-| :------------------- | :------------------------------------------------------------- |
-| `PRIVATE_TOKEN`      | GitHub Personal Access Token to fetch private assets/tools.    |
-| `GITHUB_OWNER`       | Owner of the repo (e.g., `john-doe`).                          |
-| `GITHUB_REPO`        | Repository name (e.g. `repo-name`).                            |
-| `AUTH_USERS`         | JSON object of allowed users/hashes: `{"user": "$2a$10$..."}`. |
-| `JWT_SECRET`         | Secret key used to sign Auth Cookies.                          |
-| `TOKEN_EXPIRY_HOURS` | Duration of the user session in hours (Default: 24).           |
-| `TURNSTILE_SECRET`   | Secret key from Cloudflare Turnstile for server-side verify    |
+| Variable             | Purpose                                                            |
+| :------------------- | :----------------------------------------------------------------- |
+| `PRIVATE_TOKEN`      | GitHub Personal Access Token to fetch private assets/tools.        |
+| `GITHUB_OWNER`       | Owner of the repo (e.g., `john-doe`).                              |
+| `GITHUB_REPO`        | Repository name (e.g. `repo-name`).                                |
+| `AUTH_USERS`         | JSON object of allowed users/hashes: `{"username": "$2a$10$..."}`. |
+| `JWT_SECRET`         | Secret key used to sign Auth Cookies.                              |
+| `TOKEN_EXPIRY_HOURS` | Duration of the user session in hours (Default: 24).               |
+| `TURNSTILE_SECRET`   | Secret key from Cloudflare Turnstile for server-side verify        |
 
 ## Project structure
 
@@ -148,7 +148,7 @@ Some tools rely on Serverless Functions for authentication and data access.
 ### 1. Authentication Flow
 
 - **Login:** The client `POST`s credentials to `/.netlify/functions/auth-login`.
-- **Session:** On success, the function reads the user's config file (`user_configs/{user}_config.json`), extracts all valid file paths, and embeds this flattened **permissions list** into the `nf_jwt` **HttpOnly cookie**.
+- **Session:** On success, the function reads the user's config file (`user_configs/{username}_config.json`), extracts all valid file paths, and embeds this flattened **permissions list** into the `nf_jwt` **HttpOnly cookie**.
   - The JWT is signed with `JWT_SECRET`.
 - **Logout:** `POST` to `/.netlify/functions/auth-logout` clears the cookie.
 
@@ -159,8 +159,10 @@ Private assets (PDFs, JSON data) are **not** served statically. They reside in t
 - **Endpoint:** `/.netlify/functions/get-secure-asset?file={filename}`
 - **Logic:**
   - The function verifies the `nf_jwt` cookie.
-  - **Authorization:** It checks if the requested `{filename}` exists in the **permissions list** embedded in the JWT. This allows for instant, stateless verification without reading the user's config from disk on every request.
-  - **Exception:** For requests to `me.json`, the function reads the original structured config file from disk to ensure the frontend receives the full configuration object (which cannot be fully reconstructed from the flat permissions list).
+  - **Authorization:**
+    - **Standard files:** It checks if the requested `{filename}` exists in the **permissions list** embedded in the JWT. This allows for instant, stateless verification without reading the user's config from disk on every request.
+    - **Exception: `me.json`:** If `{filename}` is `me.json`, the function reads the user's config file from disk (`user_configs/{username}_config.json`) to return the full configuration object (which cannot be fully reconstructed from the flat permissions list).
+    - **Exception: `oit_calculator-bootstrap`:** This endpoint bypasses the JWT permissions list. It reads the user's configuration file on the server, aggregates the associated food and protocol files, and returns a consolidated "bootstrap" payload for efficient app initialization.
 
 ### 3. Managing Users
 
