@@ -49,6 +49,9 @@ export async function login(username: string, password: string, turnstileToken: 
   if (response.status === 401) {
     throw new HttpError('Invalid credentials', 401)
   }
+  if (response.status === 403) {
+    throw new HttpError('No config available for user', 401)
+  }
   if (response.status === 405) {
     throw new HttpError('Method not allowed', 405)
   }
