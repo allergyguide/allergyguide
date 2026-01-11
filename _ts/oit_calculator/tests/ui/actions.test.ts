@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import Decimal from 'decimal.js';
-import { protocolState } from '../../state/instances';
+import { workspace } from '../../state/instances';
 import { clearFoodB } from '../../ui/actions';
 import { generateDefaultProtocol } from '../../core/calculator';
 import { addFoodBToProtocol, updateStepTargetMg } from '../../core/protocol';
@@ -24,7 +24,8 @@ describe('UI Actions', () => {
 
   beforeEach(() => {
     // Reset state before each test
-    protocolState.setProtocol(null, 'Reset');
+    // Use the active tab from the workspace
+    workspace.getActive().setProtocol(null, 'Reset');
   });
 
   describe('clearFoodB', () => {
@@ -40,10 +41,10 @@ describe('UI Actions', () => {
       protocol = updateStepTargetMg(protocol, 1, 1.5);
 
       // Set state
-      protocolState.setProtocol(protocol, 'Setup');
+      workspace.getActive().setProtocol(protocol, 'Setup');
 
       // Verify setup
-      let current = protocolState.getProtocol();
+      let current = workspace.getActive().getProtocol();
       expect(current?.foodB).toBeDefined();
       expect(current?.steps[0].targetMg.toNumber()).toBe(1.5);
 
@@ -51,7 +52,7 @@ describe('UI Actions', () => {
       clearFoodB();
 
       // Assertions
-      current = protocolState.getProtocol();
+      current = workspace.getActive().getProtocol();
 
       // Food B should be gone
       expect(current?.foodB).toBeUndefined();

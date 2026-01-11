@@ -2,6 +2,6 @@
  * @module
  * Singleton instances of state managers.
  */
-import { ProtocolState } from "./protocolState";
+import { WorkspaceManager } from "./workspaceManager";
 
-export const protocolState = new ProtocolState();
+export const workspace = new WorkspaceManager();

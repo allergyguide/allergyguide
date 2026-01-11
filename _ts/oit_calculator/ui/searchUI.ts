@@ -93,6 +93,27 @@ export function initSearchEvents(appState: AppState): void {
 }
 
 /**
+ * Resets the search UI state for both Food A and Food B inputs.
+ * Clears the input text, hides any visible autocomplete dropdowns,
+ * and cancels pending search debounce timers.
+ */
+export function resetSearch(): void {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+  
+  const aInput = document.getElementById("food-a-search") as HTMLInputElement;
+  const bInput = document.getElementById("food-b-search") as HTMLInputElement;
+  
+  if (aInput) {
+    aInput.value = "";
+    hideSearchDropdown("food-a-search");
+  }
+  if (bInput) {
+    bInput.value = "";
+    hideSearchDropdown("food-b-search");
+  }
+}
+
+/**
 * Render the autocomplete dropdown below a specific search input
 * Constructs dropdown menu, including:
 * - custom (always index 0) 

@@ -4,11 +4,12 @@
  */
 import type { Protocol, HistoryItem } from "../types";
 
-type Listener = (protocol: Protocol | null, note: string) => void;
+export type Listener = (protocol: Protocol | null, note: string) => void;
 
 /**
- * State manager for OIT Calculator
- * Holds central state (Protocol and Custom Notes), manages Undo/Redo history stack, handles event subscriptions for UI updates
+ * State manager for a single OIT Protocol (one tab)
+ * Holds protocol data and custom notes for that specific instance.
+ * Manages Undo/Redo history stack for this specific protocol.
  */
 export class ProtocolState {
   private MAX_HISTORY = 100;
@@ -81,6 +82,7 @@ export class ProtocolState {
       timestamp: Date.now()
     };
 
+    // TODO! to be removed in future
     console.debug(label);
 
     if (this.current && options.addToHistory) {
@@ -128,12 +130,30 @@ export class ProtocolState {
     if (!options?.skipRender) this.notify();
   }
 
+  /**
+   * Registers a callback function to be executed whenever the protocol or custom note changes.
+   * The listener is immediately called with the current state upon subscription.
+   * 
+   * @param listener - The callback function
+   */
   public subscribe(listener: Listener) {
     this.listeners.push(listener);
     // Emit current protocol inside the HistoryItem
     listener(this.current ? this.current.protocol : null, this.customNote);
   }
 
+  /**
+   * Removes a previously registered listener.
+   * 
+   * @param listener - The callback function to remove
+   */
+  public unsubscribe(listener: Listener) {
+    this.listeners = this.listeners.filter(l => l !== listener);
+  }
+
+  /**
+   * Broadcasts the current state to all registered listeners.
+   */
   private notify() {
     const p = this.current ? this.current.protocol : null;
     this.listeners.forEach(fn => fn(p, this.customNote));

@@ -4,13 +4,12 @@
  * Void functions that trigger: 1) PDF document to download in new tab 2) copy ASCII protocol to clipboard
  */
 
-import { FoodType, Method, HttpError } from "../types";
-import type { Protocol, Unit, Step, Food } from "../types";
+import { FoodType, Method } from "../types";
+import type { Protocol, Unit, Step, Food, HistoryItem } from "../types";
 import { formatNumber, formatAmount } from "../utils";
 import { getFoodAStepCount } from "../core/protocol";
 import type { jsPDF } from 'jspdf';
 import type { PDFDocument } from 'pdf-lib';
-import { protocolState } from "../state/instances";
 import { generateUserHistoryPayload } from "../core/minify";
 import { appState } from "../main"; // We need access to the global appState
 import { loadSecureAsset } from "../data/api";
@@ -23,6 +22,15 @@ declare const __VERSION_OIT_CALCULATOR__: string;
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
+
+/**
+ * Data bundle for exporting a single protocol tab
+ */
+export interface ProtocolExportData {
+  protocol: Protocol;
+  customNote: string;
+  history: HistoryItem[];
+}
 
 interface ExportRow {
   stepIndex: number;
@@ -61,9 +69,8 @@ function buildStepRows(steps: Step[], foodType: FoodType, isLastPhase: boolean):
   });
 }
 
-async function generateCompressedQrCode(): Promise<string | null> {
+async function generateCompressedQrCode(history: HistoryItem[]): Promise<string | null> {
   try {
-    const history = protocolState.getHistory();
     const payload = generateUserHistoryPayload(history);
     if (!payload) return null;
 
@@ -213,21 +220,23 @@ function renderNotes(doc: jsPDF, y: number, note: string): number {
   return y;
 }
 
-function renderFooterAndQR(doc: jsPDF, qrDataUrl: string | null) {
-  const pageCount = doc.internal.pages.length;
-  for (let i = 1; i < pageCount; i++) {
+function renderFooterAndQR(doc: jsPDF, qrMap: Map<number, string | null>) {
+  const pageCount = doc.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setFont("helvetica", "italic");
     doc.setTextColor(100);
     doc.text(`Always verify calculations before clinical use. Current tool version-hash: v${__VERSION_OIT_CALCULATOR__}-${__COMMIT_HASH__}`, 40, 772);
     doc.setTextColor(0);
-  }
 
-  if (qrDataUrl) {
-    // Always on Page 1, top right
-    doc.setPage(1);
-    doc.addImage(qrDataUrl, 'PNG', 493, 10, 80, 80);
+    // If this page has an associated QR code, render it
+    if (qrMap.has(i)) {
+      const qrDataUrl = qrMap.get(i);
+      if (qrDataUrl) {
+        doc.addImage(qrDataUrl, 'PNG', 493, 10, 80, 80);
+      }
+    }
   }
 }
 
@@ -236,7 +245,7 @@ function renderFooterAndQR(doc: jsPDF, qrDataUrl: string | null) {
 
 
 /**
- * Generate a printable PDF of the current protocol using jsPDF + autoTable.
+ * Generate a printable PDF of the current protocol(s) using jsPDF + autoTable.
  *
  * Includes:
  * - Food A section (and Food B when present)
@@ -246,50 +255,58 @@ function renderFooterAndQR(doc: jsPDF, qrDataUrl: string | null) {
  *
  * Opens in a new tab where possible; falls back to direct download.
  *
- * @param protocol Protocol
- * @param customNote string
+ * @param exportData Array of ProtocolExportData (one for each tab)
  * @param JsPdfClass  - the jsPDF constructor
  * @param PdfDocClass - static class for PDFDocument
  * @returns void
  */
-export async function generatePdf(protocol: Protocol | null, customNote: string, JsPdfClass: typeof jsPDF, PdfDocClass: typeof PDFDocument): Promise<void> {
-  if (!protocol) return;
+export async function generatePdf(exportData: ProtocolExportData[], JsPdfClass: typeof jsPDF, PdfDocClass: typeof PDFDocument): Promise<void> {
+  if (exportData.length === 0) return;
 
   try {
-    // GEN THE PROTOCL TGABLE PDF FIRST
-    const qrDataUrl = await generateCompressedQrCode();
-
     // Initialize PDF
     const doc: jsPDF = new JsPdfClass({ unit: "pt", format: "letter" });
-    let y = 40;
+    const qrMap = new Map<number, string | null>();
 
-    // Render Sections Sequentially
-    y = renderHeader(doc, y);
+    for (let i = 0; i < exportData.length; i++) {
+      const { protocol, customNote, history } = exportData[i];
+      if (i > 0) doc.addPage();
 
-    // Calculate Step Counts to determine "Last Phase"
-    const foodAStepCount = getFoodAStepCount(protocol);
-    const hasFoodBSteps = foodAStepCount < protocol.steps.length;
+      const currentPageNum = doc.getNumberOfPages();
 
-    // Food A
-    const foodASteps = protocol.steps.slice(0, getFoodAStepCount(protocol));
-    if (foodASteps.length > 0) {
-      const rows = buildStepRows(foodASteps, protocol.foodA.type, !hasFoodBSteps);
-      y = renderFoodSection(doc, y, protocol.foodA.name, protocol.foodA, rows, 440);
+      // GEN THE QR CODE for this protocol
+      const qrDataUrl = await generateCompressedQrCode(history);
+      qrMap.set(currentPageNum, qrDataUrl);
+
+      let y = 40;
+
+      // Render Header
+      y = renderHeader(doc, y);
+
+      // Calculate Step Counts to determine "Last Phase"
+      const foodAStepCount = getFoodAStepCount(protocol);
+      const hasFoodBSteps = foodAStepCount < protocol.steps.length;
+
+      // Food A
+      const foodASteps = protocol.steps.slice(0, foodAStepCount);
+      if (foodASteps.length > 0) {
+        const rows = buildStepRows(foodASteps, protocol.foodA.type, !hasFoodBSteps);
+        y = renderFoodSection(doc, y, protocol.foodA.name, protocol.foodA, rows, 440);
+      }
+
+      // Food B
+      const foodBSteps = protocol.steps.slice(foodAStepCount);
+      if (protocol.foodB && foodBSteps.length > 0) {
+        const rows = buildStepRows(foodBSteps, protocol.foodB.type, true);
+        y = renderFoodSection(doc, y, protocol.foodB.name, protocol.foodB, rows);
+      }
+
+      // Notes
+      y = renderNotes(doc, y, customNote);
     }
 
-    // Food B
-    const foodBStart = getFoodAStepCount(protocol);
-    const foodBSteps = protocol.steps.slice(foodBStart);
-    if (protocol.foodB && foodBSteps.length > 0) {
-      const rows = buildStepRows(foodBSteps, protocol.foodB.type, true);
-      y = renderFoodSection(doc, y, protocol.foodB.name, protocol.foodB, rows);
-    }
-
-    // Notes
-    y = renderNotes(doc, y, customNote);
-
-    // Footer & QR
-    renderFooterAndQR(doc, qrDataUrl);
+    // Footer & QR (Global pass across all pages)
+    renderFooterAndQR(doc, qrMap);
 
     // Merge & Download
     await handlePdfMergeAndDownload(doc, PdfDocClass);
@@ -401,46 +418,58 @@ function generateRoughAsciiTableForFood(food: Food, rows: ExportRow[]): string {
 }
 
 /**
- * Pure function to generate the ASCII string content.
- * Extracted from exportASCII to allow for easier unit testing of output logic.
+ * Pure function to generate the ASCII string content for one or more protocols.
  *
- * @param protocol Protocol
- * @param customNote string
- * @returns The formatted ASCII string or empty string if protocol is null
+ * @param exportData Array of ProtocolExportData
+ * @returns The formatted ASCII string
  */
-export function generateAsciiContent(protocol: Protocol | null, customNote: string): string {
-  if (!protocol) return "";
+export function generateAsciiContent(exportData: ProtocolExportData[]): string {
+  if (exportData.length === 0) return "";
   let text = "";
+  const isBatch = exportData.length > 1;
 
-  // --- Table Generation ---
+  for (let i = 0; i < exportData.length; i++) {
+    const { protocol, customNote } = exportData[i];
 
-  // Food A information
-  const foodAStepCount = getFoodAStepCount(protocol);
-  const hasFoodBSteps = foodAStepCount < protocol.steps.length;
-  const foodASteps = protocol.steps.slice(0, foodAStepCount);
+    if (i > 0) {
+      text += "\n\n";
+    }
 
-  if (foodASteps.length > 0) {
-    const foodARows = buildStepRows(foodASteps, protocol.foodA.type, !hasFoodBSteps);
-    text += generateRoughAsciiTableForFood(protocol.foodA, foodARows);
-  }
+    if (isBatch) {
+      text += "=".repeat(30) + "\n";
+      text += `PROTOCOL ${i + 1}\n`;
+      text += "=".repeat(30) + "\n\n";
+    }
 
-  // Food B Table
-  const totalSteps = protocol.steps.length;
-  if (protocol.foodB && foodAStepCount < totalSteps) {
-    if (foodASteps.length > 0) text += `\n--- TRANSITION TO ---\n\n`;
+    // --- Table Generation ---
 
-    const foodBSteps = protocol.steps.slice(foodAStepCount);
-    const foodBRows = buildStepRows(foodBSteps, protocol.foodB.type, true);
+    // Food A information
+    const foodAStepCount = getFoodAStepCount(protocol);
+    const hasFoodBSteps = foodAStepCount < protocol.steps.length;
+    const foodASteps = protocol.steps.slice(0, foodAStepCount);
 
-    text += generateRoughAsciiTableForFood(protocol.foodB, foodBRows)
-  }
+    if (foodASteps.length > 0) {
+      const foodARows = buildStepRows(foodASteps, protocol.foodA.type, !hasFoodBSteps);
+      text += generateRoughAsciiTableForFood(protocol.foodA, foodARows);
+    }
 
-  // --- Notes & Footer ---
-  if (customNote && customNote.trim()) {
-    text += "\n========================================\n";
-    text += "NOTES\n";
-    text += "========================================\n";
-    text += `${customNote.trim()}\n`;
+    // Food B Table
+    const totalSteps = protocol.steps.length;
+    if (protocol.foodB && foodAStepCount < totalSteps) {
+      if (foodASteps.length > 0) text += `\n--- TRANSITION TO ---\n\n`;
+
+      const foodBSteps = protocol.steps.slice(foodAStepCount);
+      const foodBRows = buildStepRows(foodBSteps, protocol.foodB.type, true);
+
+      text += generateRoughAsciiTableForFood(protocol.foodB, foodBRows)
+    }
+
+    // --- Notes ---
+    if (customNote && customNote.trim()) {
+      text += "\n" + "-".repeat(20) + "\n";
+      text += "NOTES\n";
+      text += `${customNote.trim()}\n`;
+    }
   }
 
   text += `\n---\nTool version-hash: v${__VERSION_OIT_CALCULATOR__}-${__COMMIT_HASH__}\n`;
@@ -449,16 +478,13 @@ export function generateAsciiContent(protocol: Protocol | null, customNote: stri
 }
 
 /**
- * Generate and copy an ASCII representation of the protocol to clipboard.
+ * Generate and copy an ASCII representation of the protocol(s) to clipboard.
  *
- * Creates separate tables for Food A and Food B, includes mix instructions for dilution steps, and appends custom notes when present. Falls back to alerting the text when clipboard copy fails.
- *
- * @param protocol Protocol
- * @param customNote string
+ * @param exportData Array of ProtocolExportData
  * @returns void
  */
-export function exportASCII(protocol: Protocol | null, customNote: string): void {
-  const text = generateAsciiContent(protocol, customNote);
+export function exportASCII(exportData: ProtocolExportData[]): void {
+  const text = generateAsciiContent(exportData);
   if (!text) return;
 
   // --- Copy to Clipboard ---

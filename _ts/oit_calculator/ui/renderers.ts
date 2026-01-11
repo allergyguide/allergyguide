@@ -4,9 +4,10 @@
  * DOM Rendering logic
  */
 import { Method, FoodType, DosingStrategy, FoodAStrategy } from "../types";
-import type { Protocol, Warning, Unit, Food, Step, ReadableHistoryPayload } from "../types";
+import type { Protocol, Warning, Unit, Food, Step, ReadableHistoryPayload, Tab } from "../types";
 import { formatNumber, formatAmount, escapeHtml } from "../utils";
 import { validateProtocol } from "../core/validator";
+import { workspace } from "../state/instances";
 
 // Need global commit hash 
 declare const __COMMIT_HASH__: string;
@@ -88,7 +89,7 @@ export function showProtocolUI(): void {
  *
  * @param protocol - current protocol state
  */
-export function updateFoodBDisabledState(protocol: Protocol): void {
+export function updateFoodBDisabledState(protocol: Protocol | null): void {
   const foodBContainer = document.querySelector(
     ".food-b-container",
   ) as HTMLElement;
@@ -129,6 +130,87 @@ export function updateFoodBDisabledState(protocol: Protocol): void {
 }
 
 /**
+ * Renders the Tab Bar with active state and close buttons.
+ * Each tab represents an independent protocol workspace.
+ * 
+ * @param tabs - Array of current tab metadata from WorkspaceManager
+ * @param activeId - The ID of the currently active tab to highlight
+ */
+export function renderTabs(tabs: Tab[], activeId: string): void {
+  const container = document.getElementById("oit-tabs-bar");
+  if (!container) return;
+
+  let html = "";
+  tabs.forEach(tab => {
+    const isActive = tab.id === activeId;
+    const activeClass = isActive ? "active" : "";
+
+    html += `
+      <div class="oit-tab ${activeClass}" data-tab-id="${tab.id}">
+        <span class="tab-title">${escapeHtml(tab.title)}</span>
+        <span class="oit-tab-close" data-tab-close="${tab.id}" title="Close Tab">×</span>
+      </div>
+    `;
+  });
+
+  // Always add the "+" button if tabs < 5 (Max limit handled in logic too, but good UX to hide/disable)
+  if (tabs.length < 5) {
+    html += `<div class="oit-tab-add" title="Add New Tab">+</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+/**
+ * Resets all text and numeric input fields within the settings and toolbar areas.
+ * This prevents "ghost data" from a previously active tab leaking into a new or empty tab.
+ */
+function resetInputs() {
+  // Select all text-like inputs within the calculator settings
+  const containers = document.querySelectorAll('.settings-container, .oit-toolbar');
+
+  containers.forEach(container => {
+    // select inputs and textareas 
+    const inputs = container.querySelectorAll('input[type="text"], input[type="number"], input[type="search"], textarea');
+    inputs.forEach(input => {
+      (input as HTMLInputElement | HTMLTextAreaElement).value = "";
+    });
+  });
+}
+
+/**
+ * Renders the "Empty State" UI when no protocol is loaded in the active tab.
+ * Displays Quick Start instructions by cloning the `#empty-state-template`.
+ * Also hides protocol-specific sections and clears all relevant inputs.
+ * Fairly brittle to changes in HTML structure of shortcode 
+ */
+function renderEmptyState() {
+  const tableContainer = document.querySelector(".output-container table") as HTMLElement;
+  const template = document.getElementById("empty-state-template") as HTMLTemplateElement;
+  const dosingContainer = document.querySelector(".dosing-strategy-container") as HTMLElement;
+  const warningsContainer = document.querySelector(".warnings-container") as HTMLElement;
+  const stepControls = document.querySelector(".step-controls-footer") as HTMLElement;
+  const bottomSection = document.querySelector(".bottom-section") as HTMLElement;
+
+  // Hide UI Sections
+  if (dosingContainer) dosingContainer.classList.add("oit-hidden-on-init");
+  if (warningsContainer) warningsContainer.classList.add("oit-hidden-on-init");
+  if (stepControls) stepControls.classList.add("oit-hidden-on-init");
+  if (bottomSection) bottomSection.classList.add("oit-hidden-on-init");
+
+  // Reset Food A / B inputs to prevent leaking
+  resetInputs();
+
+  // Clear Table and Show Instructions
+  if (tableContainer && template) {
+    // clear cur table, clone template, inject it
+    tableContainer.innerHTML = "";
+    const clone = template.content.cloneNode(true);
+    tableContainer.appendChild(clone);
+  }
+}
+
+/**
  * Render Food A and Food B settings panels... name, protein, serving size, form toggle, 
  * Uses patching to preserve focus. No event listeners attached here
  *
@@ -146,11 +228,19 @@ export function updateFoodBDisabledState(protocol: Protocol): void {
  * @param protocol - current active protocol. If null, the function performs no action
 */
 export function renderFoodSettings(protocol: Protocol | null): void {
-  if (!protocol) return;
-
   // HARD CODED SELECTOR OF CONTAINERS
   const foodAContainer = document.querySelector(".food-a-container") as HTMLElement;
   const foodBContainer = document.querySelector(".food-b-container") as HTMLElement;
+
+  // If no protocol, we handled clearing in renderEmptyState
+  if (!protocol) {
+    const settingsA = foodAContainer.querySelector(".food-a-settings");
+    if (settingsA) settingsA.remove();
+
+    const settingsB = foodBContainer.querySelector(".food-b-settings");
+    if (settingsB) settingsB.remove();
+    return;
+  }
 
   // --- FOOD A ---
   let foodASettings = foodAContainer.querySelector(".food-a-settings");
@@ -410,12 +500,21 @@ export function renderDosingStrategy(protocol: Protocol | null): void {
  * and either patches specific values in-place (to preserve focus) or rebuilds 
  * the table if the structure has changed.
  *
- * @param protocol - The current protocol state. If null, rendering is skipped.
+ * @param protocol - The current protocol state. If null, a table with instructions is rendered.
  * @param customNote - The current text content of the custom note.
  * @param isLoggedIn - Authentication status; used to determine if restricted controls are visible.
  */
 export function renderProtocolTable(protocol: Protocol | null, customNote: string, isLoggedIn: boolean): void {
-  if (!protocol) return;
+  if (!protocol) {
+    renderEmptyState();
+    // Update Warnings to clear them
+    const warningsContainer = document.querySelector(".warnings-container") as HTMLElement;
+    if (warningsContainer) warningsContainer.innerHTML = "";
+    return;
+  }
+
+  // Ensure UI is visible if protocol exists
+  showProtocolUI();
 
   const tableContainer = document.querySelector(
     ".output-container table",
@@ -477,30 +576,37 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
   // Input mismatch: If a user toggles a step from Direct to Dilute (or the calculator logic switches it automatically), the structure of that cell changes from a text node to an input element. Patching does not account for this
   if (!needsFullRebuild && tbody) {
     const rows = Array.from(tbody.children) as HTMLTableRowElement[];
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const spec = expectedRows[i];
-      if (spec.type === 'header') {
-        if (!row.classList.contains('food-section-header')) {
-          needsFullRebuild = true;
-          break;
-        }
-      } else {
-        if (row.classList.contains('food-section-header')) {
-          needsFullRebuild = true;
-          break;
-        }
-        // Check method consistency to ensure input vs n/a matches
-        const mixCell = row.querySelector('.col-mix-food');
-        if (!mixCell) {
-          needsFullRebuild = true;
-          break;
-        }
-        const hasInput = !!mixCell.querySelector('input');
-        const shouldHaveInput = spec.step.method === Method.DILUTE;
-        if (hasInput !== shouldHaveInput) {
-          needsFullRebuild = true;
-          break;
+    // Edge case: if we are coming from empty state, the tbody might have 1 row with colspan instructions
+    // if expectedRows > 1, we definitely need rebuild. If expectedRows=0, handled by null check above.
+    // Basically check if first row is the instruction row
+    if (rows.length === 1 && rows[0].firstElementChild?.hasAttribute('colspan')) {
+      needsFullRebuild = true;
+    } else {
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const spec = expectedRows[i];
+        if (spec.type === 'header') {
+          if (!row.classList.contains('food-section-header')) {
+            needsFullRebuild = true;
+            break;
+          }
+        } else {
+          if (row.classList.contains('food-section-header')) {
+            needsFullRebuild = true;
+            break;
+          }
+          // Check method consistency to ensure input vs n/a matches
+          const mixCell = row.querySelector('.col-mix-food');
+          if (!mixCell) {
+            needsFullRebuild = true;
+            break;
+          }
+          const hasInput = !!mixCell.querySelector('input');
+          const shouldHaveInput = spec.step.method === Method.DILUTE;
+          if (hasInput !== shouldHaveInput) {
+            needsFullRebuild = true;
+            break;
+          }
         }
       }
     }
@@ -721,21 +827,40 @@ export function updateBottomSection(customNote: string, isLoggedIn: boolean, has
   // Ensure the section is visible (handles the oit-hidden-on-init class removal)
   bottomSection.classList.remove("oit-hidden-on-init");
 
+  // Determine if we are in batch mode (multiple tabs with protocols)
+  const activeStates = workspace.getAllProtocolStates().filter(s => s.getProtocol());
+  const isBatch = activeStates.length > 1;
+
   // Delegate to specific renderers
-  updatePublicExports(customNote);
+  updatePublicExports(customNote, isBatch);
   updateRestrictedControls(isLoggedIn, hasSevereWarnings);
 }
 
 /**
- * Updates public export controls (specifically the custom note textarea).
+ * Updates public export controls (specifically the custom note textarea and export button text).
  *
  * @param customNote - New note text to display.
+ * @param isBatch - Whether multiple tabs are active.
  */
-function updatePublicExports(customNote: string) {
+function updatePublicExports(customNote: string, isBatch: boolean) {
   const textarea = document.getElementById("custom-note") as HTMLTextAreaElement;
   // Only update if changed to avoid cursor jumping if user is typing
   if (textarea && textarea.value !== customNote) {
     textarea.value = customNote;
+  }
+
+  // Update button labels for batch export
+  const asciiBtn = document.getElementById("export-ascii");
+  const pdfBtn = document.getElementById("export-pdf");
+
+  if (asciiBtn) {
+    asciiBtn.textContent = isBatch ? "Copy All (ASCII)" : "Copy ASCII";
+  }
+  if (pdfBtn) {
+    // Only update if it's not currently generating
+    if (pdfBtn.textContent !== "Generating...") {
+      pdfBtn.textContent = isBatch ? "Export All (PDF)" : "Export PDF";
+    }
   }
 }
 

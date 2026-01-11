@@ -7,7 +7,7 @@
  * Other more specialized UI event delegation and handling are done in other modules like ui/searchUI.ts, modals.ts 
  */
 import Decimal from "decimal.js";
-import { protocolState } from "../state/instances";
+import { workspace } from "../state/instances";
 import {
   updateFoodDetails,
   recalculateStepMethods,
@@ -30,6 +30,8 @@ import type { Protocol } from "../types";
 
 import { clearFoodB } from "./actions";
 import { renderDebugResult } from "./renderers";
+import { resetSearch } from "./searchUI";
+import { appState } from "../main";
 
 // Debounce timers
 let inputDebounceTimer: number | null = null;
@@ -55,6 +57,7 @@ export function initGlobalEvents(): void {
   attachCustomNoteDelegation();
   attachUndoRedoDelegation();
   attachDebugDelegation();
+  attachTabBarDelegation();
 
   // Misc global listeners
   const clearFoodBBtn = document.getElementById("clear-food-b") as HTMLButtonElement;
@@ -67,16 +70,16 @@ export function initGlobalEvents(): void {
 
 /**
  * Attaches event listeners for Undo and Redo operations
- * Wires up the UI buttons (#btn-undo, #btn-redo) to the global protocol state
+ * Wires up the UI buttons (#btn-undo, #btn-redo) to the active protocol state
  * Excludes the Custom Note textarea from these shortcuts to preserve native browser text editing behavior
  */
 function attachUndoRedoDelegation() {
   const undoBtn = document.getElementById("btn-undo");
   const redoBtn = document.getElementById("btn-redo");
 
-  // button wiring
-  if (undoBtn) undoBtn.addEventListener("click", () => protocolState.undo());
-  if (redoBtn) redoBtn.addEventListener("click", () => protocolState.redo());
+  // button wiring to active workspace protocol
+  if (undoBtn) undoBtn.addEventListener("click", () => workspace.getActive().undo());
+  if (redoBtn) redoBtn.addEventListener("click", () => workspace.getActive().redo());
 
   // keyboard shortcuts
   document.addEventListener('keydown', (e) => {
@@ -85,10 +88,10 @@ function attachUndoRedoDelegation() {
 
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
       e.preventDefault();
-      e.shiftKey ? protocolState.redo() : protocolState.undo();
+      e.shiftKey ? workspace.getActive().redo() : workspace.getActive().undo();
     } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
       e.preventDefault();
-      protocolState.redo();
+      workspace.getActive().redo();
     }
   });
 }
@@ -108,7 +111,7 @@ function attachCustomNoteDelegation() {
 
         noteDebounceTimer = window.setTimeout(() => {
           const rawValue = target.value;
-          protocolState.setCustomNote(rawValue, { skipRender: true });
+          workspace.getActive().setCustomNote(rawValue, { skipRender: true });
         }, 300);
       }
     });
@@ -135,13 +138,12 @@ function attachSettingsDelegation() {
         // debounce
         if (foodADebounceTimer) clearTimeout(foodADebounceTimer);
         foodADebounceTimer = window.setTimeout(() => {
-          const current = protocolState.getProtocol();
+          const current = workspace.getActive().getProtocol();
           if (current) {
-            const val = (target as HTMLInputElement).value;
             const updated = updateFoodDetails(current, 'A', {
               name: (target as HTMLInputElement).value
             });
-            protocolState.setProtocol(updated, `Renamed Food A`);
+            workspace.getActive().setProtocol(updated, `Renamed Food A`);
           }
         }, 400);
       }
@@ -149,7 +151,7 @@ function attachSettingsDelegation() {
 
     foodAContainer.addEventListener("change", (e) => {
       const target = e.target as HTMLElement;
-      const current = protocolState.getProtocol();
+      const current = workspace.getActive().getProtocol();
       if (!current) return;
 
       if (target.id === "food-a-serving-size") {
@@ -163,8 +165,9 @@ function attachSettingsDelegation() {
         const updated = updateFoodDetails(current, 'A', {
           servingSize: new Decimal(value),
         });
-        protocolState.setProtocol(recalculateStepMethods(updated), `Food A Serving Size changed to: ${value}`);
-      } else if (target.id === "food-a-protein") {
+        workspace.getActive().setProtocol(recalculateStepMethods(updated), `Food A Serving Size changed to: ${value}`);
+      }
+      else if (target.id === "food-a-protein") {
         let value = parseFloat((target as HTMLInputElement).value);
 
         // Food A protein input clamping
@@ -174,8 +177,9 @@ function attachSettingsDelegation() {
         const updated = updateFoodDetails(current, 'A', {
           gramsInServing: new Decimal(value)
         });
-        protocolState.setProtocol(recalculateStepMethods(updated), `Food A Protein changed to: ${value}`);
-      } else if (target.id === "food-a-threshold") {
+        workspace.getActive().setProtocol(recalculateStepMethods(updated), `Food A Protein changed to: ${value}`);
+      }
+      else if (target.id === "food-a-threshold") {
         const val = (target as HTMLInputElement).value;
 
         // Food A threshold value clamping
@@ -186,41 +190,41 @@ function attachSettingsDelegation() {
           ...current,
           diThreshold: new Decimal(value)
         }
-        protocolState.setProtocol(recalculateStepMethods(updated), `Food A DI Threshold changed to: ${value}`);
+        workspace.getActive().setProtocol(recalculateStepMethods(updated), `Food A DI Threshold changed to: ${value}`);
       }
     });
 
     foodAContainer.addEventListener("click", (e) => {
       const target = e.target as HTMLElement;
       const action = target.getAttribute("data-action");
-      const current = protocolState.getProtocol();
+      const current = workspace.getActive().getProtocol();
       if (!current || !action) return;
 
       switch (action) {
         case "toggle-food-a-solid":
           if (current.foodA.type !== FoodType.SOLID) {
-            protocolState.setProtocol(toggleFoodType(current, false), "Set Food A to Solid");
+            workspace.getActive().setProtocol(toggleFoodType(current, false), "Set Food A to Solid");
           }
           break;
         case "toggle-food-a-liquid":
           if (current.foodA.type !== FoodType.LIQUID) {
-            protocolState.setProtocol(toggleFoodType(current, false), "Set Food A to Liquid");
+            workspace.getActive().setProtocol(toggleFoodType(current, false), "Set Food A to Liquid");
           }
           break;
         case "food-a-strategy-initial":
-          protocolState.setProtocol(
+          workspace.getActive().setProtocol(
             recalculateStepMethods({ ...current, foodAStrategy: FoodAStrategy.DILUTE_INITIAL }),
             "Set Food A Strategy: Dilute Initial"
           );
           break;
         case "food-a-strategy-all":
-          protocolState.setProtocol(
+          workspace.getActive().setProtocol(
             recalculateStepMethods({ ...current, foodAStrategy: FoodAStrategy.DILUTE_ALL }),
             "Set Food A Strategy: Dilute All"
           );
           break;
         case "food-a-strategy-none":
-          protocolState.setProtocol(
+          workspace.getActive().setProtocol(
             recalculateStepMethods({ ...current, foodAStrategy: FoodAStrategy.DILUTE_NONE }),
             "Set Food A Strategy: Dilute None"
           );
@@ -238,13 +242,12 @@ function attachSettingsDelegation() {
         // debounce
         if (foodBDebounceTimer) clearTimeout(foodBDebounceTimer);
         foodBDebounceTimer = window.setTimeout(() => {
-          const current = protocolState.getProtocol();
+          const current = workspace.getActive().getProtocol();
           if (current && current.foodB) {
-            const val = (target as HTMLInputElement).value;
             const updated = updateFoodDetails(current, "B", {
               name: (target as HTMLInputElement).value
             });
-            protocolState.setProtocol(updated, `Renamed Food B`);
+            workspace.getActive().setProtocol(updated, `Renamed Food B`);
           }
         }, 400);
       }
@@ -252,7 +255,7 @@ function attachSettingsDelegation() {
 
     foodBContainer.addEventListener("change", (e) => {
       const target = e.target as HTMLElement;
-      const current = protocolState.getProtocol();
+      const current = workspace.getActive().getProtocol();
       if (!current || !current.foodB) return;
 
       if (target.id === "food-b-serving-size") {
@@ -264,7 +267,7 @@ function attachSettingsDelegation() {
         const updated = updateFoodBAndRecalculate(current, {
           servingSize: new Decimal(value)
         });
-        protocolState.setProtocol(updated, `Food B Serving Size changed to: ${value}`);
+        workspace.getActive().setProtocol(updated, `Food B Serving Size changed to: ${value}`);
       } else if (target.id === "food-b-protein") {
         let value = parseFloat((target as HTMLInputElement).value);
         if (value < 0) value = 0;
@@ -273,7 +276,7 @@ function attachSettingsDelegation() {
         const updated = updateFoodBAndRecalculate(current, {
           gramsInServing: new Decimal(value)
         });
-        protocolState.setProtocol(updated, `Food B Protein changed to: ${value}`);
+        workspace.getActive().setProtocol(updated, `Food B Protein changed to: ${value}`);
       } else if (target.id === "food-b-threshold") {
         let value = parseFloat((target as HTMLInputElement).value);
 
@@ -281,25 +284,25 @@ function attachSettingsDelegation() {
         if (value < 0) value = 0;
         if (Number.isNaN(value)) value = 0;
         const updated = updateFoodBThreshold(current, new Decimal(value));
-        protocolState.setProtocol(updated, `Food B Threshold changed to: ${value}`);
+        workspace.getActive().setProtocol(updated, `Food B Threshold changed to: ${value}`);
       }
     });
 
     foodBContainer.addEventListener("click", (e) => {
       const target = e.target as HTMLElement;
       const action = target.getAttribute("data-action");
-      const current = protocolState.getProtocol();
+      const current = workspace.getActive().getProtocol();
       if (!current || !action) return;
 
       switch (action) {
         case "toggle-food-b-solid":
           if (current.foodB && current.foodB.type !== FoodType.SOLID) {
-            protocolState.setProtocol(toggleFoodType(current, true), "Set Food B to Solid");
+            workspace.getActive().setProtocol(toggleFoodType(current, true), "Set Food B to Solid");
           }
           break;
         case "toggle-food-b-liquid":
           if (current.foodB && current.foodB.type !== FoodType.LIQUID) {
-            protocolState.setProtocol(toggleFoodType(current, true), "Set Food B to Liquid");
+            workspace.getActive().setProtocol(toggleFoodType(current, true), "Set Food B to Liquid");
           }
           break;
       }
@@ -316,11 +319,11 @@ function attachDosingStrategyDelegation() {
     container.addEventListener("click", (e) => {
       const target = e.target as HTMLElement;
       const strategy = target.getAttribute("data-strategy") as DosingStrategy;
-      const current = protocolState.getProtocol();
+      const current = workspace.getActive().getProtocol();
       if (current && strategy && strategy !== current.dosingStrategy) {
         const updated = recalculateProtocol({ ...current, dosingStrategy: strategy });
 
-        protocolState.setProtocol(updated, `Dosing Strategy changed to: ${strategy}`);
+        workspace.getActive().setProtocol(updated, `Dosing Strategy changed to: ${strategy}`);
       }
     });
   }
@@ -342,17 +345,17 @@ function attachTableDelegation() {
   // Click delegation for Add/Remove buttons
   tableContainer.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
-    const current = protocolState.getProtocol();
+    const current = workspace.getActive().getProtocol();
     if (!current) return;
 
     if (target.classList.contains("btn-add-step")) {
       const stepIndex = parseInt(target.getAttribute("data-step")!);
       const updated = addStepAfter(current, stepIndex);
-      protocolState.setProtocol(updated, `Added Step after ${stepIndex}`);
+      workspace.getActive().setProtocol(updated, `Added Step after ${stepIndex}`);
     } else if (target.classList.contains("btn-remove-step")) {
       const stepIndex = parseInt(target.getAttribute("data-step")!);
       const updated = removeStep(current, stepIndex);
-      protocolState.setProtocol(updated, `Removed Step ${stepIndex}`);
+      workspace.getActive().setProtocol(updated, `Removed Step ${stepIndex}`);
     }
   });
 
@@ -376,7 +379,7 @@ function attachTableDelegation() {
       if (value < 0) value = 0; // clamping logic
 
       // get current state of protocol
-      const current = protocolState.getProtocol();
+      const current = workspace.getActive().getProtocol();
       if (!current) return;
 
       let updated: Protocol = { ...current };
@@ -396,7 +399,7 @@ function attachTableDelegation() {
         label = oldMixFoodAmount ? `Step ${stepIndex} Mix Amount: ${oldMixFoodAmount} -> ${value}` : `Step ${stepIndex} Mix Amount: ${value}`;
       }
 
-      protocolState.setProtocol(updated, label);
+      workspace.getActive().setProtocol(updated, label);
     }, 300); // 300ms debounce
   });
 
@@ -438,6 +441,48 @@ function attachDebugDelegation() {
       } catch (e) {
         console.error("Decode failed", e);
         alert("Decode failed. Check console for error details.");
+      }
+    });
+  }
+}
+
+/**
+ * Global event delegation for the Tab Bar.
+ * Handles tab switching, closing, and adding new tabs.
+ */
+function attachTabBarDelegation() {
+  const tabsBar = document.getElementById("oit-tabs-bar");
+  if (tabsBar) {
+    tabsBar.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+
+      // Tab Switch: User clicked on a tab
+      const tabEl = target.closest(".oit-tab") as HTMLElement;
+      if (tabEl && !target.classList.contains("oit-tab-close")) {
+        const id = tabEl.dataset.tabId;
+        if (id) {
+          resetSearch(); // Cleanup UI before switch
+          workspace.setActive(id);
+        }
+        return;
+      }
+
+      // Tab Close: User clicked the 'x' button
+      if (target.classList.contains("oit-tab-close")) {
+        const id = target.dataset.tabClose;
+        if (id) workspace.closeTab(id);
+        return;
+      }
+
+      // Tab Add: User clicked the '+' button
+      if (target.classList.contains("oit-tab-add")) {
+        if (!appState.isLoggedIn) {
+          // Trigger login modal if public tries to add tab
+          const loginBtn = document.getElementById("btn-login-trigger");
+          if (loginBtn) loginBtn.click();
+        } else {
+          workspace.addTab();
+        }
       }
     });
   }

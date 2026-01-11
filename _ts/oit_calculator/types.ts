@@ -255,7 +255,9 @@ export interface HistoryItem {
 }
 
 // --- MINIFIED INTERFACES FOR QR PAYLOAD ---
-
+/**
+ * Minified representation of a Food object for compact QR storage.
+ */
 export interface MFood {
   n: string; // name
   t: number; // 0=SOLID, 1=LIQUID
@@ -263,6 +265,9 @@ export interface MFood {
   s: number; // servingSize
 }
 
+/**
+ * Minified representation of a Protocol Step for compact QR storage.
+ */
 export interface MStep {
   i: number; // stepIndex
   t: number; // targetMg
@@ -274,11 +279,17 @@ export interface MStep {
   f: number; // 0=Food A, 1=Food B
 }
 
+/**
+ * Minified representation of a validation warning.
+ */
 export interface MWarning {
   c: string; // code string
   i?: number; // stepIndex
 }
 
+/**
+ * Minified representation of a full Protocol for compact QR storage.
+ */
 export interface MProtocol {
   ds: number;   // DosingStrategy: 0=STANDARD, 1=SLOW
   fas: number;  // FoodAStrategy: 0=INIT, 1=ALL, 2=NONE
@@ -316,6 +327,9 @@ export interface AuthLoginResult {
 // ============================================
 // The purpose of these interfaces is when a userhistory payload (minified as per above) needs to be read by a human. These don't include the config as these are not changeable by the user and can simply be found by going to the relevant commit hash
 
+/**
+ * Human-readable Food definition decoded from a QR payload.
+ */
 export interface ReadableFood {
   name: string;
   type: string; // "SOLID" | "LIQUID"
@@ -324,6 +338,9 @@ export interface ReadableFood {
   proteinConcentrationMgPerUnit: number;
 }
 
+/**
+ * Human-readable Step definition decoded from a QR payload.
+ */
 export interface ReadableStep {
   stepIndex: number;
   targetMg: number;
@@ -335,11 +352,17 @@ export interface ReadableStep {
   servings?: number;
 }
 
+/**
+ * Human-readable Warning decoded from a QR payload.
+ */
 export interface ReadableWarning {
   code: string;
   stepIndex?: number;
 }
 
+/**
+ * Human-readable Protocol structure decoded from a QR payload.
+ */
 export interface ReadableProtocol {
   dosingStrategy: string;
   foodAStrategy: string;
@@ -350,7 +373,11 @@ export interface ReadableProtocol {
   steps: ReadableStep[];
 }
 
+/**
+ * Fully expanded, human-readable history payload decoded from a QR code.
+ */
 export interface ReadableHistoryPayload {
+  /** The tool version that generated this payload. */
   version: string;
   timestamp: string; // ISO String
   protocol: ReadableProtocol;
@@ -371,3 +398,26 @@ export class HttpError extends Error {
     Object.setPrototypeOf(this, HttpError.prototype);
   }
 }
+
+// ============================================
+// WORKSPACE INTERFACES
+// ============================================
+
+/**
+ * Metadata for a single OIT protocol tab.
+ */
+export interface Tab {
+  /** Unique identifier for the tab workspace. */
+  id: string;
+  /** State container for the protocol and notes in this tab. */
+  state: import("./state/protocolState").ProtocolState;
+  /** Human-readable title, usually derived from the primary food. */
+  title: string;
+}
+
+/**
+* Callback signature for workspace tab list changes.
+*/
+export type TabListener = (tabs: Tab[], activeId: string) => void;
+
+

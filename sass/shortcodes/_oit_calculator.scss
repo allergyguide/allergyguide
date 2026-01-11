@@ -108,12 +108,100 @@
     }
   }
 
+  // Tabs Bar
+  .oit-tabs-bar {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0; // connects to settings below
+    overflow-x: auto;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--oit-border);
+    
+    // Hide scrollbar but keep functionality
+    scrollbar-width: none; // Firefox
+    &::-webkit-scrollbar {
+      display: none; // Chrome/Safari
+    }
+
+    .oit-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      background-color: var(--oit-bg); // Default background
+      border: 1px solid transparent; // Reserve space for border
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      color: var(--oit-text-secondary);
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      font-weight: 500;
+      position: relative;
+      top: 1px; // Push down to cover border-bottom of container
+
+      &:hover {
+        background-color: var(--oit-bg-hover);
+        color: var(--oit-text);
+      }
+
+      &.active {
+        background-color: var(--oit-bg-secondary); // Match settings container
+        border-color: var(--oit-border);
+        border-bottom-color: var(--oit-bg-secondary); // Blend with container
+        color: var(--oit-button-primary);
+        font-weight: 600;
+        border-top: 3px solid var(--oit-button-primary);
+        padding-top: calc(0.6rem - 2px); // Adjust for thicker top border
+      }
+    }
+
+    .oit-tab-close {
+      width: 1.2rem;
+      height: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      line-height: 1;
+      margin-left: 0.25rem;
+      opacity: 0.6;
+      transition: all 0.2s;
+
+      &:hover {
+        opacity: 1;
+        background-color: rgba(0,0,0,0.1); 
+        color: var(--oit-warning-red-text);
+      }
+    }
+
+    .oit-tab-add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0.8rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--oit-text-secondary);
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      
+      &:hover {
+        color: var(--oit-success-text);
+        background-color: var(--oit-bg-hover);
+      }
+    }
+  }
+
   // Settings Container
   .settings-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-bottom: 1rem;
+    margin-top: 1rem; // Add spacing from tabs
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;

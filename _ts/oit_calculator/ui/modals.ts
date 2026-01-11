@@ -10,7 +10,7 @@ import {
   HttpError
 } from "../types"
 import { requestSaveProtocol } from "../data/api";
-import { protocolState } from "../state/instances";
+import { workspace } from "../state/instances";
 import { serializeProtocol } from "../utils";
 import { generateAsciiContent } from "../export/exports";
 import { login } from "../data/auth";
@@ -321,8 +321,8 @@ export function attachSaveRequestListeners() {
         submitBtn.disabled = true;
         submitBtn.textContent = "Sending...";
 
-        const currentProtocol = protocolState.getProtocol();
-        const currentNote = protocolState.getCustomNote();
+        const currentProtocol = workspace.getActive().getProtocol();
+        const currentNote = workspace.getActive().getCustomNote();
         if (!currentProtocol) throw new Error("No active protocol");
         const warnings = validateProtocol(currentProtocol);
 
@@ -331,7 +331,11 @@ export function attachSaveRequestListeners() {
           : "No active warnings.";
 
         const protocolData = serializeProtocol(currentProtocol, currentNote);
-        const ascii = generateAsciiContent(currentProtocol, currentNote);
+        const ascii = generateAsciiContent([{
+          protocol: currentProtocol,
+          customNote: currentNote,
+          history: workspace.getActive().getHistory()
+        }]);
 
         const name = (document.getElementById("req-protocol-name") as HTMLInputElement).value;
         const email = (document.getElementById("req-email") as HTMLInputElement).value;

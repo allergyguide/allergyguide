@@ -4,7 +4,7 @@
 
 ```text
 oit_calculator/
-├── main.ts                 # entry point: initializes appstate, checks auth, and delegates setup 
+├── main.ts                 # entry point: initializes appstate, workspace, checks auth, and delegates setup 
 ├── constants.ts            # configuration 
 ├── types.ts                # shared interfaces and enums
 ├── utils.ts                # generic helpers (formatting, escaping)
@@ -16,8 +16,9 @@ oit_calculator/
 │   └── minify.ts           # data for qr code compression and generation
 ├── state/                  
 │   ├── appstate.ts         # global app config (merges public + secure data)
-│   ├── protocolstate.ts    # observable state container for active protocol
-│   └── instances.ts        # singleton instances that can be shared amongst other modules
+│   ├── protocolstate.ts    # observable state container for a single protocol tab
+│   ├── workspaceManager.ts # manages multiple protocol states (tabs) and active view
+│   └── instances.ts        # singleton instances (workspace, appState)
 ├── data/
 │   ├── loader.ts           # orchestrates loading of public JSONs and secure user assets
 │   ├── api.ts              # secure asset fetcher from secure_assets/
@@ -29,9 +30,9 @@ oit_calculator/
 │   ├── export/             
 │   └── data_integrity.test.ts  
 └── ui/                     
-    ├── renderers.ts        # big renderer file, a bit monolithic
-    ├── events.ts           # controller layer: most (not all) global event delegation + inputs
-    ├── actions.ts          # bit of glue with logic connecting ui to state
+    ├── renderers.ts        # DOM manipulation: Tabs, Settings, Table, Empty State
+    ├── events.ts           # global event delegation (Tabs, Settings, Table actions)
+    ├── actions.ts          # bridge logic connecting UI actions to Workspace state
     ├── searchui.ts         # search input events, dropdown rendering
     ├── modals.ts           # clickwrap and login modal logic
     └── exports.ts          # export ui
@@ -46,14 +47,22 @@ Serverless Functions (Netlify)
 
 ## Patterns
 
+### Workspace & Multi-Tab State Management
+
+The application uses a **"Single Active View"** architecture managed by `WorkspaceManager`.
+
+1. **Multiple States:** The `WorkspaceManager` holds an array of `Tab` objects, each containing its own independent `ProtocolState`.
+2. **Proxy Listener:** The UI subscribes to the _Workspace_, not individual protocols. The Workspace internally subscribes to the _currently active tab_ and forwards (proxies) events to the UI.
+3. **Switching:** When a user switches tabs, the Workspace unbinds from the old tab's state and binds to the new one, triggering an immediate UI refresh.
+
 ### Unidirectional Data Flow
 
-1. **Event:** DOM interaction (ie input)
-2. **Delegate:** `ui/events.ts` (or specific UI modules) catches the event that bubbles up
-3. **Action:** a handler calls a 'pure' func from `core/protocol.ts` to calculate _new_ protocol data
-4. **State Update:** new object is passed to `protocolState.setProtocol()`
-5. **Notify:** `ProtocolState` notifies subscribers (Renderers)
-6. **Render:** `ui/renderers.ts` updates DOM to match new state
+1. **Event:** DOM interaction (e.g., input change, tab click).
+2. **Delegate:** `ui/events.ts` catches the event via delegation.
+3. **Action:** A handler calls a logic function (e.g., `updateStepTargetMg`) or Workspace method (e.g., `workspace.setActive()`).
+4. **State Update:** The action updates the _Active_ protocol via `workspace.getActive().setProtocol()`.
+5. **Notify:** The active `ProtocolState` notifies the `WorkspaceManager`, which proxies the update to subscribers.
+6. **Render:** `ui/renderers.ts` updates the DOM to match the new state.
 
 ### Authentication & Secure Data Architecture
 
@@ -74,15 +83,17 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 
 ### HTML DOM Patching
 
-- **Structure Check:** check if the DOM structure (number of rows, existence of settings blocks) matches state
-- **Patching:** renderer iterates through elements and updates only changed values (attributes, text content, input values) using `patch*` methods
-- **Rebuild:** `innerHTML` full HTML replacement is triggered when the structure changes (ie, adding a step, switching food types)
+- **Structure Check:** checks if the DOM structure (rows, settings blocks) matches the state.
+- **Patching:** updates only changed values (attributes, text, inputs) to preserve focus.
+- **Rebuild:** triggers full HTML replacement only when structure changes (e.g., adding a step).
+- **Tab Switching:** Switching tabs triggers a full state re-render, effectively swapping the view.
 
 ### Event Delegation and Initialization
 
-- Listeners are attached once to container elements (`.food-a-container`, `.output-container table`) via `initGlobalEvents`
-- Specific feature listeners (Search, Export) are initialized in their respective modules (`initSearchEvents`, `initExportEvents`) called by `main.ts`
-- Input events use **Debouncing** (150ms-300ms) to prevent excessive recalculations
+- **Global Listeners:** Attached once to container elements (`#oit-tabs-bar`, `.food-a-container`, `.output-container`) via `initGlobalEvents` in `ui/events.ts`.
+- **Specific feature listeners (Search, Export)** are initialized in their respective modules (`initSearchEvents`, `initExportEvents`) called by `main.ts`
+- **Tab Bar Logic:** Tab switching/closing logic is centralized in `attachTabBarDelegation`.
+- **Debouncing:** Input events use 150ms-300ms debouncing to prevent excessive recalculations.
 
 ## Environment Configuration
 

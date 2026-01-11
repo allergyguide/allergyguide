@@ -4,7 +4,7 @@
  * High-level actions triggered by UI interactions
  */
 import Decimal from "decimal.js";
-import { protocolState } from "../state/instances";
+import { workspace } from "../state/instances";
 import { generateDefaultProtocol, generateStepForTarget } from "../core/calculator";
 import { addFoodBToProtocol } from "../core/protocol";
 import type { FoodData, ProtocolData, Food, Protocol, Step, Unit } from "../types";
@@ -13,7 +13,7 @@ import { DEFAULT_CONFIG } from "../constants";
 
 /**
  * Select Food A from database entry and initialize a default protocol.
- * Change global protocolState
+ * Change active protocol in workspace
  *
  * @param foodData Entry from the foods database
  * @returns void
@@ -31,7 +31,7 @@ export function selectFoodA(foodData: FoodData): void {
   };
 
   const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
-  protocolState.setProtocol(newProtocol, `Selected Food A: ${food.name}`);
+  workspace.getActive().setProtocol(newProtocol, `Selected Food A: ${food.name}`);
 
   // clear search bar input after
   const input = document.getElementById("food-a-search") as HTMLInputElement;
@@ -42,13 +42,13 @@ export function selectFoodA(foodData: FoodData): void {
  * Select Food B from database entry and compute transition steps
  *
  * Applies DEFAULT_FOOD_B_THRESHOLD as the initial transition threshold
- * Changes global protocolState
+ * Changes active protocol in workspace
  *
  * @param foodData Entry from the foods database
  * @returns void
  */
 export function selectFoodB(foodData: FoodData): void {
-  const current = protocolState.getProtocol();
+  const current = workspace.getActive().getProtocol();
   if (!current) return;
 
   const food: Food = {
@@ -67,7 +67,7 @@ export function selectFoodB(foodData: FoodData): void {
   };
 
   const updated = addFoodBToProtocol(current, food, threshold);
-  protocolState.setProtocol(updated, `Selected Food B: ${food.name}`);
+  workspace.getActive().setProtocol(updated, `Selected Food B: ${food.name}`);
 
   // clear food B searchbar input after
   const input = document.getElementById("food-b-search") as HTMLInputElement;
@@ -79,7 +79,7 @@ export function selectFoodB(foodData: FoodData): void {
  *
  * Defaults to SOLID with 10 g protein per 100 g (100 mg/g) until edited
  * For Food A, initializes a new protocol; for Food B, attaches to current protocol
- * Changes global protocolState instance
+ * Changes active protocol in workspace
  *
  * @param name Display name for the custom food
  * @param inputId Source input id ("food-a-search" or "food-b-search")
@@ -98,16 +98,16 @@ export function selectCustomFood(name: string, inputId: string): void {
 
   if (inputId === "food-a-search") {
     const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
-    protocolState.setProtocol(newProtocol, `Selected Custom Food A: ${food.name}`)
+    workspace.getActive().setProtocol(newProtocol, `Selected Custom Food A: ${food.name}`)
   } else {
-    const current = protocolState.getProtocol();
+    const current = workspace.getActive().getProtocol();
     if (!current) return;
     const threshold = {
       unit: "g" as Unit,
       amount: DEFAULT_CONFIG.DEFAULT_FOOD_B_THRESHOLD,
     };
     const updated = addFoodBToProtocol(current, food, threshold);
-    protocolState.setProtocol(updated, `Selected Custom Food B: ${food.name}`);
+    workspace.getActive().setProtocol(updated, `Selected Custom Food B: ${food.name}`);
   }
 
   // clear input bar, whatever one it was
@@ -120,7 +120,7 @@ export function selectCustomFood(name: string, inputId: string): void {
  *
  * Populates Food A, strategy, thresholds, and the step/row table. Also loads Food B and its threshold if present. Computes servings for any dilution steps.
  *
- * changes global protocolState instance to trigger rerender
+ * changes active protocol in workspace to trigger rerender
  *
  * @param protocolData Protocol template record
  * @returns void
@@ -147,7 +147,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
   };
 
   if (protocolData.custom_note) {
-    protocolState.setCustomNote(protocolData.custom_note);
+    workspace.getActive().setCustomNote(protocolData.custom_note);
   }
 
   // load steps 
@@ -210,7 +210,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
       };
     }
   }
-  protocolState.setProtocol(protocol, `Loaded protocol: ${protocolData.name}`);
+  workspace.getActive().setProtocol(protocol, `Loaded protocol: ${protocolData.name}`);
 
   // clear search 
   const input = document.getElementById("food-a-search") as HTMLInputElement;
@@ -224,7 +224,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
  * @returns void
  */
 export function clearFoodB(): void {
-  const current = protocolState.getProtocol();
+  const current = workspace.getActive().getProtocol();
   if (!current) return;
 
   // if there's no food B to begin with return early so history stack isn't polluted
@@ -288,5 +288,5 @@ export function clearFoodB(): void {
   });
 
   protocolWithoutB.steps = newSteps;
-  protocolState.setProtocol(protocolWithoutB, "Cleared Food B");
+  workspace.getActive().setProtocol(protocolWithoutB, "Cleared Food B");
 }

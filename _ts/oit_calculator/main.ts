@@ -13,7 +13,8 @@
 
 import Decimal from "decimal.js";
 import { AppState } from "./state/appState";
-import { protocolState } from "./state/instances";
+import { workspace } from "./state/instances";
+import type { Protocol } from "./types";
 
 // UI 
 import {
@@ -23,7 +24,8 @@ import {
   renderProtocolTable,
   updateWarnings,
   updateFoodBDisabledState,
-  updateUndoRedoButtons
+  updateUndoRedoButtons,
+  renderTabs
 } from "./ui/renderers";
 import { initSearchEvents } from "./ui/searchUI";
 import { attachClickwrapEventListeners, attachLoginModalListeners, attachSaveRequestListeners } from "./ui/modals";
@@ -64,6 +66,9 @@ async function initializeCalculator(): Promise<void> {
     const logoutBtn = document.getElementById("btn-logout-trigger");
     const badge = document.getElementById("user-badge");
 
+    // Update workspace auth
+    workspace.setAuth(isLoggedIn);
+
     if (isLoggedIn) {
       if (loginBtn) loginBtn.style.display = 'none';
       if (logoutBtn) logoutBtn.style.display = 'inline-block';
@@ -79,9 +84,9 @@ async function initializeCalculator(): Promise<void> {
     }
 
     // Force UI refresh if protocol exists (preparing for future secure features)
-    const p = protocolState.getProtocol();
+    const p = workspace.getActive().getProtocol();
     if (p) {
-      renderProtocolTable(p, protocolState.getCustomNote(), isLoggedIn);
+      renderProtocolTable(p, workspace.getActive().getCustomNote(), isLoggedIn);
     }
   });
 
@@ -140,8 +145,10 @@ async function initializeCalculator(): Promise<void> {
   // Initialize export listeners
   initExportEvents();
 
-  // Subscribe protocol state to renderers
-  protocolState.subscribe((protocol, note) => {
+  // Subscribe workspace to renderers
+  // This listener fires whenever the ACTIVE protocol changes
+  // OR when the active tab switches
+  workspace.subscribe((protocol: Protocol | null, note: string) => {
     if (protocol) {
       showProtocolUI();
       renderFoodSettings(protocol); // renders settings blocks (uses patching)
@@ -149,8 +156,22 @@ async function initializeCalculator(): Promise<void> {
       renderProtocolTable(protocol, note, appState.isLoggedIn); // renders table (uses patching)
       updateWarnings(protocol, appState.warningsPageURL);
       updateFoodBDisabledState(protocol);
-      updateUndoRedoButtons(protocolState.getCanUndo(), protocolState.getCanRedo());
+
+      const activeState = workspace.getActive();
+      updateUndoRedoButtons(activeState.getCanUndo(), activeState.getCanRedo());
+    } else {
+      renderProtocolTable(null, "", appState.isLoggedIn);
+      renderFoodSettings(null);
+      updateFoodBDisabledState(null);
+      updateUndoRedoButtons(false, false);
     }
+  });
+
+  /**
+   * Subscribe to Tab list changes to re-render the Tab Bar.
+   */
+  workspace.subscribeToTabs((tabs, activeId) => {
+    renderTabs(tabs, activeId);
   });
 
   // Set up clickwrap modal

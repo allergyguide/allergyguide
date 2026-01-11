@@ -3,9 +3,30 @@
  *
  * Handle Export buttons (PDF, ASCII) and call actual export module from exports
  */
-import { protocolState } from "../state/instances";
+import { workspace } from "../state/instances";
 import { isClickwrapAccepted, showClickwrapModal } from "./modals";
-import { exportASCII, generatePdf } from "../export/exports"
+import { exportASCII, generatePdf, type ProtocolExportData } from "../export/exports"
+
+/**
+ * Gathers data from all non-empty tabs in the workspace for export.
+ */
+function getExportDataFromWorkspace(): ProtocolExportData[] {
+  const states = workspace.getAllProtocolStates();
+  const exportData: ProtocolExportData[] = [];
+
+  for (const state of states) {
+    const protocol = state.getProtocol();
+    if (protocol) {
+      exportData.push({
+        protocol,
+        customNote: state.getCustomNote(),
+        history: state.getHistory()
+      });
+    }
+  }
+
+  return exportData;
+}
 
 /**
  * Initialize event listeners for the export action buttons
@@ -19,7 +40,10 @@ export function initExportEvents(): void {
   document.addEventListener('click', async (e) => {
     const target = e.target as HTMLElement;
     if (target.id === 'export-ascii') {
-      exportASCII(protocolState.getProtocol(), protocolState.getCustomNote());
+      const data = getExportDataFromWorkspace();
+      if (data.length > 0) {
+        exportASCII(data);
+      }
     } else if (target.id === 'export-pdf') {
       if (isClickwrapAccepted()) {
         await triggerPdfGeneration();
@@ -39,6 +63,9 @@ export async function triggerPdfGeneration(): Promise<void> {
   const pdfBtn = document.getElementById("export-pdf");
   const modalPdfBtn = document.getElementById("clickwrap-generate-btn");
 
+  const data = getExportDataFromWorkspace();
+  if (data.length === 0) return;
+
   if (pdfBtn) {
     pdfBtn.textContent = "Generating...";
     pdfBtn.setAttribute("disabled", "true");
@@ -55,15 +82,16 @@ export async function triggerPdfGeneration(): Promise<void> {
     const { applyPlugin } = await import('jspdf-autotable');
     applyPlugin(jsPDF);
 
-    const current = protocolState.getProtocol();
-    const customNote = protocolState.getCustomNote();
-    await generatePdf(current, customNote, jsPDF, PDFDocument);
+    await generatePdf(data, jsPDF, PDFDocument);
   } catch (error) {
     console.error("Failed to load PDF libraries or generate PDF: ", error);
     alert("Error generating PDF. Please check the console for details.");
   } finally {
+    const activeStates = workspace.getAllProtocolStates().filter(s => s.getProtocol());
+    const label = activeStates.length > 1 ? "Export All (PDF)" : "Export PDF";
+
     if (pdfBtn) {
-      pdfBtn.textContent = "Export PDF";
+      pdfBtn.textContent = label;
       pdfBtn.removeAttribute("disabled");
     }
     if (modalPdfBtn) {
