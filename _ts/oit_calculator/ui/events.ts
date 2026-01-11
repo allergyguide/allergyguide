@@ -231,6 +231,14 @@ function attachSettingsDelegation() {
           break;
       }
     });
+
+    // Toggle Capture for Details element
+    foodAContainer.addEventListener("toggle", (e) => {
+      const target = e.target as HTMLDetailsElement;
+      if (target.classList.contains("oit-advanced-settings")) {
+        workspace.getActive().setAdvancedSettingsOpen(target.open);
+      }
+    }, true); // Capture phase is required for 'toggle' event delegation
   }
 
   // Food B Settings Delegation
@@ -451,7 +459,7 @@ function attachDebugDelegation() {
  * Handles tab switching, closing, and adding new tabs.
  */
 function attachTabBarDelegation() {
-  const tabsBar = document.getElementById("oit-tabs-bar");
+  const tabsBar = document.getElementById("oit-tabs-list");
   if (tabsBar) {
     tabsBar.addEventListener("click", (e) => {
       const target = e.target as HTMLElement;
@@ -482,6 +490,7 @@ function attachTabBarDelegation() {
           if (loginBtn) loginBtn.click();
         } else {
           workspace.addTab();
+          document.getElementById("food-a-search")?.focus();
         }
       }
     });

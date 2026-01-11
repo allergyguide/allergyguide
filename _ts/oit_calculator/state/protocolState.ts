@@ -18,8 +18,11 @@ export class ProtocolState {
   private current: HistoryItem | null = null;
   private history: HistoryItem[] = []; // Past
   private future: HistoryItem[] = [];  // Future (Redo)
-
   private customNote: string = "";
+
+  // for UI for tabs
+  public isAdvancedSettingsOpen: boolean = false;
+
   private listeners: Listener[] = [];
 
   /**
@@ -40,6 +43,11 @@ export class ProtocolState {
 
   public getCustomNote(): string {
     return this.customNote;
+  }
+
+  public setAdvancedSettingsOpen(isOpen: boolean) {
+    this.isAdvancedSettingsOpen = isOpen;
+    // No notify needed if we only read this during render
   }
 
   /**

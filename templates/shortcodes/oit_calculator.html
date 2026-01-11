@@ -43,23 +43,26 @@
 						})();
 			</script>
 		</div>
-		<button id="btn-undo" class="btn-secondary" disabled title="Undo (Ctrl+z)">
-			↶ Undo
-			<span class="oit-mobile-hidden-shortcut">(Ctrl-z)</span>
-		</button>
-		<button id="btn-redo" class="btn-secondary" disabled title="Redo (Ctrl+y)">
-			↷ Redo
-			<span class="oit-mobile-hidden-shortcut">(Ctrl-y)</span>
-		</button>
 	</div>
-	<!-- Tabs Bar -->
-	<div id="oit-tabs-bar" class="oit-tabs-bar">
-		<!-- Pre-rendered default state to prevent layout shift (replaced by JS on load) -->
-		<div class="oit-tab active">
-			<span class="tab-title">Untitled 1</span>
-			<span class="oit-tab-close" title="Close Tab">×</span>
+	<!-- Workspace Header (Tabs + Actions) -->
+	<div class="oit-workspace-header">
+		<div id="oit-tabs-list" class="oit-tabs-list">
+			<!-- Pre-rendered default state to prevent layout shift (replaced by JS on load) -->
+			<div class="oit-tab active">
+				<span class="status-dot"></span>
+				<span class="tab-title">Untitled 1</span>
+				<span class="oit-tab-close" title="Close Tab">×</span>
+			</div>
+			<div class="oit-tab-add" title="Add New Tab">+</div>
 		</div>
-		<div class="oit-tab-add" title="Add New Tab">+</div>
+		<div class="oit-header-actions">
+			<button id="btn-undo" class="btn-secondary" disabled title="Undo (Ctrl+z)">
+				↶ Undo
+			</button>
+			<button id="btn-redo" class="btn-secondary" disabled title="Redo (Ctrl+y)">
+				↷ Redo
+			</button>
+		</div>
 	</div>
 
 	<!-- Food Selection and Settings -->
@@ -116,7 +119,7 @@
 			<div class="export-container">
 
 				<div class="export-buttons">
-					<button class="btn-export" id="export-ascii">Copy ASCII</button>
+					<button class="btn-export" id="export-ascii">Copy to Clipboard</button>
 					<button class="btn-export" id="export-pdf">Export PDF</button>
 				</div>
 

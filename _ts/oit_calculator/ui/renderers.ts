@@ -137,7 +137,7 @@ export function updateFoodBDisabledState(protocol: Protocol | null): void {
  * @param activeId - The ID of the currently active tab to highlight
  */
 export function renderTabs(tabs: Tab[], activeId: string): void {
-  const container = document.getElementById("oit-tabs-bar");
+  const container = document.getElementById("oit-tabs-list");
   if (!container) return;
 
   let html = "";
@@ -145,8 +145,27 @@ export function renderTabs(tabs: Tab[], activeId: string): void {
     const isActive = tab.id === activeId;
     const activeClass = isActive ? "active" : "";
 
+    // Determine Status Dot Color and Tooltip
+    let statusClass = "";
+    let statusTitle = "";
+    const protocol = tab.state.getProtocol();
+    if (protocol) {
+      const warnings = validateProtocol(protocol);
+      if (warnings.some(w => w.severity === "red")) {
+        statusClass = "status-red";
+        statusTitle = "Critical Warnings";
+      } else if (warnings.some(w => w.severity === "yellow")) {
+        statusClass = "status-yellow";
+        statusTitle = "Cautionary Warnings";
+      } else {
+        statusClass = "status-green";
+        statusTitle = "No Warnings";
+      }
+    }
+
     html += `
       <div class="oit-tab ${activeClass}" data-tab-id="${tab.id}">
+        <span class="status-dot ${statusClass}" title="${statusTitle}"></span>
         <span class="tab-title">${escapeHtml(tab.title)}</span>
         <span class="oit-tab-close" data-tab-close="${tab.id}" title="Close Tab">×</span>
       </div>
@@ -268,13 +287,28 @@ export function renderFoodSettings(protocol: Protocol | null): void {
     updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-initial"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL);
     updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-all"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL);
     updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-none"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE);
+  }
 
-    // Patch Threshold Section (Conditional)
-    const thresholdContainer = foodASettings.querySelector(".threshold-setting");
-    if (protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL) {
-      if (!thresholdContainer) {
-        // Add it if missing ... which can happen if a different dilute strat is chosen
-        const html = `
+  // Shared Logic (Runs after Create or Patch Food A settings)
+  // Patch Threshold Section (Conditional)
+  const advancedSettings = (foodASettings as HTMLElement).querySelector(".oit-advanced-settings") as HTMLDetailsElement;
+  const thresholdContainer = advancedSettings?.querySelector(".threshold-setting");
+
+  // Sync open state
+  if (advancedSettings) {
+    // Only force it if it differs, to avoid interfering with browser animation logic if any
+    const shouldBeOpen = workspace.getActive().isAdvancedSettingsOpen;
+    if (advancedSettings.open !== shouldBeOpen) {
+      advancedSettings.open = shouldBeOpen;
+    }
+  }
+
+  const formUnit = protocol.foodA.type === FoodType.SOLID ? "g" : "ml";
+
+  if (protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL) {
+    if (!thresholdContainer && advancedSettings) {
+      // Add it if missing ... which can happen if a different dilute strat is chosen
+      const html = `
           <div class="setting-row threshold-setting">
             <label>Directly dose when neat amount ≥</label>
             <div class="input-unit-group">
@@ -282,16 +316,15 @@ export function renderFoodSettings(protocol: Protocol | null): void {
               <span>${formUnit}</span>
             </div>
           </div>`;
-        foodASettings.insertAdjacentHTML("beforeend", html);
-      } else {
-        // Update it
-        patchSettingsInput(thresholdContainer as HTMLElement, "#food-a-threshold", formatAmount(protocol.diThreshold, formUnit));
-        updateSpan(thresholdContainer as HTMLElement, "span", formUnit);
-      }
-    } else {
-      // Remove threshold container if present if not on dilution strat for food A
-      if (thresholdContainer) thresholdContainer.remove();
+      advancedSettings.insertAdjacentHTML("beforeend", html);
+    } else if (thresholdContainer) {
+      // Update it
+      patchSettingsInput(thresholdContainer as HTMLElement, "#food-a-threshold", formatAmount(protocol.diThreshold, formUnit));
+      updateSpan(thresholdContainer as HTMLElement, "span", formUnit);
     }
+  } else {
+    // Remove threshold container if present if not on dilution strat for food A
+    if (thresholdContainer) thresholdContainer.remove();
   }
 
   // --- FOOD B ---
@@ -357,29 +390,32 @@ function buildFoodAHTML(protocol: Protocol): string {
           <button class="toggle-btn ${protocol.foodA.type === FoodType.LIQUID ? "active" : ""}" data-action="toggle-food-a-liquid">Liquid</button>
         </div>
       </div>
-      <div class="setting-row">
-        <label>Dilution strategy:</label>
-        <div class="toggle-group">
-          <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL ? "active" : ""}" data-action="food-a-strategy-initial">Initial dilution</button>
-          <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL ? "active" : ""}" data-action="food-a-strategy-all">Dilution throughout</button>
-          <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE ? "active" : ""}" data-action="food-a-strategy-none">No dilutions</button>
+      <details class="oit-advanced-settings">
+        <summary>Advanced Configuration</summary>
+        <div class="setting-row">
+          <label>Dilution strategy:</label>
+          <div class="toggle-group">
+            <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL ? "active" : ""}" data-action="food-a-strategy-initial">Initial dilution</button>
+            <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL ? "active" : ""}" data-action="food-a-strategy-all">Dilution throughout</button>
+            <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE ? "active" : ""}" data-action="food-a-strategy-none">No dilutions</button>
+          </div>
         </div>
-      </div>
-      ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL
+        ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL
       ? `
-      <div class="setting-row threshold-setting">
-        <label>Directly dose when neat amount ≥</label>
-        <div class="input-unit-group">
-          <input type="number" id="food-a-threshold" min="0" value="${formatAmount(protocol.diThreshold, protocol.foodA.type === FoodType.SOLID ? "g" : "ml")}" step="0.1" />
-          <span>${protocol.foodA.type === FoodType.SOLID ? "g" : "ml"}</span>
-          <span class="info-tooltip" data-tooltip="Once you can measure at least this much food, switch from dilution to direct doses.">
-          ⓘ
-          </span>
+        <div class="setting-row threshold-setting">
+          <label>Directly dose when neat amount ≥</label>
+          <div class="input-unit-group">
+            <input type="number" id="food-a-threshold" min="0" value="${formatAmount(protocol.diThreshold, protocol.foodA.type === FoodType.SOLID ? "g" : "ml")}" step="0.1" />
+            <span>${protocol.foodA.type === FoodType.SOLID ? "g" : "ml"}</span>
+            <span class="info-tooltip" data-tooltip="Once you can measure at least this much food, switch from dilution to direct doses.">
+            ⓘ
+            </span>
+          </div>
         </div>
-      </div>
-      `
+        `
       : ""
     }
+      </details>
     </div>
   `;
 }
@@ -854,7 +890,7 @@ function updatePublicExports(customNote: string, isBatch: boolean) {
   const pdfBtn = document.getElementById("export-pdf");
 
   if (asciiBtn) {
-    asciiBtn.textContent = isBatch ? "Copy All (ASCII)" : "Copy ASCII";
+    asciiBtn.textContent = isBatch ? "Copy All (Clipboard)" : "Copy to Clipboard";
   }
   if (pdfBtn) {
     // Only update if it's not currently generating

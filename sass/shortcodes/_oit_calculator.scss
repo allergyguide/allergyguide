@@ -108,38 +108,80 @@
     }
   }
 
-  // Tabs Bar
-  .oit-tabs-bar {
-    display: flex;
-    gap: 0.25rem;
-    margin-bottom: 0; // connects to settings below
-    overflow-x: auto;
-    padding-bottom: 0;
+  // Workspace Header (Tabs + Actions)
+  .oit-workspace-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
     border-bottom: 1px solid var(--oit-border);
-    
-    // Hide scrollbar but keep functionality
-    scrollbar-width: none; // Firefox
+    margin-bottom: 0; // Settings container handles spacing
+    position: relative; // For z-index context if needed
+  }
+
+  // Tabs List (Scrollable Area)
+  .oit-tabs-list {
+    display: flex;
+    align-items: flex-end; // Align tabs to the bottom line
+    gap: 4px; // Small gap between tabs
+    padding: 0 0.5rem; // Indent slightly
+    overflow-x: auto;
+    flex: 1 1 auto;
+    min-width: 0; // Essential for allowing scroll within flex item
+
+    // Hide scrollbar
+    scrollbar-width: none;
+
     &::-webkit-scrollbar {
-      display: none; // Chrome/Safari
+      display: none;
     }
 
     .oit-tab {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
       padding: 0.6rem 1rem;
-      background-color: var(--oit-bg); // Default background
-      border: 1px solid transparent; // Reserve space for border
+      background-color: var(--oit-bg-secondary); // Inactive tabs are darker
+      border: 1px solid var(--oit-border);
       border-bottom: none;
-      border-radius: 6px 6px 0 0;
+      border-radius: 8px 8px 0 0; // Top corners only
       cursor: pointer;
       color: var(--oit-text-secondary);
-      white-space: nowrap;
-      transition: all 0.2s;
       font-size: 0.9rem;
       font-weight: 500;
       position: relative;
-      top: 1px; // Push down to cover border-bottom of container
+      margin-bottom: -1px; // Overlap the container border
+      transition: all 0.2s;
+      min-width: 9rem; // Ensure readable width
+      max-width: 13rem;
+
+      // Status Dot
+      .status-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background-color: var(--oit-border); // Default (Empty)
+        flex-shrink: 0;
+
+        &.status-green {
+          background-color: var(--oit-success-text);
+          box-shadow: 0 0 4px var(--oit-success-border);
+        }
+
+        &.status-yellow {
+          background-color: var(--oit-warning-yellow-text);
+        }
+
+        &.status-red {
+          background-color: var(--oit-warning-red-text);
+          box-shadow: 0 0 4px var(--oit-warning-red-border);
+        }
+      }
+
+      .tab-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
       &:hover {
         background-color: var(--oit-bg-hover);
@@ -147,52 +189,101 @@
       }
 
       &.active {
-        background-color: var(--oit-bg-secondary); // Match settings container
-        border-color: var(--oit-border);
-        border-bottom-color: var(--oit-bg-secondary); // Blend with container
-        color: var(--oit-button-primary);
+        /* background-color: var(--oit-bg); // Match the settings container bg (white/dark gray) */
+        color: var(--oit-text);
+        border-top: 3px solid var(--oit-button-primary); // Accent pop
+        border-bottom: 1px solid var(--oit-bg); // "Erase" the border line to merge
+        z-index: 2; // Sit on top of the line
+        padding-bottom: 0.7rem; // Compensate for layout shift
         font-weight: 600;
-        border-top: 3px solid var(--oit-button-primary);
-        padding-top: calc(0.6rem - 2px); // Adjust for thicker top border
       }
     }
 
     .oit-tab-close {
+      margin-left: auto; // Push to right
       width: 1.2rem;
       height: 1.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      font-size: 1.1rem;
-      line-height: 1;
-      margin-left: 0.25rem;
-      opacity: 0.6;
+      opacity: 0; // Hidden until hover (cleaner look)
       transition: all 0.2s;
+      font-size: 1.1rem;
 
       &:hover {
-        opacity: 1;
-        background-color: rgba(0,0,0,0.1); 
+        background-color: var(--oit-warning-red-bg);
         color: var(--oit-warning-red-text);
       }
     }
 
+    // Show close button when hovering the tab
+    .oit-tab:hover .oit-tab-close {
+      opacity: 0.6;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    // Ghost "New Tab" Button
     .oit-tab-add {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 0.8rem;
-      font-size: 1.2rem;
-      font-weight: bold;
+      width: 2rem;
+      height: 2rem;
+      margin-left: 0.25rem;
+      margin-bottom: 0.25rem;
+      border-radius: 6px;
       color: var(--oit-text-secondary);
+      font-size: 1.2rem;
       cursor: pointer;
-      border-radius: 6px 6px 0 0;
-      
+      opacity: 0.6;
+      transition: all 0.2s;
+
       &:hover {
-        color: var(--oit-success-text);
         background-color: var(--oit-bg-hover);
+        color: var(--oit-success-text);
+        opacity: 1;
       }
     }
+  }
+
+  // Header Actions (Undo/Redo)
+  .oit-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0 0.5rem 0.4rem 0.5rem; // Bottom padding matches visual alignment
+
+    .btn-secondary {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+      background-color: var(--oit-bg-secondary);
+      color: var(--oit-text);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:not(:disabled) {
+        border: 1px solid var(--oit-border);
+      }
+
+      &:hover:not(:disabled) {
+        background-color: var(--oit-bg-hover);
+        color: var(--oit-text);
+        border: 1px solid var(--oit-border);
+      }
+
+    }
+
   }
 
   // Settings Container
@@ -218,7 +309,7 @@
   .food-a-container,
   .food-b-container {
     background-color: var(--oit-bg-secondary);
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 8px;
     border: 1px solid var(--oit-border);
 
@@ -359,6 +450,77 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .oit-advanced-settings {
+    margin-top: 0.5rem;
+    border: 1px solid var(--oit-border);
+    border-radius: 6px;
+    background-color: var(--oit-bg);
+    overflow: hidden;
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--oit-text);
+      list-style: none; // Hide default marker
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+      font-size: 0.9rem;
+      padding: 0.75rem;
+      transition: background-color 0.2s;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &::before {
+        content: '▶';
+        font-size: 0.7rem;
+        transition: transform 0.2s;
+        color: var(--oit-text-secondary);
+        display: inline-block; // Ensure transform works
+      }
+
+      &:hover {
+        background-color: var(--oit-bg-hover);
+        color: var(--oit-button-primary);
+
+        &::before {
+          color: var(--oit-button-primary);
+        }
+      }
+    }
+
+    // Content spacing and padding
+    .setting-row {
+      padding: 0 0.75rem;
+    }
+
+    .setting-row:first-of-type {
+      margin-top: 1rem;
+    }
+
+    .setting-row:last-of-type {
+      margin-bottom: 1rem;
+    }
+
+    // Increased spacing between rows
+    .setting-row+.setting-row {
+      margin-top: 1.5rem;
+    }
+
+    &[open] {
+      summary {
+        border-bottom: 1px solid var(--oit-border);
+      }
+
+      summary::before {
+        transform: rotate(90deg);
+      }
+    }
   }
 
   .food-name-input {
@@ -992,10 +1154,6 @@
   @media (max-width: 768px) {
     padding: 1rem;
 
-    .oit-mobile-hidden-shortcut {
-      display: none;
-    }
-
     .oit-modal-overlay,
     .oit-modal-content {
       max-width: 100%;
@@ -1531,7 +1689,7 @@
 }
 
 .oit-form-group {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.75rem;
 
   label {
     display: block;
