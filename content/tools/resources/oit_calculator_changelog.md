@@ -8,6 +8,38 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+---
+
+## [0.15.0] - 2026-01-11
+
+### Added
+
+- Multi-Tab Support: Can now work on and plan up to 5 different protocols at the same time for a single patient using tabs at the top of the calculator. Tabs have coloured status dots (Green/Yellow/Red) that immediately show if a protocol has validation warnings without needing to open the tab.
+- Batch Export: "Export PDF" or "Copy to Clipboard" buttons will now include all open tabs in one single file or copy action.
+- UX: When opening a new tab, the "Food A" search bar is now automatically focused.
+- Logged-in users can open up to 5 tabs; public users are limited to 1 tab.
+
+### Changed
+
+- Layout: Moved Undo/Redo buttons inline with the tabs.
+- Settings: "Advanced Configuration" for Food A (dilution strategies) is now collapsible to reduce clutter.
+- Export: Renamed "Copy ASCII" button to "Copy to Clipboard" for clarity.
+- Spacing: Compacted the layout for Food A and Food B settings to fit more content on the screen.
+
 ## [0.14.0] - 2026-01-10
 
 ### Added
