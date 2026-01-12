@@ -12,15 +12,20 @@ authors = ["Joshua Yu"]
 
 ### Added
 
+- UX: Login modal can now be closed by pressing the `Esc` key.
+
 ### Changed
 
 - UI: now user auth and tool version are right justified.
+- UI: Added a fade-out effect to the right edge of the tabs list to better indicate scrollable content.
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- UI: Fixed an issue where the background page would still scroll when the login modal was open.
 
 ### Security
 
