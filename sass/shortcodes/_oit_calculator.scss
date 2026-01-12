@@ -136,6 +136,10 @@
       display: none;
     }
 
+    // Fade out effect on the right to prevent jarring boundary with actions
+    mask-image: linear-gradient(to right, black calc(100% - 1rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 1rem), transparent 100%);
+
     .oit-tab {
       display: flex;
       align-items: center;
