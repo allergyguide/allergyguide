@@ -8,26 +8,14 @@ import {
   type ProtocolData,
   FoodDataSchema,
   ProtocolDataSchema,
+  type PublicData,
+  type UserDataResult,
 } from "../types";
 import { HttpError } from "../types";
 import { SAMPLE_PROTOCOL } from "../utils"
 import { loadSecureAsset } from "./api";
 import { appState } from "../main";
 
-
-// Return type for just the public load
-export interface PublicData {
-  foods: FoodData[];
-  protocols: ProtocolData[];
-}
-
-// Return type for the secure load
-export interface UserDataResult {
-  username: string;
-  customFoods: FoodData[];
-  protocols: ProtocolData[];
-  handouts: string[];
-}
 
 /**
  * Validates an array of raw data items against a Zod schema

@@ -4,8 +4,8 @@
  * Workspace Manager for Multi-Tab support.
  * Manages multiple ProtocolState instances.
  */
-import { ProtocolState, type Listener } from "./protocolState";
-import { type Protocol, type TabListener, type Tab } from "../types";
+import { ProtocolState } from "./protocolState";
+import { type Protocol, type TabListener, type Tab, type ProtocolListener } from "../types";
 
 
 /**
@@ -17,7 +17,7 @@ import { type Protocol, type TabListener, type Tab } from "../types";
 export class WorkspaceManager {
   private tabs: Tab[] = [];
   private activeTabId: string;
-  private listeners: Listener[] = [];
+  private listeners: ProtocolListener[] = [];
   private tabListeners: TabListener[] = [];
   private isLoggedIn: boolean = false;
 
@@ -42,7 +42,7 @@ export class WorkspaceManager {
    * @param protocol - The new protocol state
    * @param note - The current custom note
    */
-  private proxyListener: Listener = (protocol: Protocol | null, note: string) => {
+  private proxyListener: ProtocolListener = (protocol: Protocol | null, note: string) => {
     // Update the title of the active tab based on the protocol
     const activeTab = this.tabs.find(t => t.id === this.activeTabId);
     if (activeTab) {
@@ -85,7 +85,7 @@ export class WorkspaceManager {
    * 
    * @param listener - Callback function to receive protocol updates
    */
-  public subscribe(listener: Listener) {
+  public subscribe(listener: ProtocolListener) {
     this.listeners.push(listener);
     // Emit current state immediately
     const activeState = this.getActive();

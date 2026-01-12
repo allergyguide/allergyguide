@@ -420,4 +420,58 @@ export interface Tab {
 */
 export type TabListener = (tabs: Tab[], activeId: string) => void;
 
+// ============================================
+// API & LOADER INTERFACES
+// ============================================
+
+// Return type for public loads
+export interface PublicData {
+  foods: FoodData[];
+  protocols: ProtocolData[];
+}
+
+// Return type for secure load
+export interface UserDataResult {
+  username: string;
+  customFoods: FoodData[];
+  protocols: ProtocolData[];
+  handouts: string[];
+}
+
+export interface SaveRequestPayload {
+  /** The full serialized protocol object including food settings and steps. */
+  protocolData: ProtocolData;
+  /** User-defined name for this protocol (e.g., "John Doe - Peanut Standard"). */
+  protocolName: string;
+  /** The email address where the user wants to receive the request receipt. */
+  userEmail: string;
+  /** Optional additional instructions or clinical context for the request. */
+  context: string;
+  /** A formatted ASCII representation of the protocol for administrative review. */
+  ascii: string;
+  /** A formatted representation of the warnings of the protocol. */
+  warnings: string;
+}
+
+// ============================================
+// EXPORT INTERFACES
+// ============================================
+
+/**
+ * Data bundle for exporting a single protocol tab
+ */
+export interface ProtocolExportData {
+  protocol: Protocol;
+  customNote: string;
+  history: HistoryItem[];
+}
+
+// ============================================
+// STATE LISTENERS
+// ============================================
+
+export type AuthListener = (isLoggedIn: boolean) => void;
+
+export type ProtocolListener = (protocol: Protocol | null, note: string) => void;
+
 

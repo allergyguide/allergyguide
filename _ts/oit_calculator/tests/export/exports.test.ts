@@ -8,7 +8,7 @@ vi.mock('../../main', () => ({
 }));
 
 import { generateAsciiContent } from '../../export/exports';
-import type { ProtocolExportData } from '../../export/exports';
+import type { ProtocolExportData } from '../../types';
 import { FoodType, Method, DosingStrategy, FoodAStrategy } from '../../types';
 import Decimal from 'decimal.js';
 import type { Protocol } from '../../types';

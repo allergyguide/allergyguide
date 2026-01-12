@@ -3,11 +3,9 @@
  * Global application state management (User, Auth, Databases).
  */
 import fuzzysort from "fuzzysort";
-import { type FoodData, type ProtocolData } from "../types";
+import { type FoodData, type ProtocolData, type AuthListener } from "../types";
 // Helper type: Takes any object T and adds the 'prepared' property from Fuzzysort
 type PreparedItem<T> = T & { prepared: Fuzzysort.Prepared };
-
-type AuthListener = (isLoggedIn: boolean) => void;
 
 export class AppState {
   // raw data loaded 

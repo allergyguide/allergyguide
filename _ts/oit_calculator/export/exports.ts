@@ -5,7 +5,7 @@
  */
 
 import { FoodType, Method } from "../types";
-import type { Protocol, Unit, Step, Food, HistoryItem } from "../types";
+import type { Unit, Step, Food, HistoryItem, ProtocolExportData } from "../types";
 import { formatNumber, formatAmount } from "../utils";
 import { getFoodAStepCount } from "../core/protocol";
 import type { jsPDF } from 'jspdf';
@@ -22,15 +22,6 @@ declare const __VERSION_OIT_CALCULATOR__: string;
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
-
-/**
- * Data bundle for exporting a single protocol tab
- */
-export interface ProtocolExportData {
-  protocol: Protocol;
-  customNote: string;
-  history: HistoryItem[];
-}
 
 interface ExportRow {
   stepIndex: number;

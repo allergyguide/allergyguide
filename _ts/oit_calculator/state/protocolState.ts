@@ -2,9 +2,7 @@
  * @module
  * State management for the active protocol, including history (undo/redo).
  */
-import type { Protocol, HistoryItem } from "../types";
-
-export type Listener = (protocol: Protocol | null, note: string) => void;
+import type { Protocol, HistoryItem, ProtocolListener } from "../types";
 
 /**
  * State manager for a single OIT Protocol (one tab)
@@ -23,7 +21,7 @@ export class ProtocolState {
   // for UI for tabs
   public isAdvancedSettingsOpen: boolean = false;
 
-  private listeners: Listener[] = [];
+  private listeners: ProtocolListener[] = [];
 
   /**
    * @returns current Protocol object or null if not yet initialized
@@ -144,7 +142,7 @@ export class ProtocolState {
    * 
    * @param listener - The callback function
    */
-  public subscribe(listener: Listener) {
+  public subscribe(listener: ProtocolListener) {
     this.listeners.push(listener);
     // Emit current protocol inside the HistoryItem
     listener(this.current ? this.current.protocol : null, this.customNote);
@@ -155,7 +153,7 @@ export class ProtocolState {
    * 
    * @param listener - The callback function to remove
    */
-  public unsubscribe(listener: Listener) {
+  public unsubscribe(listener: ProtocolListener) {
     this.listeners = this.listeners.filter(l => l !== listener);
   }
 

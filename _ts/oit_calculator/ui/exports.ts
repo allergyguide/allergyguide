@@ -5,7 +5,8 @@
  */
 import { workspace } from "../state/instances";
 import { isClickwrapAccepted, showClickwrapModal } from "./modals";
-import { exportASCII, generatePdf, type ProtocolExportData } from "../export/exports"
+import { exportASCII, generatePdf } from "../export/exports"
+import type { ProtocolExportData } from "../types";
 
 /**
  * Gathers data from all non-empty tabs in the workspace for export.

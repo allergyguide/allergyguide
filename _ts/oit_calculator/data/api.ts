@@ -2,7 +2,7 @@
  * @module
  * Handles network requests for secure assets and to request protocol saving (email to dev).
  */
-import { HttpError, type ProtocolData } from "../types";
+import { HttpError, type ProtocolData, type SaveRequestPayload } from "../types";
 
 /**
  * Fetcher for secure assets
@@ -76,25 +76,6 @@ export async function loadSecureAsset(filepath: string, format: 'auto' | 'buffer
 
   return await response.text();
 }
-
-/**
- * Data payload for requesting a protocol to be saved on the backend.
- */
-export interface SaveRequestPayload {
-  /** The full serialized protocol object including food settings and steps. */
-  protocolData: ProtocolData;
-  /** User-defined name for this protocol (e.g., "John Doe - Peanut Standard"). */
-  protocolName: string;
-  /** The email address where the user wants to receive the request receipt. */
-  userEmail: string;
-  /** Optional additional instructions or clinical context for the request. */
-  context: string;
-  /** A formatted ASCII representation of the protocol for administrative review. */
-  ascii: string;
-  /** A formatted representation of the warnings of the protocol. */
-  warnings: string;
-}
-
 
 /**
  * Sends a request to save a protocol through netlify function.
