@@ -14,6 +14,8 @@ authors = ["Joshua Yu"]
 
 ### Changed
 
+- UI: now user auth and tool version are right justified.
+
 ### Deprecated
 
 ### Removed

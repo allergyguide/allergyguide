@@ -81,16 +81,17 @@
     box-sizing: border-box;
   }
 
-  // undo redo and versioning
+  // versioning and auth
   .oit-toolbar {
-    display: flex;
+    display: grid;
+    width: 100%;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0rem;
     margin-top: -0.5em;
     align-items: center;
+    justify-content: end;
 
     .oit-version-auth {
-      margin-right: auto;
       font-size: 0.85rem;
       color: var(--oit-text-secondary);
       display: flex;
@@ -1594,7 +1595,7 @@
 
   // Ensure SVG scales nicely with text
   svg {
-    padding-top: 0.2rem;
+    padding-top: 0rem;
     width: 1.3rem;
     height: 1.3rem;
   }
@@ -1613,7 +1614,7 @@
   color: var(--oit-success-text);
   border: 1px solid var(--oit-success-border);
   background-color: var(--oit-success-bg);
-  padding: 0.1rem 0.4rem;
+  padding: 0.1rem 0.4rem 0.1rem;
   border-radius: 4px;
   font-size: 0.8rem;
 
