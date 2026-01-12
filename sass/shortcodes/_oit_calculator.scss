@@ -137,8 +137,8 @@
     }
 
     // Fade out effect on the right to prevent jarring boundary with actions
-    mask-image: linear-gradient(to right, black calc(100% - 1rem), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 1rem), transparent 100%);
+    mask-image: linear-gradient(to right, black calc(100% - 0.5rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 0.5rem), transparent 100%);
 
     .oit-tab {
       display: flex;
