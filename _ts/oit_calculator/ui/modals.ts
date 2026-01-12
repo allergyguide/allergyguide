@@ -180,6 +180,7 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
   // Show Modal
   loginBtn.addEventListener("click", () => {
     modal.style.display = "flex";
+    document.body.style.overflow = 'hidden'; // Lock scroll
     if (errorMsg) errorMsg.textContent = "";
 
     // init turnstile
@@ -195,6 +196,7 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
   // Hide Modal
   const hide = () => {
     modal.style.display = "none";
+    document.body.style.overflow = ''; // Restore scroll
     form.reset();
     if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
   };
