@@ -24,7 +24,7 @@ import {
   Method,
   DosingStrategy,
   FoodAStrategy,
-  WarningCode
+  UserHistoryPayloadSchema
 } from "../types"
 import { validateProtocol } from "./validator";
 
@@ -32,6 +32,48 @@ import { validateProtocol } from "./validator";
 // And current tool version
 declare const __COMMIT_HASH__: string;
 declare const __VERSION_OIT_CALCULATOR__: string;
+
+/**
+ * QR PAYLOAD KEY MAPPING DOCUMENTATION
+ * ====================================
+ * To keep the QR code size small, we use single-letter keys for the JSON payload.
+ * 
+ * MProtocol (p):
+ *  - ds: Dosing Strategy (0=STANDARD, 1=SLOW)
+ *  - fas: Food A Strategy (0=INIT, 1=ALL, 2=NONE)
+ *  - dt: Dilution Threshold (Food A)
+ *  - fbt: Food B Threshold Amount (Optional)
+ *  - fa: Food A Object (MFood)
+ *  - fb: Food B Object (MFood, Optional)
+ *  - s: Steps Array (MStep[])
+ * 
+ * MFood (fa, fb):
+ *  - n: Name
+ *  - t: Type (0=SOLID, 1=LIQUID)
+ *  - p: Protein grams in serving
+ *  - s: Serving Size
+ * 
+ * MStep (s):
+ *  - i: Step Index
+ *  - t: Target Protein (mg)
+ *  - m: Method (0=DIRECT, 1=DILUTE)
+ *  - d: Daily Amount
+ *  - f: Food Source (0=Food A, 1=Food B)
+ *  - mf: Mix Food Amount (Optional, Dilute only)
+ *  - mw: Mix Water Amount (Optional, Dilute only)
+ *  - sv: Servings (Optional, Dilute only)
+ * 
+ * MWarning (w):
+ *  - c: Code string
+ *  - i: Step Index (Optional)
+ * 
+ * Root:
+ *  - v: Version-Hash string
+ *  - ts: Timestamp
+ *  - p: Protocol (MProtocol)
+ *  - w: Warnings (MWarning[], Optional)
+ *  - h: History Log (string[])
+ */
 
 // --- Minification Helpers ---
 
@@ -168,8 +210,18 @@ export async function decodeUserHistoryPayload(b64String: string): Promise<Reada
     // Note: 'to: "string"' forces pako to return a string instead of a Uint8Array
     const jsonStr = inflate(bytes, { to: 'string' });
 
-    // Parse JSON (This gives us the Minified structure)
-    const minified = JSON.parse(jsonStr);
+    // Parse JSON
+    const rawObj = JSON.parse(jsonStr);
+
+    // Validate Schema
+    const result = UserHistoryPayloadSchema.safeParse(rawObj);
+
+    if (!result.success) {
+      console.error("Payload validation failed:", result.error);
+      return null;
+    }
+
+    const minified = result.data;
 
     // Expand Minified Keys to Human Readable Names
     return expandPayload(minified);
@@ -201,7 +253,7 @@ function expandWarnings(mw: MWarning[]): ReadableWarning[] {
  * @param m - The minified payload object (parsed from JSON)
  * @returns The readable history payload
  */
-function expandPayload(m: any): ReadableHistoryPayload {
+function expandPayload(m: UserHistoryPayload): ReadableHistoryPayload {
   const result: ReadableHistoryPayload = {
     version: m.v,
     timestamp: new Date(m.ts).toISOString(), // Convert epoch to Readable Date
@@ -222,7 +274,7 @@ function expandPayload(m: any): ReadableHistoryPayload {
  * @param p - The minified protocol object
  * @returns The readable protocol object
  */
-function expandProtocol(p: any): ReadableProtocol {
+function expandProtocol(p: MProtocol): ReadableProtocol {
   return {
     dosingStrategy: p.ds === 0 ? "STANDARD" : "SLOW",
     foodAStrategy: mapFoodAStrategy(p.fas),
@@ -240,7 +292,7 @@ function expandProtocol(p: any): ReadableProtocol {
  * @param f - The minified food object
  * @returns The readable food object
  */
-function expandFood(f: any): ReadableFood {
+function expandFood(f: MFood): ReadableFood {
   return {
     name: f.n,
     type: f.t === 0 ? "SOLID" : "LIQUID",
@@ -256,10 +308,10 @@ function expandFood(f: any): ReadableFood {
  * @param s - The minified step object
  * @returns The readable step object
  */
-function expandStep(s: any): ReadableStep {
-  const method = s.m === "D" ? "DIRECT" : "DILUTE";
+function expandStep(s: MStep): ReadableStep {
+  const method = s.m === 0 ? "DIRECT" : "DILUTE";
 
-  const step: any = {
+  const step: ReadableStep = {
     stepIndex: s.i,
     targetMg: s.t,
     method: method,

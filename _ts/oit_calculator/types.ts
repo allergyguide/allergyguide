@@ -254,62 +254,53 @@ export interface HistoryItem {
   timestamp: number;  // Unix timestamp 
 }
 
-// --- MINIFIED INTERFACES FOR QR PAYLOAD ---
-/**
- * Minified representation of a Food object for compact QR storage.
- */
-export interface MFood {
-  n: string; // name
-  t: number; // 0=SOLID, 1=LIQUID
-  p: number; // gramsInServing
-  s: number; // servingSize
-}
+// --- MINIFIED INTERFACES FOR QR PAYLOAD (ZOD SCHEMAS) ---
 
-/**
- * Minified representation of a Protocol Step for compact QR storage.
- */
-export interface MStep {
-  i: number; // stepIndex
-  t: number; // targetMg
-  m: number; // 0=DIRECT, 1=DILUTE
-  d: number; // dailyAmount
-  mf?: number; // mixFoodAmount (optional)
-  mw?: number; // mixWaterAmount (optional)
-  sv?: number; // servings (optional)
-  f: number; // 0=Food A, 1=Food B
-}
+export const MFoodSchema = z.strictObject({
+  n: z.string(), // name
+  t: z.number().int(), // 0=SOLID, 1=LIQUID
+  p: z.number(), // gramsInServing
+  s: z.number(), // servingSize
+});
+export type MFood = z.infer<typeof MFoodSchema>;
 
-/**
- * Minified representation of a validation warning.
- */
-export interface MWarning {
-  c: string; // code string
-  i?: number; // stepIndex
-}
+export const MStepSchema = z.strictObject({
+  i: z.number().int(), // stepIndex
+  t: z.number(), // targetMg
+  m: z.number().int(), // 0=DIRECT, 1=DILUTE
+  d: z.number(), // dailyAmount
+  mf: z.number().optional(), // mixFoodAmount
+  mw: z.number().optional(), // mixWaterAmount
+  sv: z.number().optional(), // servings
+  f: z.number().int(), // 0=Food A, 1=Food B
+});
+export type MStep = z.infer<typeof MStepSchema>;
 
-/**
- * Minified representation of a full Protocol for compact QR storage.
- */
-export interface MProtocol {
-  ds: number;   // DosingStrategy: 0=STANDARD, 1=SLOW
-  fas: number;  // FoodAStrategy: 0=INIT, 1=ALL, 2=NONE
-  dt: number;   // diThreshold
-  fbt?: number; // foodBThreshold amount
-  fa: MFood;    // Food A
-  fb?: MFood;   // Food B
-  s: MStep[];   // Steps
-}
+export const MWarningSchema = z.strictObject({
+  c: z.string(), // code string
+  i: z.number().int().optional(), // stepIndex
+});
+export type MWarning = z.infer<typeof MWarningSchema>;
 
-/**
- * The final payload structure to be compressed into the QR code.
- */
-export interface UserHistoryPayload {
-  v: string;      // semver-hash, ie. 0.8.0-a1213b2c 
-  ts: number;     // Generated At timestamp
-  p: MProtocol;   // Current Protocol State
-  w?: MWarning[]; // Warnings
-  h: string[];    // History of action labels only (stripped timestamps)
-}
+export const MProtocolSchema = z.strictObject({
+  ds: z.number().int(),   // DosingStrategy: 0=STANDARD, 1=SLOW
+  fas: z.number().int(),  // FoodAStrategy: 0=INIT, 1=ALL, 2=NONE
+  dt: z.number(),   // diThreshold
+  fbt: z.number().optional(), // foodBThreshold amount
+  fa: MFoodSchema,    // Food A
+  fb: MFoodSchema.optional(),   // Food B
+  s: z.array(MStepSchema),   // Steps
+});
+export type MProtocol = z.infer<typeof MProtocolSchema>;
+
+export const UserHistoryPayloadSchema = z.strictObject({
+  v: z.string(),      // semver-hash
+  ts: z.number(),     // Generated At timestamp
+  p: MProtocolSchema,   // Current Protocol State
+  w: z.array(MWarningSchema).optional(), // Warnings
+  h: z.array(z.string()),    // History of action labels only
+});
+export type UserHistoryPayload = z.infer<typeof UserHistoryPayloadSchema>;
 
 /**
  * Result of a successful authentication attempt.
