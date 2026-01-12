@@ -203,6 +203,13 @@ export function attachLoginModalListeners(onLoginAttempt: () => Promise<boolean>
 
   if (cancelBtn) cancelBtn.addEventListener("click", hide);
 
+  // Allow ESC to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape" && modal && modal.style.display === 'flex') {
+      hide();
+    }
+  });
+
   // Submit
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
