@@ -77,6 +77,12 @@ export type SpecificWarningCode = typeof WarningCode.Red[keyof typeof WarningCod
 // ============================================
 
 /**
+ * Union type for numeric inputs that may come from UI strings, 
+ * native numbers, or Decimal objects.
+ */
+export type NumberLike = string | number | Decimal;
+
+/**
  * Measuring unit for patient-facing amounts.
  * "g" for solids; "ml" for liquids.
  */

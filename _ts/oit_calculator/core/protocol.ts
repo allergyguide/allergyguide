@@ -11,6 +11,7 @@ import {
   FoodType,
   Method,
   FoodAStrategy,
+  type NumberLike,
 } from "../types"
 
 import type {
@@ -403,7 +404,7 @@ export function recalculateStepMethods(oldProtocol: Protocol): Protocol {
  * @param newTargetMg New target protein (mg)
  * @returns New Protocol with updated step, or original protocol if validation fails
  */
-export function updateStepTargetMg(oldProtocol: Protocol, stepIndex: number, newTargetMg: any): Protocol {
+export function updateStepTargetMg(oldProtocol: Protocol, stepIndex: number, newTargetMg: NumberLike): Protocol {
   if (!oldProtocol) return oldProtocol;
 
   // Shallow copy steps array
@@ -462,7 +463,7 @@ export function updateStepTargetMg(oldProtocol: Protocol, stepIndex: number, new
  * @param newDailyAmount New amount (g or ml), number-like
  * @returns New Protocol with updated step
  */
-export function updateStepDailyAmount(oldProtocol: Protocol, stepIndex: number, newDailyAmount: any): Protocol {
+export function updateStepDailyAmount(oldProtocol: Protocol, stepIndex: number, newDailyAmount: NumberLike): Protocol {
   if (!oldProtocol) return oldProtocol;
 
   // Shallow copy steps array
@@ -512,9 +513,8 @@ export function updateStepDailyAmount(oldProtocol: Protocol, stepIndex: number, 
  */
 export function updateStepMixFoodAmount(
   oldProtocol: Protocol,
-  // newMixFoodAmount must be any since it accepts user input from UI
   stepIndex: number,
-  newMixFoodAmount: any,
+  newMixFoodAmount: NumberLike,
 ): Protocol {
   if (!oldProtocol) return oldProtocol;
 

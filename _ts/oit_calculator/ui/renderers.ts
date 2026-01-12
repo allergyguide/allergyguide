@@ -4,7 +4,7 @@
  * DOM Rendering logic
  */
 import { Method, FoodType, DosingStrategy, FoodAStrategy } from "../types";
-import type { Protocol, Warning, Unit, Food, Step, ReadableHistoryPayload, Tab } from "../types";
+import type { Protocol, Warning, Unit, Food, Step, ReadableHistoryPayload, Tab, ReadableWarning } from "../types";
 import { formatNumber, formatAmount, escapeHtml } from "../utils";
 import { validateProtocol } from "../core/validator";
 import { workspace } from "../state/instances";
@@ -1130,7 +1130,7 @@ export function renderDebugResult(payload: ReadableHistoryPayload | null): void 
       ? `<details>
             <summary class="warning-summary">Warnings (${payload.warnings.length})</summary>
             <ul class="warnings-log">
-              ${payload.warnings.map((w: any) => `<li>${escapeHtml(w.code)} (Step ${w.stepIndex ?? "N/A"})</li>`).join("")}
+              ${payload.warnings.map((w: ReadableWarning) => `<li>${escapeHtml(w.code)} (Step ${w.stepIndex ?? "N/A"})</li>`).join("")}
             </ul>
           </details>`
       : ""
