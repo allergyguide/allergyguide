@@ -213,6 +213,13 @@ export const handler: Handler = async (event) => {
       'svg': 'image/svg+xml'
     };
     const contentType = contentTypes[ext || ''] || 'application/octet-stream';
+    let cacheControl = 'private, no-cache, no-store, must-revalidate'; // Default 
+    // Allow limited caching for PDFs (Static Handouts)
+    if (ext === 'pdf') {
+      // "private" = specific to this user (don't put on shared CDN)
+      // "max-age=3600" = keep in browser RAM/Disk for 1 hour
+      cacheControl = 'private, max-age=3600';
+    }
 
     // read and return
     const fileBuffer = await fs.readFile(filePath);
@@ -221,7 +228,7 @@ export const handler: Handler = async (event) => {
       headers: {
         'Content-Type': contentType,
         'Content-Disposition': `inline; filename="${filename}"`,
-        'Cache-Control': 'private, no-cache, no-store, must-revalidate',
+        'Cache-Control': cacheControl,
       },
       body: fileBuffer.toString('base64'),
       isBase64Encoded: true,
