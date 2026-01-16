@@ -56,15 +56,17 @@ The project uses a modified build process for the Abridge theme to allow for cus
 
 These must be set in Netlify (Site Settings > Environment Variables) and locally in a `.env` file for the build to succeed.
 
-| Variable             | Purpose                                                            |
-| :------------------- | :----------------------------------------------------------------- |
-| `PRIVATE_TOKEN`      | GitHub Personal Access Token to fetch private assets/tools.        |
-| `GITHUB_OWNER`       | Owner of the repo (e.g., `john-doe`).                              |
-| `GITHUB_REPO`        | Repository name (e.g. `repo-name`).                                |
-| `AUTH_USERS`         | JSON object of allowed users/hashes: `{"username": "$2a$10$..."}`. |
-| `JWT_SECRET`         | Secret key used to sign Auth Cookies.                              |
-| `TOKEN_EXPIRY_HOURS` | Duration of the user session in hours (Default: 24).               |
-| `TURNSTILE_SECRET`   | Secret key from Cloudflare Turnstile for server-side verify        |
+| Variable              | Purpose                                                                |
+| :-------------------- | :--------------------------------------------------------------------- |
+| `PRIVATE_TOKEN`       | GitHub Personal Access Token to fetch private assets/tools.            |
+| `GITHUB_OWNER`        | Owner of the repo (e.g., `john-doe`).                                  |
+| `GITHUB_REPO`         | Repository name (e.g. `repo-name`).                                    |
+| `JWT_SECRET`          | Secret key used to sign Auth Cookies.                                  |
+| `SUPABASE_URL`        | URL of the Supabase project.                                           |
+| `SUPABASE_SECRET_KEY` | for backend access ONLY.                                               |
+| `SUPABASE_JWT_SECRET` | JWT Secret for signing client tokens (from Supabase Project Settings). |
+| `TOKEN_EXPIRY_HOURS`  | Duration of the user session in hours (Default: 24).                   |
+| `TURNSTILE_SECRET`    | Secret key from Cloudflare Turnstile for server-side verify            |
 
 ## Project structure
 
@@ -136,7 +138,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 ### Generating secure content for tools
 
-- **Auth/Permissions:** Update `AUTH_USERS` in Netlify.
+- **Auth/Permissions:** Update `authorized_users` table in Supabase.
 - **User Configs:** Ensure the private repository contains the matching `user_configs/{username}_config.json` files and the files you want the user to be able to access.
 - **Build Logic:** If adding a new tool that requires private assets, you must manually add a `generateSecureAssets` call to `build-fetch-secure-assets.mts` to ensure the files are downloaded during build.
 - **Structure:** secure assets are flattened into `secure_assets/` locally during build.
@@ -148,8 +150,12 @@ Some tools rely on Serverless Functions for authentication and data access.
 ### 1. Authentication Flow
 
 - **Login:** The client `POST`s credentials to `/.netlify/functions/auth-login`.
-- **Session:** On success, the function reads the user's config file (`user_configs/{username}_config.json`), extracts all valid file paths, and embeds this flattened **permissions list** into the `nf_jwt` **HttpOnly cookie**.
-  - The JWT is signed with `JWT_SECRET`.
+- **Validation:** The function checks the credentials against the `authorized_users` table in Supabase using the `SUPABASE_SECRET_KEY`.
+- **Session:** On success:
+  1. It issues a **Supabase-compatible JWT** for client-side Row Level Security (RLS).
+  2. It reads the user's config file (`user_configs/{username}_config.json`), extracts all valid file paths, and embeds this flattened **permissions list** into the `nf_jwt` **HttpOnly cookie**.
+  - The `nf_jwt` is signed with `JWT_SECRET` for Netlify Function access.
+  - The Supabase JWT is signed with `SUPABASE_JWT_SECRET`.
 - **Logout:** `POST` to `/.netlify/functions/auth-logout` clears the cookie.
 
 ### 2. Fetching Secure Assets
@@ -166,13 +172,13 @@ Private assets (PDFs, JSON data) are **not** served statically. They reside in t
 
 ### 3. Managing Users
 
-Passwords in `AUTH_USERS` are stored as **bcrypt hashes** for security.
+Passwords are stored as **bcrypt hashes** in the Supabase `authorized_users` table.
 
 1. **Generate Hash:** Run the helper script locally:
    ```bash
    npx tsx tools/hash_password.ts "MyNewPassword123"
    ```
-2. **Update Env:** copy the hash `$2a$10...` into AUTH_USERS.
+2. **Update Database:** Insert the username and hash into the `authorized_users` table in Supabase.
 
 ---
 
