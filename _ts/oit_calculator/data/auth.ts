@@ -38,11 +38,13 @@ export async function login(username: string, password: string, turnstileToken: 
     const data = await response.json();
     const expiryHours = data.expiryHours || 24; // Default if missing
     const expiresAt = Date.now() + (expiryHours * 60 * 60 * 1000);
+    const dbToken = data.dbToken;
 
     return {
       valid: true,
       expiresAt: expiresAt,
-      username: username
+      username: username,
+      dbToken: dbToken
     }
   }
 

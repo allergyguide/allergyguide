@@ -9,6 +9,14 @@ import bcrypt from 'bcryptjs';
 import { resolve } from 'path';
 import { promises as fs } from 'fs';
 import { getAllFilePaths } from './utils.mts';
+import { createClient } from '@supabase/supabase-js';
+
+// INITIALIZE SUPABASE ADMIN
+const supabaseAdmin = createClient(
+	process.env.SUPABASE_URL!,
+	process.env.SUPABASE_SECRET_KEY!
+);
+
 
 /**
  * Verifies a user's turnstile response token against the cloudflare API.
@@ -45,8 +53,11 @@ export async function verifyTurnstile(turnstile_secret: string, turnstileTokenRe
 
 /**
  * Netlify Function: Login Handler
- * Authenticates a user against credentials stored in secret Netlify environment variables
- * On success, issues a signed JWT inside an HttpOnly, Secure cookie
+ * Authenticates a user against credentials in database.
+ * On success:
+ * 1. Issues a signed Netlify-compatible JWT inside an HttpOnly, Secure cookie.
+ * 2. Returns a signed Supabase-compatible JWT in the JSON body for client-side RLS access.
+ * 
  * @param event - The Netlify event object containing the POST body
  * @returns JSON success message with Set-Cookie header or error status
  */
@@ -102,20 +113,36 @@ export const handler: Handler = async (event) => {
 			};
 		}
 
-		// LOAD + PARSE USERS
-		// AUTH_USERS={"test":"$2a$10$..."}
-		const validUsers = JSON.parse(process.env.AUTH_USERS || '{}');
-		const storedHash = validUsers[username];
+		// lookup user in database
+		const { data: userRecord, error } = await supabaseAdmin
+			.from('authorized_users')
+			.select('auth_hash') // the bcrypt hash
+			.eq('username', username)
+			.eq('is_active', true)
+			.single();
 
-		// VERIFY CREDENTIALS
-		// bcrypt.compare returns a promise
-		if (!storedHash || !(await bcrypt.compare(password, storedHash))) {
+		if (error || !userRecord) {
+			// return generic err message
 			return {
 				statusCode: 401,
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ message: "Invalid credentials" }),
 			} as HandlerResponse;
 		}
+
+		// Verify Password 
+		const match = await bcrypt.compare(password, userRecord.auth_hash);
+		if (!match) {
+			return {
+				statusCode: 401,
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ message: "Invalid credentials" }),
+			} as HandlerResponse;
+		}
+
+		// -------
+		// AUTH WAS SUCCESSFUL
+		// -------
 
 		// READ USER CONFIG & EXTRACT PERMISSIONS
 		let permissions: string[] = [];
@@ -135,11 +162,12 @@ export const handler: Handler = async (event) => {
 			} as HandlerResponse;
 		}
 
-		// GENERATE JWT
-		const secret = process.env.JWT_SECRET;
-		if (!secret) {
-			console.error("JWT_SECRET MISSING, please check Netlify vars")
-			throw new Error("JWT_SECRET is missing");
+		// GENERATE TOKENS A) FOR NETLIFY AND B) FOR SUPABASE
+		const nfSecret = process.env.JWT_SECRET;
+		const supabaseSecret = process.env.SUPABASE_JWT_SECRET;
+		if (!nfSecret || !supabaseSecret) {
+			console.error("Either NF or SB jwt secret vars are missing")
+			throw new Error("A JWT_SECRET is missing");
 		}
 
 		if (!process.env.TOKEN_EXPIRY_HOURS) {
@@ -149,12 +177,25 @@ export const handler: Handler = async (event) => {
 		const expiryHours = parseInt(process.env.TOKEN_EXPIRY_HOURS || '24', 10);
 
 		// Sign with 'permissions' array instead of full 'config' object
-		const token = jwt.sign({ username: username, permissions: permissions }, secret, {
-			expiresIn: expiryHours * 3600 // expiresIn is in seconds so need to convert
-		});
+		const nfToken = jwt.sign({
+			username: username,
+			permissions: permissions
+		},
+			nfSecret,
+			{
+				expiresIn: expiryHours * 3600 // expiresIn is in seconds so need to convert
+			});
+
+		const dbToken = jwt.sign({
+			role: 'authenticated',
+			sub: username, // Important: must match auth.uid() in RLS
+		}, process.env.SUPABASE_JWT_SECRET!,
+			{
+				expiresIn: expiryHours * 3600
+			});
 
 		// SERIALIZE COOKIE
-		const authCookie = cookie.serialize('nf_jwt', token, {
+		const authCookie = cookie.serialize('nf_jwt', nfToken, {
 			httpOnly: true,
 			secure: true, // Requires HTTPS (Netlify provides this automatically)
 			sameSite: 'strict',
@@ -168,7 +209,12 @@ export const handler: Handler = async (event) => {
 				'Set-Cookie': authCookie,
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ success: true, username: username, expiryHours: expiryHours }),
+			body: JSON.stringify({
+				success: true,
+				username: username,
+				dbToken: dbToken,
+				expiryHours: expiryHours
+			}),
 		};
 
 	} catch (error) {

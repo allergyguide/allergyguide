@@ -2,7 +2,7 @@
  * @module
  * Handles network requests for secure assets and to request protocol saving (email to dev).
  */
-import { HttpError, type ProtocolData, type SaveRequestPayload } from "../types";
+import { HttpError, type SaveRequestPayload } from "../types";
 
 /**
  * Fetcher for secure assets

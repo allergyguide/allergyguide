@@ -14,21 +14,27 @@ dotenv.config({ override: true });
 // VERIFY NETLIFY ENV VARS EXIST - CRASH IF NOT
 const GITHUB_TOKEN = process.env.PRIVATE_TOKEN;
 const GITHUB_REPO = `${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}`;   // e.g., "username/repo-name"
-const AUTH_USERS = process.env.AUTH_USERS;
 const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY_HOURS = process.env.TOKEN_EXPIRY_HOURS;
 const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
+const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
 
 if (!GITHUB_REPO || !GITHUB_TOKEN) {
   console.error("No GitHub repo or token found. Check netlify settings")
   process.exit(1);
 }
 
-if (!AUTH_USERS || !JWT_SECRET || !TOKEN_EXPIRY_HOURS || !TURNSTILE_SECRET || !RESEND_API_KEY) {
-  console.error("Check your .env and netlify env vars, missing at least one of auth users, jwt token stuff, turnstile secret, resend api key")
+if (!JWT_SECRET || !TOKEN_EXPIRY_HOURS || !TURNSTILE_SECRET || !RESEND_API_KEY) {
+  console.error("Check your .env and netlify env vars, missing at least one of jwt token stuff, turnstile secret, resend api key")
   process.exit(1);
+}
 
+if (!SUPABASE_URL || !SUPABASE_SECRET_KEY || !SUPABASE_JWT_SECRET) {
+  console.error("no supabase stuff please check")
+  process.exit(1);
 }
 
 // GET GIT COMMIT HASH FOR VERSION STAMPING
@@ -54,7 +60,7 @@ const toolVersioning = JSON.parse(readFileSync('./tools_versioning.json', 'utf-8
 // VERIFY USER SECURITY CONFIGURATION
 // By this time the secure_assets/ folder should already be built
 console.log("-----VERIFY USER SECURITY CONFIGURATION-----");
-verifyUsersData();
+await verifyUsersData();
 console.log("---------------------------\n");
 
 // TYPST

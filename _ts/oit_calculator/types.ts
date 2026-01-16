@@ -317,6 +317,8 @@ export interface AuthLoginResult {
   /** Unix timestamp (milliseconds) when the session expires. */
   expiresAt: number;
   username: string;
+  /** JWT token needed to access data */
+  dbToken: string;
 }
 
 // ============================================

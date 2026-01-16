@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import { existsSync, mkdirSync, cpSync, rmSync } from 'fs';
 import { resolve } from 'path';
+import { createClient } from '@supabase/supabase-js';
+
 dotenv.config();
 
 
@@ -116,24 +118,27 @@ export async function getPathsUsingGitTree(token: string, repo: string, branch: 
  * Ensures that every non-admin user has an associated config file in secure_assets.
  * If the security config is invalid, the build terminates.
  */
-export function verifyUsersData() {
+export async function verifyUsersData() {
   console.log("Verifying Users Configuration...");
 
-  // Verify AUTH_USERS exists and is valid JSON
-  const authUsersEnv = process.env.AUTH_USERS!;
-  if (!authUsersEnv) {
-    console.error("Build Failed: Missing AUTH_USERS environment variable.");
-    process.exit(1);
+  const supabaseAdmin = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SECRET_KEY!
+  );
+
+  async function getAllUsernames(): Promise<string[]> {
+    const { data, error } = await supabaseAdmin
+      .from('authorized_users')
+      .select('username'); // Select only what you need
+
+    if (error) {
+      console.error("Could not get list of authorized users from db", error);
+      process.exit(1);
+    }
+    return (data || []).map((row) => row.username);
   }
 
-  let authUsersKeys: string[] = [];
-  try {
-    const authUsers = JSON.parse(authUsersEnv);
-    authUsersKeys = Object.keys(authUsers);
-  } catch (e: any) {
-    console.error("Build Failed: Could not parse AUTH_USERS as JSON.", e.message);
-    process.exit(1);
-  }
+  const authUsers = await getAllUsernames();
 
   // Load ADMIN_USERS (Optional exception list)
   let adminUsers: string[] = [];
@@ -149,7 +154,7 @@ export function verifyUsersData() {
   // Resolve path relative to project root
   const configBaseDir = resolve('secure_assets/user_configs');
 
-  authUsersKeys.forEach(user => {
+  authUsers.forEach(user => {
     // If user is an Admin, they have implicit wildcard access, so no config file is strictly required.
     if (adminUsers.includes(user)) {
       return;
@@ -170,7 +175,7 @@ export function verifyUsersData() {
     process.exit(1);
   }
 
-  console.log(`Security Config Verified: ${authUsersKeys.length} users checked.`);
+  console.log(`Security Config Verified: ${authUsers.length} users checked.`);
 }
 
 
