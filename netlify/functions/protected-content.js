@@ -1,4 +1,5 @@
 // netlify/functions/protected-content.js
+// DEPRECATED PLEASE IGNORE
 exports.handler = async (event) => {
   try {
     // Parse environment variables

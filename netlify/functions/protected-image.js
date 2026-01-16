@@ -1,4 +1,6 @@
 // netlify/functions/protected-image.js
+// DEPRECATED PLEASE IGNORE
+
 exports.handler = async (event) => {
   try {
     // Parse environment variables
