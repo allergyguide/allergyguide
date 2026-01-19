@@ -72,7 +72,7 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 
 2. **Authentication:**
 
-- **Login:** `auth-login.mts` verifies credentials against `AUTH_USERS` env var and issues a signed JWT via an HttpOnly, Secure cookie (`nf_jwt`).
+- **Login:** `auth-login.mts` verifies credentials against the `authorized_users` table in Supabase. On success, it issues a signed Netlify JWT via an HttpOnly, Secure cookie (`nf_jwt`) and returns a Supabase JWT for client-side RLS.
 - **Auto-Load:** On app start, `loader.ts` attempts to fetch the user configuration. If a valid cookie exists, the session is restored automatically.
 
 3. **Secure Assets:**
@@ -99,9 +99,12 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 
 Deployment requires the following Netlify environment variables (and ideally within local .env):
 
-- `JWT_SECRET`: Secret key for signing session tokens.
-- `AUTH_USERS`: JSON map of valid users `{"username": "bcrypt_hash"}`. Use `tools/hash_password.ts` to generate these hashes.
+- `JWT_SECRET`: Secret key for signing Netlify session tokens.
+- `SUPABASE_URL`: The URL of your Supabase project.
+- `SUPABASE_SECRET_KEY`: The key for backend administration.
+- `SUPABASE_JWT_SECRET`: The JWT secret from Supabase.
 - `TOKEN_EXPIRY_HOURS`: Session duration (default 24).
+- `TURNSTILE_SECRET`: Cloudflare Turnstile secret for login verification.
 
 ## Roadmap to v1.0.0
 
