@@ -108,28 +108,49 @@ Deployment requires the following Netlify environment variables (and ideally wit
 
 ## Roadmap to v1.0.0
 
+### Stabilized Food interface
+
+- Include a 'CAPSULE' food type to account for pharmacy prescribed capsules. These do not have any weights or calculations to measure and must therefore be exempted from _some_ aspects of the validator engine.
+- Inclusion of relevant metadata
+
 ### Safety and Core Logic Validation
 
-- The logic in `calculator.ts` and `protocol.ts` (dose calculations, dilution determination) must be **stabilized**.
+- The logic in `calculator.ts` and `protocol.ts` (dose calculations, dilution determination) must be **stable**. At present time there are no obvious bugs, but requires thorough user testing with multiple testers.
+- Will consider feature where a range of possible measurements is provided (ie to be within X% of the target mg). May not be worth it UX wise - will need to think about it.
 - `validator.ts` must be robust and comprehensive as possible. Current warnings should be reviewed and other possible warnings should be brainstormed and implemented if valid.
-- Disclaimer/Liability language should be solidified.
 
-### 2. Data Integrity and "Rough" Assets
+### Branded food database
+
+- Creation of maintainable database of common branded foods used in OIT
+- Must include automatic validation and periodic checks to update out-of-date foods
+
+### Data Integrity and "Rough" Assets
 
 - Ensure bounds in `data_integrity.test.ts` are comprehensive (e.g., ensure no food has 0g protein unless intended, check for duplicates).
 
-### 3. Development of export content / format
+### User Authentication and ability to host custom foods/protocols
 
-- Make sure ASCII export works well in EMRs
+- This represents a major feature change and will require thorough review.
+- Will need to ensure stable and secure user authentication system that also is convenient
+- Need to stabilize spec of how users will save and edit custom foods/protocols
 
-### 4. Testing, QA
+### Search UI improvement
+
+- On the search dropdown, the user should see a badge that concisely communicates the metadata. Ie. the source (CNF, BRAND, USER)
+
+### Development of export content / format
+
+- Refine and stabilize format of the protocol PDF
+- Include an OIT consent package in the PDF - ? include physician attestation on it as well? Publicly available consent forms are published already which can be used.
+
+### Testing, QA
 
 - **Unit Test Coverage:** Mainly want high coverage for `core/` files. Some edge cases:
   - Transitioning foods with vastly different protein concentrations.
   - Switching from Solid to Liquid mid-protocol.
   - Floating point precision (round-trip verification).
 - **User Testing:** Stress testing by non-developers to try and generate nonsensical protocols or any bugs. Making sure the UI is intuitive and there are no further breaking features to implement.
-- **Mobile Testing:** while this is intended for desktop, it should still work as expected on mobile.
+- **Mobile Testing:** while this is intended for desktop and will not look good on a small mobile screen, it should work as expected on mobile in a pinch. Or a large tablet.
 
 ---
 
