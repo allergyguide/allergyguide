@@ -45,10 +45,10 @@ This tool is **_explicitly_** not intended to process any Patient Health Informa
 
 ## Intellectual Property and Licensing
 
-While the source code for this tool is Open Source (GPLv3), the **generated clinical assets** are subject to specific licensing restrictions to protect the integrity of the medical materials.
+While the source code for this tool is Open Source (GPLv3), some clinical assets are subject to specific licensing restrictions:
 
-- **Source Code**: The underlying logic and code are licensed under **GPLv3**.
-- **Select Generated PDFs and Handouts**: Some PDF handouts, protocols, or patient handouts downloaded through this tool contain "**Copyright © 2025 allergyguide**". These are **strictly proprietary**.
+- **Source Code**: The underlying logic and code are open-source and licensed under **GPLv3**.
+- **Select Generated PDFs and Handouts**: Some tool assets (e.g. PDF handouts) downloaded through this tool contain "**Copyright © 2025 allergyguide**". These are **strictly proprietary**.
   - **Authorized Use**: These materials are licensed for use solely by you (the medical professional) for your direct clinical practice.
   - **No Redistribution**: You may NOT redistribute, resell, republish, or post these files on any public-facing website or repository.
 
