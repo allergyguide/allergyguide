@@ -411,7 +411,7 @@ function checkDilutionStep({ step, protocol, food }: { step: Step, protocol: Pro
     warnings.push({
       severity: getWarningSeverity(WarningCode.Yellow.HIGH_SOLID_CONCENTRATION),
       code: WarningCode.Yellow.HIGH_SOLID_CONCENTRATION,
-      message: `Step ${step.stepIndex}: at ${formatNumber(step.mixFoodAmount, SOLID_RESOLUTION)} g of food in ${formatNumber(step.mixWaterAmount, LIQUID_RESOLUTION)} ml of water, the w/v is > ${formatNumber(DEFAULT_CONFIG.MAX_SOLID_CONCENTRATION.times(100), 0)}%. The assumption that the food contributes non-negligibly to the total volume of dilution is likely violated. Consider increasing the Daily Amount`,
+      message: `Step ${step.stepIndex}: at ${formatNumber(step.mixFoodAmount, SOLID_RESOLUTION)} g of food in ${formatNumber(step.mixWaterAmount, LIQUID_RESOLUTION)} ml of water, the w/v is ${formatNumber(step.mixFoodAmount!.dividedBy(step.mixWaterAmount!).times(100), 1)}% (which is > ${formatNumber(DEFAULT_CONFIG.MAX_SOLID_CONCENTRATION.times(100), 0)}%). The assumption that the food contributes non-negligibly to the total volume of dilution is likely violated. Consider increasing the Daily Amount`,
       stepIndex: step.stepIndex,
     });
   }
