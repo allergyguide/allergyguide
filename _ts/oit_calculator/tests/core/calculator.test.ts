@@ -270,6 +270,49 @@ describe('Core: Calculator', () => {
       );
       expect(step).toBeNull();
     });
+
+    describe('Direct Amount Snapping', () => {
+      // Setup Food: 170mg/g
+      const food = createFood(FoodType.SOLID, 17);
+
+      it('should snap to cleaner number if within tolerance', () => {
+        // Target: 240mg
+        // Precise: 240 / 170 = 1.41176 g
+        // Snap 0.1: 1.4 g -> 238 mg -> 0.8% error (OK)
+        
+        const step = generateStepForTarget(
+          new Decimal(240),
+          1,
+          food,
+          FoodAStrategy.DILUTE_NONE, // Force direct
+          diThreshold,
+          DEFAULT_CONFIG
+        );
+
+        expect(step?.method).toBe(Method.DIRECT);
+        expect(step?.dailyAmount.toNumber()).toBe(1.4); // Snapped
+      });
+
+      it('should fallback to precise number if snap is outside tolerance', () => {
+        // Target: 40mg
+        // Precise: 40 / 170 = 0.23529 g
+        // Snap 0.1: 0.2 -> 34mg (15% error) -> Fail
+        // Snap 0.05: 0.25 -> 42.5mg (6.25% error) -> Fail
+        // Should keep precise
+
+        const step = generateStepForTarget(
+          new Decimal(40),
+          1,
+          food,
+          FoodAStrategy.DILUTE_NONE,
+          diThreshold,
+          DEFAULT_CONFIG
+        );
+
+        expect(step?.method).toBe(Method.DIRECT);
+        expect(step?.dailyAmount.toNumber()).toBeCloseTo(0.23529, 4);
+      });
+    });
   });
 
   describe('generateDefaultProtocol', () => {

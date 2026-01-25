@@ -16,6 +16,7 @@ authors = ["Joshua Yu"]
 
 ### Changed
 
+- Calculation: Direct dosing amounts (g or ml) are now automatically "snapped" to clean, user-friendly increments (e.g., 0.5, 0.1, 0.05) if the resulting protein dose remains within the safety tolerance (5%).
 - UI: now user auth and tool version are right justified.
 - UI: Added a fade-out effect to the right edge of the tabs list to better indicate scrollable content.
 

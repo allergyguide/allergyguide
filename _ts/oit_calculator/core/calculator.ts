@@ -274,15 +274,64 @@ export function generateStepForTarget(
       food: "A",
     };
   } else {
+    // for DIRECT
+    // Try to find a rounded/snapped amount that is within tolerance
+    const finalAmount = findRoundedDirectAmount(P, food, neatMass, config);
+
     return {
       stepIndex,
       targetMg: P,
       method: Method.DIRECT,
-      dailyAmount: neatMass,
+      dailyAmount: finalAmount,
       dailyAmountUnit: unit,
       food: "A",
     };
   }
+}
+
+/**
+ * Attempt to find a "cleaner" direct dose amount (e.g. 1.4g instead of 1.41g) that still delivers a protein dose within the allowable tolerance.
+ * 
+ * Tries successively coarser resolutions (e.g. 0.5 -> 0.1 -> 0.05). 
+ * If no rounded number satisfies the tolerance, returns the precise amount.
+ * 
+ * @param P - Target protein (mg)
+ * @param food - The food object
+ * @param preciseAmount - The mathematically exact amount of food
+ * @param config - Protocol configuration containing PROTEIN_TOLERANCE
+ * @returns Decimal - The best valid amount (rounded or precise)
+ */
+export function findRoundedDirectAmount(P: Decimal, food: Food, preciseAmount: Decimal, config: ProtocolConfig): Decimal {
+  // Resolutions to try, in order of preference (coarsest to finest)
+  let resolutions: Decimal[];
+
+  if (food.type === FoodType.SOLID) {
+    // For solids (g), standard display is 0.01. 
+    // We try to snap to 0.5, 0.1, or 0.05 if possible.
+    resolutions = [0.5, 0.1, 0.05].map(n => new Decimal(n));
+  } else {
+    // For liquids (ml), standard display is 0.1.
+    // We try to snap to 0.5. Checking 0.1 is redundant as preciseAmount 
+    // will be displayed as 0.1 anyway, but we include it for explicit verification.
+    resolutions = [0.5, 0.1].map(n => new Decimal(n));
+  }
+
+  for (const res of resolutions) {
+    // Round to nearest increment
+    // e.g. 1.41 / 0.1 = 14.1 -> 14 -> 1.4
+    const snapped = preciseAmount.dividedBy(res).round().times(res);
+
+    // Check valid
+    const deliveredMg = snapped.times(food.getMgPerUnit());
+    const diff = findPercentDifference(deliveredMg, P);
+
+    if (diff.lessThanOrEqualTo(config.PROTEIN_TOLERANCE)) {
+      return snapped;
+    }
+  }
+
+  // Fallback to precise
+  return preciseAmount;
 }
 
 /**

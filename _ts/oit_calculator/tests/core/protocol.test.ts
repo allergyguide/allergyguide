@@ -99,6 +99,28 @@ describe('Core: Protocol Manipulation', () => {
       expect(newStep.dailyAmount.toNumber()).toBe(2);
     });
 
+    it('updateStepTargetMg should snap DIRECT amounts if within tolerance', () => {
+      // Create food with 170mg/g
+      const food = createFood('Food Special', FoodType.SOLID);
+      food.gramsInServing = new Decimal(17); 
+      food.servingSize = new Decimal(100); 
+      // mgPerUnit = 170
+      
+      const proto = generateDefaultProtocol(food, DEFAULT_CONFIG);
+      const index = proto.steps.findIndex(s => s.method === Method.DIRECT) + 1;
+
+      // Target 240mg
+      // Precise: 1.41176 g
+      // Snap: 1.4 g
+      // Delta: 0.8% OK
+
+      const newProto = updateStepTargetMg(proto, index, 240);
+      const newStep = newProto.steps[index - 1];
+
+      expect(newStep.targetMg.toNumber()).toBe(240);
+      expect(newStep.dailyAmount.toNumber()).toBe(1.4); // Snapped
+    });
+
     it('updateStepTargetMg should recalculate servings/water for DILUTE steps', () => {
       // Find dilute step
       const index = baseProtocol.steps.findIndex(s => s.method === Method.DILUTE) + 1;

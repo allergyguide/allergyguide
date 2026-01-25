@@ -27,7 +27,8 @@ import {
 
 import {
   findRoundedMixWaterAmount,
-  generateStepForTarget
+  generateStepForTarget,
+  findRoundedDirectAmount
 } from "./calculator"
 
 
@@ -430,8 +431,9 @@ export function updateStepTargetMg(oldProtocol: Protocol, stepIndex: number, new
   const food = isStepFoodB ? oldProtocol.foodB! : oldProtocol.foodA;
 
   if (step.method === Method.DIRECT) {
-    // Recalculate dailyAmount
-    step.dailyAmount = step.targetMg.dividedBy(food.getMgPerUnit());
+    // Recalculate dailyAmount (with safe snapping)
+    const preciseAmount = step.targetMg.dividedBy(food.getMgPerUnit());
+    step.dailyAmount = findRoundedDirectAmount(step.targetMg, food, preciseAmount, oldProtocol.config);
   } else {
     // DILUTE - keep mixFoodAmount and dailyAmount, recalculate servings and water
     const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
