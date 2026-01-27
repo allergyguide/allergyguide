@@ -29,7 +29,7 @@ import {
   DILUTION_WATER_STEP_RESOLUTION,
   DOSING_STRATEGIES,
 } from "../constants"
-import { findPercentDifference, formatAmount, formatNumber } from "../utils";
+import { findPercentDifference, formatAmount, getMeasuringUnit } from "../utils";
 
 /**
  * Compute feasible dilution candidates for a target protein dose
@@ -239,13 +239,29 @@ export function generateStepForTarget(
   targetMg: Decimal,
   stepIndex: number,
   food: Food,
+  foodLabel: "A" | "B",
   foodAStrategy: FoodAStrategy,
   diThreshold: Decimal,
   config: ProtocolConfig,
 ): Step | null {
   const P = targetMg;
   const neatMass = P.dividedBy(food.getMgPerUnit());
-  const unit: Unit = food.type === FoodType.SOLID ? "g" : "ml";
+
+  // If CAPSULE type there is no need to calculate anything. The only thing that matters is the targetMg.
+  // Return a dummy value for dailyAmount therefore.
+  // It's always going to be step A for a capsule (for now)
+  if (food.type === FoodType.CAPSULE) {
+    return {
+      stepIndex,
+      targetMg: P,
+      method: Method.CAPSULE,
+      dailyAmount: new Decimal(1), // Dummy value
+      dailyAmountUnit: "capsule",
+      food: foodLabel
+    };
+  }
+
+  const unit: Unit = getMeasuringUnit(food);
 
   let needsDilution = false;
   if (foodAStrategy === FoodAStrategy.DILUTE_INITIAL) {
@@ -271,7 +287,7 @@ export function generateStepForTarget(
       mixFoodAmount: best.mixFoodAmount,
       mixWaterAmount: best.mixWaterAmount,
       servings: best.servings,
-      food: "A",
+      food: foodLabel, // always A for a dilution step
     };
   } else {
     // for DIRECT
@@ -284,7 +300,7 @@ export function generateStepForTarget(
       method: Method.DIRECT,
       dailyAmount: finalAmount,
       dailyAmountUnit: unit,
-      food: "A",
+      food: foodLabel,
     };
   }
 }
@@ -351,7 +367,7 @@ export function findRoundedDirectAmount(P: Decimal, food: Food, preciseAmount: D
 export function generateDefaultProtocol(food: Food, config: ProtocolConfig): Protocol {
   const dosingStrategy = DosingStrategy.STANDARD;
   const foodAStrategy = FoodAStrategy.DILUTE_INITIAL;
-  const unit: Unit = food.type === FoodType.SOLID ? "g" : "ml";
+  const unit: Unit = getMeasuringUnit(food);
   const diThreshold = config.DEFAULT_FOOD_A_DILUTION_THRESHOLD;
 
   const targetProteins = DOSING_STRATEGIES[dosingStrategy];
@@ -362,6 +378,7 @@ export function generateDefaultProtocol(food: Food, config: ProtocolConfig): Pro
       targetProteins[i],
       i + 1,
       food,
+      "A",
       foodAStrategy,
       diThreshold,
       config,
@@ -414,7 +431,7 @@ export function findRoundedMixWaterAmount(P: Decimal, food: Food, mixAmount: Dec
   const ceilWater = steps.ceil().times(DILUTION_WATER_STEP_RESOLUTION);
 
   // round values
-  const unit = food.type === FoodType.SOLID ? "g" : "ml";
+  const unit = getMeasuringUnit(food);
   const roundedDailyAmount = new Decimal(formatAmount(dailyAmount, "ml"));
   const roundedMixAmount = new Decimal(formatAmount(mixAmount, unit));
 

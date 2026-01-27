@@ -203,12 +203,17 @@ function attachSettingsDelegation() {
       switch (action) {
         case "toggle-food-a-solid":
           if (current.foodA.type !== FoodType.SOLID) {
-            workspace.getActive().setProtocol(toggleFoodType(current, false), "Set Food A to Solid");
+            workspace.getActive().setProtocol(toggleFoodType(current, false, FoodType.SOLID), "Set Food A to Solid");
           }
           break;
         case "toggle-food-a-liquid":
           if (current.foodA.type !== FoodType.LIQUID) {
-            workspace.getActive().setProtocol(toggleFoodType(current, false), "Set Food A to Liquid");
+            workspace.getActive().setProtocol(toggleFoodType(current, false, FoodType.LIQUID), "Set Food A to Liquid");
+          }
+          break;
+        case "toggle-food-a-capsule":
+          if (current.foodA.type !== FoodType.CAPSULE) {
+            workspace.getActive().setProtocol(toggleFoodType(current, false, FoodType.CAPSULE), "Set Food A to Capsule");
           }
           break;
         case "food-a-strategy-initial":
@@ -305,12 +310,13 @@ function attachSettingsDelegation() {
       switch (action) {
         case "toggle-food-b-solid":
           if (current.foodB && current.foodB.type !== FoodType.SOLID) {
-            workspace.getActive().setProtocol(toggleFoodType(current, true), "Set Food B to Solid");
+
+            workspace.getActive().setProtocol(toggleFoodType(current, true, FoodType.SOLID), "Set Food B to Solid");
           }
           break;
         case "toggle-food-b-liquid":
           if (current.foodB && current.foodB.type !== FoodType.LIQUID) {
-            workspace.getActive().setProtocol(toggleFoodType(current, true), "Set Food B to Liquid");
+            workspace.getActive().setProtocol(toggleFoodType(current, true, FoodType.LIQUID), "Set Food B to Liquid");
           }
           break;
       }

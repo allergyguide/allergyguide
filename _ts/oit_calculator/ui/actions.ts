@@ -22,7 +22,7 @@ import { DEFAULT_CONFIG } from "../constants";
 export function selectFoodA(foodData: FoodData): void {
   const food: Food = {
     name: foodData.Food,
-    type: foodData.Type === "SOLID" ? FoodType.SOLID : FoodType.LIQUID,
+    type: foodData.Type,
     gramsInServing: new Decimal(foodData["Mean protein in grams"]),
     servingSize: new Decimal(foodData["Serving size"]),
     getMgPerUnit: function() {
@@ -48,12 +48,17 @@ export function selectFoodA(foodData: FoodData): void {
  * @returns void
  */
 export function selectFoodB(foodData: FoodData): void {
+  if (foodData.Type === FoodType.CAPSULE) {
+    console.error("Capsule food type cannot be selected as Food B");
+    return;
+  }
+
   const current = workspace.getActive().getProtocol();
   if (!current) return;
 
   const food: Food = {
     name: foodData.Food,
-    type: foodData.Type === "SOLID" ? FoodType.SOLID : FoodType.LIQUID,
+    type: foodData.Type,
     gramsInServing: new Decimal(foodData["Mean protein in grams"]),
     servingSize: new Decimal(foodData["Serving size"]),
     getMgPerUnit: function() {
@@ -129,7 +134,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
 
   const foodA: Food = {
     name: protocolData.food_a.name,
-    type: protocolData.food_a.type === "SOLID" ? FoodType.SOLID : FoodType.LIQUID,
+    type: protocolData.food_a.type,
     gramsInServing: new Decimal(protocolData.food_a.gramsInServing),
     servingSize: new Decimal(protocolData.food_a.servingSize),
     getMgPerUnit: function() {
@@ -157,25 +162,41 @@ export function selectProtocol(protocolData: ProtocolData): void {
   for (let i = 0; i < tableToLoad.length; i++) {
     const row = tableToLoad[i];
 
-    const isFoodA = row.food === "A";
-    let unit: Unit = "g"
-    if (row.method === "DILUTE") {
-      unit = "ml"
-    } else if (isFoodA) {
-      unit = foodA.type === FoodType.SOLID ? "g" : "ml";
-    } else {
-      //isFoodB
-      const typeB = protocolData.food_b?.type;
-      unit = typeB === "LIQUID" ? "ml" : "g";
-    }
+    // Determine basic properties
+    let method = Method.DIRECT; // DIRECT as default
+    if (row.method === "DILUTE") method = Method.DILUTE;
+    if (row.method === "CAPSULE") method = Method.CAPSULE;
 
+    let dailyAmount = new Decimal(0);
+    let dailyAmountUnit: Unit = "g";
+
+    // handle a capsule row
+    if (method === Method.CAPSULE) {
+      dailyAmount = new Decimal(1); // Dummy
+      dailyAmountUnit = "capsule";
+    }
+    // handle Direct or Dilute
+    else {
+      if ("daily_amount" in row) { // hacky check to satisfy TS since daily amount is not in capsule protocol json row
+        dailyAmount = new Decimal(row.daily_amount);
+      }
+
+      if (method === Method.DILUTE) {
+        dailyAmountUnit = "ml";
+      } else {
+        // DIRECT
+        const isFoodA = row.food === "A";
+        const foodType = isFoodA ? foodA.type : (protocolData.food_b?.type as FoodType);
+        dailyAmountUnit = foodType === FoodType.SOLID ? "g" : "ml";
+      }
+    }
 
     const step: Step = {
       stepIndex: i + 1,
       targetMg: new Decimal(row.protein),
-      method: row.method === "DILUTE" ? Method.DILUTE : Method.DIRECT,
-      dailyAmount: new Decimal(row.daily_amount),
-      dailyAmountUnit: unit,
+      method: method,
+      dailyAmount: dailyAmount,
+      dailyAmountUnit: dailyAmountUnit,
       food: row.food,
     };
 
@@ -183,8 +204,14 @@ export function selectProtocol(protocolData: ProtocolData): void {
       step.mixFoodAmount = new Decimal(row.mix_amount);
       step.mixWaterAmount = new Decimal(row.water_amount);
       // Calculate servings
-      const food = row.food === "A" ? foodA : protocol.foodB!;
-      const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
+      let mgPerUnit = foodA.getMgPerUnit();
+      if (row.food === "B" && protocolData.food_b) {
+        const fbGrams = new Decimal(protocolData.food_b.gramsInServing);
+        const fbServing = new Decimal(protocolData.food_b.servingSize);
+        mgPerUnit = fbGrams.times(1000).dividedBy(fbServing);
+      }
+
+      const totalMixProtein = step.mixFoodAmount.times(mgPerUnit);
       step.servings = totalMixProtein.dividedBy(step.targetMg);
     }
 
@@ -195,7 +222,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
   if (protocolData.food_b) {
     protocol.foodB = {
       name: protocolData.food_b.name,
-      type: protocolData.food_b.type === "SOLID" ? FoodType.SOLID : FoodType.LIQUID,
+      type: protocolData.food_b.type as FoodType,
       gramsInServing: new Decimal(protocolData.food_b.gramsInServing),
       servingSize: new Decimal(protocolData.food_b.servingSize),
       getMgPerUnit: function() {
@@ -264,6 +291,7 @@ export function clearFoodB(): void {
       step.targetMg,
       i + 1, // 1-based index
       protocolWithoutB.foodA,
+      "A",
       protocolWithoutB.foodAStrategy,
       protocolWithoutB.diThreshold,
       protocolWithoutB.config

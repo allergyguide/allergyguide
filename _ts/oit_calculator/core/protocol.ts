@@ -31,6 +31,8 @@ import {
   findRoundedDirectAmount
 } from "./calculator"
 
+import { getMeasuringUnit } from "../utils"
+
 
 /**
  * Count the number of Food A steps in a protocol
@@ -202,6 +204,7 @@ export function addFoodBToProtocol(
       existingStep.targetMg,
       existingStep.stepIndex,
       newProtocol.foodA,
+      "A",
       newProtocol.foodAStrategy,
       newProtocol.diThreshold,
       newProtocol.config
@@ -260,7 +263,7 @@ export function addFoodBToProtocol(
 
   // Build Food B steps
   const foodBSteps: Step[] = [];
-  const foodBUnit: Unit = foodB.type === FoodType.SOLID ? "g" : "ml";
+  const foodBUnit: Unit = getMeasuringUnit(foodB);
 
   // First Food B step uses same target as last Food A step
   const firstBTargetMg = transitionTargetMg;
@@ -325,6 +328,7 @@ export function recalculateProtocol(oldProtocol: Protocol): Protocol {
       targetProteins[i],
       i + 1,
       newProtocol.foodA,
+      "A",
       newProtocol.foodAStrategy,
       newProtocol.diThreshold,
       newProtocol.config,
@@ -377,6 +381,7 @@ export function recalculateStepMethods(oldProtocol: Protocol): Protocol {
       targetMg,
       i + 1,
       food,
+      preservedFoods[i],
       foodAStrategy,
       newProtocol.diThreshold,
       newProtocol.config,
@@ -621,7 +626,7 @@ export function removeStep(oldProtocol: Protocol, stepIndex: number): Protocol {
 }
 
 /**
- * Toggle the form (SOLID ⇄ LIQUID) for Food A or Food B, updating all steps
+ * Toggle the form (SOLID / LIQUID / CAPSULE) for Food A or Food B, updating all steps
  *
  * For DILUTE steps:
  * - ensures dailyAmountUnit is "ml"
@@ -632,18 +637,23 @@ export function removeStep(oldProtocol: Protocol, stepIndex: number): Protocol {
  *
  * @param oldProtocol Protocol to update
  * @param isFoodB When true, toggles Food B; otherwise toggles Food A
+ * @param targetType The new FoodType to switch to
  * @returns New Protocol with updated food type and steps
  */
-export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean): Protocol {
+export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean, targetType: FoodType): Protocol {
   if (!oldProtocol) return oldProtocol;
 
   const newProtocol = { ...oldProtocol };
-
   const food = isFoodB ? newProtocol.foodB! : newProtocol.foodA;
 
-  // Copy food object
+  // If already that type, do nothing
+  if (food.type === targetType) return newProtocol;
+
+  const isCapsuleSwitch = targetType === FoodType.CAPSULE || food.type === FoodType.CAPSULE;
+
+  // Copy food object & update type
   const newFood = { ...food };
-  newFood.type = newFood.type === FoodType.SOLID ? FoodType.LIQUID : FoodType.SOLID;
+  newFood.type = targetType;
 
   if (isFoodB) {
     newProtocol.foodB = newFood;
@@ -652,11 +662,57 @@ export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean): Protoco
   }
 
   // Convert all relevant steps
-  // Map creates new array
   newProtocol.steps = newProtocol.steps.map(originalStep => {
     const stepIsFoodB = originalStep.food === "B";
     if (stepIsFoodB !== isFoodB) return originalStep;
 
+    // CAPSULE INVOLVED (Structural Change)
+    if (isCapsuleSwitch) {
+      // If switching TO Capsule
+      if (targetType === FoodType.CAPSULE) {
+        return {
+          ...originalStep,
+          method: Method.CAPSULE,
+          dailyAmount: new Decimal(1), // Dummy
+          dailyAmountUnit: "capsule",
+          mixFoodAmount: undefined,
+          mixWaterAmount: undefined,
+          servings: undefined
+        };
+      }
+
+      // If switching FROM Capsule (to Solid or Liquid)
+      const newStep = generateStepForTarget(
+        originalStep.targetMg,
+        originalStep.stepIndex,
+        newFood,
+        isFoodB ? "B" : "A",
+        stepIsFoodB ? FoodAStrategy.DILUTE_NONE : newProtocol.foodAStrategy, // Food B always Dilute None
+        newProtocol.diThreshold,
+        newProtocol.config
+      );
+
+      if (newStep) {
+        // Restore the food property ("A" or "B")
+        newStep.food = originalStep.food;
+        return newStep;
+      } else {
+        // Fallback DIRECT if generation fails
+        const unit = targetType === FoodType.SOLID ? "g" : "ml";
+        return {
+          ...originalStep,
+          method: Method.DIRECT,
+          dailyAmount: originalStep.targetMg.dividedBy(newFood.getMgPerUnit()),
+          dailyAmountUnit: unit,
+          mixFoodAmount: undefined,
+          mixWaterAmount: undefined,
+          servings: undefined
+        };
+      }
+    }
+
+    // CASE 2: SOLID <-> LIQUID (Form Change)
+    // Preserve manual customizations (mix amounts, etc) and just adjust units/water math
     const step = { ...originalStep };
 
     if (step.method === Method.DILUTE) {
@@ -665,6 +721,7 @@ export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean): Protoco
       step.dailyAmountUnit = "ml";
 
       // Recalculate servings and water based on new food type
+      // Note: getMgPerUnit() hasn't changed, so Total Protein is same. Servings usually same.
       const totalMixProtein = step.mixFoodAmount!.times(newFood.getMgPerUnit());
       step.servings = totalMixProtein.dividedBy(step.targetMg);
 
@@ -676,7 +733,6 @@ export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean): Protoco
       } else {
         // Switched to liquid (was solid)
         // For liquid: water = total - food
-
         const mixTotalVolume = step.dailyAmount.times(step.servings);
         step.mixWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
       }

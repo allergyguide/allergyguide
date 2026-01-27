@@ -5,7 +5,7 @@
  */
 import { Method, FoodType, DosingStrategy, FoodAStrategy } from "../types";
 import type { Protocol, Warning, Unit, Food, Step, ReadableHistoryPayload, Tab, ReadableWarning } from "../types";
-import { formatNumber, formatAmount, escapeHtml } from "../utils";
+import { formatNumber, formatAmount, escapeHtml, getMeasuringUnit } from "../utils";
 import { validateProtocol } from "../core/validator";
 import { workspace } from "../state/instances";
 
@@ -282,16 +282,29 @@ export function renderFoodSettings(protocol: Protocol | null): void {
     // Patch Toggles (Form)
     updateToggle(foodASettings as HTMLElement, '[data-action="toggle-food-a-solid"]', protocol.foodA.type === FoodType.SOLID);
     updateToggle(foodASettings as HTMLElement, '[data-action="toggle-food-a-liquid"]', protocol.foodA.type === FoodType.LIQUID);
+    updateToggle(foodASettings as HTMLElement, '[data-action="toggle-food-a-capsule"]', protocol.foodA.type === FoodType.CAPSULE);
 
     // Patch Toggles (Strategy)
     updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-initial"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL);
     updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-all"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL);
     updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-none"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE);
+
+    // Disable protein/serving size inputs if Capsule
+    const isCapsuleA = protocol.foodA.type === FoodType.CAPSULE;
+    updateInputDisabledState(foodASettings as HTMLElement, "#food-a-protein", isCapsuleA);
+    updateInputDisabledState(foodASettings as HTMLElement, "#food-a-serving-size", isCapsuleA);
   }
 
   // Shared Logic (Runs after Create or Patch Food A settings)
   // Patch Threshold Section (Conditional)
   const advancedSettings = (foodASettings as HTMLElement).querySelector(".oit-advanced-settings") as HTMLDetailsElement;
+
+  // Hide advanced settings if Capsule
+  if (advancedSettings) {
+    const isCapsuleA = protocol.foodA.type === FoodType.CAPSULE;
+    advancedSettings.style.display = isCapsuleA ? 'none' : 'block';
+  }
+
   const thresholdContainer = advancedSettings?.querySelector(".threshold-setting");
 
   // Sync open state
@@ -368,15 +381,19 @@ export function renderFoodSettings(protocol: Protocol | null): void {
  * @returns A string of HTML representing the `.food-a-settings`
  */
 function buildFoodAHTML(protocol: Protocol): string {
+  const isCapsule = protocol.foodA.type === FoodType.CAPSULE;
+  const disabledAttr = isCapsule ? 'disabled' : '';
+  const advancedStyle = isCapsule ? 'style="display: none;"' : '';
+
   return `
     <div class="food-a-settings">
       <input type="text" class="food-name-input" id="food-a-name" value="${escapeHtml(protocol.foodA.name)}" />
       <div class="setting-row">
         <label>Protein:</label>
         <div class="input-unit-group">
-          <input type="number" min="0" max="${protocol.foodA.servingSize}" id="food-a-protein" value="${protocol.foodA.gramsInServing.toFixed(1)}" step="0.1" />
+          <input type="number" min="0" max="${protocol.foodA.servingSize}" id="food-a-protein" value="${protocol.foodA.gramsInServing.toFixed(1)}" step="0.1" ${disabledAttr} />
           <span>g per</span>
-          <input type="number" min="0" id="food-a-serving-size" value="${protocol.foodA.servingSize.toFixed(1)}" step="0.1" />
+          <input type="number" min="0" id="food-a-serving-size" value="${protocol.foodA.servingSize.toFixed(1)}" step="0.1" ${disabledAttr} />
           <span>${protocol.foodA.type === FoodType.SOLID ? "g" : "ml"}</span>
         </div>
       </div>
@@ -388,9 +405,10 @@ function buildFoodAHTML(protocol: Protocol): string {
         <div class="toggle-group">
           <button class="toggle-btn ${protocol.foodA.type === FoodType.SOLID ? "active" : ""}" data-action="toggle-food-a-solid">Solid</button>
           <button class="toggle-btn ${protocol.foodA.type === FoodType.LIQUID ? "active" : ""}" data-action="toggle-food-a-liquid">Liquid</button>
+          <button class="toggle-btn ${protocol.foodA.type === FoodType.CAPSULE ? "active" : ""}" data-action="toggle-food-a-capsule">Capsule</button>
         </div>
       </div>
-      <details class="oit-advanced-settings">
+      <details class="oit-advanced-settings" ${advancedStyle}>
         <summary>Advanced Configuration</summary>
         <div class="setting-row">
           <label>Dilution strategy:</label>
@@ -475,6 +493,19 @@ function patchSettingsInput(container: HTMLElement, selector: string, newVal: st
   const input = container.querySelector(selector) as HTMLInputElement;
   if (!input) return;
   if (input.value !== newVal) input.value = newVal;
+}
+
+/**
+ * Updates input's disabled state
+ *
+ * @param container - The parent element containing the input
+ * @param selector - CSS selector to locate the specific input element
+ * @param disabled - Whether the input should be disabled
+ */
+function updateInputDisabledState(container: HTMLElement, selector: string, disabled: boolean) {
+  const input = container.querySelector(selector) as HTMLInputElement;
+  if (!input) return;
+  if (input.disabled !== disabled) input.disabled = disabled;
 }
 
 /**
@@ -591,7 +622,7 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
     const rowClass = warningClass ? `warning-highlight-${warningClass}` : "";
 
     const food = isStepFoodB ? protocol.foodB! : protocol.foodA;
-    const mixUnit: Unit = food.type === FoodType.SOLID ? "g" : "ml";
+    const mixUnit: Unit = getMeasuringUnit(food);
 
     expectedRows.push({
       type: 'step',
@@ -640,6 +671,19 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
           const hasInput = !!mixCell.querySelector('input');
           const shouldHaveInput = spec.step.method === Method.DILUTE;
           if (hasInput !== shouldHaveInput) {
+            needsFullRebuild = true;
+            break;
+          }
+
+          // Check daily amount consistency (Capsule is text, others are input)
+          const daCell = row.querySelector('.col-daily-amount');
+          if (!daCell) {
+            needsFullRebuild = true;
+            break;
+          }
+          const daHasInput = !!daCell.querySelector('input');
+          const daShouldHaveInput = spec.step.method !== Method.CAPSULE;
+          if (daHasInput !== daShouldHaveInput) {
             needsFullRebuild = true;
             break;
           }
@@ -826,20 +870,28 @@ function renderFullTable(tableContainer: HTMLElement, expectedRows: RowSpec[]) {
       }
 
       // Daily amount
-      html += `
-        <td class="col-daily-amount">
-          <input
-            class="editable"
-            type="number"
-            data-step="${step.stepIndex}"
-            data-field="dailyAmount"
-            value="${spec.dailyAmountVal}"
-            step="0.1"
-            min="0"
-          />
-          <span> ${step.dailyAmountUnit}</span>
-        </td>
-      `;
+      if (step.method === Method.CAPSULE) {
+        html += `
+          <td class="col-daily-amount non-editable">
+            Capsule
+          </td>
+        `;
+      } else {
+        html += `
+          <td class="col-daily-amount">
+            <input
+              class="editable"
+              type="number"
+              data-step="${step.stepIndex}"
+              data-field="dailyAmount"
+              value="${spec.dailyAmountVal}"
+              step="0.1"
+              min="0"
+            />
+            <span> ${step.dailyAmountUnit}</span>
+          </td>
+        `;
+      }
 
       html += `</tr>`;
     }

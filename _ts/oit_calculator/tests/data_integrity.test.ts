@@ -178,6 +178,15 @@ function validateProtocolList(list: any[], filePath: string): number {
         invalidCount++;
       }
       prevTarget = currentTarget;
+
+      // METHOD / TYPE MISMATCH CHECK (e.g. CAPSULE food but DIRECT method)
+      const isFoodA = row.food === 'A';
+      const foodType = isFoodA ? p.food_a.type : p.food_b?.type;
+      
+      if (foodType === "CAPSULE" && row.method !== "CAPSULE") {
+        console.error(`Protocol "${p.name}" Step ${rowIndex + 1}: Food ${row.food} is type CAPSULE but step method is ${row.method}.`);
+        invalidCount++;
+      }
     });
   });
 

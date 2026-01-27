@@ -22,19 +22,22 @@ export enum DosingStrategy {
 /**
  * Physical form that determines measuring unit and mixing model.
  * SOLID uses grams; LIQUID uses milliliters.
+ * CAPSULE is its own special category
  */
 export enum FoodType {
   SOLID = "SOLID",
   LIQUID = "LIQUID",
+  CAPSULE = "CAPSULE",
 }
 
 /**
  * How a step is administered:
- * DIRECT (neat food) or DILUTE (prepared mixture).
+ * DIRECT (neat food), DILUTE (prepared mixture), or CAPSULE (pre-weighed).
  */
 export enum Method {
   DILUTE = "DILUTE",
   DIRECT = "DIRECT",
+  CAPSULE = "CAPSULE",
 }
 
 /**
@@ -86,7 +89,7 @@ export type NumberLike = string | number | Decimal;
  * Measuring unit for patient-facing amounts.
  * "g" for solids; "ml" for liquids.
  */
-export type Unit = "g" | "ml";
+export type Unit = "g" | "ml" | "capsule";
 
 // ============================================
 // INTERFACES
@@ -203,20 +206,25 @@ export type FoodData = z.infer<typeof FoodDataSchema>;
 const BaseRow = z.strictObject({
   food: z.enum(["A", "B"]),
   protein: NumericString,
-  daily_amount: NumericString,
 });
 
 const DirectRow = BaseRow.extend({
   method: z.literal("DIRECT"),
+  daily_amount: NumericString,
 });
 
 const DiluteRow = BaseRow.extend({
   method: z.literal("DILUTE"),
+  daily_amount: NumericString,
   mix_amount: NumericString, // Now required!
   water_amount: NumericString, // Now required!
 });
 
-export const RowDataSchema = z.discriminatedUnion("method", [DirectRow, DiluteRow]);
+const CapsuleRow = BaseRow.extend({
+  method: z.literal("CAPSULE"),
+});
+
+export const RowDataSchema = z.discriminatedUnion("method", [DirectRow, DiluteRow, CapsuleRow]);
 export type RowData = z.infer<typeof RowDataSchema>;
 
 /**
@@ -264,7 +272,7 @@ export interface HistoryItem {
 
 export const MFoodSchema = z.strictObject({
   n: z.string(), // name
-  t: z.number().int(), // 0=SOLID, 1=LIQUID
+  t: z.number().int(), // 0=SOLID, 1=LIQUID, 2=CAPSULE
   p: z.number(), // gramsInServing
   s: z.number(), // servingSize
 });
@@ -273,7 +281,7 @@ export type MFood = z.infer<typeof MFoodSchema>;
 export const MStepSchema = z.strictObject({
   i: z.number().int(), // stepIndex
   t: z.number(), // targetMg
-  m: z.number().int(), // 0=DIRECT, 1=DILUTE
+  m: z.number().int(), // 0=DIRECT, 1=DILUTE, 2=CAPSULE
   d: z.number(), // dailyAmount
   mf: z.number().optional(), // mixFoodAmount
   mw: z.number().optional(), // mixWaterAmount
@@ -331,7 +339,7 @@ export interface AuthLoginResult {
  */
 export interface ReadableFood {
   name: string;
-  type: string; // "SOLID" | "LIQUID"
+  type: string; // "SOLID" | "LIQUID" | "CAPSULE"
   gramsInServing: number;
   servingSize: number;
   proteinConcentrationMgPerUnit: number;
@@ -343,7 +351,7 @@ export interface ReadableFood {
 export interface ReadableStep {
   stepIndex: number;
   targetMg: number;
-  method: string; // "DIRECT" | "DILUTE"
+  method: string; // "DIRECT" | "DILUTE" | "CAPSULE"
   dailyAmount: number;
   foodSource: string; // "Food A" | "Food B"
   mixFoodAmount?: number;

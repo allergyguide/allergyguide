@@ -6,7 +6,7 @@
 
 import { FoodType, Method } from "../types";
 import type { Unit, Step, Food, HistoryItem, ProtocolExportData } from "../types";
-import { formatNumber, formatAmount } from "../utils";
+import { formatNumber, formatAmount, getMeasuringUnit } from "../utils";
 import { getFoodAStepCount } from "../core/protocol";
 import type { jsPDF } from 'jspdf';
 import type { PDFDocument } from 'pdf-lib';
@@ -38,12 +38,18 @@ interface ExportRow {
  */
 function buildStepRows(steps: Step[], foodType: FoodType, isLastPhase: boolean): ExportRow[] {
   return steps.map((step, index) => {
-    let dailyAmountStr = `${formatAmount(step.dailyAmount, step.dailyAmountUnit)} ${step.dailyAmountUnit}`;
-    let mixDetails = "N/A";
+    let dailyAmountStr = "";
+    let mixDetails = "—";
 
-    if (step.method === Method.DILUTE) {
-      const mixUnit: Unit = foodType === FoodType.SOLID ? "g" : "ml";
-      mixDetails = `${formatAmount(step.mixFoodAmount!, mixUnit)} ${mixUnit} food + ${formatAmount(step.mixWaterAmount!, "ml")} ml water`;
+    if (step.method === Method.CAPSULE) {
+      dailyAmountStr = "Capsule(s) as per pharmacy";
+      mixDetails = "—";
+    } else {
+      dailyAmountStr = `${formatAmount(step.dailyAmount, step.dailyAmountUnit)} ${step.dailyAmountUnit}`;
+      if (step.method === Method.DILUTE) {
+        const mixUnit: Unit = foodType === FoodType.SOLID ? "g" : "ml";
+        mixDetails = `${formatAmount(step.mixFoodAmount!, mixUnit)} ${mixUnit} food + ${formatAmount(step.mixWaterAmount!, "ml")} ml water`;
+      }
     }
 
     const isLastStep = index === steps.length - 1;
@@ -143,14 +149,19 @@ function renderFoodSection(doc: jsPDF, y: number, name: string, food: any, rows:
   y += (20 * splitTitle.length);
 
   // Subtitle
-  const unit = food.type === FoodType.SOLID ? "g" : "ml";
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(
-    `Protein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${unit} serving.`,
-    40,
-    y
-  );
+
+  if (food.type === FoodType.CAPSULE) {
+    doc.text(`Form: Capsule (Pharmacy Compounded)`, 40, y);
+  } else {
+    const unit = getMeasuringUnit(food);
+    doc.text(
+      `Protein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${unit} serving.`,
+      40,
+      y
+    );
+  }
   y += 15;
 
   // Table

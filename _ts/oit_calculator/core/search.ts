@@ -4,6 +4,7 @@
  * Fuzzy search capabilities
  */
 import fuzzysort from "fuzzysort";
+import { FoodType } from "../types";
 
 
 /**
@@ -28,7 +29,8 @@ export function performSearch(query: string, searchType: "food" | "protocol", pr
       limit: 50,
       threshold: -10000,
     });
-    return [...results];
+    // Filter out CAPSULE types for Food B
+    return results.filter(r => r.obj.Type !== FoodType.CAPSULE);
   } else {
     // Search both foods and protocols for Food A
     const foodResults = fuzzysort.go(query, preparedFoods, {

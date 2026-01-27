@@ -85,13 +85,16 @@ export function formatNumber(value: any, decimals: number): string {
  * @remarks
  * - For grams (g): fixed to SOLID_RESOLUTION decimals
  * - For milliliters (ml): integer when whole, otherwise LIQUID_RESOLUTION
+ * - For capsules: returns empty string (dummy value)
  *
  * @param value Amount to format (g/ml)
- * @param unit Measuring unit: "g" or "ml"
+ * @param unit Measuring unit: "g" or "ml" or "capsule"
  * @returns Formatted string, for example 0.1, or 0.12
  */
 export function formatAmount(value: any, unit: Unit): string {
   if (value === null || value === undefined) return "";
+  if (unit === "capsule") return ""; // Dummy value for capsules is not shown
+
   const num = typeof value === "number" ? value : value.toNumber();
   if (unit === "g") {
     return num.toFixed(SOLID_RESOLUTION);
@@ -104,12 +107,14 @@ export function formatAmount(value: any, unit: Unit): string {
 /**
  * Get the measuring unit for a food by its form.
  *
- * @param food Food definition with type SOLID or LIQUID
- * @returns "g" for SOLID foods; "ml" for LIQUID foods
+ * @param food Food definition
+ * @returns "g" for SOLID; "ml" for LIQUID; "capsule" for CAPSULE
  */
 export function getMeasuringUnit(food: Food): Unit {
   if (food.type === FoodType.LIQUID) {
     return "ml";
+  } else if (food.type === FoodType.CAPSULE) {
+    return "capsule";
   } else {
     return "g";
   }
@@ -135,23 +140,29 @@ export function serializeProtocol(protocol: Protocol, notes: string): ProtocolDa
   // Map steps to RowData
   const table: RowData[] = protocol.steps.map((step) => {
     const foodType = step.food === "A" ? protocol.foodA.type : protocol.foodB!.type;
-    const measureUnit: Unit = foodType === FoodType.SOLID ? "g" : "ml";
+    const measureUnit: Unit = getMeasuringUnit(step.food === "A" ? protocol.foodA : protocol.foodB!);
 
     const base = {
       food: step.food,
       protein: step.targetMg.toString(), // ProtocolData expects strings
-      daily_amount: formatAmount(step.dailyAmount, step.dailyAmountUnit),
     };
 
     if (step.method === Method.DIRECT) {
       return {
         ...base,
         method: "DIRECT",
+        daily_amount: formatAmount(step.dailyAmount, step.dailyAmountUnit),
+      };
+    } else if (step.method === Method.CAPSULE) {
+      return {
+        ...base,
+        method: "CAPSULE",
       };
     } else {
       return {
         ...base,
         method: "DILUTE",
+        daily_amount: formatAmount(step.dailyAmount, step.dailyAmountUnit),
         mix_amount: formatAmount(step.mixFoodAmount!, measureUnit),
         water_amount: formatAmount(step.mixWaterAmount!, "ml"),
       };

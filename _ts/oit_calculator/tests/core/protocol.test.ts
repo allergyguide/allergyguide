@@ -189,7 +189,7 @@ describe('Core: Protocol Manipulation', () => {
     it('toggleFoodType should switch units', () => {
       // Toggle Food A to Liquid
       expect(baseProtocol.foodA.type).toBe(FoodType.SOLID);
-      const newProto = toggleFoodType(baseProtocol, false);
+      const newProto = toggleFoodType(baseProtocol, false, FoodType.LIQUID);
 
       expect(newProto.foodA.type).toBe(FoodType.LIQUID);
 
@@ -197,6 +197,30 @@ describe('Core: Protocol Manipulation', () => {
       newProto.steps.forEach(s => {
         if (s.method === Method.DIRECT) {
           expect(s.dailyAmountUnit).toBe('ml');
+        }
+      });
+    });
+
+    it('toggleFoodType should handle CAPSULE toggles', () => {
+      // Toggle to CAPSULE
+      const capProto = toggleFoodType(baseProtocol, false, FoodType.CAPSULE);
+      
+      expect(capProto.foodA.type).toBe(FoodType.CAPSULE);
+      capProto.steps.forEach(s => {
+        expect(s.method).toBe(Method.CAPSULE);
+        expect(s.dailyAmountUnit).toBe('capsule');
+        expect(s.dailyAmount.toNumber()).toBe(1); // Dummy value
+      });
+
+      // Toggle back to SOLID
+      const solidProto = toggleFoodType(capProto, false, FoodType.SOLID);
+      expect(solidProto.foodA.type).toBe(FoodType.SOLID);
+      solidProto.steps.forEach(s => {
+        expect(s.method).not.toBe(Method.CAPSULE);
+        if (s.method === Method.DILUTE) {
+          expect(s.dailyAmountUnit).toBe('ml');
+        } else {
+          expect(s.dailyAmountUnit).toBe('g');
         }
       });
     });

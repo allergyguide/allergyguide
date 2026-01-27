@@ -49,14 +49,14 @@ declare const __VERSION_OIT_CALCULATOR__: string;
  * 
  * MFood (fa, fb):
  *  - n: Name
- *  - t: Type (0=SOLID, 1=LIQUID)
+ *  - t: Type (0=SOLID, 1=LIQUID, 2=CAPSULE)
  *  - p: Protein grams in serving
  *  - s: Serving Size
  * 
  * MStep (s):
  *  - i: Step Index
  *  - t: Target Protein (mg)
- *  - m: Method (0=DIRECT, 1=DILUTE)
+ *  - m: Method (0=DIRECT, 1=DILUTE, 2=CAPSULE)
  *  - d: Daily Amount
  *  - f: Food Source (0=Food A, 1=Food B)
  *  - mf: Mix Food Amount (Optional, Dilute only)
@@ -97,10 +97,14 @@ function minifyWarnings(warnings: Warning[]): MWarning[] {
  * @returns The minified food object (MFood)
  */
 function minifyFood(f: Food): MFood {
+  let t = 0;
+  if (f.type === FoodType.LIQUID) t = 1;
+  else if (f.type === FoodType.CAPSULE) t = 2;
+
   // f is type Food, but we access properties to convert Decimal
   return {
     n: f.name,
-    t: f.type === FoodType.SOLID ? 0 : 1,
+    t: t,
     p: f.gramsInServing.toNumber(),
     s: f.servingSize.toNumber()
   };
@@ -113,11 +117,15 @@ function minifyFood(f: Food): MFood {
  * @returns The minified step object (MStep)
  */
 function minifyStep(s: Step): MStep {
+  let m = 0;
+  if (s.method === Method.DILUTE) m = 1;
+  else if (s.method === Method.CAPSULE) m = 2;
+
   // s is Step
   const ms: MStep = {
     i: s.stepIndex,
     t: s.targetMg.toNumber(),
-    m: s.method === Method.DIRECT ? 0 : 1,
+    m: m,
     d: s.dailyAmount.toNumber(),
     f: s.food === "A" ? 0 : 1
   };
@@ -293,9 +301,13 @@ function expandProtocol(p: MProtocol): ReadableProtocol {
  * @returns The readable food object
  */
 function expandFood(f: MFood): ReadableFood {
+  let type = "SOLID";
+  if (f.t === 1) type = "LIQUID";
+  else if (f.t === 2) type = "CAPSULE";
+
   return {
     name: f.n,
-    type: f.t === 0 ? "SOLID" : "LIQUID",
+    type: type,
     gramsInServing: f.p,
     servingSize: f.s,
     proteinConcentrationMgPerUnit: (f.p * 1000) / f.s
@@ -309,7 +321,9 @@ function expandFood(f: MFood): ReadableFood {
  * @returns The readable step object
  */
 function expandStep(s: MStep): ReadableStep {
-  const method = s.m === 0 ? "DIRECT" : "DILUTE";
+  let method = "DIRECT";
+  if (s.m === 1) method = "DILUTE";
+  else if (s.m === 2) method = "CAPSULE";
 
   const step: ReadableStep = {
     stepIndex: s.i,

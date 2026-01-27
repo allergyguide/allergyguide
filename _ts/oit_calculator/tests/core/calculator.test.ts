@@ -203,6 +203,7 @@ describe('Core: Calculator', () => {
         new Decimal(1000), // 1000mg = 10g food
         1,
         solidFood,
+        "A",
         FoodAStrategy.DILUTE_INITIAL,
         diThreshold,
         DEFAULT_CONFIG
@@ -217,6 +218,7 @@ describe('Core: Calculator', () => {
         new Decimal(10), // 10mg = 0.1g food < 0.5g
         1,
         solidFood,
+        "A",
         FoodAStrategy.DILUTE_INITIAL,
         diThreshold,
         DEFAULT_CONFIG
@@ -230,6 +232,7 @@ describe('Core: Calculator', () => {
         new Decimal(10), // 10mg would normally require dilution
         1,
         solidFood,
+        "A",
         FoodAStrategy.DILUTE_NONE,
         diThreshold,
         DEFAULT_CONFIG
@@ -244,6 +247,7 @@ describe('Core: Calculator', () => {
         new Decimal(1000), // 10g normally DIRECT
         1,
         solidFood,
+        "A",
         FoodAStrategy.DILUTE_ALL,
         diThreshold,
         DEFAULT_CONFIG
@@ -264,6 +268,7 @@ describe('Core: Calculator', () => {
         new Decimal(1),
         1,
         solidFood,
+        "A",
         FoodAStrategy.DILUTE_INITIAL,
         diThreshold,
         strictConfig
@@ -279,11 +284,12 @@ describe('Core: Calculator', () => {
         // Target: 240mg
         // Precise: 240 / 170 = 1.41176 g
         // Snap 0.1: 1.4 g -> 238 mg -> 0.8% error (OK)
-        
+
         const step = generateStepForTarget(
           new Decimal(240),
           1,
           food,
+          "A",
           FoodAStrategy.DILUTE_NONE, // Force direct
           diThreshold,
           DEFAULT_CONFIG
@@ -304,6 +310,7 @@ describe('Core: Calculator', () => {
           new Decimal(40),
           1,
           food,
+          "A",
           FoodAStrategy.DILUTE_NONE,
           diThreshold,
           DEFAULT_CONFIG

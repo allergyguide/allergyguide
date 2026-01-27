@@ -109,20 +109,20 @@ function validateSettings(protocol: Protocol): Warning[] {
 /**
  * Reusable validator for Food A or B config
  * Checks:
- * - if mgPerUnit <= 0  
- * - if grams in serving > serving size
+ * - if mgPerUnit <= 0 (does not matter for CAPSULE)
+ * - if grams in serving > serving size (does not matter for CAPSULE)
  */
 function validateFoodConfig(food: Food): Warning[] {
   const warnings: Warning[] = [];
 
-  if (food.getMgPerUnit().lessThanOrEqualTo(0)) {
+  if (food.type !== FoodType.CAPSULE && food.getMgPerUnit().lessThanOrEqualTo(0)) {
     warnings.push({
       severity: getWarningSeverity(WarningCode.Red.INVALID_CONCENTRATION),
       code: WarningCode.Red.INVALID_CONCENTRATION,
       message: `${escapeHtml(food.name)} protein concentration must be > 0 to be considered for OIT`,
     });
   }
-  if (food.gramsInServing.greaterThan(food.servingSize)) {
+  if (food.type !== FoodType.CAPSULE && food.gramsInServing.greaterThan(food.servingSize)) {
     warnings.push({
       severity: getWarningSeverity(WarningCode.Red.INVALID_CONCENTRATION),
       code: WarningCode.Red.INVALID_CONCENTRATION,
@@ -149,9 +149,10 @@ function validateAllSteps(protocol: Protocol): Warning[] {
     warnings.push(...checkMeasurability(ctx));
     if (step.method === Method.DILUTE) {
       warnings.push(...checkDilutionStep(ctx));
-    } else {
+    } else if (step.method === Method.DIRECT) {
       warnings.push(...checkDirectStep(ctx));
     }
+    // No need to handle CAPSULE in this line; there is no specific checkCapsuleStep()
   });
 
   // Run Sequence checks (needs access to full array)
@@ -167,8 +168,11 @@ function validateAllSteps(protocol: Protocol): Warning[] {
 /**
  * Checks if the configured amounts are practically measurable by home tools - VALIDATES AGAINST ROUNDED AMOUNTS
  * Handles BELOW_RESOLUTION for both Dilution and Direct methods
+ * This is not a relevant check if capsule type
  */
 function checkMeasurability({ step, protocol, food }: { step: Step, protocol: Protocol, food: Food }): Warning[] {
+  if (step.method === Method.CAPSULE) return [];
+
   const warnings: Warning[] = [];
   const config = protocol.config;
 
@@ -263,7 +267,8 @@ function checkAnyStepType({ step, protocol, food }: { step: Step, protocol: Prot
   }
 
   // HIGH_DAILY_AMOUNT: more than the practical amount
-  if (step.dailyAmount.greaterThan(protocol.config.MAX_DAILY_AMOUNT)) {
+  // Does not apply for capsule
+  if (step.method !== Method.CAPSULE && step.dailyAmount.greaterThan(protocol.config.MAX_DAILY_AMOUNT)) {
     warnings.push({
       severity: getWarningSeverity(WarningCode.Yellow.HIGH_DAILY_AMOUNT),
       code: WarningCode.Yellow.HIGH_DAILY_AMOUNT,

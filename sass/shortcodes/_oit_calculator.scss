@@ -577,6 +577,14 @@
         outline: none;
         border-color: var(--oit-button-primary);
       }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: var(--oit-bg);
+        border-color: var(--oit-border);
+        color: var(--oit-text-secondary);
+      }
     }
 
     span {
