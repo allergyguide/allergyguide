@@ -3,7 +3,7 @@ title = "Idiopathic / recurrent anaphylaxis"
 description = "[description of md page]"
 date = 2025-01-01
 draft = false
-weight=2
+weight=5
 
 
 [taxonomies]
