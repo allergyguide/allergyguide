@@ -86,7 +86,7 @@ Here you would put the evidence behind a study (ideally a systematic review or m
 Macros exist at the top of the topic page. While not all topics need a macro, most will. It has 2 sections:
 
 - relevant HPI
-- Family doctor focused blurb about the condition (ie. pathophys, prognosis), investigations, management recommendations
+- A&P
 
 FORMAT:
 
@@ -94,10 +94,8 @@ FORMAT:
 - The Impression and plan MUST be styled as follows:
 
   ```txt
-  # Topic name: blurb about the topic is either after the topic name, or below in plain text (see the example)
-  * Investigations are prepended with a *
-  > Management is prepended with a >
-  - if you require additional context or writing, use a -
+  # Topic name
+  [text]
   ```
 
 Example:
