@@ -835,17 +835,29 @@ It was done in *** steps, seperated by [15 | 20 | 30] minutes each.
 The patient was monitored about one hour after the last step.
 '''
 
-[food-immunotherapy]
+[food-OIT]
 wip = true
-topic = "Food immunotherapy"
+topic = "Oral immunotherapy"
 keywords = ["food", "OIT", "immunotherapy"]
 content = '''
-Placeholder
 
-# Topic
-[Details]
-* Investigations
-> Management
+Test
+
+'''
+
+[food-SLIT]
+wip = true
+topic = "Food sublingual immunotherapy"
+keywords = ["food", "SLIT", "immunotherapy"]
+content = '''
+Sublingual immunotherapy (SLIT) is a treatment for food allergy that can reduce risk of reaction from accidental allergen exposures, and in a proportion of patients may alter the natural history of the disease if the therapy is used to transition to oral immunotherapy. We reviewed the following: 
+- General definitions and the different phases of SLIT (build-up phase, generally ~5-6 months; maintenance phase, typically 24 months), including eventual transition to oral immunotherapy (OIT) depending on patient goals  
+- SLIT is not a cure for food allergy, but a desensitization therapy that increases the threshold for an allergic reaction. Regular ingestion of the culprit food is essential once the treatment is completed to maintain tolerance
+- Efficacy: After 2 years of maintenance, 70% of patients are able to tolerate 300 mg of food protein and thereby transition to oral immunotherapy (BCCH study by Williams et al., 2025) and 65% are able to tolerate 750 mg food protein (based on Kim et al., 2019 for peanut SLIT 3-5 years).
+- Risks: Mild reactions (oral itch/discomfort, nausea) are common and expected. The rate of epinephrine use from our local data is 1.3%, and the rate of anaphylaxis is 2.2% during SLIT (BCCH study by Williams et al., 2025). In a small proportion of patients there is a small risk of the development, or unmasking of, eosinophilic esophagitis. 
+
+TODO - separate sections for SLIT for different ages re: efficacy and safety 
+
 '''
 
 [airwayent-SCIT]
