@@ -146,24 +146,24 @@ exposed b4?
 repeat exposure since?
 consistency?
 
-# IgE-mediated food allergy to:
+# IgE-mediated food allergy
+Index reaction and sensitized to:
+No index reaction but sensitized to:
 
-Broadly, options for management include: 1) strict avoidance, or 2) immunotherapy.
+Broadly, management options include: 1) strict avoidance, or 2) immunotherapy (oral-OIT; sublingual-SLIT). OIT/SLIT is a form of food desensitization for IgE mediated allergies. It is highly effective at very young ages and may help to outgrow the allergy completely. In older children, teenagers and adults, food allergies are felt to be more fixed. Lifelong OIT/SLIT in these situations may be more helpful to protect against accidental exposure as opposed to aid in outgrowing the food allergy, but OIT (especially in older patients) comes at relatively increased risk of treatment-induced anaphylaxis. The overall process, potential side effects/adverse reactions and time commitment was reviewed. 
+
 After discussing the above, they have decided to pursue: 
 
-In the interim, they should strictly avoid these foods. We have prescribed an epinephrine auto-injector x2, and reviewed an anaphylaxis action plan. Antihistamines do not improve mortality in the setting of anaphylaxis: the *only* live saving treatment is timely administration of epinephrine.
+In the interim, they should strictly avoid these foods. We have prescribed an epinephrine auto-injector x2 that should be carried on them at all times, and reviewed an anaphylaxis action plan. Antihistamines do not improve mortality in the setting of anaphylaxis: the *only* life saving treatment is timely administration of epinephrine.
 
-*** Their symptoms are most consistent with oral allergy syndrome, which is a type of reaction that typically remains localized and does not progress to systemic illness/anaphylaxis. Symptoms are characterized by predominantly oral itch, scratchy throat, mild rash or swelling of the lips and occasionally abdominal upset after eating certain fruits, vegetables or tree nuts. It results from cross-reactivity between tree pollens and several fresh fruits, nuts, and vegetables, and usually disappears with cooked foods. The patients skin test was positive for ***, which cross reacts with ***. Therefore, her/his reaction to cherries may be attributable to oral allergy syndrome. We recommend
+Their symptoms are most consistent with oral allergy syndrome, a type of reaction that typically remains localized and does not progress to anaphylaxis. Symptoms are characterized by predominantly oral itch, scratchy throat, mild rash or swelling of the lips and occasionally abdominal upset after eating certain fruits, vegetables or tree nuts. It results from cross-reactivity between tree pollens and several fresh fruits, nuts, and vegetables, and usually disappears with cooked or more processed foods. 
 
-*** IgE suspected but unclear testing
-> While history is consistent with IgE-mediated allergy, there is not current evidence of IgE sensitization on SPT - however, these tests are not 100% sensitive
-> Offered serum IgE testing and/or a graded oral challenge at a later date
-> We have asked them to start/continue a food-symptom diary
+IgE suspected but unclear testing
+While history is consistent with IgE-mediated allergy, there is not current evidence of IgE sensitization on SPT - however, these tests are not 100% sensitive. We have offered serum IgE testing and/or a graded oral challenge at a later date, and have also asked them to start/continue a food-symptom diary.
 
-*** Non-immune reaction
-> The clinical history is inconsistent with IgE-mediated food allergy, and skin testing was negative.
-> Recommended a slow introduction at home. Once they have tolerated the food consistently, they no longer need to carry their epinephrine autoinjector
-> However, given ongoing avoidance and concern around re-introduction we have arranged an oral challenge to liberate the patient from this label. They will continue to carry an epinephrine autoinjector until the challenge is completed
+Non-immune reaction
+The clinical history is inconsistent with IgE-mediated food allergy, and skin testing was negative. We recommended a slow introduction at home. Once they have tolerated the food consistently, they no longer need to carry their epinephrine autoinjector.
+However, given ongoing avoidance and concern around re-introduction we have arranged an oral challenge to remove this label. They will continue to carry an epinephrine autoinjector until the challenge is completed.
 '''
 
 [food-non_ige_food]
@@ -185,14 +185,16 @@ topic = "Food Protein-Induced Enterocolitis Syndrome"
 keywords = ["food", "non-ige mediated food allergy", "FPIES", "fpies"]
 content = '''
 # Food Protein-Induced Enterocolitis Syndrome (FPIES) to: 
-Based on clinical history, a diagnosis of FPIES is very likely. FPIES is a non-IgE mediated food allergy manifesting only by delayed gastrointestinal symptoms. Typically, it is rare to have FPIES to multiple foods (25% of children react to 2 foods and less than 10% react to ≥ 3 foods). There is no diagnostic test for FPIES beyond oral challenge, and diagnosis is usually based on clinical history. FPIES does not respond to epinephrine and there is no indication to carry an epinephrine auto-injector. The natural history of child-onset FPIES is excellent and most children will outgrow it within ~ 12 to 24 months.  
+FPIES is a non-IgE mediated food allergy manifesting with delayed gastrointestinal symptoms. Typically, it is rare to have FPIES to multiple foods (25% of children react to 2 foods and less than 10% react to ≥ 3 foods). There is no diagnostic test for FPIES beyond oral challenge: diagnosis is usually based on clinical history. FPIES does not respond to epinephrine and there is no indication to carry an epinephrine auto-injector. The natural history of child-onset FPIES is excellent and most children will outgrow it within ~ 12 to 24 months.  
 
-Plan:
-> Two main options exist: 1) strict avoidance of ***, with consideration of oral challenge in ~1-2 years. However, with strict avoidance there is risk of development of an IgE mediated allergy. 2) A novel approach is the FPIES ladder to slowly reintroduce the food at home, starting with 1/64 teaspoon of the trigger food (using mini measuring teaspoons)
-- Family has elected to pursue: 
-- We provided guidance on how to use the ladder and sent a copy to the family. In case of mild symptoms, previous tolerated dose should be resumed for another 4 weeks. They should otherwise strictly avoid the culprit food
-> In case of accidental exposure or intractable nausea/emesis, Ondansetron 0.15 mg/kg can alleviate symptoms. Occasionally, moderate to severe dehydration may occur and requires IV rehydration, which may present as pallor, lethargy, or syncope - in this case, immediate medical attention should be sought
-> An explanatory letter to present to the emergency department physician in case of accidental exposure was sent to the family
+There are two main management options:
+- 1) Strict avoidance of culprit foods, with consideration of oral challenge in ~1-2 years. However, with strict avoidance there is risk of development of an IgE mediated allergy
+- 2) Starting an FPIES ladder to slowly reintroduce the food at home, starting with 1/64 teaspoon of the trigger food (using mini measuring teaspoons
+
+On discussion, they have elected to pursue: 
+We provided guidance on how to use the ladder and sent a copy to the family. In case of mild symptoms, previous tolerated dose should be resumed for another 4 weeks. They should otherwise strictly avoid the culprit food.
+
+In case of accidental exposure or intractable nausea/emesis, Ondansetron 0.15 mg/kg can alleviate symptoms. Occasionally, moderate to severe dehydration may occur and requires IV rehydration, which may present as pallor, lethargy, or syncope - in this case, immediate medical attention should be sought.
 '''
 
 # DRUG
@@ -253,14 +255,16 @@ wip = true
 topic = "Penicillin allergy"
 keywords = ["drug", "penicillin"]
 content = '''
-# No amoxicillin allergy
+# Unlikely penicillin allergy
 Clinical history is not suggestive of an penicillin allergy as:
 
-Additionally, the character of the rash is not in keeping with the urticaria expected in IgE-mediated allergy; the history was not concerning for serum sickness or severe cutaneous adverse drug reactions, such as Stevens Johnson Syndrome or Toxic Epidermal Necrolysis. Up to 95% of patients presenting with a rash following administration of an antibiotic do not in fact have a drug allergy, and rather the symptoms are most likely related to the infection itself rather than amoxicillin.
+Their cutaneous symptoms are not in keeping with urticaria expected in IgE-mediated allergy; the history was not concerning for serum sickness or severe cutaneous adverse drug reactions, such as Stevens Johnson Syndrome or Toxic Epidermal Necrolysis. Up to 95% of patients presenting with a rash following administration of an antibiotic do not in fact have a drug allergy, and rather the symptoms are most likely related to the infection itself rather than the penicillin.
 
-The oral drug challenge in clinic today was well-tolerated. This type of testing does not exclude delayed hypersensitivities: we asked that the family monitor for rashes over the next several days, take photos and contact our office if one appears. 
+Unverified penicillin allergy labels are common, and are associated with increased mortality (6-7%), surgical site infections (60% increase), multidrug-resistant organism infections (42% increase), and C. difficile infections (23-26% increase), primarily due to the use of suboptimal alternative antibiotics (see: https://pubmed.ncbi.nlm.nih.gov/39834819/, https://pubmed.ncbi.nlm.nih.gov/40122092/). As such, there is strong motivation for these patients to undergo an oral challenge for delabelling.
 
-Future courses of penicillin may be given with no increased risk of allergic reaction compared to the general population for their age. 
+*** As their query reaction was within the past 6 months, we will arrange for a direct challenge at a later date.
+
+The oral drug challenge in clinic today was well-tolerated. This type of testing does not exclude delayed hypersensitivities: we asked they monitor for rashes over the next week, take photos and contact our office if one appears. Future courses of penicillin may be given with no increased risk of allergic reaction compared to the general population for their age. 
 '''
 
 # AIRWAY AND ENT
@@ -280,15 +284,16 @@ prior ENT or surg:
 prior testing: 
 treatment tried, technique, duration
 
-# Allergic rhinitis, sensitized to ***. Current symptom control:
+# Allergic rhinitis, sensitized to: 
 Ddx: non-allergic rhinits (irritant, occupational, vasomotor, gustatory), localized allergic rhinitis, sinusitis
 
-Plan:
-> Non-pharmacologically, discussed avoidance strategies including:
-> Use of OTC sterile saline rinses prior to intra-nasal corticosteroids (INCS)
-> Rx Ryaltris 2 sprays EN BID. Counseled on correct technique. While a combination anti-histamine/INCS spray offers quicker relief, consistent use over weeks provides the most symptomatic benefit
-> Rx anti-histamine eye drops PRN 
-> We briefly discussed immunotherapy (SCIT vs SLIT) as an option in the case of: medically refractory symptoms, desire for root-cause treatment or reduction of current pharmacotherapy. They are welcome to contact our office if they wish to pursue it later
+- Non-pharmacologically: discussed avoidance strategies with handout provided, and recommended OTC sterile saline rinses prior to intra-nasal corticosteroids (INCS) 
+- Rx Ryaltris 2 sprays EN BID. While a combination anti-histamine/INCS spray offers quicker relief than INCS alone, consistent use over weeks provides the most symptomatic benefit
+- Rx anti-histamine eye drops PRN: Bepreve / Pataday
+
+- We briefly discussed immunotherapy (SCIT vs SLIT) as an option in the case of: medically refractory symptoms, desire for root-cause treatment or reduction of current pharmacotherapy. They will contact our office if they wish to pursue it later
+OR
+- They have decided to pursue immunotherapy. We discussed:  
 '''
 
 [airwayent-asthma]
@@ -312,20 +317,60 @@ Rescue / week
 missing work/school
 Reponse to treatment
 
-# Asthma. Phenotype: allergic/eosinophilic/nonallergic/ intermittent (exercise induced vs. occupational vs. viral induced). Current control with *** compliance/technique: [uncontrolled | excellent]
+# Asthma
+Asthma is a chronic heterogeneous disease characterized by bronchial hyperresponsiveness and variable expiratory airflow limitation, usually associated with chronic airway inflammation. When left untreated, patients are at risk of severe life-threatening exacerbations and fibrosis from prolonged inflammation.
 
-Recommendations:
-* Baseline spirometry, SPT, FeNO
-* Consider methacholine / Exercise challenge test given diagnostic uncertainty
-* Ad-hoc: OSA study
-> Optimize exacerbating comorbid conditions: [smoking | obesity | obstructive sleep apnea | nasal polyps | allergic rhinitis | anxiety | de-conditioning | viruses | pollution exposure]
-> Pharmacologically:
-  - Symbicort 200/6 1 puff PRN (up to 8 puffs/daily) for mild intermittent asthma or issues with adherence (as per the SYGMA2 trial)
-  - Symbicort 200/6 1-2 puffs BID; it can be used additionally PRN, up to 8 puffs daily
-  - Triple therapy with: Trelegy Ellipta 200mcg 1 inh daily or Enerzair Breezhaler 160mcg 1 inh daily
-  - If in exacerbation: prednisone 50mg PO OD x 5 days with a taper, vs present to the ED
-> Asthma action plan was reviewed alongside importance of medication adherence and technique
-> As they are well controlled, we discussed stepping down therapy to:
+Last spirometry: none | 
+Phenotype: allergic | non-allergic | exercise induced | occupational | Type 2 high | Type 2 low
+Current control: well controlled | partly controlled | uncontrolled
+Current therapy:
+Risk factors: [Exacerbation in past yr | Low FEV1 | High SABA use | Smoking | Obesity | poor adherence/technique]
+
+PLAN:
+We will obtain pre-post spirometry to confirm diagnosis; if negative will consider methacholine challenge test. OPTIONAL: We will also obtain further phenotyping with FeNO, CBC, Sputum eosinophils.
+
+AGE 12+
+Pharmacologically, inhaled corticosteroids are the cornerstone of management and significantly reduce the chance of severe exacerbation. SABA-only treatment is associated with increased risk of exacerbations. We provided:
+- Symbicort 200/6 1-2 puffs PRN (up to 8 puffs/daily) for mild intermittent asthma (as per the SYGMA2 trial)
+- Symbicort 200/6mcg 1-2 puffs BID + 1 puff PRN (maximum 8 puffs/day total)
+- Spiriva 2.5mcg 2 puffs OD + Symbicort 200/6mcg 1-2 puffs BID + 1 puff Symbicort PRN (maximum 8 puffs/day total)
+- Trelegy Ellipta 200mcg 1 inh daily + ventolin PRN
+
+Cheaper options:
+- SABA/ICS PRN only
+- Low dose ICS + ventolin PRN
+- Atectura (mometasone/indacaterol) 160/150 1 puff OD + ventolin PRN
+- Atectura (mometasone/indacaterol) 320/150 1 puff OD + ventolin PRN
+
+AGE 6-11
+Pharmacologically, inhaled corticosteroids are the cornerstone of management and significantly reduce the chance of severe exacerbation. SABA-only treatment is associated with increased risk of exacerbations. All MDIs should be used with a spacer. We provided:
+(GINA step 1)
+- Flovent 50mcg taken concurrently with ventolin PRN
+- Alvesco 100mcg taken concurrently with ventolin PRN
+- Qvar 100mcg taken concurrently with ventolin PRN
+
+(GINA step 2) minor symptoms, few days
+- Flovent 50mcg 1-2 puffs OD + ventolin PRN
+- Alvesco 100mcg 1-2 puffs OD + ventolin PRN
+- Qvar 100mcg OD + ventolin PRN
+
+(GINA step 3) most days
+
+
+(GINA step 4) basically all days or severe flares
+
+
+SEVERE ASTHMA
+TODO
+Phenotyping: 
+Current control:
+Current therapy:
+
+---
+
+Asthma action plan reviewed alongside importance of medication adherence and technique
+
+As they are well controlled, we discussed stepping down therapy to:
 '''
 
 [airwayent-abpa]
@@ -359,15 +404,13 @@ SNOT-22 Score
 Their clinical picture is suggestive of CRS, an inflammatory syndrome defined by objective structural evidence of sinus inflammation and ≥2 cardinal symptoms (nasal congestion, facial pain/pressure, anterior/posterior nasal drainage, absent/reduced smell) ≥12 weeks. While chronic, regular pharmacotherapy can usually control symptoms well.
 
 Recommendations:
-* CT sinuses (non-contrast) vs ENT referral
-* SPT for common aeroallergens
-* Ad-hoc testing: ie. B-cell immunodeficiency workup in setting of suspicious symptoms / acute recurrent sinusitis
-> High volume nasal saline rinses, avoidance of triggers
-> INCS + treatment of any underlying causes
-> Consider short course prednisone for symptom management (most evidence for CRSwNP or AFRS)
-> Consider biologics for CRSwNP if severe/failed first-line therapy
-
-Follow-up: ~3-4 months
+- CT sinuses (non-contrast) vs ENT referral
+- SPT for common aeroallergens
+- Ad-hoc testing: ie. B-cell immunodeficiency workup in setting of suspicious symptoms / acute recurrent sinusitis
+- High volume nasal saline rinses, avoidance of triggers
+- INCS + treatment of any underlying causes
+- Consider short course prednisone for symptom management (most evidence for CRSwNP or AFRS)
+- Consider biologics for CRSwNP if severe/failed first-line therapy
 '''
 
 # DERMATOLOGY
@@ -397,25 +440,23 @@ NSAIDS
 Red flags: [anaphylaxis | thyroid | B symptoms | rheum]
 No burning or pain, bruising, systemic symptoms of fever, weight loss, bone pain, adenopathy, signs of inflammatory arthritis, no skin rashes, no photosensitivity, no Raynaud's, no dry eyes or dry mouth, no oral or genital ulcers.
 
-# Chronic spontaneous urticaria (CSU) / Chronic inducible urticaria (CIU).
-This is a generally benign, histamine-mediated idiopathic primary skin disorder. CSU is typically a self-resolving condition over 1-5 years; CIU is generally more long lived. In the vast majority of cases it is not a sign of more insidious underlying disease, though in some cases we arrange for baseline bloodwork to assess for rarer underlying causes.
+# Chronic spontaneous urticaria (CSU) / Chronic inducible urticaria (CIndU).
+This is a generally benign, histamine-mediated idiopathic primary skin disorder thought to be mediated by mast cells. CSU is typically a self-resolving condition over 1-5 years; CIndU is generally more long lived. In the vast majority of cases it is not a sign of more insidious underlying disease, though in some cases we arrange for baseline bloodwork to assess for rarer underlying causes.
 
-> CBC, CRP, TSH, anti-TPO, IgE, Calcium, SPEP, H. pylori serology
-> Non-pharmacologically we recommended:
-  - They do/do not have physical triggers that lead to worsening of symptoms. We advised avoidance of ***
-  - Food avoidance with elimination diets is contreversial
-> For symptomatic management we recommend 2nd generation antihistamines, with titration to 4x the regular dose as required. We have provided:
+- We will obtain CBC, CRP, TSH, anti-TPO, IgE, Calcium, SPEP, H. pylori serology
+- We recommended avoidance of physical triggers, as well as NSAIDs and alcohol which can exacerbate symptoms
+- For symptomatic management we recommend 2nd generation antihistamines, with titration to 4x the regular dose as required. We have provided:
   - Rupatadine 10mg PO OD, which can be titrated to 40mg OD if required
   - Bilastine 20mg PO OD, which can be titrated to 80mg OD if required
-  - The goal is complete control; thereafter, the dose may be slowly tapered to the minimal effective dose
-> If refractory to maximal regular antihistamine, we will investigate further for alternative etiologies and consider biologic anti IgE treatment (omalizumab)
+- The goal is complete control; thereafter, the dose may be slowly tapered to the minimal effective dose
+- If refractory to maximal regular antihistamine, we will consider biologic anti IgE treatment (omalizumab)
+
+Omalizumab
+Start 300mg q4w SC
+If controlled for 6 months with minimal AH - taper: q6w for 6 months, then q8w, then either stop cold turkey or taper dose
 
 *** if COLD induced:
 there is a risk of more severe reactions including anaphylaxis. As such, we have advised to keep their Epi Pen and to avoid significant cold exposures (cold plunges in water).
-
-*** dermatographism:
-This is a form of chronic inducible urticaria triggered by pressure on the skin. This is a self-limiting condition but can take months to years to subside; unfortunately, the only curative therapy is time. Intermittent flares are
-not atypical. It can sometimes also be worsened during periods of stress, infection or other immune system triggers. 
 '''
 
 [dermatology-angioedema]
@@ -431,6 +472,8 @@ when was the first episode
 abdo pain, systemic symptoms, rashes, arthralgias, vitiligo
 family history
 Urticaria
+treatments
+trials of AH, doses, duration
 
 # Angioedema
 AE-MC
@@ -448,6 +491,8 @@ AE-UK
 > short-term prophylaxis:
 > long term prophylaxis: C1-INH, ?androgrens but AEs
 
+Connect with HAE canada
+genetics? (which panel?)
 *** AAE ACEi supportive care, avoid ACEi and Entresto, ARBs ok in a pinch
 '''
 
@@ -469,12 +514,12 @@ current skin regimen
 treatments done (topical steroids, AH, etc.)
 current EASI score (>8yo)
 
-# Atopic dermatitis / Eczema. Current control: 
-Atopic dermatitis is a common chronic primary skin condition thought to be a result of a complex interplay of genetics, environmental irritants/allergens, and microbiota. For many patients, the eczema will improve as they get older. Skin testing for foods without a history to suggest an IgE-mediated allergic reaction is not indicated as many false positives occur. Of note: empiric elimination diets in the general atopic dermatitis population have been unsuccessful based on available evidence and any perceived improvement may be due to the waxing and waning nature of the condition. However, avoiding allergenic foods can potentially lead to the development of food allergy. From a primary prevention standpoint, maintaining allergenic foods in the diet is protective against food allergy. 
+# Atopic dermatitis / Eczema
+Atopic dermatitis is a common chronic primary skin condition thought to be a result of a complex interplay of genetics, environmental irritants/allergens, and microbiota. For many patients, the eczema will improve as they get older.
 
-Recommendations:
-> Regular moisturization (at least BID) is a crucial part of management; there is strong evidence it reduces disease severity and need for prescription creams. We reviewed options such as (but not limited to) Vaseline, CeraVe, or Cetaphil creams
-> For disease flares we suggest:
+Skin testing for foods without a history to suggest an IgE-mediated allergic reaction is not indicated as many false positives occur. Of note: empiric elimination diets in the general atopic dermatitis population have been unsuccessful based on available evidence and any perceived improvement may be due to the waxing and waning nature of the condition. However, avoiding allergenic foods can potentially lead to the development of food allergy. From a primary prevention standpoint, maintaining allergenic foods in the diet is protective against food allergy. 
+
+Regular moisturization (at least BID) is a crucial part of management; there is strong evidence it reduces disease severity and need for prescription creams. We reviewed options such as (but not limited to) Vaseline, CeraVe, or Cetaphil creams. For disease flares we suggest:
   - Betaderm 0.1% ointment BID to body and Desonide 0.05% cream BID (or Protopic 0.1% ointment BID, or Hydrocortisone 2.5% cream BID) to face, until clear of ezcema
   - If eczema returns quickly, a maintenance schedule of topicals 2-3x/weekly to eczema-prone areas will be considered, with taper back to OTC moisturization with sustained control
 > If symptoms are refractory, we can consider systemic therapies such as Dupilimab and further investigate for mimickers such as allergic contact dermatitis, cutaneous T cell lymphoma, scabies, or immunodeficiency
@@ -530,7 +575,7 @@ Response to therapy:
 Tryptase or other investigations:
 
 # Anaphylaxis NYD
-Ddx: mast-cell disorders (MCAS, systemic mastocytosis, hereditary alpha tryptasemia), catamenial, food/environmental trigger, exercise induced anaphylaxis, cofactor induced, CSU flare, cholinergic urticaria, flushing disorders (pheo, carcinoid), idiopathic anaphylaxis if all else unclear
+Ddx: mast-cell disorders (MCAS, mastocytosis, hereditary alpha tryptasemia), catamenial, food/environmental trigger, exercise induced anaphylaxis, cofactor induced, CSU flare, cholinergic urticaria, flushing disorders (pheo, carcinoid)
 
 * Baseline serum tryptase, PRN requisition in case of reaction to be drawn within 4 hours
 * SPT / sIgE to potential triggers
@@ -538,7 +583,7 @@ Ddx: mast-cell disorders (MCAS, systemic mastocytosis, hereditary alpha tryptase
 > Regular antihistamines vs PRN
 > Anti IgE therapy if refractory
 > Event diary
-> EpiPEN 
+> EpiPEN PRN
 '''
 
 [misc-eosinophilic_esophagitis]
@@ -554,13 +599,13 @@ Endoscopy / swallow
 PPI before, response?
 Topical steroids, response?
 
-# Eosinophilic esophagitis
+# Eosinophilic esophagitis (EoE)
 Sx consistent with this bc:
 Endoscopy:
 PPI trial:
 IgE mediated food allergy?
 
-The underlying etiology is not fully understood but felt to be food-related in many cases. Unfortunately, we do not have a testing modality to identify culprit foods. The goal of treatment is both histological and clinical improvement.
+EoE is a chronic Type 2 mediated inflammatory condition. The exact underlying etiology is not fully understood but felt to be food-related in many cases. Unfortunately, there are no skin tests or bloodwork that can identify culprit foods. The goal of treatment is both histological and clinical improvement.
 
 > We have referred to GI / They should continue follow-up with their current GI; we defer to our colleagues regarding timing of repeat endoscopy
 > Start empiric 8-week trial of PPI: 40mg pantoprazole BID
@@ -573,6 +618,8 @@ The underlying etiology is not fully understood but felt to be food-related in m
   - Another alternative approaches include the 6-food (wheat, milk, egg, nuts, soy, fish and shellfish) elimination diet or 4 food (wheat, milk, egg, nuts, soy) diet, but should be done working with a dietician; they are harder logistically to implement
 > We otherwise defer ongoing surgical management to the GI team
 > Should symptoms persist we would consider Dupixent for more advanced disease
+
+TODO: add notes about stopping PPI 4 weeks prior to endoscopy, efficacy rates
 '''
 
 
@@ -807,12 +854,12 @@ topic = "Subcutaneous Immunotherapy"
 keywords = ["immunotherapy", "SCIT", "subcutaneous"]
 content = '''
 Subcutaneous Immunotherapy (SCIT) to: 
-> Typically there is 6-9 months of weekly build-up injections, followed by monthly maintenance injections
-> Symptomatic benefit is expected within 1-2 years, with a total course of 3-5 years ideally and lasting benefit thereafter for at least several years; premature discontinuation is associated with less lasting benefit. In the case of relapse post-completion, a repeat course of immunotherapy can be done
-> Risks discussed: Localized reactions are common and can be treated with non-drowsy antihistamines; prophylactic use before injections is common. Anaphylaxis occurs in 0.1-4% of injections, while fatal anaphylaxis is estimated at 1 in 2.5 million injections 
-> Contraindications: Development of moderate/severe/ uncontrolled asthma. Spirometry showing FEV1<70. Use of beta-blocker or significant cardiovascular comorbidity and lack of physiologic reserve. Dose escalation is contraindicated in pregnancy. If the patient becomes pregnant while on immunotherapy, our office should be contacted immediately to decide whether to continue or stop immunotherapy
-> Safety considerations: Doses should be held during times of respiratory illness; once maintenance is reached, **NEW MAINTENANCE VIAL DOSES SHOULD BE INITIALLY REDUCED BY 50%**
-> We have ordered a prescription; once the serum is available we will arrange a follow-up visit for the first injection
+- Build-up: 6-9 months of weekly injections → monthly maintenance for 3-5 years total
+- Symptomatic benefit expected within 1-2 years with lasting benefit post-completion 
+- Risks: local reactions are common and should be treated with PRN 2nd generation antihistamines; we also recommend prophylactic use 1 hour prior to injection. Anaphylaxis occurs in around 1/2000 injections and the risk of fatal anaphylaxis is around 1 in 2 million.
+- Contraindications: uncontrolled asthma, FEV1<70, beta-blocker use, or significant cardiovascular comorbidity and lack of physiologic reserve. Dose escalation is contraindicated in pregnancy. If the patient becomes pregnant while on immunotherapy, our office should be contacted immediately 
+- Safety: doses should be held temporarily if the patient is ill, and once maintenance doses are reached, **NEW MAINTENANCE VIAL DOSES SHOULD BE INITIALLY REDUCED BY 50%**
+- Serum ordered; will arrange follow-up for first injection once available
 '''
 
 [airwayent-SLIT]
@@ -820,11 +867,11 @@ wip = true
 topic = "Sublingual immunotherapy"
 keywords = ["immunotherapy", "SLIT", "sublingual"]
 content = '''
-Sublingual immunotherapy (SLIT) for:
-> They are a candidate for [Acarizax (dust mite) | Itulatek (birch/tree) | Grastek (Timothy/grass) | Oralair (sweet vernal, orchard, perennial, rye, timothy, Kentucky blue) | Ragwitek (ragweed)] SLIT
-> Sublingual tablets are given daily at home, with a typical course for 3 years. Symptomatic relief is expected within 6-12 months, with lasting benefit after completion of the full course. 
-> Risks discussed: oral pruritus, eosinophilic esophagitis. Anaphylaxis is exceedingly rare with SLIT
-> The first dose of each allergen must be give in clinic due to elevated risk of anaphylaxis 
+
+Sublingual immunotherapy (SLIT): [Acarizax | Itulatek | Grastek | Oralair | Ragwitek]
+- Daily home administration for 3 years; symptomatic relief expected within 6 months with lasting benefit after completion of full course. Should be paused/avoided in setting of oral ulceration or uncontrolled asthma
+- Risks include oral pruritus (common); eosinophilic esophagitis (~3%); anaphylaxis exceedingly rare
+- First dose given in clinic due to increased risk of anaphylaxis 
 '''
 
 
