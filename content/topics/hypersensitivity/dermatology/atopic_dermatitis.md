@@ -23,12 +23,17 @@ status="wip" # options include not-started, wip, or ready
 
 Lots of variability in how it presents, nummular, extensor, flexor ... this varies by age as well
 skin tone also changes appearance
+variability also in terms of ethnicity too
 
 Other findings:
 
 - Follicular prominence (looks like they have goosebumps)
 - Post inflammatory pigmentary change (hypopigmentation)
 - Hyper-linear palms, especially more noticeable in kids > adults
+
+More often in pediatrics or those on immuosuppressive treatments
+
+- Eczema herpeticum - classically punched out appearance of blisters usually not pustular - swab for HSV
 
 ## infected?
 
