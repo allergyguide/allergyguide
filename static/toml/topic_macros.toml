@@ -793,26 +793,58 @@ COVID
 
 # Immunodeficiency:
 
-=> We have ordered quantitative Igs (IgG, IgM, IgA) as well as a response assay to vaccination (tet and dip for protein, pneumococcal for polysacc). Can consider flow cytometry for B, T, NK cells, C3/C4, CBC, HIV testing, CH50 (completment), neutrophil burst assay
-=> Immunoglobulin replacement is the mainstay of preventative therapy of recurrent infections.
 
-- IVIG > 400 to 600 mg/kg every three to four weeks vs:
-- SCIG (more stable IgG numbers, good for people who react to IVIG, poor IV access, self administered at home, improved QoL) Higher doses may be required in patients with bronchiectasis and in those with protein-losing enteropathy
-  Calculation for weight appropriate dose of IG: https://ivig.transfusionontario.org/dose
-  The half-life of IG is approximately 30 days, Steady-state levels are usually achieved after
-  three to six months of therapy
-  => followup and screening: Pulmonary function testing yearly, CT thorax q5y, serum b12/iron qyear
-  => IVIG monitoring? CBC, lytes, renal, ALT, quant Ig trough levels?
-  => avoid live vaccinations such as live shingles, live flu shot, etc
+The clinical picture is concerning for an underlying immunodeficiency given [ ]. Broadly, immunodeficiencies can be classified as an inborn error of immunity (IEI) or a secondary immunodeficiency (SID). 
+
+We would like to proceed with the following screening investigations:
+- CBC with differential, CRP, albumin, Cr, urinalysis, HIV serology
+- IgG, IgA, IgM, IgE levels
+- T/B/NK cell subsets 
+- T and B cell memory panel
+- Tetanus and diptheria / MMR titres
+- C3/C4, CH50/AH50 
+- US abdomen to assess the liver and spleen 
+
+In the interim, 
+- Management of infection PRN
+- Consideration of antibiotic prophylaxis
+- Consideration of IgRT
+- Vaccination
 
 * General monitoring for IEI associated with immune dysregulation^:
   - q6-12 months CBC/diff, LFTs, Cr, quantitative Ig; consider EBV/CMV viral loads
-  - Annual B12, LDH, SPEP, Beta-2 microglobulin, TSH
+  - Annual B12, LDH, SPEP, TSH
   - PFTS annually. Last PFT:
   - CT chest q3-5 years and PRN. Last CT: 
-  - Ideally q6 month in-person assessments; annual if geography difficult, with local IM involvement
 
 ^Immune dysregulation: risk of malignancy, lymphoproliferation, autoimmunity/autoinflammation. Includes CVID and combined immune deficiency patients.
+'''
+
+
+[immunology-genetic_testing]
+wip = true
+topic = "Genetic testing"
+keywords = ["immunology", "genetic"]
+content = '''
+We discussed the clinical indications for genetic testing, available alternatives, and potential limitations. The following possible outcomes were reviewed: (1) establishing a diagnosis through identifying a disease-causing variant, (2) negative or uninformative results, where a disease-causing variant is not found, (3) variants of unknown significance, or (4) secondary findings where medically-actionable differences unrelated to the indication for genetic testing are identified.
+'''
+
+[immunology-igrt]
+wip = true
+topic = "Immunoglobulin replacement therapy (IgRT)"
+keywords = ["immunology", "SCIG", "IVIG", "igrt", "IgRT"]
+content = '''
+
+Risks 
+
+- IVIG > 400 to 600 mg/kg 
+- SCIG (more stable IgG numbers, good for people who react to IVIG, poor IV access, self administered at home, improved QoL)
+
+Doses:
+- Typical starting doses are 0.4-0.6g/kg, but the amount required to maintain sufficient infection prophylaxis may vary by patient. Usually, doses are further titrated based on IgG trough levels, with targets of >=7 g/L in most cases, though higher targets may be used in patients with bronchiectasis and in those with protein-losing enteropathy. Steady-state levels are usually achieved after three to six months of therapy.
+
+Notes:
+- vaccination
 '''
 
 # -----------------------------
@@ -823,8 +855,7 @@ wip = true
 topic = "Food challenges"
 keywords = ["food", "challenge", "oral challenge"]
 content = '''
-Prior to challenge, risk of anaphylaxis and milder localized allergic reactions discussed.
-Patient does not have any concurrent illness, does not use betablockers/ACEi or NSAIDs, has not recently had alcohol, has not exercised strenuously <2h prior to this visit, and is not sleep deprived.
+Prior to challenge, risk of anaphylaxis and milder localized allergic reactions discussed. They do not have any concurrent illness, does not use betablockers/ACEi or NSAIDs, has not recently had alcohol, has not exercised strenuously <2h prior to this visit, and is not sleep deprived.
 
 Procedure:
 A total serving size of *** was used, about *** grams of protein.
