@@ -22,53 +22,70 @@ status="not-started" # options include not-started, wip, or ready
 
 <div class="blur-container">
 
-# macro
+# Organization of this page
 
-Adults:
-1.Two or more ear infections / year
-2.Two or more sinus infections/ year (in absence of allergy)
-3.One pneumonia per year for more than one year (must be CXR documented)
-4.Chronic diarrhea + weight loss
-5.Recurrent viral infections (colds, herpes, warts, condyloma)
-6.Recurrent need for IV antibiotics to clear infection.
-7.Long duration or multiple courses of antibiotics
-8.Recurrent deep abscesses of skin / internal organs
-9.Persistent thrush/ fungal skin infections
-10.Infected with normally harmless TB- like bacteria.
-** if you have positive history of infection, ask in detail (age of onset, circumstance, type
-of bug, where they vaccinated for this bug, how long did it need to be cleared,
-complications)
+- Purpose of this page is to categorize immune dysregulation / deficiency broadly without too much detail - for indiviual categories, ideally there are separate pages for the relevant conditions/subclasses and hopefully there is a seperate page for BOTH IEI and secondary immunodeficiencies
+  - This page will talk about the basic history and investigations to send in general
+  - Maybe a timeline of how to read these articles would be helpful?
+  - Also discuss different arms of the immune system? which is difficult because there's so many... might not be worth it
+  - ? add tool for IEIs (similar to other website) that can be embedded or a tool to better view the characterizations of the phenotypes from IUIS vs all the different approaches to categorization - seems like it should be within the IEIs
+    - Maybe a tool mechanistically going through the different systems would be nice? for learning? something very similar to what janeway had, maybe with the help of biorender
+- preface again that IEIs change rapidly and more are discovered daily
 
-Warning Signs of PIDDs in Children
+# How to categorize
 
-1. ≥4 new ear infections within 1 year
-2. ≥2 serious sinus infections within 1 year
-3. ≥2 months on antibiotics with little effect
-4. ≥2 pneumonias within 1 year
-5. Failure of an infant to gain weight or grow normally 6. Recurrent, deep skin or organ abscesses
-6. Persistent thrush in mouth or fungal infection of skin 8. Need for IV antibiotics to clear infections
-7. ≥2 deep-seated infections, including septicemia
-8. A family history of PIDD
+Difficult for a few reasons:
 
-Autoimmune review of systems – rash, photosensitivity, ulcers, Reynaud’s,
-arthritis/arthralgia, sicca symptoms, abdominal pain, neuropathy/focal weakness • Cancer
-Constitutional symptoms and age-appropriate cancer screening
-developmental issues
-fhx: autoimmune, immune def, infections, relative died young unknown, cancer
+- innate / adaptive immune system has substantial overlap
+- many of these disorders have overlap and it is not entirely clear- there are exceptions to every rule in immunology
+- there are as such many different ways to categorize them ...
 
-AP:
+Whether or not having an ironclad understanding of the mechanisms and genetics of IEIs is important for day to day clinical practice is useful ... often times in clinical practice, the main approach is:
 
-=> We have ordered quantitative Igs (IgG, IgM, IgA) as well as a response assay to vaccination (tet and dip for protein, pneumococcal for polysacc). Can consider flow cytometry for B, T, NK cells, C3/C4, CBC, HIV testing, CH50 (completment), neutrophil burst assay
-=> Immunoglobulin replacement is the mainstay of preventative therapy of recurrent infections.
+- history - does anything obvious stick out / red flags for a phenotype vs secondary
+- send off screening panel + more/less PRN based on history
+- if screening panel neg and phenotype persists => genetics (ie. PIDD panel); if + then may still consider genetics + targeted treatments (ie if CVID)
 
-- IVIG > 400 to 600 mg/kg every three to four weeks vs:
-- SCIG (more stable IgG numbers, good for people who react to IVIG, poor IV access, self administered at home, improved QoL) Higher doses may be required in patients with bronchiectasis and in those with protein-losing enteropathy
-  Calculation for weight appropriate dose of IG: https://ivig.transfusionontario.org/dose
-  The half-life of IG is approximately 30 days, Steady-state levels are usually achieved after
-  three to six months of therapy
-  => followup and screening: Pulmonary function testing yearly, CT thorax q5y, serum b12/iron qyear
-  => IVIG monitoring? CBC, lytes, renal, ALT, quant Ig trough levels?
-  => avoid live vaccinations such as live shingles, live flu shot, etc
+# Primary
+
+- 2024 IUIS - 10 phenotypes -> subcategories
+  - CID
+  - CID + syndromic
+  - Antibody def main
+  - Immune dysregulation
+  - Phagocytic
+  - Intrinsic/innate
+  - Phagocytic
+  - Autoinflammatory
+  - Complement deficinecy
+  - Bone marrow
+
+- Broad (limited by fact there is often overlap between these two)
+  - Adaptive defects
+    - T cell defects
+    - B cell defects
+  - Innate defects
+    - Complement, barrier/structural, phagocytic, receptors/signal transduction, etc.
+
+- Mechanistic (not withstanding phenotype)
+  - T/B cell
+    - Development (VDJ recombination, signals for differentiation from CLP)
+    - Selection (MHC, AIRE, thymic development, etc)
+    - Migration (ie to lymph nodes etc)
+    - Activation (TCR pathways, coreceptor proteins, etc)
+    - Effector activity
+  - Complement
+  - Etc.
+
+# Secondary
+
+- Protein loss / lack of intake (Malnutrition, nephrotic syndrome, ascites, enteropathy)
+- HIV
+- Malignancy
+- Drugs
+- Structural secondary (ie infectious bronchiectasis)
+- Metabolic disease
+- ? CF in here
 
 # from talk 07/02/2025
 
