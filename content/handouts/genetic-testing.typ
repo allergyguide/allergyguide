@@ -81,7 +81,7 @@
     #v(0em)
     *Small differences in your books and recipes are completely normal*---they are what make you unique!
 
-    Most of these differences are harmless. However, sometimes a variation acts like a major typo in a recipe, or causes pages and chapters to be missing or duplicated. When these specific errors happen, they sometimes change how your body works and lead to certain health conditions.
+    Most of these differences are harmless. However, sometimes a variation acts like a major typo in a recipe, or causes pages and chapters to be missing or duplicated. When these specific errors happen, they sometimes change how your proteins work, and lead to certain health conditions.
   ]
 
   pagebreak()
@@ -98,7 +98,7 @@
     fill: (luma(241), none),
     stroke: frame(0.5pt + luma(180)),
   )
-  text(size: 10pt, table(
+  text(size: 10.5pt, table(
     columns: 2,
     inset: 7pt,
 
@@ -120,26 +120,21 @@
     [An entire chromosome is extra or missing. _An entire book is extra or missing._],
   ))
 
-  text(weight: "bold", size: 14pt)[3. What types of tests are there?]
-  text(size: 10pt, table(
+  text(weight: "bold", size: 14pt)[3. What are some types of genetic tests?]
+  text(size: 10.5pt, table(
     columns: 2,
-    inset: 7pt,
+    inset: 8pt,
 
     [*Test Type*], [*What It Looks For* (_and associated analogy_)],
 
     [*Panel Testing*],
-    [A specific group (panel) of genes related to your health condition.  _Reading many relevant chapters_.],
+    [A specific group (panel) of hundreds of genes potentially related to your health condition. _Reading #underline()[many] relevant chapters_.],
 
     [*Chromosomal Microarray*],
     [Missing or extra DNA. _Detects missing or extra chapters._],
 
-    [*Karyotype*], [Whole chromosomes. _Checks number and size of all books._],
-
     [*Whole Exome Sequencing*],
     [Most genes that make proteins. _Reads the majority of important chapters._],
-
-    [*Whole Genome Sequencing*],
-    [All your DNA. _Reads the full set of books, even parts that are not relevant._],
   ))
 
   text()[*Note:* Test availability can vary significantly based on medical profile, hospital resources, and healthcare coverage. Your physician will recommend the most appropriate option.]
@@ -192,15 +187,15 @@
 
     - *Family Planning:* For parents or those wanting to start a family, this test provides a clearer picture of the chances a condition might be passed on to future children.
   ]
+}
 
-  v(1fr) // Push footer to bottom
-  line(length: 100%, stroke: 0.5pt + black)
-  v(0.5em)
-  align(center)[
+#set page(footer: [
+  #line(length: 100%, stroke: 0.5pt + black)
+  #align(center)[
     #text(size: 9pt, style: "italic")[
-      This handout is for informational purposes and should be discussed with your clinical team.
+      This handout is for informational purposes only.
     ]
   ]
-}
+])
 
 #genetic-testing-handout()
