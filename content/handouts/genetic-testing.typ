@@ -161,14 +161,14 @@
       stroke-style: (thickness: 1pt, dash: "dashed"),
     )[
       #v(-0.7em)
-      We found a variant, *but we don't know yet if it changes the protein(s) enough to cause a problem*. It might be harmless, or it might cause disease. We track these as research evolves.
+      We find a variant, *but we don't know yet if it changes the protein(s) enough to cause a problem*. It might be harmless, or it might cause disease. We track these as research evolves.
     ],
     result-box(
       title: "Secondary Findings",
       stroke-style: (thickness: 1.5pt, dash: "dotted"),
     )[
       #v(-0.7em)
-      We found a typo in a completely different chapter that we were not originally looking for. This usually involves genes related to other medically actionable conditions, unrelated to the initial reason we tested.
+      We find a typo in a completely different chapter that we were not originally looking for. This usually involves genes related to other medically actionable conditions, unrelated to the initial reason we tested.
     ],
   )
 
