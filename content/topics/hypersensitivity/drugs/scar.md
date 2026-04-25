@@ -69,4 +69,8 @@ note morphology - annular, more dusky persistent darker area in the middle repre
 
 # GBFDE
 
+# guiding questions
+
+- is there much data on cross reactivity?
+
 </div>

@@ -45,4 +45,9 @@ AI
 - eGPA
 - SLE
 
+# guiding questions
+
+- What are your ddx?
+- What degree of elevation do you get concerned about if there's otherwise a non-concerning history?
+
 </div>

@@ -63,4 +63,9 @@ venom immunotherapy
 cofactors mgment
 ige blocker
 
+# Guiding questions
+
+- How do you categorize mast cell disorders?
+- How does it all fit in?
+
 </div>

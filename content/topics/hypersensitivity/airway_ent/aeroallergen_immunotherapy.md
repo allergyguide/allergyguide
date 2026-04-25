@@ -59,6 +59,16 @@ BB ACEi relative contraindicatoins
 > pearl:
 > new vial first dose should probably be done in allergy clinic ... anecdotal higher risk of reaction
 
+# SCIT considerations/pearls
+
+- first dose should be done in Allergist office ideally so you can explain the vials and progression
+- to find the doses for SCIT, look up 2024 CSACI guideline paper
+- of note, grasses are 4000 BAU in community, and cedar is 500
+- anecdotally, most cases of systemic reactions occur during build up vial 3 and 4
+- in the setting of anaphylaxis some doctors will cut the dose by 50% and keep that as the maintenance dosing instead of pushing higher
+- some people advocate for at most one vial if possible ...
+- while guidelines say don't start during pollen season, or don't updose, ancedotally this doesn't seem to be the case especially in BC where the pollen season is VERY long
+
 # SLIT contraindications
 
 # SLIT side effects
@@ -85,5 +95,13 @@ Patient information / monograph: [ALK 2022](/monographs/acarizax_2022_1.pdf)
 ## orlistat
 
 # Monitoring:
+
+# Guiding Questions
+
+- What are sample SCIT build up protocols? How do I find them?
+- What are the risks of severe systemic reaction vs systemic reaction in general for SCIT?
+- For SLIT, is there any data on cofactor avoidance (ie exercise)? Or mainly for SCIT?
+- What protocols exist for how to restart SCIT and SLIT in the setting of stopping for variable times?
+- Is there a proper technique for SCIT?
 
 </div>

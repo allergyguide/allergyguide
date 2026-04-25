@@ -134,4 +134,10 @@ needle legnth is important for peds/adult
 don't be afriad to treat anaphylxais even if BP is high
 BB and epi with alpha oppostino should be kept in mind
 
+# guiding questions
+
+- Is there a difference between EAI vs drawing up with syringe?
+- Neffy vs EAI?
+- Should patients have an IV in situ before a challenge?
+
 </div>

@@ -20,4 +20,9 @@ status = "not-started"
 
 <div class="blur-container">
 
+# guiding questions
+
+- per province, what are the requirements for funding and costs associated with these medications?
+- What are the side effects? Are they different for different indications?
+
 </div>

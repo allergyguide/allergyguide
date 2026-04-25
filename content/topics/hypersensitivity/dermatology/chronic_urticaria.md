@@ -216,4 +216,13 @@ some ?desnsitivetion but contreversial
 
 ## urticarial vasculitis
 
+# guiding questions
+
+- What are the options after maxing out AHs?
+- For patients with episodes of swelling near the mouth is it reasonable to provide an EpiPEN?
+- What are the different approaches to workup?
+- Is there any major utility to skin prick testing for these patients without atopy otherwise?
+- For 2nd line treatments, how can these be obtained?
+- What are specific endotypes of CSU and is it worth endotyping patients?
+
 </div>

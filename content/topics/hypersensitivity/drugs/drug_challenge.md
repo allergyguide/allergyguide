@@ -29,6 +29,9 @@ WIP
 
 - when doing a drug challenge you need to tailor the time you wait based on the timing of the reaction; for example, don't wait only 1 hour for a drug reaction history that took 3 hours to occur
 -
--
+
+# guiding questions:
+
+- how good is the penicillin cross reactivity chart really?
 
 </div>

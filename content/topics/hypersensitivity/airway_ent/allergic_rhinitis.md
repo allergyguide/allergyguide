@@ -61,4 +61,11 @@ INCS AH
 ryaltris - mometasone + olopatadine
 dymista -fluct prop + azel
 
+# guiding questions
+
+- In patients with suspected localized AR, is SCIT/SLIT a viable option?
+- What are the associated costs for these therapies by province?
+- What are programs that can help with costs and how do you get them?
+- What are different ways of giving SLIT? ie half tab then full tab
+
 </div>
