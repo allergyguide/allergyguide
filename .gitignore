@@ -9,3 +9,5 @@ node_modules
 .netlify/
 secure_assets
 static/js/*
+temp_*
+.gemini/
