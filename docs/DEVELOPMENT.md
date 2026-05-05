@@ -11,7 +11,7 @@ This project uses **Zola** (SSG) hosted on Netlify, with a custom build pipeline
   - [Typst](https://github.com/typst/typst) (markup-based typesetting system for PDF creation)
 
 - **To test the site locally**: `npm run serve`
-  - _Note: This runs the full build pipeline (TS, Assets) before starting Zola. This currently requires a `PRIVATE_TOKEN` and access to the private assets repository to succeed._
+  - _Note: This runs the full build pipeline (TS, Assets) before starting Zola. This requires a `PRIVATE_TOKEN` and access to the private assets repository._
   - _Do not commit the artifacts in `static/js` or `secure_assets`._
 
 ---
@@ -29,7 +29,7 @@ Defined in `package.json` and orchestrated by `build.mts`.
 1. **Legacy JS Sync:** Copies raw JavaScript files from `_legacy_js/` to `static/js/`. This ensures custom scripts are present before the build continues.
 2. **Secure Assets:** `build-fetch-secure-assets.mts` uses `PRIVATE_TOKEN` to fetch strictly controlled assets (PDFs, JSON) from the private repository into the local `secure_assets/` folder.
 3. **Type Checking:** Runs `tsc --noEmit` to ensure TypeScript integrity.
-4. **Typst Compilation:** `build-typ.mts` checks for/downloads the Typst binary and compiles `.typ` source files into PDFs.
+4. **Typst Compilation:** `build-typ.mts` checks for and downloads the Typst binary and compiles `.typ` source files from specified directories into PDFs.
 5. **TypeScript Bundling:** `build-ts.mts` reads `tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
 
 ### Stage 2: Site Generation (Zola)
@@ -140,7 +140,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 - **Auth/Permissions:** Update `authorized_users` table in Supabase.
 - **User Configs:** Ensure the private repository contains the matching `user_configs/{username}_config.json` files and the files you want the user to be able to access.
-- **Build Logic:** If adding a new tool that requires private assets, you must manually add a `generateSecureAssets` call to `build-fetch-secure-assets.mts` to ensure the files are downloaded during build.
+- **Build Logic:** If adding a new tool that requires private assets, you must manually add a `generateSecureAssets` call to `build-fetch-secure-assets.mts` to ensure the files are downloaded during build. See the end of that file.
 - **Structure:** secure assets are flattened into `secure_assets/` locally during build.
 
 ## Netlify Functions & Auth

@@ -110,19 +110,20 @@ Deployment requires the following Netlify environment variables (and ideally wit
 
 ### Stabilized Food interface
 
-- Include a 'CAPSULE' food type to account for pharmacy prescribed capsules. These do not have any weights or calculations to measure and must therefore be exempted from _some_ aspects of the validator engine.
-- Inclusion of relevant metadata
+- Include a 'CAPSULE' food type to account for pharmacy prescribed capsules. These do not have any weights or calculations to measure and must therefore be exempted from _some_ aspects of the validator engine. DONE.
+- Inclusion of relevant metadata - WIP.
+-
+
+### Branded Food Database
+
+- Creation of maintainable database of common branded foods used in OIT
+- Must include automatic validation and periodic checks to update out-of-date foods
 
 ### Safety and Core Logic Validation
 
 - The logic in `calculator.ts` and `protocol.ts` (dose calculations, dilution determination) must be **stable**. At present time there are no obvious bugs, but requires thorough user testing with multiple testers.
 - Will consider feature where a range of possible measurements is provided (ie to be within X% of the target mg). May not be worth it UX wise - will need to think about it.
 - `validator.ts` must be robust and comprehensive as possible. Current warnings should be reviewed and other possible warnings should be brainstormed and implemented if valid.
-
-### Branded food database
-
-- Creation of maintainable database of common branded foods used in OIT
-- Must include automatic validation and periodic checks to update out-of-date foods
 
 ### Data Integrity and "Rough" Assets
 
@@ -137,6 +138,7 @@ Deployment requires the following Netlify environment variables (and ideally wit
 ### Search UI improvement
 
 - On the search dropdown, the user should see a badge that concisely communicates the metadata. Ie. the source (CNF, BRAND, USER)
+- Versus keeping a single vertical scrollable list with headers that define the source, with user > brand > CNF if possible
 
 ### Development of export content / format
 
