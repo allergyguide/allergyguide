@@ -12,6 +12,7 @@ authors = ["Joshua Yu"]
 
 ### Added
 
+- Support for pharmacy-compounded capsules for "Food A", allowing generation of protocols for doses without manual measurement or dilution.
 - UX: Login modal can now be closed by pressing the `Esc` key.
 
 ### Changed
@@ -19,6 +20,7 @@ authors = ["Joshua Yu"]
 - Calculation: Direct dosing amounts (g or ml) are now automatically "snapped" to clean, user-friendly increments (e.g., 0.5, 0.1, 0.05) if the resulting protein dose remains within the safety tolerance (5%).
 - UI: now user auth and tool version are right justified.
 - UI: Added a fade-out effect to the right edge of the tabs list to better indicate scrollable content.
+- Exports: Updated PDF and ASCII export logic to format capsule steps as "Capsule(s) as per pharmacy".
 
 ### Deprecated
 
@@ -29,6 +31,8 @@ authors = ["Joshua Yu"]
 - UI: Fixed an issue where the background page would still scroll when the login modal was open.
 
 ### Security
+
+- Updated dependencies (`jspdf`, `dompurify`) to address potential vulnerabilities and improve PDF export stability.
 
 ---
 
