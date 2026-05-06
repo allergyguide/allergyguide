@@ -439,7 +439,7 @@ export function updateStepTargetMg(oldProtocol: Protocol, stepIndex: number, new
     // Recalculate dailyAmount (with safe snapping)
     const preciseAmount = step.targetMg.dividedBy(food.getMgPerUnit());
     step.dailyAmount = findRoundedDirectAmount(step.targetMg, food, preciseAmount, oldProtocol.config);
-  } else {
+  } else if (step.method === Method.DILUTE) {
     // DILUTE - keep mixFoodAmount and dailyAmount, recalculate servings and water
     const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
     step.servings = totalMixProtein.dividedBy(step.targetMg);
@@ -489,7 +489,7 @@ export function updateStepDailyAmount(oldProtocol: Protocol, stepIndex: number, 
   if (step.method === Method.DIRECT) {
     // Recalculate target protein
     step.targetMg = step.dailyAmount.times(food.getMgPerUnit());
-  } else {
+  } else if (step.method === Method.DILUTE) {
     // DILUTE - keep mixFoodAmount fixed, recalculate water
     const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
     step.servings = totalMixProtein.dividedBy(step.targetMg);

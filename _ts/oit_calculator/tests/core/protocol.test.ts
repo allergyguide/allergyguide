@@ -165,6 +165,18 @@ describe('Core: Protocol Manipulation', () => {
       // servings should double (since mix protein doubled)
       expect(newStep.servings?.toNumber()).toBeCloseTo(oldStep.servings!.times(2).toNumber());
     });
+
+    it('updateStepTargetMg should handle CAPSULE steps without error', () => {
+      let proto = toggleFoodType(baseProtocol, false, FoodType.CAPSULE);
+      const index = 1;
+      
+      const newProto = updateStepTargetMg(proto, index, 50);
+      const newStep = newProto.steps[index - 1];
+      
+      expect(newStep.method).toBe(Method.CAPSULE);
+      expect(newStep.targetMg.toNumber()).toBe(50);
+      expect(newStep.dailyAmount.toNumber()).toBe(1); // Dummy remains
+    });
   });
 
   describe('Structure Modification', () => {
