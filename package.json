@@ -29,6 +29,7 @@
     "jsonminify": "^0.4.2",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.2",
+    "lit-html": "^3.3.2",
     "pagefind": "^1.1.0",
     "pako": "^2.1.0",
     "pdf-lib": "^1.17.1",
