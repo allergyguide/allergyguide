@@ -3,13 +3,13 @@
  *
  * DOM Rendering logic
  */
-import { Method, FoodType, DosingStrategy, FoodAStrategy } from "../types";
+import { Method, DosingStrategy } from "../types";
 import type { Protocol, Warning, Unit, Food, Step, ReadableHistoryPayload, Tab, ReadableWarning } from "../types";
 import { formatNumber, formatAmount, escapeHtml, getMeasuringUnit } from "../utils";
 import { validateProtocol } from "../core/validator";
 import { workspace } from "../state/instances";
 
-// Need global commit hash 
+// Need global commit hash
 declare const __COMMIT_HASH__: string;
 
 // ============================================
@@ -132,7 +132,7 @@ export function updateFoodBDisabledState(protocol: Protocol | null): void {
 /**
  * Renders the Tab Bar with active state and close buttons.
  * Each tab represents an independent protocol workspace.
- * 
+ *
  * @param tabs - Array of current tab metadata from WorkspaceManager
  * @param activeId - The ID of the currently active tab to highlight
  */
@@ -189,7 +189,7 @@ function resetInputs() {
   const containers = document.querySelectorAll('.settings-container, .oit-toolbar');
 
   containers.forEach(container => {
-    // select inputs and textareas 
+    // select inputs and textareas
     const inputs = container.querySelectorAll('input[type="text"], input[type="number"], input[type="search"], textarea');
     inputs.forEach(input => {
       (input as HTMLInputElement | HTMLTextAreaElement).value = "";
@@ -201,7 +201,7 @@ function resetInputs() {
  * Renders the "Empty State" UI when no protocol is loaded in the active tab.
  * Displays Quick Start instructions by cloning the `#empty-state-template`.
  * Also hides protocol-specific sections and clears all relevant inputs.
- * Fairly brittle to changes in HTML structure of shortcode 
+ * Fairly brittle to changes in HTML structure of shortcode
  */
 function renderEmptyState() {
   const tableContainer = document.querySelector(".output-container table") as HTMLElement;
@@ -227,313 +227,6 @@ function renderEmptyState() {
     const clone = template.content.cloneNode(true);
     tableContainer.appendChild(clone);
   }
-}
-
-/**
- * Render Food A and Food B settings panels... name, protein, serving size, form toggle, 
- * Uses patching to preserve focus. No event listeners attached here
- *
- * @returns void
- */
-/**
- * Renders or updates the settings panels for Food A and Food B: name, protein, serving size, form toggle, threshold if applicable
- *
- * Uses DOM patching strategy: checks if the settings markup already exists and updates the input values and toggle states in-place
- *
- * specific behaviors:
- * - Food A is always rendered; conditionally adds/removes the "Direct Dose Threshold"
- * - Food B renders only if `protocol.foodB` is defined
- *
- * @param protocol - current active protocol. If null, the function performs no action
-*/
-export function renderFoodSettings(protocol: Protocol | null): void {
-  // HARD CODED SELECTOR OF CONTAINERS
-  const foodAContainer = document.querySelector(".food-a-container") as HTMLElement;
-  const foodBContainer = document.querySelector(".food-b-container") as HTMLElement;
-
-  // If no protocol, we handled clearing in renderEmptyState
-  if (!protocol) {
-    const settingsA = foodAContainer.querySelector(".food-a-settings");
-    if (settingsA) settingsA.remove();
-
-    const settingsB = foodBContainer.querySelector(".food-b-settings");
-    if (settingsB) settingsB.remove();
-    return;
-  }
-
-  // --- FOOD A ---
-  let foodASettings = foodAContainer.querySelector(".food-a-settings");
-
-  // If settings don't exist, build them from scratch
-  if (!foodASettings) {
-    const html = buildFoodAHTML(protocol);
-    foodAContainer.insertAdjacentHTML("beforeend", html);
-    foodASettings = foodAContainer.querySelector(".food-a-settings"); // foodASettings prev null to be in this scope, need to update so that it can be accessed again for threshold if DI
-  } else {
-    // Patch existing Food A settings, hard coded selectors here
-    patchSettingsInput(foodASettings as HTMLElement, "#food-a-name", protocol.foodA.name);
-    patchSettingsInput(foodASettings as HTMLElement, "#food-a-protein", protocol.foodA.gramsInServing.toFixed(1));
-    patchSettingsInput(foodASettings as HTMLElement, "#food-a-serving-size", protocol.foodA.servingSize.toFixed(1));
-
-    // Update unit spans with form form switch
-    const formUnit = protocol.foodA.type === FoodType.SOLID ? "g" : "ml";
-    updateSpan(foodASettings as HTMLElement, ".input-unit-group span:last-of-type", formUnit);
-
-    // Patch Toggles (Form)
-    updateToggle(foodASettings as HTMLElement, '[data-action="toggle-food-a-solid"]', protocol.foodA.type === FoodType.SOLID);
-    updateToggle(foodASettings as HTMLElement, '[data-action="toggle-food-a-liquid"]', protocol.foodA.type === FoodType.LIQUID);
-    updateToggle(foodASettings as HTMLElement, '[data-action="toggle-food-a-capsule"]', protocol.foodA.type === FoodType.CAPSULE);
-
-    // Patch Toggles (Strategy)
-    updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-initial"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL);
-    updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-all"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL);
-    updateToggle(foodASettings as HTMLElement, '[data-action="food-a-strategy-none"]', protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE);
-
-    // Disable protein/serving size inputs if Capsule
-    const isCapsuleA = protocol.foodA.type === FoodType.CAPSULE;
-    updateInputDisabledState(foodASettings as HTMLElement, "#food-a-protein", isCapsuleA);
-    updateInputDisabledState(foodASettings as HTMLElement, "#food-a-serving-size", isCapsuleA);
-  }
-
-  // Shared Logic (Runs after Create or Patch Food A settings)
-  // Patch Threshold Section (Conditional)
-  const advancedSettings = (foodASettings as HTMLElement).querySelector(".oit-advanced-settings") as HTMLDetailsElement;
-
-  // Hide advanced settings if Capsule
-  if (advancedSettings) {
-    const isCapsuleA = protocol.foodA.type === FoodType.CAPSULE;
-    advancedSettings.style.display = isCapsuleA ? 'none' : 'block';
-  }
-
-  const thresholdContainer = advancedSettings?.querySelector(".threshold-setting");
-
-  // Sync open state
-  if (advancedSettings) {
-    // Only force it if it differs, to avoid interfering with browser animation logic if any
-    const shouldBeOpen = workspace.getActive().isAdvancedSettingsOpen;
-    if (advancedSettings.open !== shouldBeOpen) {
-      advancedSettings.open = shouldBeOpen;
-    }
-  }
-
-  const formUnit = protocol.foodA.type === FoodType.SOLID ? "g" : "ml";
-
-  if (protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL) {
-    if (!thresholdContainer && advancedSettings) {
-      // Add it if missing ... which can happen if a different dilute strat is chosen
-      const html = `
-          <div class="setting-row threshold-setting">
-            <label>Directly dose when neat amount ≥</label>
-            <div class="input-unit-group">
-              <input type="number" id="food-a-threshold" min="0" value="${formatAmount(protocol.diThreshold, formUnit)}" step="0.1" />
-              <span>${formUnit}</span>
-            </div>
-          </div>`;
-      advancedSettings.insertAdjacentHTML("beforeend", html);
-    } else if (thresholdContainer) {
-      // Update it
-      patchSettingsInput(thresholdContainer as HTMLElement, "#food-a-threshold", formatAmount(protocol.diThreshold, formUnit));
-      updateSpan(thresholdContainer as HTMLElement, "span", formUnit);
-    }
-  } else {
-    // Remove threshold container if present if not on dilution strat for food A
-    if (thresholdContainer) thresholdContainer.remove();
-  }
-
-  // --- FOOD B ---
-  if (protocol.foodB) {
-    let foodBSettings = foodBContainer.querySelector(".food-b-settings");
-    if (!foodBSettings) {
-      const html = buildFoodBHTML(protocol);
-      foodBContainer.insertAdjacentHTML("beforeend", html);
-    } else {
-      // Patch Food B settings: name, protein, serving size
-      patchSettingsInput(foodBSettings as HTMLElement, "#food-b-name", protocol.foodB.name);
-      patchSettingsInput(foodBSettings as HTMLElement, "#food-b-protein", protocol.foodB.gramsInServing.toFixed(1));
-      patchSettingsInput(foodBSettings as HTMLElement, "#food-b-serving-size", protocol.foodB.servingSize.toFixed(1));
-
-      const formUnit = protocol.foodB.type === FoodType.SOLID ? "g" : "ml";
-      updateSpan(foodBSettings as HTMLElement, ".input-unit-group span:last-of-type", formUnit);
-
-      updateToggle(foodBSettings as HTMLElement, '[data-action="toggle-food-b-solid"]', protocol.foodB.type === FoodType.SOLID);
-      updateToggle(foodBSettings as HTMLElement, '[data-action="toggle-food-b-liquid"]', protocol.foodB.type === FoodType.LIQUID);
-
-      // Threshold
-      if (protocol.foodBThreshold) {
-        patchSettingsInput(foodBSettings as HTMLElement, "#food-b-threshold", formatAmount(protocol.foodBThreshold.amount, protocol.foodBThreshold.unit));
-        updateSpan(foodBSettings as HTMLElement, ".threshold-setting span", protocol.foodBThreshold.unit);
-      }
-    }
-  } else {
-    // Cleanup Food B if it exists but shouldn't
-    const existing = foodBContainer.querySelector(".food-b-settings");
-    if (existing) existing.remove();
-  }
-}
-
-// ------------------------------
-// Helpers for renderFoodSettings
-// ------------------------------
-/**
- * Generates complete HTML string for the Food A settings panel based on arguement protocol state
- *
- * @param protocol current protocol configuration containing Food A details
- * @returns A string of HTML representing the `.food-a-settings`
- */
-function buildFoodAHTML(protocol: Protocol): string {
-  const isCapsule = protocol.foodA.type === FoodType.CAPSULE;
-  const disabledAttr = isCapsule ? 'disabled' : '';
-  const advancedStyle = isCapsule ? 'style="display: none;"' : '';
-
-  return `
-    <div class="food-a-settings">
-      <input type="text" class="food-name-input" id="food-a-name" value="${escapeHtml(protocol.foodA.name)}" />
-      <div class="setting-row">
-        <label>Protein:</label>
-        <div class="input-unit-group">
-          <input type="number" min="0" max="${protocol.foodA.servingSize}" id="food-a-protein" value="${protocol.foodA.gramsInServing.toFixed(1)}" step="0.1" ${disabledAttr} />
-          <span>g per</span>
-          <input type="number" min="0" id="food-a-serving-size" value="${protocol.foodA.servingSize.toFixed(1)}" step="0.1" ${disabledAttr} />
-          <span>${protocol.foodA.type === FoodType.SOLID ? "g" : "ml"}</span>
-        </div>
-      </div>
-      <div class="input-warning-text">
-        Manufacturers can change formulations. Always verify these values match the Nutrition Facts label.
-      </div>
-      <div class="setting-row">
-        <label>Form:</label>
-        <div class="toggle-group">
-          <button class="toggle-btn ${protocol.foodA.type === FoodType.SOLID ? "active" : ""}" data-action="toggle-food-a-solid">Solid</button>
-          <button class="toggle-btn ${protocol.foodA.type === FoodType.LIQUID ? "active" : ""}" data-action="toggle-food-a-liquid">Liquid</button>
-          <button class="toggle-btn ${protocol.foodA.type === FoodType.CAPSULE ? "active" : ""}" data-action="toggle-food-a-capsule">Capsule</button>
-        </div>
-      </div>
-      <details class="oit-advanced-settings" ${advancedStyle}>
-        <summary>Advanced Configuration</summary>
-        <div class="setting-row">
-          <label>Dilution strategy:</label>
-          <div class="toggle-group">
-            <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL ? "active" : ""}" data-action="food-a-strategy-initial">Initial dilution</button>
-            <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL ? "active" : ""}" data-action="food-a-strategy-all">Dilution throughout</button>
-            <button class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE ? "active" : ""}" data-action="food-a-strategy-none">No dilutions</button>
-          </div>
-        </div>
-        ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL
-      ? `
-        <div class="setting-row threshold-setting">
-          <label>Directly dose when neat amount ≥</label>
-          <div class="input-unit-group">
-            <input type="number" id="food-a-threshold" min="0" value="${formatAmount(protocol.diThreshold, protocol.foodA.type === FoodType.SOLID ? "g" : "ml")}" step="0.1" />
-            <span>${protocol.foodA.type === FoodType.SOLID ? "g" : "ml"}</span>
-            <span class="info-tooltip" data-tooltip="Once you can measure at least this much food, switch from dilution to direct doses.">
-            ⓘ
-            </span>
-          </div>
-        </div>
-        `
-      : ""
-    }
-      </details>
-    </div>
-  `;
-}
-
-/**
- * Generates complete HTML string for the Food B settings panel based on arguement protocol state
- *
- * @param protocol current protocol configuration containing Food B details
- * @returns string HTML representing the `.food-b-settings` or "" if no food B was selected
- */
-function buildFoodBHTML(protocol: Protocol): string {
-  if (!protocol.foodB) return "";
-  return `
-      <div class="food-b-settings">
-        <input type="text" class="food-name-input" id="food-b-name" value="${escapeHtml(protocol.foodB.name)}" />
-        <div class="setting-row">
-          <label>Protein:</label>
-          <div class="input-unit-group">
-            <input type="number" id="food-b-protein" min="0" max="${protocol.foodB.servingSize}" value="${protocol.foodB.gramsInServing.toFixed(1)}" step="0.1" />
-            <span>g per</span>
-            <input type="number" id="food-b-serving-size" min="0" value="${protocol.foodB.servingSize.toFixed(1)}" step="0.1" />
-            <span>${protocol.foodB.type === FoodType.SOLID ? "g" : "ml"}</span>
-          </div>
-        </div>
-        <div class="input-warning-text">
-          Manufacturers can change formulations. Always verify these values match the Nutrition Facts label.
-        </div>
-        <div class="setting-row">
-          <label>Form:</label>
-          <div class="toggle-group">
-            <button class="toggle-btn ${protocol.foodB.type === FoodType.SOLID ? "active" : ""}" data-action="toggle-food-b-solid">Solid</button>
-            <button class="toggle-btn ${protocol.foodB.type === FoodType.LIQUID ? "active" : ""}" data-action="toggle-food-b-liquid">Liquid</button>
-          </div>
-        </div>
-        <div class="setting-row threshold-setting">
-          <label>Transition when daily amount ≥</label>
-          <div class="input-unit-group">
-            <input type="number" id="food-b-threshold" value="${formatAmount(protocol.foodBThreshold!.amount, protocol.foodBThreshold!.unit)}" step="0.1" min="0" />
-            <span>${protocol.foodBThreshold!.unit}</span>
-            <span class="info-tooltip" data-tooltip="Once you can measure at least this much food, transition from the first food to this food.">
-            ⓘ
-            </span>
-          </div>
-        </div>
-      </div>
-    `;
-}
-
-/**
- * Updates input's value if it differs from the new value: goal => preserving user focus
- *
- * @param container - The parent element containing the input
- * @param selector - CSS selector to locate the specific input element
- * @param newVal - The target value string to apply
- */
-function patchSettingsInput(container: HTMLElement, selector: string, newVal: string) {
-  const input = container.querySelector(selector) as HTMLInputElement;
-  if (!input) return;
-  if (input.value !== newVal) input.value = newVal;
-}
-
-/**
- * Updates input's disabled state
- *
- * @param container - The parent element containing the input
- * @param selector - CSS selector to locate the specific input element
- * @param disabled - Whether the input should be disabled
- */
-function updateInputDisabledState(container: HTMLElement, selector: string, disabled: boolean) {
-  const input = container.querySelector(selector) as HTMLInputElement;
-  if (!input) return;
-  if (input.disabled !== disabled) input.disabled = disabled;
-}
-
-/**
- * Updates visual state of toggle button by adding or removing the 'active' class
- *
- * @param container - The parent element containing the toggle button
- * @param selector - CSS selector to locate the button
- * @param isActive - True to add the 'active' class, false to remove it
- */
-function updateToggle(container: HTMLElement, selector: string, isActive: boolean) {
-  const btn = container.querySelector(selector);
-  if (!btn) return;
-  if (isActive) btn.classList.add("active");
-  else btn.classList.remove("active");
-}
-
-/**
- * Updates the text content of a span element if it differs from the provided text.
- * Helper mainly for refreshing dynamic unit labels (ie., "g" vs "ml")
- *
- * @param container - The parent element containing the span
- * @param selector - CSS selector to locate the span
- * @param text - The new text content to display
- */
-function updateSpan(container: HTMLElement, selector: string, text: string) {
-  const span = container.querySelector(selector);
-  if (!span) return;
-  if (span.textContent !== text) span.textContent = text;
 }
 
 
@@ -562,9 +255,9 @@ export function renderDosingStrategy(protocol: Protocol | null): void {
 
 /**
  * Renders the main protocol table into the DOM using a diffing/patching strategy.
- * 
+ *
  * This function calculates the expected layout, compares it to the current DOM,
- * and either patches specific values in-place (to preserve focus) or rebuilds 
+ * and either patches specific values in-place (to preserve focus) or rebuilds
  * the table if the structure has changed.
  *
  * @param protocol - The current protocol state. If null, a table with instructions is rendered.
@@ -777,7 +470,7 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
  * Completely rebuilds and renders the protocol table HTML based on the provided row spec
  *
  * @param tableContainer - DOM element (table) where the HTML will be injected
- * @param expectedRows 
+ * @param expectedRows
  */
 function renderFullTable(tableContainer: HTMLElement, expectedRows: RowSpec[]) {
   let html = `
@@ -1186,7 +879,7 @@ export function renderDebugResult(payload: ReadableHistoryPayload | null): void 
             </ul>
           </details>`
       : ""
-    }      
+    }
     </div>
   `;
   container.innerHTML = html;

@@ -657,6 +657,12 @@ export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean, targetTy
 
   if (isFoodB) {
     newProtocol.foodB = newFood;
+    if (newProtocol.foodBThreshold) {
+      newProtocol.foodBThreshold = {
+        ...newProtocol.foodBThreshold,
+        unit: getMeasuringUnit(newFood)
+      };
+    }
   } else {
     newProtocol.foodA = newFood;
   }

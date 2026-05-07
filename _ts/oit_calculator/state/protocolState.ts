@@ -45,7 +45,7 @@ export class ProtocolState {
 
   public setAdvancedSettingsOpen(isOpen: boolean) {
     this.isAdvancedSettingsOpen = isOpen;
-    // No notify needed if we only read this during render
+    this.notify();
   }
 
   /**

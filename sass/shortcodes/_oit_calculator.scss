@@ -500,21 +500,13 @@
     }
 
     // Content spacing and padding
-    .setting-row {
-      padding: 0 0.75rem;
-    }
+    .advanced-settings-content {
+      padding: 1rem 0.75rem;
 
-    .setting-row:first-of-type {
-      margin-top: 1rem;
-    }
-
-    .setting-row:last-of-type {
-      margin-bottom: 1rem;
-    }
-
-    // Increased spacing between rows
-    .setting-row+.setting-row {
-      margin-top: 1.5rem;
+      // Increased spacing between rows
+      .setting-row + .setting-row {
+        margin-top: 1.5rem;
+      }
     }
 
     &[open] {

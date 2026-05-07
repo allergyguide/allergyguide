@@ -6,14 +6,8 @@
  * Mainly for mutation of big global protocol states and the main components
  * Other more specialized UI event delegation and handling are done in other modules like ui/searchUI.ts, modals.ts 
  */
-import Decimal from "decimal.js";
 import { workspace } from "../state/instances";
 import {
-  updateFoodDetails,
-  recalculateStepMethods,
-  updateFoodBAndRecalculate,
-  updateFoodBThreshold,
-  toggleFoodType,
   updateStepTargetMg,
   updateStepDailyAmount,
   updateStepMixFoodAmount,
@@ -22,11 +16,9 @@ import {
   recalculateProtocol
 } from "../core/protocol";
 import {
-  FoodType,
-  FoodAStrategy,
-  DosingStrategy
+  DosingStrategy,
+  type Protocol
 } from "../types";
-import type { Protocol } from "../types";
 
 import { clearFoodB } from "./actions";
 import { renderDebugResult } from "./renderers";
@@ -36,8 +28,6 @@ import { appState } from "../main";
 // Debounce timers
 let inputDebounceTimer: number | null = null;
 let noteDebounceTimer: number | null = null;
-let foodADebounceTimer: number | null = null;
-let foodBDebounceTimer: number | null = null;
 
 let isInitialized = false;
 
@@ -51,7 +41,6 @@ export function initGlobalEvents(): void {
     return;
   }
 
-  attachSettingsDelegation();
   attachTableDelegation();
   attachDosingStrategyDelegation();
   attachCustomNoteDelegation();
@@ -113,212 +102,6 @@ function attachCustomNoteDelegation() {
           const rawValue = target.value;
           workspace.getActive().setCustomNote(rawValue, { skipRender: true });
         }, 300);
-      }
-    });
-  }
-}
-
-/**
- * Attaches event delegation logic for Food A and Food B settings panels
- * Handles three types of interactions:
- * 1. `input`: For text fields like Food Name (debounced)
- * 2. `change`: For numeric inputs (Protein, Serving Size, Thresholds). Updates trigger immediate protocol recalculations 
- * 3. `click`: For toggle buttons (Solid/Liquid form, Dilution Strategies)
- *
- * Parses and validates numeric inputs before updating the state
- */
-function attachSettingsDelegation() {
-  // Food A Settings Delegation
-  const foodAContainer = document.querySelector(".food-a-container");
-  if (foodAContainer) {
-    foodAContainer.addEventListener("input", (e) => {
-      const target = e.target as HTMLElement;
-
-      if (target.id === "food-a-name") {
-        // debounce
-        if (foodADebounceTimer) clearTimeout(foodADebounceTimer);
-        foodADebounceTimer = window.setTimeout(() => {
-          const current = workspace.getActive().getProtocol();
-          if (current) {
-            const updated = updateFoodDetails(current, 'A', {
-              name: (target as HTMLInputElement).value
-            });
-            workspace.getActive().setProtocol(updated, `Renamed Food A`);
-          }
-        }, 400);
-      }
-    });
-
-    foodAContainer.addEventListener("change", (e) => {
-      const target = e.target as HTMLElement;
-      const current = workspace.getActive().getProtocol();
-      if (!current) return;
-
-      if (target.id === "food-a-serving-size") {
-        let value = parseFloat((target as HTMLInputElement).value);
-        // validation of input
-        // also have to clamp so serving size cannot be less than the protein amount
-        if (value < current.foodA.gramsInServing.toNumber()) value = current.foodA.gramsInServing.toNumber();
-        if (value <= 0) value = 1;
-        if (value > 1000) value = 1000;
-        if (Number.isNaN(value)) value = 1;
-        const updated = updateFoodDetails(current, 'A', {
-          servingSize: new Decimal(value),
-        });
-        workspace.getActive().setProtocol(recalculateStepMethods(updated), `Food A Serving Size changed to: ${value}`);
-      }
-      else if (target.id === "food-a-protein") {
-        let value = parseFloat((target as HTMLInputElement).value);
-
-        // Food A protein input clamping
-        if (value < 0) value = 0;
-        if (value > current.foodA.servingSize.toNumber()) value = current.foodA.servingSize.toNumber();
-        if (Number.isNaN(value)) value = 0;
-        const updated = updateFoodDetails(current, 'A', {
-          gramsInServing: new Decimal(value)
-        });
-        workspace.getActive().setProtocol(recalculateStepMethods(updated), `Food A Protein changed to: ${value}`);
-      }
-      else if (target.id === "food-a-threshold") {
-        const val = (target as HTMLInputElement).value;
-
-        // Food A threshold value clamping
-        let value = parseFloat(val);
-        if (value < 0) value = 0;
-        if (Number.isNaN(value)) value = 0;
-        const updated: Protocol = {
-          ...current,
-          diThreshold: new Decimal(value)
-        }
-        workspace.getActive().setProtocol(recalculateStepMethods(updated), `Food A DI Threshold changed to: ${value}`);
-      }
-    });
-
-    foodAContainer.addEventListener("click", (e) => {
-      const target = e.target as HTMLElement;
-      const action = target.getAttribute("data-action");
-      const current = workspace.getActive().getProtocol();
-      if (!current || !action) return;
-
-      switch (action) {
-        case "toggle-food-a-solid":
-          if (current.foodA.type !== FoodType.SOLID) {
-            workspace.getActive().setProtocol(toggleFoodType(current, false, FoodType.SOLID), "Set Food A to Solid");
-          }
-          break;
-        case "toggle-food-a-liquid":
-          if (current.foodA.type !== FoodType.LIQUID) {
-            workspace.getActive().setProtocol(toggleFoodType(current, false, FoodType.LIQUID), "Set Food A to Liquid");
-          }
-          break;
-        case "toggle-food-a-capsule":
-          if (current.foodA.type !== FoodType.CAPSULE) {
-            workspace.getActive().setProtocol(toggleFoodType(current, false, FoodType.CAPSULE), "Set Food A to Capsule");
-          }
-          break;
-        case "food-a-strategy-initial":
-          workspace.getActive().setProtocol(
-            recalculateStepMethods({ ...current, foodAStrategy: FoodAStrategy.DILUTE_INITIAL }),
-            "Set Food A Strategy: Dilute Initial"
-          );
-          break;
-        case "food-a-strategy-all":
-          workspace.getActive().setProtocol(
-            recalculateStepMethods({ ...current, foodAStrategy: FoodAStrategy.DILUTE_ALL }),
-            "Set Food A Strategy: Dilute All"
-          );
-          break;
-        case "food-a-strategy-none":
-          workspace.getActive().setProtocol(
-            recalculateStepMethods({ ...current, foodAStrategy: FoodAStrategy.DILUTE_NONE }),
-            "Set Food A Strategy: Dilute None"
-          );
-          break;
-      }
-    });
-
-    // Toggle Capture for Details element
-    foodAContainer.addEventListener("toggle", (e) => {
-      const target = e.target as HTMLDetailsElement;
-      if (target.classList.contains("oit-advanced-settings")) {
-        workspace.getActive().setAdvancedSettingsOpen(target.open);
-      }
-    }, true); // Capture phase is required for 'toggle' event delegation
-  }
-
-  // Food B Settings Delegation
-  const foodBContainer = document.querySelector(".food-b-container");
-  if (foodBContainer) {
-    foodBContainer.addEventListener("input", (e) => {
-      const target = e.target as HTMLElement;
-      if (target.id === "food-b-name") {
-        // debounce
-        if (foodBDebounceTimer) clearTimeout(foodBDebounceTimer);
-        foodBDebounceTimer = window.setTimeout(() => {
-          const current = workspace.getActive().getProtocol();
-          if (current && current.foodB) {
-            const updated = updateFoodDetails(current, "B", {
-              name: (target as HTMLInputElement).value
-            });
-            workspace.getActive().setProtocol(updated, `Renamed Food B`);
-          }
-        }, 400);
-      }
-    });
-
-    foodBContainer.addEventListener("change", (e) => {
-      const target = e.target as HTMLElement;
-      const current = workspace.getActive().getProtocol();
-      if (!current || !current.foodB) return;
-
-      if (target.id === "food-b-serving-size") {
-        let value = parseFloat((target as HTMLInputElement).value);
-        if (value < current.foodB.gramsInServing.toNumber()) value = current.foodB.gramsInServing.toNumber();
-        if (value <= 0) value = 1;
-        if (value > 1000) value = 1000;
-        if (Number.isNaN(value)) value = 1;
-        const updated = updateFoodBAndRecalculate(current, {
-          servingSize: new Decimal(value)
-        });
-        workspace.getActive().setProtocol(updated, `Food B Serving Size changed to: ${value}`);
-      } else if (target.id === "food-b-protein") {
-        let value = parseFloat((target as HTMLInputElement).value);
-        if (value < 0) value = 0;
-        if (value > current.foodB.servingSize.toNumber()) value = current.foodB.servingSize.toNumber();
-        if (Number.isNaN(value)) value = 0;
-        const updated = updateFoodBAndRecalculate(current, {
-          gramsInServing: new Decimal(value)
-        });
-        workspace.getActive().setProtocol(updated, `Food B Protein changed to: ${value}`);
-      } else if (target.id === "food-b-threshold") {
-        let value = parseFloat((target as HTMLInputElement).value);
-
-        // Food B threshold input clamp
-        if (value < 0) value = 0;
-        if (Number.isNaN(value)) value = 0;
-        const updated = updateFoodBThreshold(current, new Decimal(value));
-        workspace.getActive().setProtocol(updated, `Food B Threshold changed to: ${value}`);
-      }
-    });
-
-    foodBContainer.addEventListener("click", (e) => {
-      const target = e.target as HTMLElement;
-      const action = target.getAttribute("data-action");
-      const current = workspace.getActive().getProtocol();
-      if (!current || !action) return;
-
-      switch (action) {
-        case "toggle-food-b-solid":
-          if (current.foodB && current.foodB.type !== FoodType.SOLID) {
-
-            workspace.getActive().setProtocol(toggleFoodType(current, true, FoodType.SOLID), "Set Food B to Solid");
-          }
-          break;
-        case "toggle-food-b-liquid":
-          if (current.foodB && current.foodB.type !== FoodType.LIQUID) {
-            workspace.getActive().setProtocol(toggleFoodType(current, true, FoodType.LIQUID), "Set Food B to Liquid");
-          }
-          break;
       }
     });
   }

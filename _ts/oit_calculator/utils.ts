@@ -203,6 +203,26 @@ export function serializeProtocol(protocol: Protocol, notes: string): ProtocolDa
   return data;
 }
 
+/**
+ * Safely parses a string input into a Decimal.
+ * Handles NaN by returning a default value.
+ * Clamps the value to be at least the minimum.
+ *
+ * @param input - The string to parse
+ * @param defaultValue - Value to return if parsing fails
+ * @param min - Minimum allowed value (default 0)
+ */
+export function parseSafeDecimal(input: string, defaultValue: Decimal, min: number = 0): Decimal {
+  if (!input || input.trim() === "") return defaultValue;
+  try {
+    const val = new Decimal(input);
+    if (val.isNaN()) return defaultValue;
+    const minimum = new Decimal(min);
+    return val.lessThan(minimum) ? minimum : val;
+  } catch {
+    return defaultValue;
+  }
+}
 
 export const SAMPLE_PROTOCOL: ProtocolData = {
   name: "Almond milk to whole almonds",
@@ -304,4 +324,3 @@ export const SAMPLE_PROTOCOL: ProtocolData = {
   ],
   custom_note: "This is an example of a pre-defined protocol."
 }
-

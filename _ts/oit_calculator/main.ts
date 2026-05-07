@@ -16,10 +16,9 @@ import { AppState } from "./state/appState";
 import { workspace } from "./state/instances";
 import type { Protocol } from "./types";
 
-// UI 
+// UI
 import {
   showProtocolUI,
-  renderFoodSettings,
   renderDosingStrategy,
   renderProtocolTable,
   updateWarnings,
@@ -27,6 +26,10 @@ import {
   updateUndoRedoButtons,
   renderTabs
 } from "./ui/renderers";
+import {
+  renderFoodASettings,
+  renderFoodBSettings
+} from "./ui/components/FoodSettings";
 import { initSearchEvents } from "./ui/searchUI";
 import { attachClickwrapEventListeners, attachLoginModalListeners, attachSaveRequestListeners } from "./ui/modals";
 import { initGlobalEvents } from "./ui/events";
@@ -90,7 +93,7 @@ async function initializeCalculator(): Promise<void> {
     }
   });
 
-  // OPTIMISTIC UI 
+  // OPTIMISTIC UI
   // Check if we expect to be logged in based on local flag
   let optimisticLogin = false;
   try {
@@ -149,9 +152,15 @@ async function initializeCalculator(): Promise<void> {
   // This listener fires whenever the ACTIVE protocol changes
   // OR when the active tab switches
   workspace.subscribe((protocol: Protocol | null, note: string) => {
+
+    // Mount food A and B settings. These functions handle a null protocol already
+    const aMount = document.getElementById("food-a-settings-mount");
+    const bMount = document.getElementById("food-b-settings-mount");
+    if (aMount) renderFoodASettings(workspace, aMount);
+    if (bMount) renderFoodBSettings(workspace, bMount);
+
     if (protocol) {
       showProtocolUI();
-      renderFoodSettings(protocol); // renders settings blocks (uses patching)
       renderDosingStrategy(protocol); // renders strategy buttons
       renderProtocolTable(protocol, note, appState.isLoggedIn); // renders table (uses patching)
       updateWarnings(protocol, appState.warningsPageURL);
@@ -161,7 +170,6 @@ async function initializeCalculator(): Promise<void> {
       updateUndoRedoButtons(activeState.getCanUndo(), activeState.getCanRedo());
     } else {
       renderProtocolTable(null, "", appState.isLoggedIn);
-      renderFoodSettings(null);
       updateFoodBDisabledState(null);
       updateUndoRedoButtons(false, false);
     }
