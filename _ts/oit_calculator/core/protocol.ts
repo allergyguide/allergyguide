@@ -31,7 +31,7 @@ import {
   findRoundedDirectAmount
 } from "./calculator"
 
-import { getMeasuringUnit } from "../utils"
+import { getMeasuringUnit, generateUniqueId } from "../utils"
 
 
 /**
@@ -218,6 +218,7 @@ export function addFoodBToProtocol(
       const neatMass = P.dividedBy(newProtocol.foodA.getMgPerUnit());
       const unit: Unit = newProtocol.foodA.type === FoodType.SOLID ? "g" : "ml";
       normalizedSteps.push({
+        id: generateUniqueId(),
         stepIndex: existingStep.stepIndex,
         targetMg: P,
         method: Method.DIRECT,
@@ -269,6 +270,7 @@ export function addFoodBToProtocol(
   const firstBTargetMg = transitionTargetMg;
   const firstBNeatMass = firstBTargetMg.dividedBy(foodB.getMgPerUnit());
   foodBSteps.push({
+    id: generateUniqueId(),
     stepIndex: transitionIndex + 2, // Will be reindexed later
     targetMg: firstBTargetMg,
     method: Method.DIRECT,
@@ -281,6 +283,7 @@ export function addFoodBToProtocol(
   for (const targetMg of originalTargets) {
     const neatMass = targetMg.dividedBy(foodB.getMgPerUnit());
     foodBSteps.push({
+      id: generateUniqueId(),
       stepIndex: 0, // Will be reindexed
       targetMg,
       method: Method.DIRECT,
@@ -385,6 +388,7 @@ export function recalculateStepMethods(oldProtocol: Protocol): Protocol {
       foodAStrategy,
       newProtocol.diThreshold,
       newProtocol.config,
+      newProtocol.steps[i].id
     );
 
     if (step) {
@@ -574,6 +578,7 @@ export function addStepAfter(oldProtocol: Protocol, stepIndex: number): Protocol
 
   // Duplicate the step
   const newStep: Step = {
+    id: generateUniqueId(),
     stepIndex: step.stepIndex + 1,
     targetMg: step.targetMg,
     method: step.method,
@@ -678,6 +683,7 @@ export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean, targetTy
       if (targetType === FoodType.CAPSULE) {
         return {
           ...originalStep,
+          id: originalStep.id || generateUniqueId(),
           method: Method.CAPSULE,
           dailyAmount: new Decimal(1), // Dummy
           dailyAmountUnit: "capsule",
@@ -707,6 +713,7 @@ export function toggleFoodType(oldProtocol: Protocol, isFoodB: boolean, targetTy
         const unit = targetType === FoodType.SOLID ? "g" : "ml";
         return {
           ...originalStep,
+          id: originalStep.id || generateUniqueId(),
           method: Method.DIRECT,
           dailyAmount: originalStep.targetMg.dividedBy(newFood.getMgPerUnit()),
           dailyAmountUnit: unit,

@@ -149,26 +149,26 @@ describe('State: WorkspaceManager', () => {
       const listener = vi.fn();
       manager.subscribe(listener);
 
-      // Initial emit
-      expect(listener).toHaveBeenCalledTimes(1);
+      // Initial emit (structural)
+      expect(listener).toHaveBeenCalledWith(null, "", 'structural');
 
       // Change Tab 1 State -> Should Fire
       manager.getActive().setCustomNote("Note 1");
-      expect(listener).toHaveBeenCalledWith(null, "Note 1");
+      expect(listener).toHaveBeenCalledWith(null, "Note 1", 'structural');
 
       // Add Tab 2
       manager.addTab();
-      // Listener fires immediately on switch
-      expect(listener).toHaveBeenLastCalledWith(null, ""); 
+      // Listener fires immediately on switch with 'structural' context
+      expect(listener).toHaveBeenLastCalledWith(null, "", 'structural'); 
 
       // Change Tab 2 State -> Should Fire
       manager.getActive().setCustomNote("Note 2");
-      expect(listener).toHaveBeenLastCalledWith(null, "Note 2");
+      expect(listener).toHaveBeenCalledWith(null, "Note 2", 'structural');
 
       // Switch back to Tab 1
       manager.setActive(manager.getTabs()[0].id);
       // Listener fires with Tab 1 state
-      expect(listener).toHaveBeenLastCalledWith(null, "Note 1");
+      expect(listener).toHaveBeenLastCalledWith(null, "Note 1", 'structural');
     });
 
     it('should update tab titles via proxy listener', () => {

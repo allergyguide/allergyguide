@@ -29,7 +29,7 @@ import {
   DILUTION_WATER_STEP_RESOLUTION,
   DOSING_STRATEGIES,
 } from "../constants"
-import { findPercentDifference, formatAmount, getMeasuringUnit } from "../utils";
+import { findPercentDifference, formatAmount, getMeasuringUnit, generateUniqueId } from "../utils";
 
 /**
  * Compute feasible dilution candidates for a target protein dose
@@ -233,6 +233,7 @@ function checkCandidateValidity(food: Food, P: Decimal, totalMixProtein: Decimal
  * @param foodAStrategy Strategy controlling Food A dilution behavior
  * @param diThreshold Threshold neat amount at/above which DIRECT is acceptable, for dilution initial strategy
  * @param config Protocol constraints and tolerances
+ * @param id Optional stable ID to preserve
  * @returns Step definition or null if a required dilution cannot be constructed
  */
 export function generateStepForTarget(
@@ -243,6 +244,7 @@ export function generateStepForTarget(
   foodAStrategy: FoodAStrategy,
   diThreshold: Decimal,
   config: ProtocolConfig,
+  id?: string,
 ): Step | null {
   const P = targetMg;
   const neatMass = P.dividedBy(food.getMgPerUnit());
@@ -252,6 +254,7 @@ export function generateStepForTarget(
   // It's always going to be step A for a capsule (for now)
   if (food.type === FoodType.CAPSULE) {
     return {
+      id: id || generateUniqueId(),
       stepIndex,
       targetMg: P,
       method: Method.CAPSULE,
@@ -279,6 +282,7 @@ export function generateStepForTarget(
     }
     const best = candidates[0];
     return {
+      id: id || generateUniqueId(),
       stepIndex,
       targetMg: P,
       method: Method.DILUTE,
@@ -295,6 +299,7 @@ export function generateStepForTarget(
     const finalAmount = findRoundedDirectAmount(P, food, neatMass, config);
 
     return {
+      id: id || generateUniqueId(),
       stepIndex,
       targetMg: P,
       method: Method.DIRECT,
@@ -390,6 +395,7 @@ export function generateDefaultProtocol(food: Food, config: ProtocolConfig): Pro
       const P = targetProteins[i];
       const neatMass = P.dividedBy(food.getMgPerUnit());
       steps.push({
+        id: generateUniqueId(),
         stepIndex: i + 1,
         targetMg: P,
         method: Method.DIRECT,

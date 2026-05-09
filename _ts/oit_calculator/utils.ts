@@ -224,6 +224,50 @@ export function parseSafeDecimal(input: string, defaultValue: Decimal, min: numb
   }
 }
 
+/**
+ * Generates a stable UUID-like ID, safely falling back if crypto.randomUUID is unavailable.
+ * This ensures the calculator functions in non-secure contexts (HTTP) often found in clinical intranets.
+ */
+export function generateUniqueId(): string {
+  const cryptoObj = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
+
+  // Preferred: modern standard
+  if (typeof cryptoObj?.randomUUID === 'function') {
+    return cryptoObj.randomUUID();
+  }
+
+  // Strong fallback using Web Crypto
+  if (typeof cryptoObj?.getRandomValues === 'function') {
+    const bytes = cryptoObj.getRandomValues(new Uint8Array(16));
+
+    // UUID v4 format compliance
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    // Build the hex string directly to avoid heavy array allocations
+    let hex = '';
+    for (let i = 0; i < 16; i++) {
+      hex += bytes[i].toString(16).padStart(2, '0');
+    }
+
+    return (
+      hex.substring(0, 8) + '-' +
+      hex.substring(8, 12) + '-' +
+      hex.substring(12, 16) + '-' +
+      hex.substring(16, 20) + '-' +
+      hex.substring(20)
+    );
+  }
+
+  // Last resort
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+
+}
+
 export const SAMPLE_PROTOCOL: ProtocolData = {
   name: "Almond milk to whole almonds",
   dosing_strategy: DosingStrategy.STANDARD,

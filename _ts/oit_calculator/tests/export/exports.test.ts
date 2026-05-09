@@ -33,6 +33,7 @@ const createMockProtocol = (name: string, foodAName: string): Protocol => ({
   diThreshold: new Decimal(0.5),
   steps: [
     {
+      id: 'step-1',
       stepIndex: 1,
       targetMg: new Decimal(1),
       method: Method.DILUTE,
@@ -44,6 +45,7 @@ const createMockProtocol = (name: string, foodAName: string): Protocol => ({
       food: 'A'
     },
     {
+      id: 'step-2',
       stepIndex: 2,
       targetMg: new Decimal(100),
       method: Method.DIRECT,
@@ -125,6 +127,7 @@ describe('Export: ASCII Generation', () => {
     };
     // Add a Food B step
     protocol.steps.push({
+      id: 'step-3',
       stepIndex: 3,
       targetMg: new Decimal(300),
       method: Method.DIRECT,

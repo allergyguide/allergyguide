@@ -5,12 +5,13 @@
  * Manages multiple ProtocolState instances.
  */
 import { ProtocolState } from "./protocolState";
-import { type Protocol, type TabListener, type Tab, type ProtocolListener } from "../types";
+import { type Protocol, type TabListener, type Tab, type ProtocolListener, type UpdateContext } from "../types";
+import { generateUniqueId } from "../utils";
 
 
 /**
  * Manages multiple OIT protocol workspaces (tabs).
- * 
+ *
  * This manager multiplexes UI listeners to the currently active ProtocolState.
  * It handles tab lifecycle events (add, close, switch), title derivation from protocol state, and enforces tab limits for unauthenticated users.
  */
@@ -21,9 +22,12 @@ export class WorkspaceManager {
   private tabListeners: TabListener[] = [];
   private isLoggedIn: boolean = false;
 
+  /**
+   * Initializes the workspace with a single empty tab and binds internal listeners.
+   */
   constructor() {
     // Initialize with 1 empty tab
-    this.activeTabId = crypto.randomUUID();
+    this.activeTabId = generateUniqueId();
     const initialState = new ProtocolState();
     this.tabs.push({
       id: this.activeTabId,
@@ -38,11 +42,12 @@ export class WorkspaceManager {
   /**
    * Internal listener that forwards events from the active ProtocolState to Workspace subscribers.
    * Also updates the active tab's title based on the selected Food A.
-   * 
+   *
    * @param protocol - The new protocol state
    * @param note - The current custom note
+   * @param context - Why the state changed
    */
-  private proxyListener: ProtocolListener = (protocol: Protocol | null, note: string) => {
+  private proxyListener: ProtocolListener = (protocol: Protocol | null, note: string, context: UpdateContext) => {
     // Update the title of the active tab based on the protocol
     const activeTab = this.tabs.find(t => t.id === this.activeTabId);
     if (activeTab) {
@@ -60,7 +65,7 @@ export class WorkspaceManager {
     this.notifyTabsListeners();
 
     // Propagate to external protocol listeners (e.g. table renderer)
-    this.listeners.forEach(fn => fn(protocol, note));
+    this.listeners.forEach(fn => fn(protocol, note, context));
   }
 
   /**
@@ -82,19 +87,19 @@ export class WorkspaceManager {
   /**
    * Subscribes a listener to changes in the *Active* protocol and note.
    * Mimics the single-tab ProtocolState.subscribe behavior.
-   * 
+   *
    * @param listener - Callback function to receive protocol updates
    */
   public subscribe(listener: ProtocolListener) {
     this.listeners.push(listener);
     // Emit current state immediately
     const activeState = this.getActive();
-    listener(activeState.getProtocol(), activeState.getCustomNote());
+    listener(activeState.getProtocol(), activeState.getCustomNote(), 'structural');
   }
 
   /**
    * Subscribes a listener to changes in the tab list (add/remove/switch/title).
-   * 
+   *
    * @param callback - Callback function receiving the full tab list and active ID
    */
   public subscribeToTabs(callback: TabListener) {
@@ -112,7 +117,7 @@ export class WorkspaceManager {
   /**
    * Switches the active workspace to the tab with the specified ID.
    * Resets UI state by unbinding from the old state and binding to the new one.
-   * 
+   *
    * @param id - UUID of the tab to activate
    */
   public setActive(id: string) {
@@ -125,7 +130,7 @@ export class WorkspaceManager {
     // Switch
     this.activeTabId = id;
 
-    // Subscribe to new tab (will trigger proxyListener immediately which notifies UI)
+    // Subscribe to new tab (will trigger proxyListener immediately which notifies UI with 'structural' context)
     this.bindToActiveTab();
 
     // Notify tab listeners of switch
@@ -148,7 +153,7 @@ export class WorkspaceManager {
     }
 
     // make new tab and add to Tabs then setActive
-    const newId = crypto.randomUUID();
+    const newId = generateUniqueId();
     const newState = new ProtocolState();
     this.tabs.push({
       id: newId,
@@ -164,7 +169,7 @@ export class WorkspaceManager {
    * Closes the tab with the specified ID.
    * If the closed tab was active, another tab is activated.
    * If it was the only tab, it is reset instead of removed.
-   * 
+   *
    * @param id - UUID of the tab to close
    */
   public closeTab(id: string): void {
@@ -219,7 +224,7 @@ export class WorkspaceManager {
   }
 
   /**
-   * @returns The full list of tab metadata objects.
+   * @returns An array of tabs metadata objects.
    */
   public getTabs(): Tab[] {
     return this.tabs;
@@ -227,7 +232,7 @@ export class WorkspaceManager {
 
   /**
    * Updates the workspace's internal authentication flag to enforce tab limits.
-   * 
+   *
    * @param loggedIn - Current login status
    */
   public setAuth(loggedIn: boolean) {

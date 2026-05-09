@@ -111,11 +111,13 @@
 	</div>
 	<!-- Protocol Output -->
 	<div class="output-container">
-		<template id="empty-state-template">
-			{% include "shortcodes/oit_calculator_components/table_instructions.html" %}
-		</template>
-		<table>
-			{% include "shortcodes/oit_calculator_components/table_instructions.html" %}
+		<div id="empty-state-container">
+			<table>
+				{% include "shortcodes/oit_calculator_components/table_instructions.html" %}
+			</table>
+		</div>
+		<table id="protocol-table-mount" style="display: none;">
+			<!-- Lit-html will mount here -->
 		</table>
 		<div class="bottom-section oit-hidden-on-init">
 			<div class="export-container">

@@ -36,8 +36,6 @@ include_content = true            # include rendered content of page/section in 
 # truncate_content_length = 100 # Truncate at nth character. May be useful if index is getting too large.
 
 [markdown]
-highlight_code = true
-highlight_theme = "css"
 bottom_footnotes = true            # adds footnote backreference
 render_emoji = true
 external_links_target_blank = true # rel="noopener"

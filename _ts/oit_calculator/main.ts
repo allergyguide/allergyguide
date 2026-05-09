@@ -14,7 +14,8 @@
 import Decimal from "decimal.js";
 import { AppState } from "./state/appState";
 import { workspace } from "./state/instances";
-import type { Protocol } from "./types";
+import type { Warning } from "./types";
+import { validateProtocol } from "./core/validator";
 
 // UI
 import {
@@ -36,6 +37,7 @@ import { initGlobalEvents } from "./ui/events";
 import { initExportEvents, triggerPdfGeneration } from "./ui/exports";
 import { handleUserLoad, loadPublicDatabases, loadUserConfiguration } from "./data/loader";
 import { logout } from "./data/auth";
+import { VALIDATION_DEBOUNCE_MS } from "./constants";
 
 // Configure Decimal.js
 Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
@@ -54,8 +56,8 @@ async function initializeCalculator(): Promise<void> {
   const urlContainer = document.getElementById('url-container');
   const rulesUrl = urlContainer ? urlContainer.dataset.targetUrl! : "";
 
-  // Start Loads
-  const publicDataPromise = loadPublicDatabases();
+  // Start loads
+  const publicDataPromise = loadPublicDatabases(); // for CNF foods basically
   const userDataPromise = loadUserConfiguration().catch(() => null);
 
   // Await Public Data (Required for AppState init)
@@ -63,6 +65,10 @@ async function initializeCalculator(): Promise<void> {
 
   // Init AppState and Subscribers
   appState = new AppState(publicData, rulesUrl);
+
+  // Cache for warnings to avoid flickering during debounced updates
+  let cachedWarnings: Warning[] = [];
+  let validationTimer: number | null = null;
 
   appState.subscribeToAuth((isLoggedIn) => {
     const loginBtn = document.getElementById("btn-login-trigger");
@@ -86,10 +92,12 @@ async function initializeCalculator(): Promise<void> {
       if (badge) badge.style.display = 'none';
     }
 
-    // Force UI refresh if protocol exists (preparing for future secure features)
+    // Force UI refresh if protocol exists
     const p = workspace.getActive().getProtocol();
     if (p) {
-      renderProtocolTable(p, workspace.getActive().getCustomNote(), isLoggedIn);
+      cachedWarnings = validateProtocol(p);
+      renderProtocolTable(p, workspace.getActive().getCustomNote(), isLoggedIn, cachedWarnings);
+      updateWarnings(p, appState.warningsPageURL, cachedWarnings); // for sidebar
     }
   });
 
@@ -104,7 +112,6 @@ async function initializeCalculator(): Promise<void> {
         optimisticLogin = true;
         appState.setAuthState(true, session.username || "..."); // Show "User: Loading..." immediately
       } else {
-        // removes old cookie that's expired...? redundant if we do this again below
         localStorage.removeItem('oit_session_active');
       }
     }
@@ -151,7 +158,7 @@ async function initializeCalculator(): Promise<void> {
   // Subscribe workspace to renderers
   // This listener fires whenever the ACTIVE protocol changes
   // OR when the active tab switches
-  workspace.subscribe((protocol: Protocol | null, note: string) => {
+  workspace.subscribe((protocol, note, context) => {
 
     // Mount food A and B settings. These functions handle a null protocol already
     const aMount = document.getElementById("food-a-settings-mount");
@@ -161,17 +168,46 @@ async function initializeCalculator(): Promise<void> {
 
     if (protocol) {
       showProtocolUI();
-      renderDosingStrategy(protocol); // renders strategy buttons
-      renderProtocolTable(protocol, note, appState.isLoggedIn); // renders table (uses patching)
-      updateWarnings(protocol, appState.warningsPageURL);
+      renderDosingStrategy(protocol);
       updateFoodBDisabledState(protocol);
 
       const activeState = workspace.getActive();
       updateUndoRedoButtons(activeState.getCanUndo(), activeState.getCanRedo());
+
+      // debouncer for validation engine
+      if (validationTimer !== null) {
+        window.clearTimeout(validationTimer);
+      }
+
+      if (context === 'input') {
+        // DEBOUNCED PATH; if the user is editing a numerical field, ideally the validation engine doesn't run immediately but after a slight debounce after they stop typing. ,  
+        renderProtocolTable(protocol, note, appState.isLoggedIn, cachedWarnings); // first tho, render immediately with cached warnings to keep math snappy but colors stable
+
+        validationTimer = window.setTimeout(() => {
+          cachedWarnings = validateProtocol(protocol);
+          renderProtocolTable(protocol, note, appState.isLoggedIn, cachedWarnings);
+          updateWarnings(protocol, appState.warningsPageURL, cachedWarnings);
+          validationTimer = null;
+        }, VALIDATION_DEBOUNCE_MS);
+
+      } else {
+        // INSTANT PATH (Structural, History, Load), no debounce needed
+        cachedWarnings = validateProtocol(protocol);
+        renderProtocolTable(protocol, note, appState.isLoggedIn, cachedWarnings);
+        updateWarnings(protocol, appState.warningsPageURL, cachedWarnings);
+      }
+
     } else {
-      renderProtocolTable(null, "", appState.isLoggedIn);
+      // NO ACTIVE PROTOCOL: clear timers, warnings[], etc. and then freshly re-render
+      if (validationTimer !== null) {
+        clearTimeout(validationTimer);
+        validationTimer = null;
+      }
+      cachedWarnings = [];
+      renderProtocolTable(null, "", appState.isLoggedIn, []);
       updateFoodBDisabledState(null);
       updateUndoRedoButtons(false, false);
+      updateWarnings(null, appState.warningsPageURL, []);
     }
   });
 

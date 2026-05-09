@@ -150,6 +150,7 @@ describe('Utils', () => {
       foodBThreshold: { unit: 'g', amount: new Decimal(0.4) },
       steps: [
         {
+          id: 'step-1',
           stepIndex: 1,
           targetMg: new Decimal(1),
           method: Method.DILUTE,
@@ -161,6 +162,7 @@ describe('Utils', () => {
           food: 'A'
         },
         {
+          id: 'step-2',
           stepIndex: 2,
           targetMg: new Decimal(10),
           method: Method.DIRECT,
@@ -169,6 +171,7 @@ describe('Utils', () => {
           food: 'A'
         },
         {
+          id: 'step-3',
           stepIndex: 3,
           targetMg: new Decimal(100),
           method: Method.DIRECT,

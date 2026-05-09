@@ -10,6 +10,7 @@ import { addFoodBToProtocol } from "../core/protocol";
 import type { FoodData, ProtocolData, Food, Protocol, Step, Unit } from "../types";
 import { FoodType, DosingStrategy, FoodAStrategy, Method } from "../types";
 import { DEFAULT_CONFIG } from "../constants";
+import { generateUniqueId } from "../utils";
 
 /**
  * Select Food A from database entry and initialize a default protocol.
@@ -192,6 +193,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
     }
 
     const step: Step = {
+      id: generateUniqueId(),
       stepIndex: i + 1,
       targetMg: new Decimal(row.protein),
       method: method,
@@ -305,6 +307,7 @@ export function clearFoodB(): void {
       console.error("Unable to find new valid dilution for step:", step);
       const unit = protocolWithoutB.foodA.type === FoodType.SOLID ? "g" : "ml";
       newSteps.push({
+        id: generateUniqueId(),
         stepIndex: i + 1,
         targetMg: step.targetMg,
         method: Method.DIRECT,

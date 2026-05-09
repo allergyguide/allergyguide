@@ -3,11 +3,13 @@
  *
  * DOM Rendering logic
  */
-import { Method, DosingStrategy } from "../types";
-import type { Protocol, Warning, Unit, Food, Step, ReadableHistoryPayload, Tab, ReadableWarning } from "../types";
-import { formatNumber, formatAmount, escapeHtml, getMeasuringUnit } from "../utils";
-import { validateProtocol } from "../core/validator";
+import { DosingStrategy } from "../types";
+import type { Protocol, Warning, ReadableHistoryPayload, Tab, ReadableWarning } from "../types";
+import { escapeHtml } from "../utils";
 import { workspace } from "../state/instances";
+import { render } from "lit-html";
+import { ProtocolTable } from "./components/ProtocolTable";
+import { validateProtocol } from "../core/validator";
 
 // Need global commit hash
 declare const __COMMIT_HASH__: string;
@@ -15,42 +17,17 @@ declare const __COMMIT_HASH__: string;
 // ============================================
 // MODULE SPECIFIC INTERFACES
 // ============================================
-/**
- * Specification for a section header row (e.g., "Peanut", "CustomFood").
- */
-interface HeaderRowSpec {
-  type: 'header';
-  text: string;
-}
-/**
- * Specification for a protocol step row.
- * Intended to contain pre-formatted values to facilitate easy diffing against the DOM
- */
-interface StepRowSpec {
-  type: 'step';
-  step: Step;
-  rowClass: string;
-  food: Food;
-  targetMgVal: string;
-  mixFoodAmountVal: string;
-  dailyAmountVal: string;
-  mixUnit: Unit;
-}
-/**
- * Union type representing any expected row in the protocol table.
- */
-export type RowSpec = HeaderRowSpec | StepRowSpec;
 
 /**
- * Update undo redo button status states
+ * Updates the disabled/enabled state of the Undo and Redo buttons.
  *
- * @returns void
+ * @param canUndo - Whether there is a state in history to revert to.
+ * @param canRedo - Whether there is a state in the future stack to restore.
  */
 export function updateUndoRedoButtons(canUndo: boolean, canRedo: boolean): void {
   const undoBtn = document.getElementById("btn-undo") as HTMLButtonElement;
   const redoBtn = document.getElementById("btn-redo") as HTMLButtonElement;
 
-  // Simple toggle button possible based on state
   if (undoBtn) undoBtn.disabled = !canUndo;
   if (redoBtn) redoBtn.disabled = !canRedo;
 }
@@ -83,9 +60,8 @@ export function showProtocolUI(): void {
 }
 
 /**
- * Updates enabled/disabled state of the Food B settings section based on Food A. user can only select food B once a Food A has been selected
- *
- * Toggles `.disabled` CSS class on the container
+ * Updates the enabled/disabled state of the Food B settings section.
+ * Food B selection is only permitted after a Food A has been selected.
  *
  * @param protocol - current protocol state
  */
@@ -130,7 +106,7 @@ export function updateFoodBDisabledState(protocol: Protocol | null): void {
 }
 
 /**
- * Renders the Tab Bar with active state and close buttons.
+ * Renders the Tab Bar with active state and status indicators.
  * Each tab represents an independent protocol workspace.
  *
  * @param tabs - Array of current tab metadata from WorkspaceManager
@@ -145,16 +121,17 @@ export function renderTabs(tabs: Tab[], activeId: string): void {
     const isActive = tab.id === activeId;
     const activeClass = isActive ? "active" : "";
 
-    // Determine Status Dot Color and Tooltip
+    // Determine Status Dot Color based on validation severity
     let statusClass = "";
     let statusTitle = "";
     const protocol = tab.state.getProtocol();
     if (protocol) {
+      // Internal validation check for the status dot
       const warnings = validateProtocol(protocol);
-      if (warnings.some(w => w.severity === "red")) {
+      if (warnings.some((w: Warning) => w.severity === "red")) {
         statusClass = "status-red";
         statusTitle = "Critical Warnings";
-      } else if (warnings.some(w => w.severity === "yellow")) {
+      } else if (warnings.some((w: Warning) => w.severity === "yellow")) {
         statusClass = "status-yellow";
         statusTitle = "Cautionary Warnings";
       } else {
@@ -172,7 +149,7 @@ export function renderTabs(tabs: Tab[], activeId: string): void {
     `;
   });
 
-  // Always add the "+" button if tabs < 5 (Max limit handled in logic too, but good UX to hide/disable)
+  // Always add the "+" button if under the tab limit
   if (tabs.length < 5) {
     html += `<div class="oit-tab-add" title="Add New Tab">+</div>`;
   }
@@ -181,15 +158,13 @@ export function renderTabs(tabs: Tab[], activeId: string): void {
 }
 
 /**
- * Resets all text and numeric input fields within the settings and toolbar areas.
- * This prevents "ghost data" from a previously active tab leaking into a new or empty tab.
+ * Resets all text and numeric input fields in the settings area.
+ * Prevents stale data from leaking between tabs.
  */
 function resetInputs() {
-  // Select all text-like inputs within the calculator settings
   const containers = document.querySelectorAll('.settings-container, .oit-toolbar');
 
   containers.forEach(container => {
-    // select inputs and textareas
     const inputs = container.querySelectorAll('input[type="text"], input[type="number"], input[type="search"], textarea');
     inputs.forEach(input => {
       (input as HTMLInputElement | HTMLTextAreaElement).value = "";
@@ -198,20 +173,23 @@ function resetInputs() {
 }
 
 /**
- * Renders the "Empty State" UI when no protocol is loaded in the active tab.
- * Displays Quick Start instructions by cloning the `#empty-state-template`.
- * Also hides protocol-specific sections and clears all relevant inputs.
- * Fairly brittle to changes in HTML structure of shortcode
+ * Renders the "Empty State" UI when no protocol is loaded.
+ * Toggles visibility of the instruction container and mount points.
  */
 function renderEmptyState() {
-  const tableContainer = document.querySelector(".output-container table") as HTMLElement;
-  const template = document.getElementById("empty-state-template") as HTMLTemplateElement;
+  const emptyStateContainer = document.getElementById("empty-state-container");
+  const protocolTableMount = document.getElementById("protocol-table-mount");
+
   const dosingContainer = document.querySelector(".dosing-strategy-container") as HTMLElement;
   const warningsContainer = document.querySelector(".warnings-container") as HTMLElement;
   const stepControls = document.querySelector(".step-controls-footer") as HTMLElement;
   const bottomSection = document.querySelector(".bottom-section") as HTMLElement;
 
-  // Hide UI Sections
+  // Show Zola instructions, Hide Lit table mount
+  if (emptyStateContainer) emptyStateContainer.style.display = "block";
+  if (protocolTableMount) protocolTableMount.style.display = "none";
+
+  // Hide protocol-specific UI sections
   if (dosingContainer) dosingContainer.classList.add("oit-hidden-on-init");
   if (warningsContainer) warningsContainer.classList.add("oit-hidden-on-init");
   if (stepControls) stepControls.classList.add("oit-hidden-on-init");
@@ -219,19 +197,13 @@ function renderEmptyState() {
 
   // Reset Food A / B inputs to prevent leaking
   resetInputs();
-
-  // Clear Table and Show Instructions
-  if (tableContainer && template) {
-    // clear cur table, clone template, inject it
-    tableContainer.innerHTML = "";
-    const clone = template.content.cloneNode(true);
-    tableContainer.appendChild(clone);
-  }
 }
 
 
 /**
- * Render dosing strategy buttons based on passed protocol
+ * Renders the dosing strategy toggle buttons.
+ *
+ * @param protocol - The current protocol state.
  */
 export function renderDosingStrategy(protocol: Protocol | null): void {
   if (!protocol) return;
@@ -254,17 +226,18 @@ export function renderDosingStrategy(protocol: Protocol | null): void {
 }
 
 /**
- * Renders the main protocol table into the DOM using a diffing/patching strategy.
+ * Orchestrates the rendering of the interactive protocol table using lit-html.
+ * Handles display toggling between the instructional empty state and the active table.
  *
- * This function calculates the expected layout, compares it to the current DOM,
- * and either patches specific values in-place (to preserve focus) or rebuilds
- * the table if the structure has changed.
- *
- * @param protocol - The current protocol state. If null, a table with instructions is rendered.
- * @param customNote - The current text content of the custom note.
- * @param isLoggedIn - Authentication status; used to determine if restricted controls are visible.
+ * @param protocol - The current protocol state.
+ * @param customNote - The text content of the custom note.
+ * @param isLoggedIn - Current authentication status.
+ * @param warnings - Pre-calculated warnings array.
  */
-export function renderProtocolTable(protocol: Protocol | null, customNote: string, isLoggedIn: boolean): void {
+export function renderProtocolTable(protocol: Protocol | null, customNote: string, isLoggedIn: boolean, warnings: Warning[]): void {
+  const emptyStateContainer = document.getElementById("empty-state-container");
+  const protocolTableMount = document.getElementById("protocol-table-mount");
+
   if (!protocol) {
     renderEmptyState();
     // Update Warnings to clear them
@@ -276,190 +249,16 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
   // Ensure UI is visible if protocol exists
   showProtocolUI();
 
-  const tableContainer = document.querySelector(
-    ".output-container table",
-  ) as HTMLElement;
-  const tbody = tableContainer.querySelector("tbody");
+  // Toggle visibility to show the reactive Lit-html table
+  if (emptyStateContainer) emptyStateContainer.style.display = "none";
+  if (protocolTableMount) protocolTableMount.style.display = "table";
 
-  // Get warnings, need to know which steps / rows to highlight
-  // See if there are any red warnings too for later
-  const warnings = validateProtocol(protocol);
+  // Check for severe warnings for button disabling
   const hasSevereWarnings = warnings.some(w => w.severity === 'red');
-  const stepWarnings = new Map<number, "red" | "yellow">();
-  for (const warning of warnings) {
-    if (warning.stepIndex !== undefined) {
-      const existing = stepWarnings.get(warning.stepIndex);
-      if (!existing || (warning.severity === "red" && existing === "yellow")) {
-        stepWarnings.set(warning.stepIndex, warning.severity);
-      }
-    }
-  }
 
-  // Determine expected rows structure; contents of expectedRows can be used to render the fullTable if required
-  const expectedRows: RowSpec[] = [];
-  let lastWasFoodA = true;
-
-  for (const step of protocol.steps) {
-    const isStepFoodB = step.food === "B";
-
-    // Header check if foodB has started or not, and to add food A header to very start
-    if (isStepFoodB && lastWasFoodA) {
-      expectedRows.push({ type: 'header', text: protocol.foodB!.name });
-      lastWasFoodA = false;
-    } else if (!isStepFoodB && step.stepIndex === 1) {
-      expectedRows.push({ type: 'header', text: protocol.foodA.name });
-    }
-
-    // generate the class for the row with warnings
-    const warningClass = stepWarnings.get(step.stepIndex);
-    const rowClass = warningClass ? `warning-highlight-${warningClass}` : "";
-
-    const food = isStepFoodB ? protocol.foodB! : protocol.foodA;
-    const mixUnit: Unit = getMeasuringUnit(food);
-
-    expectedRows.push({
-      type: 'step',
-      step,
-      rowClass, // contains warning information
-      food,
-      targetMgVal: formatNumber(step.targetMg, 1),
-      mixFoodAmountVal: step.method === Method.DILUTE ? formatAmount(step.mixFoodAmount!, mixUnit) : "",
-      dailyAmountVal: formatAmount(step.dailyAmount, step.dailyAmountUnit),
-      mixUnit
-    });
-  }
-
-  // Check if either no table rows exist or actual # rows in tbody is not the same as expectedRows (ie a step has been deleted or added) a full table rebuild should occur
-  let needsFullRebuild = !tbody || tbody.children.length !== expectedRows.length;
-  // Other reasons to trigger a full rebuild even if step # matches:
-  // Step / header mismatch
-  // Input mismatch: If a user toggles a step from Direct to Dilute (or the calculator logic switches it automatically), the structure of that cell changes from a text node to an input element. Patching does not account for this
-  if (!needsFullRebuild && tbody) {
-    const rows = Array.from(tbody.children) as HTMLTableRowElement[];
-    // Edge case: if we are coming from empty state, the tbody might have 1 row with colspan instructions
-    // if expectedRows > 1, we definitely need rebuild. If expectedRows=0, handled by null check above.
-    // Basically check if first row is the instruction row
-    if (rows.length === 1 && rows[0].firstElementChild?.hasAttribute('colspan')) {
-      needsFullRebuild = true;
-    } else {
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const spec = expectedRows[i];
-        if (spec.type === 'header') {
-          if (!row.classList.contains('food-section-header')) {
-            needsFullRebuild = true;
-            break;
-          }
-        } else {
-          if (row.classList.contains('food-section-header')) {
-            needsFullRebuild = true;
-            break;
-          }
-          // Check method consistency to ensure input vs n/a matches
-          const mixCell = row.querySelector('.col-mix-food');
-          if (!mixCell) {
-            needsFullRebuild = true;
-            break;
-          }
-          const hasInput = !!mixCell.querySelector('input');
-          const shouldHaveInput = spec.step.method === Method.DILUTE;
-          if (hasInput !== shouldHaveInput) {
-            needsFullRebuild = true;
-            break;
-          }
-
-          // Check daily amount consistency (Capsule is text, others are input)
-          const daCell = row.querySelector('.col-daily-amount');
-          if (!daCell) {
-            needsFullRebuild = true;
-            break;
-          }
-          const daHasInput = !!daCell.querySelector('input');
-          const daShouldHaveInput = spec.step.method !== Method.CAPSULE;
-          if (daHasInput !== daShouldHaveInput) {
-            needsFullRebuild = true;
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  if (needsFullRebuild) {
-    renderFullTable(tableContainer, expectedRows);
-    // Update Notes and Exports (Bottom Section)
-    // this needs to occur here to remove the hidden on init
-    updateBottomSection(customNote, isLoggedIn, hasSevereWarnings);
-    return;
-  }
-
-  // Patch values if no full rebuild was needed
-  if (tbody) {
-    const rows = Array.from(tbody.children) as HTMLTableRowElement[];
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const spec = expectedRows[i];
-
-      if (spec.type === 'header') {
-        // patch header text (food name) if different
-        const cell = row.firstElementChild as HTMLTableCellElement;
-        if (cell.textContent !== spec.text) cell.textContent = spec.text;
-      } else {
-        // Step Row
-
-        // patch class for styling changes
-        if (row.className !== spec.rowClass) row.className = spec.rowClass;
-
-        // patch step Num (col 0, inside actions-cell)
-        const stepNumSpan = row.querySelector('.step-number');
-        if (stepNumSpan && stepNumSpan.textContent !== String(spec.step.stepIndex)) {
-          stepNumSpan.textContent = String(spec.step.stepIndex);
-        }
-
-        // patch button data-step associated with each action cell
-        row.querySelectorAll('button').forEach(btn => {
-          if (btn.getAttribute('data-step') !== String(spec.step.stepIndex)) {
-            btn.setAttribute('data-step', String(spec.step.stepIndex));
-          }
-        });
-
-        // Inputs - targetMg, mixFoodAmount, dailyAmount
-        patchInput(row, '.editable[data-field="targetMg"]', spec.targetMgVal, spec.step.stepIndex);
-        if (spec.step.method === Method.DILUTE) {
-          patchInput(row, '.editable[data-field="mixFoodAmount"]', spec.mixFoodAmountVal, spec.step.stepIndex);
-        }
-        patchInput(row, '.editable[data-field="dailyAmount"]', spec.dailyAmountVal, spec.step.stepIndex);
-
-        // Method Text
-        const methodCell = row.querySelector('.col-method');
-        if (methodCell && methodCell.textContent !== spec.step.method) methodCell.textContent = spec.step.method;
-
-        // Water / Servings
-        if (spec.step.method === Method.DILUTE) {
-          const waterCell = row.querySelector('.col-mix-water');
-          if (waterCell) {
-            const text = `${formatAmount(spec.step.mixWaterAmount!, "ml")} ml`;
-            const html = `${text}\n<span style="color: var(--oit-text-secondary); font-size: 0.85rem;"> (${formatNumber(spec.step.servings!, 1)} servings)</span>\n`;
-
-            // Simple check:
-            if (!waterCell.innerHTML.includes(text) || !waterCell.innerHTML.includes(formatNumber(spec.step.servings!, 1))) {
-              waterCell.innerHTML = html; // set
-            }
-          }
-        }
-
-        // patch Units
-        if (spec.step.method === Method.DILUTE) {
-          const mixCell = row.querySelector('.col-mix-food');
-          const unitSpan = mixCell ? mixCell.querySelector('span') : null;
-          if (unitSpan && unitSpan.textContent?.trim() !== spec.mixUnit) unitSpan.textContent = ` ${spec.mixUnit}`;
-        }
-
-        const daCell = row.querySelector('.col-daily-amount');
-        const daUnitSpan = daCell ? daCell.querySelector('span') : null;
-        if (daUnitSpan && daUnitSpan.textContent?.trim() !== spec.step.dailyAmountUnit) daUnitSpan.textContent = ` ${spec.step.dailyAmountUnit}`;
-      }
-    }
+  // Mount/Update the Lit-html component
+  if (protocolTableMount) {
+    render(ProtocolTable(protocol, warnings), protocolTableMount);
   }
 
   // Update Notes and Exports (Bottom Section)
@@ -467,139 +266,11 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
 }
 
 /**
- * Completely rebuilds and renders the protocol table HTML based on the provided row spec
+ * Updates the visibility and content of the bottom section (Notes and Exports).
  *
- * @param tableContainer - DOM element (table) where the HTML will be injected
- * @param expectedRows
- */
-function renderFullTable(tableContainer: HTMLElement, expectedRows: RowSpec[]) {
-  let html = `
-    <thead>
-      <tr>
-        <th>Step</th>
-        <th>Protein (mg)</th>
-        <th>Method</th>
-        <th>Amount for mixture</th>
-        <th>Water for mixture</th>
-        <th>Daily amount</th>
-      </tr>
-    </thead>
-    <tbody>
-  `;
-
-  // spec generated in `renderProtocolTable()`
-  for (const spec of expectedRows) {
-    if (spec.type === 'header') {
-      html += `
-        <tr class="food-section-header">
-          <td colspan="6">${escapeHtml(spec.text)}</td>
-        </tr>
-      `;
-    } else {
-      const step = spec.step;
-      html += `<tr class="${spec.rowClass}">`;
-
-      // Actions + Step number
-      html += `
-        <td class="col-actions">
-          <div class="actions-cell">
-            <button class="btn-add-step" data-step="${step.stepIndex}">+</button>
-            <button class="btn-remove-step" data-step="${step.stepIndex}">−</button>
-            <span class="step-number">${step.stepIndex}</span>
-          </div>
-        </td>
-      `;
-
-      // Protein (editable)
-      html += `
-        <td class="col-protein">
-          <input
-            class="editable"
-            type="number"
-            data-step="${step.stepIndex}"
-            data-field="targetMg"
-            value="${spec.targetMgVal}"
-            step="0.1"
-            min="0"
-          />
-        </td>
-      `;
-
-      // Method
-      html += `
-        <td class="col-method">${step.method}</td>
-      `;
-
-      // Amount for mixture
-      if (step.method === Method.DILUTE) {
-        html += `
-          <td class="col-mix-food">
-            <input
-              class="editable"
-              type="number"
-              data-step="${step.stepIndex}"
-              data-field="mixFoodAmount"
-              min="0"
-              value="${spec.mixFoodAmountVal}"
-              step="0.01"
-            />
-            <span> ${spec.mixUnit}</span>
-          </td>
-        `;
-      } else {
-        html += `<td class="na-cell col-mix-food">n/a</td>`;
-      }
-
-      // Water for mixture
-      if (step.method === Method.DILUTE) {
-        html += `
-          <td class="non-editable col-mix-water">
-            ${formatAmount(step.mixWaterAmount!, "ml")} ml
-            <span style="color: var(--oit-text-secondary); font-size: 0.85rem;"> (${formatNumber(step.servings!, 1)} servings)</span>
-          </td>
-        `;
-      } else {
-        html += `<td class="na-cell col-mix-water">n/a</td>`;
-      }
-
-      // Daily amount
-      if (step.method === Method.CAPSULE) {
-        html += `
-          <td class="col-daily-amount non-editable">
-            Capsule
-          </td>
-        `;
-      } else {
-        html += `
-          <td class="col-daily-amount">
-            <input
-              class="editable"
-              type="number"
-              data-step="${step.stepIndex}"
-              data-field="dailyAmount"
-              value="${spec.dailyAmountVal}"
-              step="0.1"
-              min="0"
-            />
-            <span> ${step.dailyAmountUnit}</span>
-          </td>
-        `;
-      }
-
-      html += `</tr>`;
-    }
-  }
-  html += `</tbody>`;
-  tableContainer.innerHTML = html;
-}
-
-/**
- * Updates the visibility and state of the bottom section controls (Exports, Save Request, Notes).
- * Decouples layout generation from logic by manipulating static HTML.
- *
- * @param customNote - The current custom note text.
- * @param isLoggedIn - User authentication status.
- * @param hasSevereWarnings - If true, disables the "Save Request" button.
+ * @param customNote - Current note text.
+ * @param isLoggedIn - Whether restricted controls should be visible.
+ * @param hasSevereWarnings - Whether export functionality should be restricted.
  */
 export function updateBottomSection(customNote: string, isLoggedIn: boolean, hasSevereWarnings: boolean) {
   const bottomSection = document.querySelector(".bottom-section");
@@ -608,7 +279,6 @@ export function updateBottomSection(customNote: string, isLoggedIn: boolean, has
   // Ensure the section is visible (handles the oit-hidden-on-init class removal)
   bottomSection.classList.remove("oit-hidden-on-init");
 
-  // Determine if we are in batch mode (multiple tabs with protocols)
   const activeStates = workspace.getAllProtocolStates().filter(s => s.getProtocol());
   const isBatch = activeStates.length > 1;
 
@@ -618,35 +288,31 @@ export function updateBottomSection(customNote: string, isLoggedIn: boolean, has
 }
 
 /**
- * Updates public export controls (specifically the custom note textarea and export button text).
+ * Updates text content and labels for public-facing export buttons.
  *
  * @param customNote - New note text to display.
  * @param isBatch - Whether multiple tabs are active.
+ * Updates text content and labels for public-facing export buttons.
  */
 function updatePublicExports(customNote: string, isBatch: boolean) {
   const textarea = document.getElementById("custom-note") as HTMLTextAreaElement;
-  // Only update if changed to avoid cursor jumping if user is typing
   if (textarea && textarea.value !== customNote) {
     textarea.value = customNote;
   }
 
-  // Update button labels for batch export
   const asciiBtn = document.getElementById("export-ascii");
   const pdfBtn = document.getElementById("export-pdf");
 
   if (asciiBtn) {
     asciiBtn.textContent = isBatch ? "Copy All (Clipboard)" : "Copy to Clipboard";
   }
-  if (pdfBtn) {
-    // Only update if it's not currently generating
-    if (pdfBtn.textContent !== "Generating...") {
-      pdfBtn.textContent = isBatch ? "Export All (PDF)" : "Export PDF";
-    }
+  if (pdfBtn && pdfBtn.textContent !== "Generating...") {
+    pdfBtn.textContent = isBatch ? "Export All (PDF)" : "Export PDF";
   }
 }
 
 /**
- * Updates the Restricted "Request to Save Protocol" button state.
+ * Updates the restricted "Request to Save Protocol" button based on auth and safety checks.
  *
  * @param isLoggedIn - Determines visibility of the wrapper.
  * @param hasSevereWarnings - Determines disabled state of the button.
@@ -662,7 +328,6 @@ function updateRestrictedControls(isLoggedIn: boolean, hasSevereWarnings: boolea
     return;
   }
 
-  // Is Logged In
   wrapper.style.display = "block";
 
   if (hasSevereWarnings) {
@@ -679,44 +344,15 @@ function updateRestrictedControls(isLoggedIn: boolean, hasSevereWarnings: boolea
 }
 
 /**
- * Updates a specific input field within a table row while preserving user focus and typing state
+ * Renders the warnings sidebar, grouping issues by step and severity.
  *
- * @param row - HTML element representing the table row (tr)
- * @param selector - CSS selector to find the specific input within the row
- * @param newVal - new value string to apply.
- * @param stepIndex - index of step
+ * @param protocol - The current protocol state.
+ * @param rulesURL - Link to the detailed validation rules documentation.
+ * @param warnings - Pre-calculated warnings array.
  */
-function patchInput(row: HTMLElement, selector: string, newVal: string, stepIndex: number) {
-  const input = row.querySelector(selector) as HTMLInputElement;
-  if (!input) return;
-
-  // Ensure data-step is correct (if we re-used a row from a different index, which we try to avoid)
-  if (input.getAttribute('data-step') !== String(stepIndex)) {
-    input.setAttribute('data-step', String(stepIndex));
-  }
-
-  if (document.activeElement === input) {
-    // If the input is empty and the new value is "0", don't overwrite it. Let the user keep the field empty while typing
-    if (input.value.trim() === "" && parseFloat(newVal) === 0) return;
-
-    const currentNum = parseFloat(input.value);
-    const newNum = parseFloat(newVal);
-    // Avoid overwriting if numerically equivalent (handles "1." vs "1")
-    if (currentNum === newNum) return;
-    input.value = newVal;
-  } else {
-    if (input.value !== newVal) input.value = newVal;
-  }
-}
-
-/**
- * Update warnings sidebar.
- * Groups first by step, then severity
- */
-export function updateWarnings(protocol: Protocol | null, rulesURL: string): void {
+export function updateWarnings(protocol: Protocol | null, rulesURL: string, warnings: Warning[]): void {
   if (!protocol) return;
 
-  const warnings = validateProtocol(protocol);
   const container = document.querySelector(
     ".warnings-container",
   ) as HTMLElement;
@@ -730,7 +366,6 @@ export function updateWarnings(protocol: Protocol | null, rulesURL: string): voi
     return;
   }
 
-  // counts
   const redCount = warnings.filter(w => w.severity === 'red').length;
   const yellowCount = warnings.filter(w => w.severity === 'yellow').length;
 
@@ -752,7 +387,6 @@ export function updateWarnings(protocol: Protocol | null, rulesURL: string): voi
   const sortedSteps = Array.from(stepWarnings.keys()).sort((a, b) => a - b);
   let html = "";
 
-  // Render summary header
   html += `<div class="warnings-summary-header">`;
   if (redCount > 0) {
     html += `<span class="summary-badge red"><strong>${redCount}</strong> Critical</span>`;
@@ -764,7 +398,6 @@ export function updateWarnings(protocol: Protocol | null, rulesURL: string): voi
 
   // Render Global Warnings (if any)
   if (globalWarnings.length > 0) {
-    // Determine overall block severity
     const isRed = globalWarnings.some(w => w.severity === 'red');
     html += renderWarningBlock("Protocol Issues", globalWarnings, isRed ? 'red' : 'yellow');
   }
@@ -787,13 +420,14 @@ export function updateWarnings(protocol: Protocol | null, rulesURL: string): voi
 }
 
 /**
- * Helper to render a unified warning block (card).
- * @param title - The title of the block (e.g., "Step 5")
- * @param warnings - List of warnings to display
- * @param blockSeverity - 'red' or 'yellow'. Determines the border color.
+ * Helper to render a stylized block of warnings.
+ *
+ * @param title - Header text for the block.
+ * @param warnings - List of warning objects.
+ * @param blockSeverity - Overall severity determining visual style.
+ * @returns HTML string.
  */
 function renderWarningBlock(title: string, warnings: Warning[], blockSeverity: 'red' | 'yellow'): string {
-  // CSS class for the block container
   const cssClass = `warning-group severity-${blockSeverity}`;
 
   let html = `<div class="${cssClass}">`;
@@ -816,10 +450,7 @@ function renderWarningBlock(title: string, warnings: Warning[], blockSeverity: '
       }
     }
 
-    // Individual item styling
     const itemClass = w.severity === 'red' ? 'item-red' : 'item-yellow';
-
-    // Red warnings get bold text
     const content = w.severity === 'red' ? `<strong>${escapeHtml(msg)}</strong>` : escapeHtml(msg);
 
     return `<li class="${itemClass}">${content}</li>`;
@@ -830,9 +461,9 @@ function renderWarningBlock(title: string, warnings: Warning[], blockSeverity: '
 }
 
 /**
- * Renders the decoded debug payload into the debug result container
+ * Renders the decoded debug payload into the debug result container.
  *
- * @param payload - The decoded user history payload
+ * @param payload - The decoded payload metadata.
  */
 export function renderDebugResult(payload: ReadableHistoryPayload | null): void {
   if (!payload) return;

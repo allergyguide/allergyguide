@@ -80,7 +80,7 @@ export type SpecificWarningCode = typeof WarningCode.Red[keyof typeof WarningCod
 // ============================================
 
 /**
- * Union type for numeric inputs that may come from UI strings, 
+ * Union type for numeric inputs that may come from UI strings,
  * native numbers, or Decimal objects.
  */
 export type NumberLike = string | number | Decimal;
@@ -113,7 +113,8 @@ export interface Food {
  * For DILUTE steps, mix * and servings describe the prepared mixture.
  */
 export interface Step {
-  stepIndex: number;
+  id: string; // Unique identifier for the step, exists in runtime
+  stepIndex: number; // NOTE: stepIndex starts from 1, NOT zero
   targetMg: Decimal;
   method: Method;
   dailyAmount: Decimal;
@@ -260,12 +261,12 @@ export type ProtocolData = z.infer<typeof ProtocolDataSchema>;
 
 /**
  * Rich history item for internal application state
- * Maintains full object fidelity and precise timestamps 
+ * Maintains full object fidelity and precise timestamps
  */
 export interface HistoryItem {
   protocol: Protocol;
   label: string;      // Human-readable action description
-  timestamp: number;  // Unix timestamp 
+  timestamp: number;  // Unix timestamp
 }
 
 // --- MINIFIED INTERFACES FOR QR PAYLOAD (ZOD SCHEMAS) ---
@@ -479,6 +480,12 @@ export interface ProtocolExportData {
 
 export type AuthListener = (isLoggedIn: boolean) => void;
 
-export type ProtocolListener = (protocol: Protocol | null, note: string) => void;
+/**
+ * Categorizes why the state changed.
+ * 'input' - rapid user typing (debounced history)
+ * 'structural' - add/remove steps, change strategy, load new protocol
+ * 'history' - undo/redo
+ */
+export type UpdateContext = 'input' | 'structural' | 'history';
 
-
+export type ProtocolListener = (protocol: Protocol | null, note: string, context: UpdateContext) => void;

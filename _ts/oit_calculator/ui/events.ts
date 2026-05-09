@@ -2,22 +2,16 @@
  * @module
  *
  * Centralized event delegation and handling
- * Biggun
  * Mainly for mutation of big global protocol states and the main components
  * Other more specialized UI event delegation and handling are done in other modules like ui/searchUI.ts, modals.ts 
+ * Slowly being chipped away to lit-html for high importance components
  */
 import { workspace } from "../state/instances";
 import {
-  updateStepTargetMg,
-  updateStepDailyAmount,
-  updateStepMixFoodAmount,
-  addStepAfter,
-  removeStep,
   recalculateProtocol
 } from "../core/protocol";
 import {
-  DosingStrategy,
-  type Protocol
+  DosingStrategy
 } from "../types";
 
 import { clearFoodB } from "./actions";
@@ -26,7 +20,6 @@ import { resetSearch } from "./searchUI";
 import { appState } from "../main";
 
 // Debounce timers
-let inputDebounceTimer: number | null = null;
 let noteDebounceTimer: number | null = null;
 
 let isInitialized = false;
@@ -41,7 +34,6 @@ export function initGlobalEvents(): void {
     return;
   }
 
-  attachTableDelegation();
   attachDosingStrategyDelegation();
   attachCustomNoteDelegation();
   attachUndoRedoDelegation();
@@ -124,90 +116,6 @@ function attachDosingStrategyDelegation() {
       }
     });
   }
-}
-
-/**
- * Attaches event delegation for the main Protocol Output Table
- * Handles:
- * - Row Actions: Clicks on "Add Step" (+) and "Remove Step" (-) buttons
- * - Data Editing: Input events on editable cells (Target Mg, Daily Amount, Mix Food Amount)
- * - Uses a 300ms debounce timer for smoother typing
- * - Clamps negative values to 0
- * - UX: Handles 'Enter' keypresses to blur inputs
- */
-function attachTableDelegation() {
-  const tableContainer = document.querySelector(".output-container table");
-  if (!tableContainer) return;
-
-  // Click delegation for Add/Remove buttons
-  tableContainer.addEventListener("click", (e) => {
-    const target = e.target as HTMLElement;
-    const current = workspace.getActive().getProtocol();
-    if (!current) return;
-
-    if (target.classList.contains("btn-add-step")) {
-      const stepIndex = parseInt(target.getAttribute("data-step")!);
-      const updated = addStepAfter(current, stepIndex);
-      workspace.getActive().setProtocol(updated, `Added Step after ${stepIndex}`);
-    } else if (target.classList.contains("btn-remove-step")) {
-      const stepIndex = parseInt(target.getAttribute("data-step")!);
-      const updated = removeStep(current, stepIndex);
-      workspace.getActive().setProtocol(updated, `Removed Step ${stepIndex}`);
-    }
-  });
-
-  // Input delegation with debounce
-  tableContainer.addEventListener("input", (e) => {
-    const target = e.target as HTMLInputElement;
-    if (!target.classList.contains("editable")) return;
-
-    if (inputDebounceTimer !== null) {
-      clearTimeout(inputDebounceTimer);
-    }
-
-    inputDebounceTimer = window.setTimeout(() => {
-      const stepIndex = parseInt(target.getAttribute("data-step")!);
-      const field = target.getAttribute("data-field")!;
-      let value = parseFloat(target.value);
-
-      // for ALL table inputs, disallow negatives
-      // treat as 0
-      if (isNaN(value)) value = 0;
-      if (value < 0) value = 0; // clamping logic
-
-      // get current state of protocol
-      const current = workspace.getActive().getProtocol();
-      if (!current) return;
-
-      let updated: Protocol = { ...current };
-      let label = "";
-
-      if (field === "targetMg") {
-        const oldTargetMg = current.steps[stepIndex - 1].targetMg.toNumber();
-        updated = updateStepTargetMg(current, stepIndex, value);
-        label = `Step ${stepIndex} Target: ${oldTargetMg} -> ${value} mg`;
-      } else if (field === "dailyAmount") {
-        const oldDailyAmount = current.steps[stepIndex - 1].dailyAmount.toNumber();
-        updated = updateStepDailyAmount(current, stepIndex, value);
-        label = `Step ${stepIndex} Daily Amount: ${oldDailyAmount} -> ${value}`;
-      } else if (field === "mixFoodAmount") {
-        const oldMixFoodAmount = current.steps[stepIndex - 1].mixFoodAmount?.toNumber();
-        updated = updateStepMixFoodAmount(current, stepIndex, value);
-        label = oldMixFoodAmount ? `Step ${stepIndex} Mix Amount: ${oldMixFoodAmount} -> ${value}` : `Step ${stepIndex} Mix Amount: ${value}`;
-      }
-
-      workspace.getActive().setProtocol(updated, label);
-    }, 300); // 300ms debounce
-  });
-
-  tableContainer.addEventListener("keydown", (e) => {
-    if ((e as KeyboardEvent).key === "Enter") {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT') {
-        target.blur();
-      }
-    }
-  });
 }
 
 function attachDebugDelegation() {
