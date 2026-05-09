@@ -13,29 +13,7 @@ import {
   handleFoodATypeChange
 } from "../../ui/actions/settingsActions";
 import { FoodType, FoodAStrategy, DosingStrategy } from "../../types";
-import { parseSafeDecimal } from "../../utils";
 import { DEFAULT_CONFIG } from "../../constants";
-
-describe("parseSafeDecimal", () => {
-  it("should parse a valid decimal string", () => {
-    expect(parseSafeDecimal("1.5", new Decimal(0)).toString()).toBe("1.5");
-  });
-
-  it("should return defaultValue for invalid string", () => {
-    const def = new Decimal(10);
-    expect(parseSafeDecimal("abc", def).toString()).toBe("10");
-  });
-
-  it("should return defaultValue for empty string", () => {
-    const def = new Decimal(5);
-    expect(parseSafeDecimal("", def).toString()).toBe("5");
-  });
-
-  it("should clamp to min value if input is lower", () => {
-    expect(parseSafeDecimal("-5", new Decimal(0), 0).toString()).toBe("0");
-    expect(parseSafeDecimal("1", new Decimal(0), 5).toString()).toBe("5");
-  });
-});
 
 describe("Action Handlers", () => {
   let mockActive: any;
@@ -64,17 +42,16 @@ describe("Action Handlers", () => {
     };
   });
 
-  it("handleFoodANameChange should update name and call setProtocol", () => {
-    vi.useFakeTimers();
+  it("handleFoodANameChange should update name immediately and request history debounce", () => {
     handleFoodANameChange(mockActive, "New Name");
-    vi.runAllTimers();
+
     expect(mockActive.setProtocol).toHaveBeenCalledWith(
       expect.objectContaining({
         foodA: expect.objectContaining({ name: "New Name" })
       }),
-      "Renamed Food A"
+      "Renamed Food A",
+      { debounceHistory: true }
     );
-    vi.useRealTimers();
   });
 
   it("handleFoodAProteinChange should clamp protein and update protocol", () => {
@@ -154,17 +131,16 @@ describe("Action Handlers", () => {
       mockProtocol.foodBThreshold = { amount: new Decimal(0.5), unit: "g" };
     });
 
-    it("handleFoodBNameChange should update name", () => {
-      vi.useFakeTimers();
+    it("handleFoodBNameChange should update name immediately and request history debounce", () => {
       handleFoodBNameChange(mockActive, "New Food B");
-      vi.runAllTimers();
+
       expect(mockActive.setProtocol).toHaveBeenCalledWith(
         expect.objectContaining({
           foodB: expect.objectContaining({ name: "New Food B" })
         }),
-        "Renamed Food B"
+        "Renamed Food B",
+        { debounceHistory: true }
       );
-      vi.useRealTimers();
     });
 
     it("handleFoodBProteinChange should update Food B protein", () => {

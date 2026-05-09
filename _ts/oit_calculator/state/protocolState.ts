@@ -2,6 +2,7 @@
  * @module
  * State management for the active protocol, including history (undo/redo).
  */
+import { HISTORY_DEBOUNCE_MS } from "../constants";
 import type { Protocol, HistoryItem, ProtocolListener } from "../types";
 
 /**
@@ -22,6 +23,9 @@ export class ProtocolState {
   public isAdvancedSettingsOpen: boolean = false;
 
   private listeners: ProtocolListener[] = [];
+
+  // Debounce tracking
+  private historyDebounceTimer: number | null = null;
 
   /**
    * @returns current Protocol object or null if not yet initialized
@@ -67,17 +71,23 @@ export class ProtocolState {
    * @param p New protocol
    * @param label Description of the action (e.g., "Changed target from 100 to 200")
    * @param options.addToHistory Default true
+   * @param options.debounceHistory If true, groups rapid updates into a single undo step
    */
   public setProtocol(
     p: Protocol | null,
     label: string,
-    options: { addToHistory?: boolean } = { addToHistory: true }
+    options?: { addToHistory?: boolean; debounceHistory?: boolean }
   ) {
+    // per-property defaults
+    const addToHistory = options?.addToHistory ?? true;
+    const debounceHistory = options?.debounceHistory ?? false;
+
     // If setting null, just clear everything
     if (!p) {
       this.current = null;
       this.history = [];
       this.future = [];
+      this.clearDebounce();
       this.notify();
       return;
     }
@@ -91,17 +101,40 @@ export class ProtocolState {
     // TODO! to be removed in future
     console.debug(label);
 
-    if (this.current && options.addToHistory) {
-      this.history.push(this.current);
-      if (this.history.length > this.MAX_HISTORY) this.history.shift();
-      this.future = [];
+    if (this.current && addToHistory) {
+
+      if (debounceHistory) {
+        // if first keystroke, push to history
+        if (this.historyDebounceTimer === null) {
+          this.history.push(this.current);
+          if (this.history.length > this.MAX_HISTORY) this.history.shift();
+        }
+
+        // Start debounce timer after reset
+        this.clearDebounce();
+        this.historyDebounceTimer = window.setTimeout(() => {
+          this.historyDebounceTimer = null;
+        }, HISTORY_DEBOUNCE_MS);
+
+      } else {
+
+        // for fields not intended to be debounced
+        this.clearDebounce();
+        this.history.push(this.current);
+        if (this.history.length > this.MAX_HISTORY) this.history.shift();
+      }
     }
 
+    // clear redo stack on new actions
+    if (addToHistory) {
+      this.future = [];
+    }
     this.current = newItem;
     this.notify();
   }
 
   public undo() {
+    this.clearDebounce(); // Ensure we don't finish a typing sequence after an undo
     if (this.history.length === 0) return;
 
     const previous = this.history.pop();
@@ -113,6 +146,7 @@ export class ProtocolState {
   }
 
   public redo() {
+    this.clearDebounce();
     if (this.future.length === 0) return;
 
     const next = this.future.pop();
@@ -120,6 +154,13 @@ export class ProtocolState {
       this.history.push(this.current);
       this.current = next;
       this.notify();
+    }
+  }
+
+  private clearDebounce() {
+    if (this.historyDebounceTimer !== null) {
+      window.clearTimeout(this.historyDebounceTimer);
+      this.historyDebounceTimer = null;
     }
   }
 

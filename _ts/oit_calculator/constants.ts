@@ -58,3 +58,4 @@ export const OIT_CLICKWRAP_ACCEPTED_KEY = "oit_clickwrap_accepted_v1";
 export const CLICKWRAP_EXPIRY_DAYS = 7;
 
 export const UI_DEBOUNCE_MS = 300;
+export const HISTORY_DEBOUNCE_MS = 300;

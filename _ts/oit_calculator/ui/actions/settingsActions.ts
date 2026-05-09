@@ -10,38 +10,22 @@ import { FoodType, FoodAStrategy } from "../../types";
 import type { Protocol } from "../../types";
 import type { ProtocolState } from "../../state/protocolState";
 import { parseSafeDecimal } from "../../utils";
-import { UI_DEBOUNCE_MS } from "../../constants";
 
 
 // --- Food A Handlers ---
 
 /**
-* Maps ProtocolState instances to their respective debounce timers for Food A name changes.
-* Makes sure that timers are automatically cleaned up if ProtocolState instance is removed (ie tab is closed)
-*/
-const foodATimers = new WeakMap<ProtocolState, number>();
-
-/**
  * Updates the name of Food A in the active protocol.
- * Includes a debounce mechanism to avoid frequent state updates while typing.
  *
  * @param state - The protocol state container.
  * @param name - The new name for Food A.
  */
 export function handleFoodANameChange(state: ProtocolState, name: string) {
-  if (foodATimers.has(state)) {
-    clearTimeout(foodATimers.get(state));
+  const current = state.getProtocol();
+  if (current) {
+    const updated = updateFoodDetails(current, 'A', { name });
+    state.setProtocol(updated, `Renamed Food A`, { debounceHistory: true });
   }
-
-  const timer = window.setTimeout(() => {
-    const current = state.getProtocol();
-    if (current) {
-      const updated = updateFoodDetails(current, 'A', { name });
-      state.setProtocol(updated, `Renamed Food A`);
-    }
-  }, UI_DEBOUNCE_MS);
-
-  foodATimers.set(state, timer);
 }
 
 /**
@@ -140,31 +124,17 @@ export function handleFoodAThresholdChange(state: ProtocolState, valueStr: strin
 // --- Food B Handlers ---
 
 /**
-* Maps ProtocolState instances to their respective debounce timers for Food B name changes
-*/
-const foodBTimers = new WeakMap<ProtocolState, number>();
-
-/**
  * Updates the name of Food B in the active protocol.
- * Includes a debounce mechanism to avoid frequent state updates while typing.
  *
  * @param state - The protocol state container.
  * @param name - The new name for Food B.
  */
 export function handleFoodBNameChange(state: ProtocolState, name: string) {
-  if (foodBTimers.has(state)) {
-    clearTimeout(foodBTimers.get(state));
+  const current = state.getProtocol();
+  if (current && current.foodB) {
+    const updated = updateFoodDetails(current, 'B', { name });
+    state.setProtocol(updated, `Renamed Food B`, { debounceHistory: true });
   }
-
-  const timer = window.setTimeout(() => {
-    const current = state.getProtocol();
-    if (current && current.foodB) {
-      const updated = updateFoodDetails(current, 'B', { name });
-      state.setProtocol(updated, `Renamed Food B`);
-    }
-  }, UI_DEBOUNCE_MS);
-
-  foodBTimers.set(state, timer);
 }
 
 /**
