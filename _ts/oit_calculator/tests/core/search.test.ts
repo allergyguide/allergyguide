@@ -28,21 +28,23 @@ describe('Core: Search', () => {
   it('should find foods matching query', () => {
     const results = performSearch('Pea', 'food', preparedFoods, preparedProtocols);
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].obj.Food).toBe('Peanut');
+    expect(results[0].type).toBe('food');
+    expect((results[0].data as any).Food).toBe('Peanut');
   });
 
   it('should find protocols matching query', () => {
     const results = performSearch('Stand', 'protocol', preparedFoods, preparedProtocols);
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].obj.name).toBe('Peanut Standard');
+    expect(results[0].type).toBe('protocol');
+    expect((results[0].data as any).name).toBe('Peanut Standard');
   });
 
   it('should combine results for protocol search type', () => {
     // "Milk" matches both food and protocol
     const results = performSearch('Milk', 'protocol', preparedFoods, preparedProtocols);
 
-    const hasFood = results.some(r => r.obj.Food === 'Milk');
-    const hasProtocol = results.some(r => r.obj.name === 'Milk Slow');
+    const hasFood = results.some(r => r.type === 'food' && (r.data as any).Food === 'Milk');
+    const hasProtocol = results.some(r => r.type === 'protocol' && (r.data as any).name === 'Milk Slow');
 
     expect(hasFood).toBe(true);
     expect(hasProtocol).toBe(true);

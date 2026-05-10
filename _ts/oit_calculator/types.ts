@@ -256,6 +256,17 @@ export const ProtocolDataSchema = z.strictObject({
 export type ProtocolData = z.infer<typeof ProtocolDataSchema>;
 
 // ============================================
+// SEARCH INTERFACES
+// ============================================
+
+/**
+ * Discriminated union for search results 
+ */
+export type SearchResult =
+  | { type: "food"; data: FoodData }
+  | { type: "protocol"; data: ProtocolData };
+
+// ============================================
 // HISTORY INTERFACES
 // ============================================
 

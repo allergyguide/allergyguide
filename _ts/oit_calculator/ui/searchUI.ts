@@ -4,15 +4,20 @@
  * Search UI components (dropdowns, navigation)
  * Does rely on glue from actions.ts
  */
-import { escapeHtml } from "../utils";
-import type { FoodData, ProtocolData } from "../types";
+import { render, nothing } from "lit-html";
+import { SearchDropdown } from "./components/SearchDropdown";
+import type { FoodData, ProtocolData, SearchResult } from "../types";
 import { performSearch } from "../core/search";
 import { AppState } from "../state/appState";
 import { selectCustomFood, selectProtocol, selectFoodA, selectFoodB } from "./actions";
+import { SEARCH_DISPLAY_LIMIT } from "../constants";
 
 // State for dropdown navigation
-let currentDropdownIndex: number = -1;
+let activeIndex: number = -1;
 let currentDropdownInputId: string = "";
+let currentResults: SearchResult[] = [];
+let currentQuery: string = "";
+let currentCallbacks: SearchCallbacks | null = null;
 let searchDebounceTimer: number | null = null;
 
 /**
@@ -25,6 +30,25 @@ export interface SearchCallbacks {
   onSelectFoodA: (data: FoodData) => void;
   onSelectFoodB: (data: FoodData) => void;
 }
+
+const GLOBAL_CALLBACKS: SearchCallbacks = {
+  onSelectCustom: (name, inputId) => {
+    selectCustomFood(name, inputId);
+    hideSearchDropdown(inputId);
+  },
+  onSelectProtocol: (data) => {
+    selectProtocol(data);
+    if (currentDropdownInputId) hideSearchDropdown(currentDropdownInputId);
+  },
+  onSelectFoodA: (data) => {
+    selectFoodA(data);
+    hideSearchDropdown("food-a-search");
+  },
+  onSelectFoodB: (data) => {
+    selectFoodB(data);
+    hideSearchDropdown("food-b-search");
+  }
+};
 
 /**
  * Initialize search input listeners for Food A and Food B
@@ -46,12 +70,7 @@ export function initSearchEvents(appState: AppState): void {
       if (!query || !query.trim()) return;
 
       const results = performSearch(query, type, appState.foodsIndex, appState.protocolsIndex);
-      showSearchDropdown(inputId, results, query, {
-        onSelectCustom: selectCustomFood,
-        onSelectProtocol: selectProtocol,
-        onSelectFoodA: selectFoodA,
-        onSelectFoodB: selectFoodB
-      });
+      showSearchDropdown(inputId, results, query, GLOBAL_CALLBACKS);
     };
 
     // Debounced search while typing
@@ -60,6 +79,7 @@ export function initSearchEvents(appState: AppState): void {
       if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
 
       searchDebounceTimer = window.setTimeout(() => {
+        activeIndex = -1; // Reset navigation on type
         triggerSearch(query);
       }, 150);
     });
@@ -99,10 +119,10 @@ export function initSearchEvents(appState: AppState): void {
  */
 export function resetSearch(): void {
   if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-  
+
   const aInput = document.getElementById("food-a-search") as HTMLInputElement;
   const bInput = document.getElementById("food-b-search") as HTMLInputElement;
-  
+
   if (aInput) {
     aInput.value = "";
     hideSearchDropdown("food-a-search");
@@ -115,171 +135,119 @@ export function resetSearch(): void {
 
 /**
 * Render the autocomplete dropdown below a specific search input
-* Constructs dropdown menu, including:
-* - custom (always index 0) 
-* - A list of up to 50 search results (Protocols or Foods)
-* - Attaches click listeners to each item to trigger the appropriate callback
+* Uses lit-html to render into the dedicated mount point
 *
 * @param inputId - DOM ID of the input element (e.g., "food-a-search").
-* @param results - Array of search results (mixed objects of ProtocolData or FoodData)
+* @param results - Array of SearchResult
 * @param query - current text value of the input, used for the "Custom" entry
 * @param callbacks - interface containing methods to handle selection
 */
 export function showSearchDropdown(
   inputId: string,
-  results: any[],
+  results: SearchResult[],
   query: string,
   callbacks: SearchCallbacks
 ): void {
-  const input = document.getElementById(inputId) as HTMLInputElement;
-  if (!input || !input.parentElement) return;
+  const mountId = `${inputId}-dropdown-mount`;
+  const mount = document.getElementById(mountId);
+  if (!mount) return;
 
-  const container = input.parentElement;
-
-  // Remove existing dropdown
-  const existingDropdown = container.querySelector(".search-dropdown");
-  if (existingDropdown) {
-    existingDropdown.remove();
-  }
-
-  if (results.length === 0 && !query.trim()) return;
-
-  const dropdown = document.createElement("div");
-  dropdown.className = "search-dropdown";
-
-  // Reset dropdown navigation state
-  currentDropdownIndex = -1;
+  // Update internal state for navigation
   currentDropdownInputId = inputId;
+  currentResults = results;
+  currentQuery = query;
+  currentCallbacks = callbacks;
 
-  // Always add custom option first
-  const customItem = document.createElement("div");
-  customItem.className = "search-result-item";
-  customItem.setAttribute("data-index", "0");
-  customItem.innerHTML = `<strong>Create Custom Food:</strong> ${escapeHtml(query || "New food")}`;
-  customItem.addEventListener("click", () => {
-    callbacks.onSelectCustom(query || "New Food", inputId);
-    hideSearchDropdown(inputId);
-  });
-  dropdown.appendChild(customItem);
-
-  // Add search results
-  // limit of 50 HARD CODED HERE consider moving out
-  const displayResults = results.slice(0, 50);
-  for (let i = 0; i < displayResults.length; i++) {
-    const result = displayResults[i];
-    const item = document.createElement("div");
-    item.className = "search-result-item";
-    item.setAttribute("data-index", String(i + 1));
-
-    if (result.obj.name) {
-      // Protocol result
-      item.innerHTML = `<strong>Protocol:</strong> ${escapeHtml(result.obj.name)}`;
-      item.addEventListener("click", () => {
-        callbacks.onSelectProtocol(result.obj);
-        hideSearchDropdown(inputId);
-      });
-    } else {
-      // Food result
-      const foodData: FoodData = result.obj;
-
-      item.innerHTML = `
-        ${escapeHtml(foodData.Food)}
-        <span class="food-type"> - ${escapeHtml(foodData.Type)} - Protein: ${foodData["Mean protein in grams"].toFixed(1)} g/${foodData["Serving size"]} ${foodData.Type === "SOLID" ? "g" : "ml"}</span>
-      `;
-      item.addEventListener("click", () => {
-        if (inputId === "food-a-search") {
-          callbacks.onSelectFoodA(foodData);
-        } else {
-          callbacks.onSelectFoodB(foodData);
-        }
-        hideSearchDropdown(inputId);
-      });
-    }
-
-    dropdown.appendChild(item);
+  if (results.length === 0 && !query.trim()) {
+    render(nothing, mount);
+    return;
   }
 
-  container.appendChild(dropdown);
+  // there's stuff, render
+  render(SearchDropdown(inputId, results, query, activeIndex, callbacks), mount);
+
+  const dropdown = mount.querySelector('.search-dropdown');
+  if (dropdown) {
+    if (activeIndex === -1) {
+      // ensures that new searches / typing resets scroll position
+      dropdown.scrollTop = 0;
+    } else {
+      // Handle scrolling after render with the user keying up or down
+      const activeItem = dropdown.querySelector(`[data-index="${activeIndex}"]`);
+      if (activeItem) {
+        activeItem.scrollIntoView({
+          block: "nearest",
+          behavior: "auto",
+        });
+      }
+    }
+  }
 }
 
 /**
  * Remove and reset the autocomplete dropdown for a given input
- * removes `.search-dropdown` element
- * Resets internal navigation state (`currentDropdownIndex`)
  *
  * @param inputId - DOM ID of the input associated with the dropdown to hide
  */
 export function hideSearchDropdown(inputId: string): void {
-  const input = document.getElementById(inputId) as HTMLInputElement;
-  if (!input || !input.parentElement) return;
-
-  const container = input.parentElement;
-  const dropdown = container.querySelector(".search-dropdown");
-  if (dropdown) {
-    dropdown.remove();
+  const mountId = `${inputId}-dropdown-mount`;
+  const mount = document.getElementById(mountId);
+  if (mount) {
+    render(nothing, mount);
   }
-  currentDropdownIndex = -1;
-  currentDropdownInputId = "";
+
+  if (currentDropdownInputId === inputId) {
+    // reset everything
+    activeIndex = -1;
+    currentDropdownInputId = "";
+    currentResults = [];
+    currentQuery = "";
+  }
 }
 
 /**
  * Keyboard navigation for the autocomplete dropdown.
  */
 export function navigateDropdown(direction: "up" | "down"): void {
-  if (!currentDropdownInputId) return;
+  if (!currentDropdownInputId || !currentCallbacks) return;
 
-  const input = document.getElementById(
-    currentDropdownInputId,
-  ) as HTMLInputElement;
-  if (!input || !input.parentElement) return;
-
-  const container = input.parentElement;
-  const dropdown = container.querySelector(".search-dropdown");
-  if (!dropdown) return;
-
-  const items = Array.from(dropdown.querySelectorAll(".search-result-item"));
-  if (items.length === 0) return;
-
-  // Remove current highlight
-  if (currentDropdownIndex >= 0 && currentDropdownIndex < items.length) {
-    items[currentDropdownIndex].classList.remove("highlighted");
-  }
+  const totalItems = currentResults.slice(0, SEARCH_DISPLAY_LIMIT).length + 1; // +1 for Custom Food
+  if (totalItems === 0) return;
 
   // Update index
   if (direction === "down") {
-    currentDropdownIndex = (currentDropdownIndex + 1) % items.length;
+    activeIndex = (activeIndex + 1) % totalItems;
   } else {
-    currentDropdownIndex =
-      currentDropdownIndex <= 0 ? items.length - 1 : currentDropdownIndex - 1;
+    activeIndex = activeIndex <= 0 ? totalItems - 1 : activeIndex - 1;
   }
 
-  // Add new highlight
-  items[currentDropdownIndex].classList.add("highlighted");
-
-  // Scroll into view
-  items[currentDropdownIndex].scrollIntoView({
-    block: "nearest",
-    behavior: "smooth",
-  });
+  // Re-render
+  showSearchDropdown(currentDropdownInputId, currentResults, currentQuery, currentCallbacks);
 }
 
 /**
  * Programmatically "click" the currently highlighted autocomplete item.
  */
 export function selectHighlightedDropdownItem(): void {
-  if (!currentDropdownInputId || currentDropdownIndex < 0) return;
+  if (!currentDropdownInputId || activeIndex < 0 || !currentCallbacks) return;
 
-  const input = document.getElementById(
-    currentDropdownInputId,
-  ) as HTMLInputElement;
-  if (!input || !input.parentElement) return;
-
-  const container = input.parentElement;
-  const dropdown = container.querySelector(".search-dropdown");
-  if (!dropdown) return;
-
-  const items = Array.from(dropdown.querySelectorAll(".search-result-item"));
-  if (currentDropdownIndex < items.length) {
-    (items[currentDropdownIndex] as HTMLElement).click();
+  if (activeIndex === 0) {
+    currentCallbacks.onSelectCustom(currentQuery || "New Food", currentDropdownInputId);
+  } else {
+    const resultIndex = activeIndex - 1;
+    const results = currentResults.slice(0, SEARCH_DISPLAY_LIMIT);
+    if (resultIndex < results.length) {
+      const result = results[resultIndex];
+      if (result.type === "protocol") {
+        currentCallbacks.onSelectProtocol(result.data);
+      } else {
+        if (currentDropdownInputId === "food-a-search") {
+          currentCallbacks.onSelectFoodA(result.data);
+        } else {
+          currentCallbacks.onSelectFoodB(result.data);
+        }
+      }
+    }
   }
+  hideSearchDropdown(currentDropdownInputId);
 }

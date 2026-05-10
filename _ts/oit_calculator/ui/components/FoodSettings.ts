@@ -1,4 +1,4 @@
-import { html, render } from "lit-html";
+import { html, render, nothing } from "lit-html";
 import { live } from "lit-html/directives/live.js";
 import { FoodType, FoodAStrategy, type Food } from "../../types";
 import { WorkspaceManager } from "../../state/workspaceManager";
@@ -115,7 +115,7 @@ export function renderFoodASettings(ws: WorkspaceManager, mount: HTMLElement): v
 
   // if no protocol defined, then HTMLElement defined by mount set as empty
   if (!protocol) {
-    render(html``, mount);
+    render(nothing, mount);
     return;
   }
 
@@ -195,7 +195,7 @@ export function renderFoodBSettings(ws: WorkspaceManager, mount: HTMLElement): v
   const activeState = ws.getActive();
   const protocol = activeState.getProtocol();
   if (!protocol || !protocol.foodB) {
-    render(html``, mount);
+    render(nothing, mount);
     return;
   }
 
