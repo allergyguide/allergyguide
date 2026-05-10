@@ -9,6 +9,7 @@ import { escapeHtml } from "../utils";
 import { workspace } from "../state/instances";
 import { render } from "lit-html";
 import { ProtocolTable } from "./components/ProtocolTable";
+import { WarningsSidebar } from "./components/WarningsSidebar";
 import { validateProtocol } from "../core/validator";
 
 // Need global commit hash
@@ -357,107 +358,9 @@ export function updateWarnings(protocol: Protocol | null, rulesURL: string, warn
     ".warnings-container",
   ) as HTMLElement;
 
-  if (warnings.length === 0) {
-    container.innerHTML = `
-      <div class="no-warnings">
-      Protocol passes internal checks: see <a href="${rulesURL}" target="_blank">here</a> for the issues we check for.<br><br>THIS DOES NOT GUARANTEE THE PROTOCOL IS VALID.<br>DOSES MUST STILL BE VERIFIED/REVIEWED.
-      </div>
-    `;
-    return;
+  if (container) {
+    render(WarningsSidebar(warnings, rulesURL), container);
   }
-
-  const redCount = warnings.filter(w => w.severity === 'red').length;
-  const yellowCount = warnings.filter(w => w.severity === 'yellow').length;
-
-  // Grouping Warnings by scope: Global or Step-Specific
-  const globalWarnings: Warning[] = [];
-  const stepWarnings = new Map<number, Warning[]>();
-
-  warnings.forEach(w => {
-    if (w.stepIndex !== undefined && w.stepIndex !== null) {
-      if (!stepWarnings.has(w.stepIndex)) {
-        stepWarnings.set(w.stepIndex, []);
-      }
-      stepWarnings.get(w.stepIndex)!.push(w);
-    } else {
-      globalWarnings.push(w);
-    }
-  });
-
-  const sortedSteps = Array.from(stepWarnings.keys()).sort((a, b) => a - b);
-  let html = "";
-
-  html += `<div class="warnings-summary-header">`;
-  if (redCount > 0) {
-    html += `<span class="summary-badge red"><strong>${redCount}</strong> Critical</span>`;
-  }
-  if (yellowCount > 0) {
-    html += `<span class="summary-badge yellow"><strong>${yellowCount}</strong> Caution</span>`;
-  }
-  html += `</div>`;
-
-  // Render Global Warnings (if any)
-  if (globalWarnings.length > 0) {
-    const isRed = globalWarnings.some(w => w.severity === 'red');
-    html += renderWarningBlock("Protocol Issues", globalWarnings, isRed ? 'red' : 'yellow');
-  }
-
-  // Render Step Warnings (grouped by severity within)
-  // Each step gets ONE block, containing all its warnings (red + yellow mixed)
-  sortedSteps.forEach(index => {
-    const list = stepWarnings.get(index)!;
-    // Sort: Red warnings first, then yellow
-    list.sort((a, b) => {
-      if (a.severity === b.severity) return 0;
-      return a.severity === 'red' ? -1 : 1;
-    });
-
-    const isRed = list.some(w => w.severity === 'red');
-    html += renderWarningBlock(`Step ${index}`, list, isRed ? 'red' : 'yellow');
-  });
-
-  container.innerHTML = html;
-}
-
-/**
- * Helper to render a stylized block of warnings.
- *
- * @param title - Header text for the block.
- * @param warnings - List of warning objects.
- * @param blockSeverity - Overall severity determining visual style.
- * @returns HTML string.
- */
-function renderWarningBlock(title: string, warnings: Warning[], blockSeverity: 'red' | 'yellow'): string {
-  const cssClass = `warning-group severity-${blockSeverity}`;
-
-  let html = `<div class="${cssClass}">`;
-  html += `<div class="warning-header">${escapeHtml(title)}</div>`;
-  html += `<ul class="warning-list">`;
-
-  html += warnings.map(w => {
-    // Remove redundant prefix if present ("Step X: ...")
-    let msg = w.message;
-    const prefix = `${title}: `;
-    if (msg.startsWith(prefix)) {
-      msg = msg.substring(prefix.length);
-      if (msg.length > 0) msg = msg.charAt(0).toUpperCase() + msg.slice(1);
-    } else if (msg.startsWith("Step ")) {
-      // generic "Step N: " removal if title matched partially
-      const parts = msg.split(": ");
-      if (parts.length > 1 && parts[0].includes("Step")) {
-        msg = parts.slice(1).join(": ");
-        if (msg.length > 0) msg = msg.charAt(0).toUpperCase() + msg.slice(1);
-      }
-    }
-
-    const itemClass = w.severity === 'red' ? 'item-red' : 'item-yellow';
-    const content = w.severity === 'red' ? `<strong>${escapeHtml(msg)}</strong>` : escapeHtml(msg);
-
-    return `<li class="${itemClass}">${content}</li>`;
-  }).join("");
-
-  html += `</ul></div>`;
-  return html;
 }
 
 /**

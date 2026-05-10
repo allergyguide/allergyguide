@@ -504,7 +504,7 @@
       padding: 1rem 0.75rem;
 
       // Increased spacing between rows
-      .setting-row + .setting-row {
+      .setting-row+.setting-row {
         margin-top: 1.5rem;
       }
     }
@@ -998,14 +998,14 @@
   // Warnings Container
   .warnings-container {
     background-color: var(--oit-bg-secondary);
-    padding: 0.5rem 0.5rem 0 0.5rem; // trbl
+    padding: 0 0.5rem 0.5rem 0.5rem; // Flush top
     border-radius: 8px;
     border: 1px solid var(--oit-border);
     max-height: 400px;
     overflow-y: auto;
 
     h3 {
-      margin: 0 0 0.5rem 0;
+      margin: 0.5rem 0 0.5rem 0;
       font-size: 1.1rem;
       font-weight: 700;
       color: var(--oit-text);
@@ -1018,6 +1018,7 @@
     /* align-items: center; */
     /* justify-content: center; */
     padding: 1rem;
+    margin-top: 0.5rem;
     font-size: 1.1rem;
     font-weight: 500;
     color: var(--oit-success-text);
@@ -1027,9 +1028,17 @@
   }
 
   .warnings-summary-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--oit-bg-secondary);
+    padding: 0.5rem 0.75rem;
+    margin: 0 -0.5rem 0.75rem -0.5rem; // Flush to container edges
+    border-bottom: 1px solid var(--oit-border);
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
     display: flex;
     gap: 1rem;
-    margin-bottom: 0.3rem;
     font-size: 0.9rem;
 
     .summary-badge {
