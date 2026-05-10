@@ -14,12 +14,14 @@ authors = ["Joshua Yu"]
 
 - Support for pharmacy-compounded capsules for "Food A", allowing generation of protocols for doses without manual measurement or dilution.
 - UX: Login modal can now be closed by pressing the `Esc` key.
+- UX: When adding a new step to the protocol, the "Protein (mg)" field is now automatically focused and selected.
 
 ### Changed
 
 - Calculation: Direct dosing amounts (g or ml) are now automatically "snapped" to clean, user-friendly increments (e.g., 0.5, 0.1, 0.05) if the resulting protein dose remains within the safety tolerance (5%).
 - UI: now user auth and tool version are right justified.
 - UI: Added a fade-out effect to the right edge of the tabs list to better indicate scrollable content.
+- UI: Safety warnings and row highlighting update with a slight delay during typing to reduce visual distraction
 - Exports: Updated PDF and ASCII export logic to format capsule steps as "Capsule(s) as per pharmacy".
 
 ### Deprecated
