@@ -30,12 +30,15 @@ oit_calculator/
 │   ├── export/             
 │   └── data_integrity.test.ts  
 └── ui/                     
-    ├── renderers.ts        # DOM manipulation: Tabs, Settings, Table, Empty State
-    ├── events.ts           # global event delegation (Tabs, Settings, Table actions)
-    ├── actions.ts          # bridge logic connecting UI actions to Workspace state
-    ├── searchui.ts         # search input events, dropdown rendering
-    ├── modals.ts           # clickwrap and login modal logic
-    └── exports.ts          # export ui
+    ├── components/         # declarative lit-html components (Table, Settings, Search, Sidebar)
+    ├── directives/         # specialized lit-html directives (activeSafe)
+    ├── actions/            # specialized action handlers (e.g. settingsActions.ts)
+    ├── renderers.ts        # orchestrates rendering; patches Tabs, Dosing, and Empty State manually
+    ├── events.ts           # global event delegation (Tabs, Dosing, Undo/Redo, Notes)
+    ├── actions.ts          # high-level actions connecting search/loading to state
+    ├── searchUI.ts         # search input events and dropdown orchestration
+    ├── modals.ts           # clickwrap, login, and save request modal logic
+    └── exports.ts          # export ui triggers
 
 Serverless Functions (Netlify)
 ├── auth-login.mts          # Authenticates user & issues JWT (HttpOnly cookie)
@@ -55,14 +58,16 @@ The application uses a **"Single Active View"** architecture managed by `Workspa
 2. **Proxy Listener:** The UI subscribes to the _Workspace_, not individual protocols. The Workspace internally subscribes to the _currently active tab_ and forwards (proxies) events to the UI.
 3. **Switching:** When a user switches tabs, the Workspace unbinds from the old tab's state and binds to the new one, triggering an immediate UI refresh.
 
+#### History & Debouncing
+Each `ProtocolState` maintains its own Undo/Redo stack. To prevent "history pollution" during rapid text input (e.g., typing a food name), `setProtocol` supports a `debounceHistory` flag. This groups consecutive keystrokes into a single undo step while keeping the live state instantly synchronized for a responsive UI.
+
 ### Unidirectional Data Flow
 
-1. **Event:** DOM interaction (e.g., input change, tab click).
-2. **Delegate:** `ui/events.ts` catches the event via delegation.
-3. **Action:** A handler calls a logic function (e.g., `updateStepTargetMg`) or Workspace method (e.g., `workspace.setActive()`).
-4. **State Update:** The action updates the _Active_ protocol via `workspace.getActive().setProtocol()`.
-5. **Notify:** The active `ProtocolState` notifies the `WorkspaceManager`, which proxies the update to subscribers.
-6. **Render:** `ui/renderers.ts` updates the DOM to match the new state.
+1. **Event:** DOM interaction. This is handled either via global delegation in `ui/events.ts` (for shell UI) or via inline bindings in `lit-html` components (for the table and settings).
+2. **Action:** A handler in `ui/actions/` calls a logic function and updates the state.
+3. **State Update:** The action updates the _Active_ protocol via `workspace.getActive().setProtocol(updated, label, options)`.
+4. **Contextual Notification:** The `ProtocolState` notifies subscribers with an `UpdateContext` (`input`, `structural`, or `history`). This allows renderers to decide if they should debounce expensive operations (like validation) or render immediately.
+5. **Render:** `ui/renderers.ts` and individual components update the DOM.
 
 ### Authentication & Secure Data Architecture
 
@@ -81,19 +86,25 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 - **Configuration:** The tool uses an `oit_calculator-bootstrap` request, which the backend handles by reading `user_configs/{username}_config.json` and then aggregating the required food and protocol lists into a single JSON response for the frontend.
 - **Merging:** `AppState` merges the public foods/protocols with the private ones received from the bootstrap payload, rebuilding search indices.
 
-### HTML DOM Patching
+### Hybrid Rendering Strategy
 
-- **Structure Check:** checks if the DOM structure (rows, settings blocks) matches the state.
-- **Patching:** updates only changed values (attributes, text, inputs) to preserve focus.
-- **Rebuild:** triggers full HTML replacement only when structure changes (e.g., adding a step).
-- **Tab Switching:** Switching tabs triggers a full state re-render, effectively swapping the view.
+The app uses a hybrid approach combining **`lit-html`** for complex, reactive components and **manual DOM patching** for the stable application shell.
+
+#### 1. lit-html Components (`ui/components/`)
+Core UI modules (Protocol Table, Food Settings, Search Dropdowns, Warnings Sidebar) are implemented as declarative `lit-html` templates.
+- **Stability:** For the table, uses stable UUIDs (generated on step creation) as keys in the `repeat()` directive. This ensures that adding or removing rows doesn't cause unrelated inputs to lose focus or state.
+- **UX:** The **`activeSafe`** directive (`ui/directives/`) prevents disruptive cursor jumps during debounced re-renders. It only updates an input's value if the new state is mathematically different from the current user input, and enforces canonical formatting (e.g., "1.0") on blur.
+
+#### 2. Manual DOM Patching (`ui/renderers.ts`)
+The application shell (Tabs, Dosing Strategy toggles, Export buttons, and the Empty State) uses a lightweight manual patching strategy. Since these elements change infrequently or have simple structures, this avoids the overhead of a full framework for the top-level layout.
 
 ### Event Delegation and Initialization
 
-- **Global Listeners:** Attached once to container elements (`#oit-tabs-bar`, `.food-a-container`, `.output-container`) via `initGlobalEvents` in `ui/events.ts`.
+- **Global Listeners:** Attached once to container elements (`#oit-tabs-list`, `.bottom-section`) via `initGlobalEvents` in `ui/events.ts`.
 - **Specific feature listeners (Search, Export)** are initialized in their respective modules (`initSearchEvents`, `initExportEvents`) called by `main.ts`
 - **Tab Bar Logic:** Tab switching/closing logic is centralized in `attachTabBarDelegation`.
-- **Debouncing:** Input events use 150ms-300ms debouncing to prevent excessive recalculations.
+- **Component Listeners:** High-interactivity components (like the Table) use `lit-html`'s native `@event` bindings, which are automatically cleaned up and re-attached by the library.
+- **Debouncing:** Input events are synchronized immediately to state, but the **Validation Engine** (in `main.ts`) is debounced by 250ms during 'input' contexts to keep the interface snappy.
 
 ## Environment Configuration
 
@@ -112,7 +123,6 @@ Deployment requires the following Netlify environment variables (and ideally wit
 
 - Include a 'CAPSULE' food type to account for pharmacy prescribed capsules. These do not have any weights or calculations to measure and must therefore be exempted from _some_ aspects of the validator engine. DONE.
 - Inclusion of relevant metadata - WIP.
--
 
 ### Branded Food Database
 
@@ -137,7 +147,8 @@ Deployment requires the following Netlify environment variables (and ideally wit
 
 ### Search UI improvement
 
-- On the search dropdown, the user should see a badge that concisely communicates the metadata. Ie. the source (CNF, BRAND, USER)
+- On the search dropdown, the user should see a badge that concisely communicates the metadata. Ie. the source (CNF, BRAND, USER), versus styling of the dropdown list item itself
+- Will consider making the "Create Custom" sticky at the bottom of the search bar instead of index 0
 - Versus keeping a single vertical scrollable list with headers that define the source, with user > brand > CNF if possible
 
 ### Development of export content / format
@@ -180,7 +191,7 @@ OIT protocols involve a series of increasing allergen doses over time. The speci
 From personal experience:
 
 - OIT is done many different ways
-- Current approaches do not handle this complexity and diversity well enough to provide an efficient way to individualize protocols easily for patients
+- Current approaches do not handle this complexity and diversity well enough to provide an efficient way to individualize protocols easily for patients and providers
 - Manual calculations are easy but very time consuming, and there are many variables, heuristics, and assumptions to keep in mind that don't appear in calculations:
 
   > What is a practical dose I should choose for a step?
