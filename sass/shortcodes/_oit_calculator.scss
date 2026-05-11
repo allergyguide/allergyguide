@@ -447,6 +447,19 @@
     strong {
       color: var(--oit-button-primary);
     }
+
+    &.sticky-bottom {
+      position: sticky;
+      bottom: 0;
+      background-color: var(--oit-bg-secondary);
+      border-top: 2px solid var(--oit-border);
+      z-index: 10;
+
+      &:hover,
+      &.highlighted {
+        background-color: var(--oit-bg-hover);
+      }
+    }
   }
 
   // Food Settings

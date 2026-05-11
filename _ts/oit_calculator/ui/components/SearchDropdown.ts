@@ -39,24 +39,14 @@ export const SearchDropdown = (
 
   return html`
     <div class="search-dropdown">
-      <!-- Custom Food Item (Always Index 0) -->
-      <div 
-        class="search-result-item ${activeIndex === 0 ? "highlighted" : ""}" 
-        data-index="0"
-        @click=${handleSelectCustom}
-      >
-        <strong>Create Custom Food:</strong> ${query || "New food"}
-      </div>
-
       <!-- Search Results -->
       ${displayResults.map((result, i) => {
-    const itemIndex = i + 1;
-    const isHighlighted = activeIndex === itemIndex;
+    const isHighlighted = activeIndex === i;
 
     return html`
           <div 
             class="search-result-item ${isHighlighted ? "highlighted" : ""}" 
-            data-index="${itemIndex}"
+            data-index="${i}"
             @click=${() => handleSelectResult(result)}
           >
             ${result.type === "protocol"
@@ -69,6 +59,15 @@ export const SearchDropdown = (
           </div>
         `;
   })}
+
+      <!-- Custom Food Item (Sticky at Bottom) -->
+      <div 
+        class="search-result-item sticky-bottom ${activeIndex === displayResults.length ? "highlighted" : ""}" 
+        data-index="${displayResults.length}"
+        @click=${handleSelectCustom}
+      >
+        <strong>Create Custom Food:</strong> ${query || "New food"}
+      </div>
     </div>
   `;
 };

@@ -211,14 +211,20 @@ export function hideSearchDropdown(inputId: string): void {
 export function navigateDropdown(direction: "up" | "down"): void {
   if (!currentDropdownInputId || !currentCallbacks) return;
 
-  const totalItems = currentResults.slice(0, SEARCH_DISPLAY_LIMIT).length + 1; // +1 for Custom Food
+  const results = currentResults.slice(0, SEARCH_DISPLAY_LIMIT);
+  const totalItems = results.length + 1; // +1 for Custom Food
   if (totalItems === 0) return;
 
   // Update index
   if (direction === "down") {
     activeIndex = (activeIndex + 1) % totalItems;
   } else {
-    activeIndex = activeIndex <= 0 ? totalItems - 1 : activeIndex - 1;
+    // ArrowUp loop logic: if -1 (input focused), loop to totalItems - 1 (Custom Food)
+    if (activeIndex === -1) {
+      activeIndex = totalItems - 1;
+    } else {
+      activeIndex = activeIndex <= 0 ? totalItems - 1 : activeIndex - 1;
+    }
   }
 
   // Re-render
@@ -231,21 +237,20 @@ export function navigateDropdown(direction: "up" | "down"): void {
 export function selectHighlightedDropdownItem(): void {
   if (!currentDropdownInputId || activeIndex < 0 || !currentCallbacks) return;
 
-  if (activeIndex === 0) {
+  const results = currentResults.slice(0, SEARCH_DISPLAY_LIMIT);
+  
+  if (activeIndex === results.length) {
+    // Custom Food is now at the end (Index N)
     currentCallbacks.onSelectCustom(currentQuery || "New Food", currentDropdownInputId);
-  } else {
-    const resultIndex = activeIndex - 1;
-    const results = currentResults.slice(0, SEARCH_DISPLAY_LIMIT);
-    if (resultIndex < results.length) {
-      const result = results[resultIndex];
-      if (result.type === "protocol") {
-        currentCallbacks.onSelectProtocol(result.data);
+  } else if (activeIndex < results.length) {
+    const result = results[activeIndex];
+    if (result.type === "protocol") {
+      currentCallbacks.onSelectProtocol(result.data);
+    } else {
+      if (currentDropdownInputId === "food-a-search") {
+        currentCallbacks.onSelectFoodA(result.data);
       } else {
-        if (currentDropdownInputId === "food-a-search") {
-          currentCallbacks.onSelectFoodA(result.data);
-        } else {
-          currentCallbacks.onSelectFoodB(result.data);
-        }
+        currentCallbacks.onSelectFoodB(result.data);
       }
     }
   }
