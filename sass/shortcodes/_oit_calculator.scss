@@ -363,6 +363,13 @@
     margin-bottom: 1rem;
     display: flex;
     gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    flex-grow: 1;
+    width: 100%;
   }
 
   .search-input {

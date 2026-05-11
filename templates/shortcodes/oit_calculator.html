@@ -70,13 +70,15 @@
 		<!-- Food A Container -->
 		<div class="food-a-container">
 			<div class="search-container">
-				<input type="text"
-				       id="food-a-search"
-				       placeholder="Search for foods, protocols, or make custom food..."
-				       class="search-input"
-				       autocomplete="off"
-				>
-				<div id="food-a-search-dropdown-mount"></div>
+				<div class="search-input-wrapper">
+					<input type="text"
+					       id="food-a-search"
+					       placeholder="Search for foods, protocols, or make custom food..."
+					       class="search-input"
+					       autocomplete="off"
+					>
+					<div id="food-a-search-dropdown-mount"></div>
+				</div>
 			</div>
 			<!-- Food A settings will be dynamically inserted here -->
 			<div id="food-a-settings-mount"></div>
@@ -85,14 +87,16 @@
 		<div class="food-b-container disabled">
 			<h3>Optional Transition Food</h3>
 			<div class="search-container">
-				<input type="text"
-				       id="food-b-search"
-				       placeholder="Search for food or create one to transition to..."
-				       class="search-input"
-				       autocomplete="off"
-				       disabled
-				>
-				<div id="food-b-search-dropdown-mount"></div>
+				<div class="search-input-wrapper">
+					<input type="text"
+					       id="food-b-search"
+					       placeholder="Search for food or create one to transition to..."
+					       class="search-input"
+					       autocomplete="off"
+					       disabled
+					>
+					<div id="food-b-search-dropdown-mount"></div>
+				</div>
 				<button id="clear-food-b" class="clear-food-b" disabled>
 					Clear
 				</button>
