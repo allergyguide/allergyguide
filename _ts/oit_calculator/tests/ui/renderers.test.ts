@@ -1,6 +1,16 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { updateWarnings } from "../../ui/renderers";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { updateWarnings, renderProtocolTable } from "../../ui/renderers";
 import type { Protocol, Warning } from "../../types";
+import * as litHtml from "lit-html";
+
+// Mock lit-html to spy on render calls
+vi.mock("lit-html", async () => {
+  const actual = await vi.importActual("lit-html") as any;
+  return {
+    ...actual,
+    render: vi.fn(actual.render),
+  };
+});
 
 describe("Renderer: updateWarnings", () => {
   let container: HTMLElement;
@@ -10,6 +20,7 @@ describe("Renderer: updateWarnings", () => {
     // Create the expected DOM structure for updateWarnings
     document.body.innerHTML = '<div class="warnings-container"></div>';
     container = document.querySelector(".warnings-container") as HTMLElement;
+    vi.clearAllMocks();
   });
 
   it("should render the empty state when no warnings are present", () => {
@@ -36,7 +47,7 @@ describe("Renderer: updateWarnings", () => {
     // Check warning groups
     const groups = container.querySelectorAll(".warning-group");
     expect(groups).toHaveLength(2);
-    
+
     expect(groups[0].classList.contains("severity-red")).toBe(true);
     expect(groups[0].querySelector(".warning-header")?.textContent).toBe("Protocol Issues");
 
@@ -54,5 +65,35 @@ describe("Renderer: updateWarnings", () => {
 
     const message = container.querySelector(".warning-list li")?.textContent?.trim();
     expect(message).toBe("Low servings");
+  });
+});
+
+describe("Renderer: renderProtocolTable", () => {
+  beforeEach(() => {
+    // Mock the full OIT UI structure needed for renderProtocolTable and renderEmptyState
+    document.body.innerHTML = `
+      <div id="empty-state-container"></div>
+      <div id="protocol-table-mount"></div>
+      <div class="warnings-container"></div>
+      <div class="dosing-strategy-container"></div>
+      <div class="step-controls-footer"></div>
+      <div class="bottom-section"></div>
+      <div class="settings-container"></div>
+      <div class="oit-toolbar"></div>
+    `;
+    vi.clearAllMocks();
+  });
+
+  it("should clear warnings container using lit-html when protocol is null", () => {
+    const warningsContainer = document.querySelector(".warnings-container") as HTMLElement;
+
+    // Call with null protocol (simulating tab switch to empty)
+    renderProtocolTable(null, "", false, []);
+
+    // Regression check: Ensure render(nothing, container) was called instead of warningsContainer.innerHTML = ""
+    expect(litHtml.render).toHaveBeenCalledWith(litHtml.nothing, warningsContainer);
+
+    // Also verify that the container is effectively empty 
+    expect(warningsContainer.innerHTML.replace("<!---->", "")).toBe("");
   });
 });

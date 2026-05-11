@@ -238,11 +238,12 @@ export function selectHighlightedDropdownItem(): void {
   if (!currentDropdownInputId || activeIndex < 0 || !currentCallbacks) return;
 
   const results = currentResults.slice(0, SEARCH_DISPLAY_LIMIT);
-  
+
   if (activeIndex === results.length) {
     // Custom Food is now at the end (Index N)
     currentCallbacks.onSelectCustom(currentQuery || "New Food", currentDropdownInputId);
   } else if (activeIndex < results.length) {
+    // it's a food or protocol from search
     const result = results[activeIndex];
     if (result.type === "protocol") {
       currentCallbacks.onSelectProtocol(result.data);

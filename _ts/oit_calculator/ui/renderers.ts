@@ -7,7 +7,7 @@ import { DosingStrategy } from "../types";
 import type { Protocol, Warning, ReadableHistoryPayload, Tab, ReadableWarning } from "../types";
 import { escapeHtml } from "../utils";
 import { workspace } from "../state/instances";
-import { render } from "lit-html";
+import { nothing, render } from "lit-html";
 import { ProtocolTable } from "./components/ProtocolTable";
 import { WarningsSidebar } from "./components/WarningsSidebar";
 import { validateProtocol } from "../core/validator";
@@ -243,7 +243,7 @@ export function renderProtocolTable(protocol: Protocol | null, customNote: strin
     renderEmptyState();
     // Update Warnings to clear them
     const warningsContainer = document.querySelector(".warnings-container") as HTMLElement;
-    if (warningsContainer) warningsContainer.innerHTML = "";
+    if (warningsContainer) render(nothing, warningsContainer)
     return;
   }
 

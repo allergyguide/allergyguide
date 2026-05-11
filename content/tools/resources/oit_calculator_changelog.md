@@ -15,6 +15,7 @@ authors = ["Joshua Yu"]
 - Support for pharmacy-compounded capsules for "Food A", allowing generation of protocols for doses without manual measurement or dilution.
 - UX: Login modal can now be closed by pressing the `Esc` key.
 - UX: When adding a new step to the protocol, the "Protein (mg)" field is now automatically focused and selected.
+- UI: The "Create Custom Food" option in the search dropdown is now sticky at the bottom, ensuring it remains accessible when there are many search results.
 
 ### Changed
 
