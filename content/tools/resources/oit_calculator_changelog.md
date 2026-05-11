@@ -35,8 +35,6 @@ authors = ["Joshua Yu"]
 
 ### Security
 
-- Updated dependencies (`jspdf`, `dompurify`) to address potential vulnerabilities and improve PDF export stability.
-
 ---
 
 ## [0.15.0] - 2026-01-11
