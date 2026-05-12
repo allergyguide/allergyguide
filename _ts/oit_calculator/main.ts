@@ -34,7 +34,7 @@ import {
 import { initSearchEvents } from "./ui/searchUI";
 import { attachClickwrapEventListeners, attachLoginModalListeners, attachSaveRequestListeners } from "./ui/modals";
 import { initGlobalEvents } from "./ui/events";
-import { initExportEvents, triggerPdfGeneration } from "./ui/exports";
+import { initExportEvents, prefetchPdfLibraries, triggerPdfGeneration } from "./ui/exports";
 import { handleUserLoad, loadPublicDatabases, loadUserConfiguration } from "./data/loader";
 import { logout } from "./data/auth";
 import { VALIDATION_DEBOUNCE_MS } from "./constants";
@@ -248,6 +248,9 @@ async function initializeCalculator(): Promise<void> {
       debugPanel.style.display = 'block';
     }
   }
+
+  // start loading some of the heavy libraries needed for export
+  prefetchPdfLibraries()
 
   console.log("OIT Calculator initialized");
 }

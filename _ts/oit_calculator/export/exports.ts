@@ -329,30 +329,26 @@ async function fetchBaseTermsSheet(): Promise<ArrayBuffer> {
 async function handlePdfMergeAndDownload(doc: jsPDF, PdfDocClass: typeof PDFDocument) {
   const protocolPdfBytes = doc.output('arraybuffer');
   const mergedPdf = await PdfDocClass.create();
-  const handoutOrder = appState.pdfHandouts; // e.g. ["alice_header.pdf", "protocol", "alice_footer.pdf"]
 
-  for (const item of handoutOrder) {
-    let pdfBytes: ArrayBuffer;
+  // fetch all PDFs
+  const fetchPromises = appState.pdfHandouts.map(async (item) => {
+    if (item === "public_terms") return fetchBaseTermsSheet();
+    if (item === "protocol") return protocolPdfBytes;
 
-    if (item === "public_terms") {
-      pdfBytes = await fetchBaseTermsSheet();
+    try {
+      return await fetchSecurePdfBytes(item);
+    } catch (e) {
+      console.error(`Could not load handout: ${item}`, e);
+      return null;
     }
-    else if (item === "protocol") {
-      pdfBytes = protocolPdfBytes;
-    } else {
-      // Fetch external PDF (Securely)
-      try {
-        pdfBytes = await fetchSecurePdfBytes(item);
-      } catch (e) {
-        console.error(`Could not load handout: ${item}`, e);
-        continue; // Skip missing files rather than failing entire export
-      }
-    }
+  });
+  const pdfBytesArray = await Promise.all(fetchPromises);
 
-    // Load and Merge
+  // merge PDFs in order specified in appState.pdfHandouts, e.g. ["alice_header.pdf", "protocol", "alice_footer.pdf"]
+  for (const pdfBytes of pdfBytesArray) {
+    if (!pdfBytes) continue; // Skip missing files
     const srcDoc = await PdfDocClass.load(pdfBytes);
-    const indices = srcDoc.getPageIndices();
-    const copiedPages = await mergedPdf.copyPages(srcDoc, indices);
+    const copiedPages = await mergedPdf.copyPages(srcDoc, srcDoc.getPageIndices());
     copiedPages.forEach((page) => mergedPdf.addPage(page));
   }
 

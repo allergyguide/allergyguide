@@ -9,6 +9,22 @@ import { exportASCII, generatePdf } from "../export/exports"
 import type { ProtocolExportData } from "../types";
 
 /**
+ * Optimistic async loading of some heavy libraries needed for creation and merging of PDFs
+*/
+export function prefetchPdfLibraries() {
+  // Use requestIdleCallback if available, otherwise setTimeout
+  const requestIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1000));
+
+  requestIdle(() => {
+    import('jspdf');
+    import('pdf-lib');
+    import('jspdf-autotable');
+    import('qrcode');
+    import('pako');
+  });
+}
+
+/**
  * Gathers data from all non-empty tabs in the workspace for export.
  */
 function getExportDataFromWorkspace(): ProtocolExportData[] {
