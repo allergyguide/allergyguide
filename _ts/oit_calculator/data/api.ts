@@ -5,6 +5,28 @@
 import { HttpError, type SaveRequestPayload } from "../types";
 
 /**
+ * Fetches the user's provisioned foods, protocols, and config
+ * Hits the dedicated bootstrap Netlify function.
+ */
+export async function fetchOITBootstrap() {
+  const response = await fetch('/.netlify/functions/oit-bootstrap');
+
+  if (!response.ok) {
+    let errorMessage = 'Unknown Error';
+    try {
+      const json = await response.json();
+      errorMessage = json.message || json.error || JSON.stringify(json);
+    } catch (e) {
+      errorMessage = 'Could not read error body';
+    }
+
+    throw new HttpError(`Error: ${errorMessage}`, response.status);
+  }
+
+  return await response.json();
+}
+
+/**
  * Fetcher for secure assets
  * Handles the URL construction and basic HTTP error throwing
  * Calls netlify function
@@ -87,7 +109,7 @@ export async function loadSecureAsset(filepath: string, format: 'auto' | 'buffer
  * @throws {HttpError} If the server returns a non-200 status or if the session is invalid.
  */
 export async function requestSaveProtocol(payload: SaveRequestPayload): Promise<boolean> {
-  const response = await fetch('/.netlify/functions/request-save-oit-protocol', {
+  const response = await fetch('/.netlify/functions/oit-request-save-protocol', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)

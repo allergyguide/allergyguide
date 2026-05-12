@@ -8,7 +8,7 @@ import cookie from 'cookie';
 import bcrypt from 'bcryptjs';
 import { resolve } from 'path';
 import { promises as fs } from 'fs';
-import { getAllFilePaths } from './utils.mts';
+import { getAllFilePaths } from './_lib/utils.mts';
 import { createClient } from '@supabase/supabase-js';
 
 // INITIALIZE SUPABASE ADMIN

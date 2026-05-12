@@ -13,7 +13,7 @@ import {
 } from "../types";
 import { HttpError } from "../types";
 import { SAMPLE_PROTOCOL } from "../utils"
-import { loadSecureAsset } from "./api";
+import { fetchOITBootstrap, loadSecureAsset } from "./api";
 import { appState } from "../main";
 
 
@@ -85,8 +85,8 @@ export async function loadPublicDatabases(): Promise<PublicData> {
  */
 export async function loadUserConfiguration(): Promise<UserDataResult> {
   try {
-    // Fetch everything in one go via the `oit_calculator-bootstrap`
-    const bootstrapData = await loadSecureAsset('oit_calculator-bootstrap', 'json');
+    // Fetch everything in one go 
+    const bootstrapData = await fetchOITBootstrap();
 
     // Basic structure check
     if (!bootstrapData || typeof bootstrapData !== 'object') {

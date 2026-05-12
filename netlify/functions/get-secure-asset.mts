@@ -5,18 +5,8 @@
 import type { Handler, HandlerResponse } from '@netlify/functions';
 import { normalize, resolve } from 'path';
 import { promises as fs } from 'fs';
-import cookie from 'cookie';
-import jwt from 'jsonwebtoken';
-
-/**
- * Interface representing the decoded JWT payload.
- */
-interface UserToken {
-  username: string;
-  permissions: string[];
-  iat: number;
-  exp: number;
-}
+import { authenticateUser, UserToken } from './_lib/auth.mts';
+import { HttpError } from './_lib/utils.mts';
 
 
 /**
@@ -29,34 +19,30 @@ interface UserToken {
  * @returns A response containing the base64 encoded file or an error status
  */
 export const handler: Handler = async (event) => {
-  // EXTRACT COOKIE and JWT TOKEN
-  const cookies = cookie.parse(event.headers.cookie || '');
-  const token = cookies.nf_jwt;
-
-  if (!token) {
-    return {
-      statusCode: 401,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: "Unauthorized: No session found" })
-    };
-  }
 
   let username = '';
   let tokenPermissions: string[];
 
-  // VERIFY JWT & GET USER
   try {
-    if (!process.env.JWT_SECRET) throw new Error("Missing JWT_SECRET");
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as UserToken;
+    const decoded = authenticateUser(event) as UserToken;
     username = decoded.username;
     tokenPermissions = decoded.permissions;
   } catch (err) {
-    return {
-      statusCode: 403,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: "Forbidden: Session expired or invalid" })
-    };
+    if (err instanceof HttpError) {
+      return {
+        statusCode: err.statusCode,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: err.message })
+      };
+    } else {
+      // would be very odd if this were to run 
+      console.error("Unhandled Server Error:", err);
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: "Internal Server Error" })
+      };
+    }
   }
 
   // PARSE REQUESTED FILENAME, AND MAKE SURE IT'S VALID
@@ -74,74 +60,6 @@ export const handler: Handler = async (event) => {
   // CHANGE FILENAME IF GENERIC `me.json` REQUESTED TO GRAB USER CONFIG
   if (filename === 'me.json') {
     filename = `user_configs/${username}_config.json`;
-  }
-
-  // HANDLE BOOTSTRAP REQUEST (Server-Side Aggregation)
-  if (filename === 'oit_calculator-bootstrap') {
-    try {
-      const secureRoot = resolve('./secure_assets');
-      const configPath = resolve(secureRoot, `user_configs/${username}_config.json`);
-
-      // A. Read User Config
-      const configRaw = await fs.readFile(configPath, 'utf-8');
-      const userConfig = JSON.parse(configRaw);
-
-      if (!userConfig.tools?.oit_calculator) {
-        console.warn(`User ${username} logged in but lacks oit_calculator config.`);
-        return {
-          statusCode: 403,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: "Forbidden: No OIT Configuration found" })
-        };
-      }
-
-      const oitConfig = userConfig.tools.oit_calculator;
-
-      // B. Read Assets Parallel
-      // Use catch() to return empty array if a specific file is missing/broken
-
-      // path traversal security check
-      const foodsPath = resolve(secureRoot, oitConfig.provisioned_foods);
-      if (!foodsPath.startsWith(secureRoot)) throw new Error("Invalid provisioned foods path");
-      const protocolsPath = resolve(secureRoot, oitConfig.provisioned_protocols);
-      if (!protocolsPath.startsWith(secureRoot)) throw new Error("Invalid provisioned protocols path");
-
-      const [foodsRaw, protocolsRaw] = await Promise.all([
-
-        fs.readFile(foodsPath, 'utf-8').catch(e => {
-          console.error(`Failed to load foods for ${username}:`, e);
-          return "[]";
-        }),
-        fs.readFile(protocolsPath, 'utf-8').catch(e => {
-          console.error(`Failed to load protocols for ${username}:`, e);
-          return "[]";
-        })
-      ]);
-
-      const responseData = {
-        username: username,
-        provisioned_foods: JSON.parse(foodsRaw),
-        provisioned_protocols: JSON.parse(protocolsRaw),
-        handouts: oitConfig.handouts || []
-      };
-
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'private, no-cache, no-store, must-revalidate',
-        },
-        body: JSON.stringify(responseData)
-      };
-
-    } catch (err) {
-      console.error(`Error in oit_calculator bootstrap for ${username}:`, err);
-      return {
-        statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: "Bootstrap failed" })
-      };
-    }
   }
 
   // AUTHORIZATION LOGIC
