@@ -101,10 +101,10 @@ export const handler: Handler = async (event) => {
       // Use catch() to return empty array if a specific file is missing/broken
 
       // path traversal security check
-      const foodsPath = resolve(secureRoot, oitConfig.custom_foods);
-      if (!foodsPath.startsWith(secureRoot)) throw new Error("Invalid custom foods path");
-      const protocolsPath = resolve(secureRoot, oitConfig.custom_protocols);
-      if (!protocolsPath.startsWith(secureRoot)) throw new Error("Invalid custom protocols path");
+      const foodsPath = resolve(secureRoot, oitConfig.provisioned_foods);
+      if (!foodsPath.startsWith(secureRoot)) throw new Error("Invalid provisioned foods path");
+      const protocolsPath = resolve(secureRoot, oitConfig.provisioned_protocols);
+      if (!protocolsPath.startsWith(secureRoot)) throw new Error("Invalid provisioned protocols path");
 
       const [foodsRaw, protocolsRaw] = await Promise.all([
 
@@ -120,8 +120,8 @@ export const handler: Handler = async (event) => {
 
       const responseData = {
         username: username,
-        customFoods: JSON.parse(foodsRaw),
-        protocols: JSON.parse(protocolsRaw),
+        provisioned_foods: JSON.parse(foodsRaw),
+        provisioned_protocols: JSON.parse(protocolsRaw),
         handouts: oitConfig.handouts || []
       };
 

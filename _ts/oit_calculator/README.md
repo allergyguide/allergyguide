@@ -84,7 +84,7 @@ The tool uses a "Hybrid" data loading model to support multi-tenancy while keepi
 
 - **Gating:** `get-secure-asset.mts` verifies the JWT and checks the user config fetched from secure_assets to ensure the user is allowed to access the requested file.
 - **Configuration:** The tool uses an `oit_calculator-bootstrap` request, which the backend handles by reading `user_configs/{username}_config.json` and then aggregating the required food and protocol lists into a single JSON response for the frontend.
-- **Merging:** `AppState` merges the public foods/protocols with the private ones received from the bootstrap payload, rebuilding search indices.
+- **Merging:** `AppState` merges the public foods/protocols with the provisioned ones received from the bootstrap payload, rebuilding search indices.
 
 ### Hybrid Rendering Strategy
 
@@ -234,3 +234,4 @@ The calculator operates based on a set of clinical and practical assumptions to 
 2. **Customize Protocol:** Adjust Food A settings (name, protein concentration, form, dilution strategy, threshold), select a dosing strategy (Standard, Slow), and modify individual steps. Optionally, add a transition Food B, whose settings (name, protein concentration, form, threshold) can also be customized. A custom note can also be added.
 3. **Review and Refine:** The tool displays real-time warnings (red for critical, yellow for caution) and can edit the protocol as required to fix these.
 4. **Export:** Once satisfied, export the protocol in ASCII format or as a PDF for patient handout.
+

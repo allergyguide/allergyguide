@@ -95,13 +95,13 @@ export async function loadUserConfiguration(): Promise<UserDataResult> {
 
     // Validate Data
     // fallback to [] if the call fails
-    const customFoods = validateList<FoodData>(bootstrapData.customFoods || [], FoodDataSchema, "Custom Food");
-    const protocols = validateList<ProtocolData>(bootstrapData.protocols || [], ProtocolDataSchema, "Protocol");
+    const provisioned_foods = validateList<FoodData>(bootstrapData.provisioned_foods || [], FoodDataSchema, "Provisioned Food");
+    const provisioned_protocols = validateList<ProtocolData>(bootstrapData.provisioned_protocols || [], ProtocolDataSchema, "Provisioned Protocol");
 
     return {
       username: bootstrapData.username || "Unknown",
-      customFoods,
-      protocols,
+      provisioned_foods: provisioned_foods,
+      provisioned_protocols: provisioned_protocols,
       handouts: bootstrapData.handouts || []
     };
   } catch (error) {
@@ -125,9 +125,9 @@ export async function handleUserLoad(): Promise<boolean> {
     const userData = await loadUserConfiguration();
 
     // update state (foods, protocols, and pdf order)
-    appState.addSecureData(
-      userData.customFoods,
-      userData.protocols,
+    appState.addProvisionedData(
+      userData.provisioned_foods,
+      userData.provisioned_protocols,
       userData.handouts
     );
 

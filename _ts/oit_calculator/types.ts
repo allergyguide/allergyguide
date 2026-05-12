@@ -452,11 +452,11 @@ export interface PublicData {
   protocols: ProtocolData[];
 }
 
-// Return type for secure load
+// Return type for secure load of provisioned resrouces
 export interface UserDataResult {
   username: string;
-  customFoods: FoodData[];
-  protocols: ProtocolData[];
+  provisioned_foods: FoodData[];
+  provisioned_protocols: ProtocolData[];
   handouts: string[];
 }
 

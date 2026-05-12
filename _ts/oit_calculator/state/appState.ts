@@ -68,13 +68,13 @@ export class AppState {
   /**
    * Merges secure data (ie other custom foods, protocols) into the application state and rebuilds search indices
    */
-  public addSecureData(customFoods: FoodData[] | null, protocols: ProtocolData[] | null, handoutOrder: string[] | null) {
+  public addProvisionedData(provisioned_foods: FoodData[] | null, provisioned_protocols: ProtocolData[] | null, handoutOrder: string[] | null) {
     // Merge Foods (Public + Custom)
     // TODO! ?duplicate check
-    this.foodsDatabase = customFoods ? [...this.foodsDatabase, ...customFoods] : this.foodsDatabase;
+    this.foodsDatabase = provisioned_foods ? [...this.foodsDatabase, ...provisioned_foods] : this.foodsDatabase;
 
     // Set Protocols (Assuming protocols are entirely private/secure)
-    this.protocolsDatabase = protocols ? protocols : this.protocolsDatabase;
+    this.protocolsDatabase = provisioned_protocols ? provisioned_protocols : this.protocolsDatabase;
 
     // set handouts order
     this.pdfHandouts = handoutOrder ? handoutOrder : this.pdfHandouts;

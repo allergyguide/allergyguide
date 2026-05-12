@@ -124,10 +124,10 @@ async function initializeCalculator(): Promise<void> {
 
   // If successful auth in
   if (userData) {
-    console.log("Session restored: Loading custom assets.");
-    appState.addSecureData(
-      userData.customFoods,
-      userData.protocols,
+    console.log("Session restored: Loading provisioned assets.");
+    appState.addProvisionedData(
+      userData.provisioned_foods,
+      userData.provisioned_protocols,
       userData.handouts
     );
 
