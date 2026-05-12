@@ -1,5 +1,11 @@
-import { directive, Directive, PartType, type ElementPart, type PartInfo } from 'lit-html/directive.js';
-import Decimal from 'decimal.js';
+import {
+	directive,
+	Directive,
+	PartType,
+	type ElementPart,
+	type PartInfo,
+} from "lit-html/directive.js";
+import Decimal from "decimal.js";
 
 /**
  * activeSafe Directive
@@ -10,91 +16,98 @@ import Decimal from 'decimal.js';
  * html`<input ${activeSafe(value, (v) => v.toFixed(1))}>`
  */
 class ActiveSafeDirective extends Directive {
-  private element?: HTMLInputElement;
-  private lastValue: unknown;
-  private formatter?: (v: unknown) => string;
+	private element?: HTMLInputElement;
+	private lastValue: unknown;
+	private formatter?: (v: unknown) => string;
 
-  /**
-   * Initializes the directive and ensures it is used on an element.
-   *
-   * @param partInfo - Metadata about the part where the directive is used.
-   * @throws Error if not used as an element directive.
-   */
-  constructor(partInfo: PartInfo) {
-    super(partInfo);
-    if (partInfo.type !== PartType.ELEMENT) {
-      throw new Error('activeSafe must be used as an element directive: <input ${activeSafe(...)}>');
-    }
-  }
+	/**
+	 * Initializes the directive and ensures it is used on an element.
+	 *
+	 * @param partInfo - Metadata about the part where the directive is used.
+	 * @throws Error if not used as an element directive.
+	 */
+	constructor(partInfo: PartInfo) {
+		super(partInfo);
+		if (partInfo.type !== PartType.ELEMENT) {
+			throw new Error(
+				"activeSafe must be used as an element directive: <input ${activeSafe(...)}>",
+			);
+		}
+	}
 
-  /**
-   * Handles update of the host element's value.
-   * Compares the new value with the current DOM value using mathematical equivalence if the element is focused.
-   *
-   * @param part - The element part being updated.
-   * @param props - The value and optional formatter function.
-   * @returns undefined (Element directives do not render content).
-   */
-  update(part: ElementPart, [value, formatter]: [unknown, ((v: unknown) => string)?]) {
-    this.element = part.element as HTMLInputElement;
-    this.lastValue = value;
-    this.formatter = formatter;
+	/**
+	 * Handles update of the host element's value.
+	 * Compares the new value with the current DOM value using mathematical equivalence if the element is focused.
+	 *
+	 * @param part - The element part being updated.
+	 * @param props - The value and optional formatter function.
+	 * @returns undefined (Element directives do not render content).
+	 */
+	update(
+		part: ElementPart,
+		[value, formatter]: [unknown, ((v: unknown) => string)?],
+	) {
+		this.element = part.element as HTMLInputElement;
+		this.lastValue = value;
+		this.formatter = formatter;
 
-    const formattedValue = formatter ? formatter(value) : String(value);
+		const formattedValue = formatter ? formatter(value) : String(value);
 
-    // If the element is currently focused, is the current state === new input mathematically (ie. 1.0 === 1) 
-    if (document.activeElement === this.element) {
-      try {
-        const vNew = new Decimal(formattedValue);
-        const vCurr = new Decimal(this.element.value || '0');
+		// If the element is currently focused, is the current state === new input mathematically (ie. 1.0 === 1)
+		if (document.activeElement === this.element) {
+			try {
+				const vNew = new Decimal(formattedValue);
+				const vCurr = new Decimal(this.element.value || "0");
 
-        if (vNew.equals(vCurr)) {
-          // Mathematically equivalent, skip DOM update to preserve cursor/state
-          return;
-        }
-      } catch (e) {
-        // If parsing fails while focused => there's an intermediate (ie. "." or "-") that Decimal(x) will throw an err for
-        // return here avoids overwriting current input
-        return;
-      }
-    }
+				if (vNew.equals(vCurr)) {
+					// Mathematically equivalent, skip DOM update to preserve cursor/state
+					return;
+				}
+			} catch (e) {
+				// If parsing fails while focused => there's an intermediate (ie. "." or "-") that Decimal(x) will throw an err for
+				// return here avoids overwriting current input
+				return;
+			}
+		}
 
-    // if not equivalent or not focused, should update
-    if (this.element.value !== formattedValue) {
-      this.element.value = formattedValue;
-    }
+		// if not equivalent or not focused, should update
+		if (this.element.value !== formattedValue) {
+			this.element.value = formattedValue;
+		}
 
-    // Attach blur listener once
-    // This is a bit dirty but for this purpose it's fine ...
-    if (!this.element.dataset.activeSafeInitialized) {
-      this.element.addEventListener('blur', () => this.handleBlur());
-      this.element.dataset.activeSafeInitialized = 'true';
-    }
+		// Attach blur listener once
+		// This is a bit dirty but for this purpose it's fine ...
+		if (!this.element.dataset.activeSafeInitialized) {
+			this.element.addEventListener("blur", () => this.handleBlur());
+			this.element.dataset.activeSafeInitialized = "true";
+		}
 
-    return this.render(value, formatter);
-  }
+		return this.render(value, formatter);
+	}
 
-  /**
-   * Handles blur event to apply final formatting to the input
-   * Ensures the DOM value matches the precisely formatted state value
-   */
-  private handleBlur() {
-    if (this.element) {
-      const cleanValue = this.formatter ? this.formatter(this.lastValue) : String(this.lastValue);
-      if (this.element.value !== cleanValue) {
-        this.element.value = cleanValue;
-      }
-    }
-  }
+	/**
+	 * Handles blur event to apply final formatting to the input
+	 * Ensures the DOM value matches the precisely formatted state value
+	 */
+	private handleBlur() {
+		if (this.element) {
+			const cleanValue = this.formatter
+				? this.formatter(this.lastValue)
+				: String(this.lastValue);
+			if (this.element.value !== cleanValue) {
+				this.element.value = cleanValue;
+			}
+		}
+	}
 
-  /**
-   * Required render method for Lit directives
-   *
-   * @returns undefined
-   */
-  render(_value: unknown, _formatter?: (v: unknown) => string) {
-    return undefined;
-  }
+	/**
+	 * Required render method for Lit directives
+	 *
+	 * @returns undefined
+	 */
+	render(_value: unknown, _formatter?: (v: unknown) => string) {
+		return undefined;
+	}
 }
 
 /**

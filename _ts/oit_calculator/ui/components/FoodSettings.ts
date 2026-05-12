@@ -4,17 +4,17 @@ import { FoodType, FoodAStrategy, type Food } from "../../types";
 import { WorkspaceManager } from "../../state/workspaceManager";
 import { ProtocolState } from "../../state/protocolState";
 import {
-  handleFoodANameChange,
-  handleFoodAProteinChange,
-  handleFoodAServingSizeChange,
-  handleFoodATypeChange,
-  handleFoodAStrategyChange,
-  handleFoodAThresholdChange,
-  handleFoodBNameChange,
-  handleFoodBProteinChange,
-  handleFoodBServingSizeChange,
-  handleFoodBTypeChange,
-  handleFoodBThresholdChange
+	handleFoodANameChange,
+	handleFoodAProteinChange,
+	handleFoodAServingSizeChange,
+	handleFoodATypeChange,
+	handleFoodAStrategyChange,
+	handleFoodAThresholdChange,
+	handleFoodBNameChange,
+	handleFoodBProteinChange,
+	handleFoodBServingSizeChange,
+	handleFoodBTypeChange,
+	handleFoodBThresholdChange,
 } from "../actions/settingsActions";
 import { formatAmount } from "../../utils";
 
@@ -30,21 +30,21 @@ import { formatAmount } from "../../utils";
  * @returns A lit-html TemplateResult.
  */
 const baseFoodForm = (
-  state: ProtocolState,
-  food: Food,
-  idPrefix: string,
-  handlers: {
-    onName: (state: ProtocolState, val: string) => void;
-    onProtein: (state: ProtocolState, val: string) => void;
-    onServing: (state: ProtocolState, val: string) => void;
-    onType: (state: ProtocolState, type: FoodType) => void;
-  },
-  options: { allowCapsules: boolean }
+	state: ProtocolState,
+	food: Food,
+	idPrefix: string,
+	handlers: {
+		onName: (state: ProtocolState, val: string) => void;
+		onProtein: (state: ProtocolState, val: string) => void;
+		onServing: (state: ProtocolState, val: string) => void;
+		onType: (state: ProtocolState, type: FoodType) => void;
+	},
+	options: { allowCapsules: boolean },
 ) => {
-  const isCapsule = food.type === FoodType.CAPSULE;
-  const unit = food.type === FoodType.SOLID ? "g" : "ml";
+	const isCapsule = food.type === FoodType.CAPSULE;
+	const unit = food.type === FoodType.SOLID ? "g" : "ml";
 
-  return html`
+	return html`
     <input 
       type="text" 
       class="food-name-input" 
@@ -91,12 +91,16 @@ const baseFoodForm = (
           class="toggle-btn ${food.type === FoodType.LIQUID ? "active" : ""}" 
           @click="${() => handlers.onType(state, FoodType.LIQUID)}"
         >Liquid</button>
-        ${options.allowCapsules ? html`
+        ${
+					options.allowCapsules
+						? html`
           <button 
             class="toggle-btn ${food.type === FoodType.CAPSULE ? "active" : ""}" 
             @click="${() => handlers.onType(state, FoodType.CAPSULE)}"
           >Capsule</button>
-        ` : ""}
+        `
+						: ""
+				}
       </div>
     </div>
   `;
@@ -109,28 +113,37 @@ const baseFoodForm = (
  * @param ws - The workspace manager providing access to the active protocol state.
  * @param mount - The DOM element where the lit-html template should be rendered.
  */
-export function renderFoodASettings(ws: WorkspaceManager, mount: HTMLElement): void {
-  const activeState = ws.getActive();
-  const protocol = activeState.getProtocol();
+export function renderFoodASettings(
+	ws: WorkspaceManager,
+	mount: HTMLElement,
+): void {
+	const activeState = ws.getActive();
+	const protocol = activeState.getProtocol();
 
-  // if no protocol defined, then HTMLElement defined by mount set as empty
-  if (!protocol) {
-    render(nothing, mount);
-    return;
-  }
+	// if no protocol defined, then HTMLElement defined by mount set as empty
+	if (!protocol) {
+		render(nothing, mount);
+		return;
+	}
 
-  const isCapsule = protocol.foodA.type === FoodType.CAPSULE;
-  const unit = protocol.foodA.type === FoodType.SOLID ? "g" : "ml";
+	const isCapsule = protocol.foodA.type === FoodType.CAPSULE;
+	const unit = protocol.foodA.type === FoodType.SOLID ? "g" : "ml";
 
-  // build lit-html template
-  const template = html`
+	// build lit-html template
+	const template = html`
     <div class="food-a-settings">
-      ${baseFoodForm(activeState, protocol.foodA, "food-a", {
-    onName: handleFoodANameChange,
-    onProtein: handleFoodAProteinChange,
-    onServing: handleFoodAServingSizeChange,
-    onType: handleFoodATypeChange
-  }, { allowCapsules: true })}
+      ${baseFoodForm(
+				activeState,
+				protocol.foodA,
+				"food-a",
+				{
+					onName: handleFoodANameChange,
+					onProtein: handleFoodAProteinChange,
+					onServing: handleFoodAServingSizeChange,
+					onType: handleFoodATypeChange,
+				},
+				{ allowCapsules: true },
+			)}
 
       <details 
         class="oit-advanced-settings" 
@@ -157,7 +170,9 @@ export function renderFoodASettings(ws: WorkspaceManager, mount: HTMLElement): v
               >No dilutions</button>
             </div>
           </div>
-          ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL ? html`
+          ${
+						protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL
+							? html`
             <div class="setting-row threshold-setting">
               <label>Directly dose when neat amount ≥</label>
               <div class="input-unit-group">
@@ -175,13 +190,15 @@ export function renderFoodASettings(ws: WorkspaceManager, mount: HTMLElement): v
                 </span>
               </div>
             </div>
-          ` : ""}
+          `
+							: ""
+					}
         </div>
       </details>
     </div>
   `;
 
-  render(template, mount);
+	render(template, mount);
 }
 
 /**
@@ -191,22 +208,31 @@ export function renderFoodASettings(ws: WorkspaceManager, mount: HTMLElement): v
  * @param ws - The workspace manager providing access to the active protocol state.
  * @param mount - The DOM element where the lit-html template should be rendered.
  */
-export function renderFoodBSettings(ws: WorkspaceManager, mount: HTMLElement): void {
-  const activeState = ws.getActive();
-  const protocol = activeState.getProtocol();
-  if (!protocol || !protocol.foodB) {
-    render(nothing, mount);
-    return;
-  }
+export function renderFoodBSettings(
+	ws: WorkspaceManager,
+	mount: HTMLElement,
+): void {
+	const activeState = ws.getActive();
+	const protocol = activeState.getProtocol();
+	if (!protocol || !protocol.foodB) {
+		render(nothing, mount);
+		return;
+	}
 
-  const template = html`
+	const template = html`
     <div class="food-b-settings">
-      ${baseFoodForm(activeState, protocol.foodB, "food-b", {
-    onName: handleFoodBNameChange,
-    onProtein: handleFoodBProteinChange,
-    onServing: handleFoodBServingSizeChange,
-    onType: handleFoodBTypeChange
-  }, { allowCapsules: false })}
+      ${baseFoodForm(
+				activeState,
+				protocol.foodB,
+				"food-b",
+				{
+					onName: handleFoodBNameChange,
+					onProtein: handleFoodBProteinChange,
+					onServing: handleFoodBServingSizeChange,
+					onType: handleFoodBTypeChange,
+				},
+				{ allowCapsules: false },
+			)}
 
       <div class="setting-row threshold-setting">
         <label>Transition when daily amount ≥</label>
@@ -228,5 +254,5 @@ export function renderFoodBSettings(ws: WorkspaceManager, mount: HTMLElement): v
     </div>
   `;
 
-  render(template, mount);
+	render(template, mount);
 }

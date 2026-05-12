@@ -5,9 +5,19 @@
  */
 import Decimal from "decimal.js";
 import { workspace } from "../state/instances";
-import { generateDefaultProtocol, generateStepForTarget } from "../core/calculator";
+import {
+	generateDefaultProtocol,
+	generateStepForTarget,
+} from "../core/calculator";
 import { addFoodBToProtocol } from "../core/protocol";
-import type { FoodData, ProtocolData, Food, Protocol, Step, Unit } from "../types";
+import type {
+	FoodData,
+	ProtocolData,
+	Food,
+	Protocol,
+	Step,
+	Unit,
+} from "../types";
 import { FoodType, DosingStrategy, FoodAStrategy, Method } from "../types";
 import { DEFAULT_CONFIG } from "../constants";
 import { generateUniqueId } from "../utils";
@@ -21,22 +31,24 @@ import { generateUniqueId } from "../utils";
  */
 
 export function selectFoodA(foodData: FoodData): void {
-  const food: Food = {
-    name: foodData.Food,
-    type: foodData.Type,
-    gramsInServing: new Decimal(foodData["Mean protein in grams"]),
-    servingSize: new Decimal(foodData["Serving size"]),
-    getMgPerUnit: function() {
-      return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-    },
-  };
+	const food: Food = {
+		name: foodData.Food,
+		type: foodData.Type,
+		gramsInServing: new Decimal(foodData["Mean protein in grams"]),
+		servingSize: new Decimal(foodData["Serving size"]),
+		getMgPerUnit: function () {
+			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
+		},
+	};
 
-  const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
-  workspace.getActive().setProtocol(newProtocol, `Selected Food A: ${food.name}`);
+	const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+	workspace
+		.getActive()
+		.setProtocol(newProtocol, `Selected Food A: ${food.name}`);
 
-  // clear search bar input after
-  const input = document.getElementById("food-a-search") as HTMLInputElement;
-  if (input) input.value = "";
+	// clear search bar input after
+	const input = document.getElementById("food-a-search") as HTMLInputElement;
+	if (input) input.value = "";
 }
 
 /**
@@ -49,35 +61,35 @@ export function selectFoodA(foodData: FoodData): void {
  * @returns void
  */
 export function selectFoodB(foodData: FoodData): void {
-  if (foodData.Type === FoodType.CAPSULE) {
-    console.error("Capsule food type cannot be selected as Food B");
-    return;
-  }
+	if (foodData.Type === FoodType.CAPSULE) {
+		console.error("Capsule food type cannot be selected as Food B");
+		return;
+	}
 
-  const current = workspace.getActive().getProtocol();
-  if (!current) return;
+	const current = workspace.getActive().getProtocol();
+	if (!current) return;
 
-  const food: Food = {
-    name: foodData.Food,
-    type: foodData.Type,
-    gramsInServing: new Decimal(foodData["Mean protein in grams"]),
-    servingSize: new Decimal(foodData["Serving size"]),
-    getMgPerUnit: function() {
-      return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-    },
-  };
+	const food: Food = {
+		name: foodData.Food,
+		type: foodData.Type,
+		gramsInServing: new Decimal(foodData["Mean protein in grams"]),
+		servingSize: new Decimal(foodData["Serving size"]),
+		getMgPerUnit: function () {
+			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
+		},
+	};
 
-  const threshold = {
-    unit: food.type === FoodType.SOLID ? ("g" as Unit) : ("ml" as Unit),
-    amount: DEFAULT_CONFIG.DEFAULT_FOOD_B_THRESHOLD,
-  };
+	const threshold = {
+		unit: food.type === FoodType.SOLID ? ("g" as Unit) : ("ml" as Unit),
+		amount: DEFAULT_CONFIG.DEFAULT_FOOD_B_THRESHOLD,
+	};
 
-  const updated = addFoodBToProtocol(current, food, threshold);
-  workspace.getActive().setProtocol(updated, `Selected Food B: ${food.name}`);
+	const updated = addFoodBToProtocol(current, food, threshold);
+	workspace.getActive().setProtocol(updated, `Selected Food B: ${food.name}`);
 
-  // clear food B searchbar input after
-  const input = document.getElementById("food-b-search") as HTMLInputElement;
-  if (input) input.value = "";
+	// clear food B searchbar input after
+	const input = document.getElementById("food-b-search") as HTMLInputElement;
+	if (input) input.value = "";
 }
 
 /**
@@ -92,33 +104,37 @@ export function selectFoodB(foodData: FoodData): void {
  * @returns void
  */
 export function selectCustomFood(name: string, inputId: string): void {
-  const food: Food = {
-    name: name || "Custom Food",
-    type: FoodType.SOLID,
-    gramsInServing: new Decimal(10),
-    servingSize: new Decimal(100),
-    getMgPerUnit: function() {
-      return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-    },
-  };
+	const food: Food = {
+		name: name || "Custom Food",
+		type: FoodType.SOLID,
+		gramsInServing: new Decimal(10),
+		servingSize: new Decimal(100),
+		getMgPerUnit: function () {
+			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
+		},
+	};
 
-  if (inputId === "food-a-search") {
-    const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
-    workspace.getActive().setProtocol(newProtocol, `Selected Custom Food A: ${food.name}`)
-  } else {
-    const current = workspace.getActive().getProtocol();
-    if (!current) return;
-    const threshold = {
-      unit: "g" as Unit,
-      amount: DEFAULT_CONFIG.DEFAULT_FOOD_B_THRESHOLD,
-    };
-    const updated = addFoodBToProtocol(current, food, threshold);
-    workspace.getActive().setProtocol(updated, `Selected Custom Food B: ${food.name}`);
-  }
+	if (inputId === "food-a-search") {
+		const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
+		workspace
+			.getActive()
+			.setProtocol(newProtocol, `Selected Custom Food A: ${food.name}`);
+	} else {
+		const current = workspace.getActive().getProtocol();
+		if (!current) return;
+		const threshold = {
+			unit: "g" as Unit,
+			amount: DEFAULT_CONFIG.DEFAULT_FOOD_B_THRESHOLD,
+		};
+		const updated = addFoodBToProtocol(current, food, threshold);
+		workspace
+			.getActive()
+			.setProtocol(updated, `Selected Custom Food B: ${food.name}`);
+	}
 
-  // clear input bar, whatever one it was
-  const input = document.getElementById(inputId) as HTMLInputElement;
-  if (input) input.value = "";
+	// clear input bar, whatever one it was
+	const input = document.getElementById(inputId) as HTMLInputElement;
+	if (input) input.value = "";
 }
 
 /**
@@ -132,118 +148,127 @@ export function selectCustomFood(name: string, inputId: string): void {
  * @returns void
  */
 export function selectProtocol(protocolData: ProtocolData): void {
+	const foodA: Food = {
+		name: protocolData.food_a.name,
+		type: protocolData.food_a.type,
+		gramsInServing: new Decimal(protocolData.food_a.gramsInServing),
+		servingSize: new Decimal(protocolData.food_a.servingSize),
+		getMgPerUnit: function () {
+			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
+		},
+	};
 
-  const foodA: Food = {
-    name: protocolData.food_a.name,
-    type: protocolData.food_a.type,
-    gramsInServing: new Decimal(protocolData.food_a.gramsInServing),
-    servingSize: new Decimal(protocolData.food_a.servingSize),
-    getMgPerUnit: function() {
-      return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-    },
-  };
+	const protocol: Protocol = {
+		dosingStrategy:
+			DosingStrategy[
+				protocolData.dosing_strategy as keyof typeof DosingStrategy
+			],
+		foodA,
+		foodAStrategy:
+			FoodAStrategy[protocolData.food_a_strategy as keyof typeof FoodAStrategy],
+		diThreshold: new Decimal(protocolData.di_threshold),
+		steps: [],
+		config: DEFAULT_CONFIG,
+	};
 
-  const protocol: Protocol = {
-    dosingStrategy: DosingStrategy[protocolData.dosing_strategy as keyof typeof DosingStrategy],
-    foodA,
-    foodAStrategy: FoodAStrategy[protocolData.food_a_strategy as keyof typeof FoodAStrategy],
-    diThreshold: new Decimal(protocolData.di_threshold),
-    steps: [],
-    config: DEFAULT_CONFIG,
-  };
+	if (protocolData.custom_note) {
+		workspace.getActive().setCustomNote(protocolData.custom_note);
+	}
 
-  if (protocolData.custom_note) {
-    workspace.getActive().setCustomNote(protocolData.custom_note);
-  }
+	// load steps
+	const tableToLoad = protocolData.table;
 
-  // load steps 
-  const tableToLoad = protocolData.table;
+	// load steps from relevant table
+	for (let i = 0; i < tableToLoad.length; i++) {
+		const row = tableToLoad[i];
 
-  // load steps from relevant table
-  for (let i = 0; i < tableToLoad.length; i++) {
-    const row = tableToLoad[i];
+		// Determine basic properties
+		let method = Method.DIRECT; // DIRECT as default
+		if (row.method === "DILUTE") method = Method.DILUTE;
+		if (row.method === "CAPSULE") method = Method.CAPSULE;
 
-    // Determine basic properties
-    let method = Method.DIRECT; // DIRECT as default
-    if (row.method === "DILUTE") method = Method.DILUTE;
-    if (row.method === "CAPSULE") method = Method.CAPSULE;
+		let dailyAmount = new Decimal(0);
+		let dailyAmountUnit: Unit = "g";
 
-    let dailyAmount = new Decimal(0);
-    let dailyAmountUnit: Unit = "g";
+		// handle a capsule row
+		if (method === Method.CAPSULE) {
+			dailyAmount = new Decimal(1); // Dummy
+			dailyAmountUnit = "capsule";
+		}
+		// handle Direct or Dilute
+		else {
+			if ("daily_amount" in row) {
+				// hacky check to satisfy TS since daily amount is not in capsule protocol json row
+				dailyAmount = new Decimal(row.daily_amount);
+			}
 
-    // handle a capsule row
-    if (method === Method.CAPSULE) {
-      dailyAmount = new Decimal(1); // Dummy
-      dailyAmountUnit = "capsule";
-    }
-    // handle Direct or Dilute
-    else {
-      if ("daily_amount" in row) { // hacky check to satisfy TS since daily amount is not in capsule protocol json row
-        dailyAmount = new Decimal(row.daily_amount);
-      }
+			if (method === Method.DILUTE) {
+				dailyAmountUnit = "ml";
+			} else {
+				// DIRECT
+				const isFoodA = row.food === "A";
+				const foodType = isFoodA
+					? foodA.type
+					: (protocolData.food_b?.type as FoodType);
+				dailyAmountUnit = foodType === FoodType.SOLID ? "g" : "ml";
+			}
+		}
 
-      if (method === Method.DILUTE) {
-        dailyAmountUnit = "ml";
-      } else {
-        // DIRECT
-        const isFoodA = row.food === "A";
-        const foodType = isFoodA ? foodA.type : (protocolData.food_b?.type as FoodType);
-        dailyAmountUnit = foodType === FoodType.SOLID ? "g" : "ml";
-      }
-    }
+		const step: Step = {
+			id: generateUniqueId(),
+			stepIndex: i + 1,
+			targetMg: new Decimal(row.protein),
+			method: method,
+			dailyAmount: dailyAmount,
+			dailyAmountUnit: dailyAmountUnit,
+			food: row.food,
+		};
 
-    const step: Step = {
-      id: generateUniqueId(),
-      stepIndex: i + 1,
-      targetMg: new Decimal(row.protein),
-      method: method,
-      dailyAmount: dailyAmount,
-      dailyAmountUnit: dailyAmountUnit,
-      food: row.food,
-    };
+		if (row.method === "DILUTE") {
+			// mix_amount and water_amount are guaranteed by RowDataSchema
+			step.mixFoodAmount = new Decimal(row.mix_amount);
+			step.mixWaterAmount = new Decimal(row.water_amount);
+			// Calculate servings
+			let mgPerUnit = foodA.getMgPerUnit();
+			if (row.food === "B" && protocolData.food_b) {
+				const fbGrams = new Decimal(protocolData.food_b.gramsInServing);
+				const fbServing = new Decimal(protocolData.food_b.servingSize);
+				mgPerUnit = fbGrams.times(1000).dividedBy(fbServing);
+			}
 
-    if (row.method === "DILUTE") { // mix_amount and water_amount are guaranteed by RowDataSchema
-      step.mixFoodAmount = new Decimal(row.mix_amount);
-      step.mixWaterAmount = new Decimal(row.water_amount);
-      // Calculate servings
-      let mgPerUnit = foodA.getMgPerUnit();
-      if (row.food === "B" && protocolData.food_b) {
-        const fbGrams = new Decimal(protocolData.food_b.gramsInServing);
-        const fbServing = new Decimal(protocolData.food_b.servingSize);
-        mgPerUnit = fbGrams.times(1000).dividedBy(fbServing);
-      }
+			const totalMixProtein = step.mixFoodAmount.times(mgPerUnit);
+			step.servings = totalMixProtein.dividedBy(step.targetMg);
+		}
 
-      const totalMixProtein = step.mixFoodAmount.times(mgPerUnit);
-      step.servings = totalMixProtein.dividedBy(step.targetMg);
-    }
+		protocol.steps.push(step);
+	}
 
-    protocol.steps.push(step);
-  }
+	// Load Food B if present
+	if (protocolData.food_b) {
+		protocol.foodB = {
+			name: protocolData.food_b.name,
+			type: protocolData.food_b.type as FoodType,
+			gramsInServing: new Decimal(protocolData.food_b.gramsInServing),
+			servingSize: new Decimal(protocolData.food_b.servingSize),
+			getMgPerUnit: function () {
+				return this.gramsInServing.times(1000).dividedBy(this.servingSize);
+			},
+		};
 
-  // Load Food B if present
-  if (protocolData.food_b) {
-    protocol.foodB = {
-      name: protocolData.food_b.name,
-      type: protocolData.food_b.type as FoodType,
-      gramsInServing: new Decimal(protocolData.food_b.gramsInServing),
-      servingSize: new Decimal(protocolData.food_b.servingSize),
-      getMgPerUnit: function() {
-        return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-      },
-    };
+		if (protocolData.food_b_threshold) {
+			protocol.foodBThreshold = {
+				unit: protocol.foodB.type === FoodType.SOLID ? "g" : "ml",
+				amount: new Decimal(protocolData.food_b_threshold),
+			};
+		}
+	}
+	workspace
+		.getActive()
+		.setProtocol(protocol, `Loaded protocol: ${protocolData.name}`);
 
-    if (protocolData.food_b_threshold) {
-      protocol.foodBThreshold = {
-        unit: protocol.foodB.type === FoodType.SOLID ? "g" : "ml",
-        amount: new Decimal(protocolData.food_b_threshold),
-      };
-    }
-  }
-  workspace.getActive().setProtocol(protocol, `Loaded protocol: ${protocolData.name}`);
-
-  // clear search 
-  const input = document.getElementById("food-a-search") as HTMLInputElement;
-  if (input) input.value = "";
+	// clear search
+	const input = document.getElementById("food-a-search") as HTMLInputElement;
+	if (input) input.value = "";
 }
 
 /**
@@ -253,71 +278,73 @@ export function selectProtocol(protocolData: ProtocolData): void {
  * @returns void
  */
 export function clearFoodB(): void {
-  const current = workspace.getActive().getProtocol();
-  if (!current) return;
+	const current = workspace.getActive().getProtocol();
+	if (!current) return;
 
-  // if there's no food B to begin with return early so history stack isn't polluted
-  // and needless calculations are done
-  if (!current.foodB || !current.foodBThreshold) return;
+	// if there's no food B to begin with return early so history stack isn't polluted
+	// and needless calculations are done
+	if (!current.foodB || !current.foodBThreshold) return;
 
-  // Create shallow copy without Food B
-  const protocolWithoutB: Protocol = {
-    ...current,
-    foodB: undefined,
-    foodBThreshold: undefined
-  };
+	// Create shallow copy without Food B
+	const protocolWithoutB: Protocol = {
+		...current,
+		foodB: undefined,
+		foodBThreshold: undefined,
+	};
 
-  const newSteps: Step[] = [];
+	const newSteps: Step[] = [];
 
-  // Filter out the redundant transition step if it exists
-  // e.g. food A 80mg -> food B 80mg, on clear food B the latter step should be removed...
-  // Criteria: Current step is Food B, Previous step is Food A, and Targets are identical
-  const filteredSteps = current.steps.filter((step, index) => {
-    if (index === 0) return true;
-    const prevStep = current.steps[index - 1];
+	// Filter out the redundant transition step if it exists
+	// e.g. food A 80mg -> food B 80mg, on clear food B the latter step should be removed...
+	// Criteria: Current step is Food B, Previous step is Food A, and Targets are identical
+	const filteredSteps = current.steps.filter((step, index) => {
+		if (index === 0) return true;
+		const prevStep = current.steps[index - 1];
 
-    if (
-      prevStep.food === "A" &&
-      step.food === "B" &&
-      step.targetMg.equals(prevStep.targetMg)
-    ) {
-      return false;
-    }
-    return true;
-  });
+		if (
+			prevStep.food === "A" &&
+			step.food === "B" &&
+			step.targetMg.equals(prevStep.targetMg)
+		) {
+			return false;
+		}
+		return true;
+	});
 
-  // Iterate over filtered steps to preserve their targetMg
-  filteredSteps.forEach((step, i) => {
-    // generate a step for Food A for this target
-    const newStep = generateStepForTarget(
-      step.targetMg,
-      i + 1, // 1-based index
-      protocolWithoutB.foodA,
-      "A",
-      protocolWithoutB.foodAStrategy,
-      protocolWithoutB.diThreshold,
-      protocolWithoutB.config
-    );
+	// Iterate over filtered steps to preserve their targetMg
+	filteredSteps.forEach((step, i) => {
+		// generate a step for Food A for this target
+		const newStep = generateStepForTarget(
+			step.targetMg,
+			i + 1, // 1-based index
+			protocolWithoutB.foodA,
+			"A",
+			protocolWithoutB.foodAStrategy,
+			protocolWithoutB.diThreshold,
+			protocolWithoutB.config,
+		);
 
-    if (newStep) {
-      newSteps.push(newStep);
-    } else {
-      // Fallback if dilution fails (e.g. target too small for Food A config)
-      // force a DIRECT step so the data isn't lost
-      console.error("Unable to find new valid dilution for step:", step);
-      const unit = protocolWithoutB.foodA.type === FoodType.SOLID ? "g" : "ml";
-      newSteps.push({
-        id: generateUniqueId(),
-        stepIndex: i + 1,
-        targetMg: step.targetMg,
-        method: Method.DIRECT,
-        dailyAmount: step.targetMg.dividedBy(protocolWithoutB.foodA.getMgPerUnit()),
-        dailyAmountUnit: unit,
-        food: "A"
-      });
-    }
-  });
+		if (newStep) {
+			newSteps.push(newStep);
+		} else {
+			// Fallback if dilution fails (e.g. target too small for Food A config)
+			// force a DIRECT step so the data isn't lost
+			console.error("Unable to find new valid dilution for step:", step);
+			const unit = protocolWithoutB.foodA.type === FoodType.SOLID ? "g" : "ml";
+			newSteps.push({
+				id: generateUniqueId(),
+				stepIndex: i + 1,
+				targetMg: step.targetMg,
+				method: Method.DIRECT,
+				dailyAmount: step.targetMg.dividedBy(
+					protocolWithoutB.foodA.getMgPerUnit(),
+				),
+				dailyAmountUnit: unit,
+				food: "A",
+			});
+		}
+	});
 
-  protocolWithoutB.steps = newSteps;
-  workspace.getActive().setProtocol(protocolWithoutB, "Cleared Food B");
+	protocolWithoutB.steps = newSteps;
+	workspace.getActive().setProtocol(protocolWithoutB, "Cleared Food B");
 }

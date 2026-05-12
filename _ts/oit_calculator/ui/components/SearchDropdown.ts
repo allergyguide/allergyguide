@@ -5,7 +5,7 @@ import { SEARCH_DISPLAY_LIMIT } from "../../constants";
 
 /**
  * Lit-html template for the search dropdown component
- * 
+ *
  * @param inputId - The ID of the associated search input
  * @param results - Array of search results
  * @param query - The current search query
@@ -13,52 +13,53 @@ import { SEARCH_DISPLAY_LIMIT } from "../../constants";
  * @param callbacks - Search event callbacks
  */
 export const SearchDropdown = (
-  inputId: string,
-  results: SearchResult[],
-  query: string,
-  activeIndex: number,
-  callbacks: SearchCallbacks
+	inputId: string,
+	results: SearchResult[],
+	query: string,
+	activeIndex: number,
+	callbacks: SearchCallbacks,
 ) => {
-  const displayResults = results.slice(0, SEARCH_DISPLAY_LIMIT);
+	const displayResults = results.slice(0, SEARCH_DISPLAY_LIMIT);
 
-  const handleSelectCustom = () => {
-    callbacks.onSelectCustom(query || "New Food", inputId);
-  };
+	const handleSelectCustom = () => {
+		callbacks.onSelectCustom(query || "New Food", inputId);
+	};
 
-  const handleSelectResult = (result: SearchResult) => {
-    if (result.type === "protocol") {
-      callbacks.onSelectProtocol(result.data);
-    } else {
-      if (inputId === "food-a-search") {
-        callbacks.onSelectFoodA(result.data);
-      } else {
-        callbacks.onSelectFoodB(result.data);
-      }
-    }
-  };
+	const handleSelectResult = (result: SearchResult) => {
+		if (result.type === "protocol") {
+			callbacks.onSelectProtocol(result.data);
+		} else {
+			if (inputId === "food-a-search") {
+				callbacks.onSelectFoodA(result.data);
+			} else {
+				callbacks.onSelectFoodB(result.data);
+			}
+		}
+	};
 
-  return html`
+	return html`
     <div class="search-dropdown">
       <!-- Search Results -->
       ${displayResults.map((result, i) => {
-    const isHighlighted = activeIndex === i;
+				const isHighlighted = activeIndex === i;
 
-    return html`
+				return html`
           <div 
             class="search-result-item ${isHighlighted ? "highlighted" : ""}" 
             data-index="${i}"
             @click=${() => handleSelectResult(result)}
           >
-            ${result.type === "protocol"
-        ? html`<strong>Protocol:</strong> ${result.data.name}`
-        : html`
+            ${
+							result.type === "protocol"
+								? html`<strong>Protocol:</strong> ${result.data.name}`
+								: html`
                   ${result.data.Food}
                   <span class="food-type"> - ${result.data.Type} - Protein: ${result.data["Mean protein in grams"].toFixed(1)} g/${result.data["Serving size"]} ${result.data.Type === "SOLID" ? "g" : "ml"}</span>
                 `
-      }
+						}
           </div>
         `;
-  })}
+			})}
 
       <!-- Custom Food Item (Sticky at Bottom) -->
       <div 

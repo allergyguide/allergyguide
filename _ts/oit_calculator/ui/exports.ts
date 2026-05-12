@@ -5,44 +5,45 @@
  */
 import { workspace } from "../state/instances";
 import { isClickwrapAccepted, showClickwrapModal } from "./modals";
-import { exportASCII, generatePdf } from "../export/exports"
+import { exportASCII, generatePdf } from "../export/exports";
 import type { ProtocolExportData } from "../types";
 
 /**
  * Optimistic async loading of some heavy libraries needed for creation and merging of PDFs
-*/
+ */
 export function prefetchPdfLibraries() {
-  // Use requestIdleCallback if available, otherwise setTimeout
-  const requestIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1000));
+	// Use requestIdleCallback if available, otherwise setTimeout
+	const requestIdle =
+		window.requestIdleCallback || ((cb) => setTimeout(cb, 1000));
 
-  requestIdle(() => {
-    import('jspdf');
-    import('pdf-lib');
-    import('jspdf-autotable');
-    import('qrcode');
-    import('pako');
-  });
+	requestIdle(() => {
+		import("jspdf");
+		import("pdf-lib");
+		import("jspdf-autotable");
+		import("qrcode");
+		import("pako");
+	});
 }
 
 /**
  * Gathers data from all non-empty tabs in the workspace for export.
  */
 function getExportDataFromWorkspace(): ProtocolExportData[] {
-  const states = workspace.getAllProtocolStates();
-  const exportData: ProtocolExportData[] = [];
+	const states = workspace.getAllProtocolStates();
+	const exportData: ProtocolExportData[] = [];
 
-  for (const state of states) {
-    const protocol = state.getProtocol();
-    if (protocol) {
-      exportData.push({
-        protocol,
-        customNote: state.getCustomNote(),
-        history: state.getHistory()
-      });
-    }
-  }
+	for (const state of states) {
+		const protocol = state.getProtocol();
+		if (protocol) {
+			exportData.push({
+				protocol,
+				customNote: state.getCustomNote(),
+				history: state.getHistory(),
+			});
+		}
+	}
 
-  return exportData;
+	return exportData;
 }
 
 /**
@@ -54,21 +55,21 @@ function getExportDataFromWorkspace(): ProtocolExportData[] {
  * - If NOT accepted: Opens the Clickwrap Modal to enforce terms of use acceptance
  */
 export function initExportEvents(): void {
-  document.addEventListener('click', async (e) => {
-    const target = e.target as HTMLElement;
-    if (target.id === 'export-ascii') {
-      const data = getExportDataFromWorkspace();
-      if (data.length > 0) {
-        exportASCII(data);
-      }
-    } else if (target.id === 'export-pdf') {
-      if (isClickwrapAccepted()) {
-        await triggerPdfGeneration();
-      } else {
-        showClickwrapModal();
-      }
-    }
-  });
+	document.addEventListener("click", async (e) => {
+		const target = e.target as HTMLElement;
+		if (target.id === "export-ascii") {
+			const data = getExportDataFromWorkspace();
+			if (data.length > 0) {
+				exportASCII(data);
+			}
+		} else if (target.id === "export-pdf") {
+			if (isClickwrapAccepted()) {
+				await triggerPdfGeneration();
+			} else {
+				showClickwrapModal();
+			}
+		}
+	});
 }
 
 /**
@@ -77,44 +78,44 @@ export function initExportEvents(): void {
  * @returns promise that resolves when the generation is complete (or failed)
  */
 export async function triggerPdfGeneration(): Promise<void> {
-  const pdfBtn = document.getElementById("export-pdf");
-  const modalPdfBtn = document.getElementById("clickwrap-generate-btn");
+	const pdfBtn = document.getElementById("export-pdf");
+	const modalPdfBtn = document.getElementById("clickwrap-generate-btn");
 
-  const data = getExportDataFromWorkspace();
-  if (data.length === 0) return;
+	const data = getExportDataFromWorkspace();
+	if (data.length === 0) return;
 
-  if (pdfBtn) {
-    pdfBtn.textContent = "Generating...";
-    pdfBtn.setAttribute("disabled", "true");
-  }
-  if (modalPdfBtn) {
-    modalPdfBtn.textContent = "Generating...";
-    modalPdfBtn.setAttribute("disabled", "true");
-  }
+	if (pdfBtn) {
+		pdfBtn.textContent = "Generating...";
+		pdfBtn.setAttribute("disabled", "true");
+	}
+	if (modalPdfBtn) {
+		modalPdfBtn.textContent = "Generating...";
+		modalPdfBtn.setAttribute("disabled", "true");
+	}
 
-  try {
-    // dynamic load of libs regardless if its modal or pdfbtn licked
-    const { jsPDF } = await import('jspdf');
-    const { PDFDocument } = await import('pdf-lib');
-    const { applyPlugin } = await import('jspdf-autotable');
-    applyPlugin(jsPDF);
+	try {
+		// dynamic load of libs regardless if its modal or pdfbtn licked
+		const { jsPDF } = await import("jspdf");
+		const { PDFDocument } = await import("pdf-lib");
+		const { applyPlugin } = await import("jspdf-autotable");
+		applyPlugin(jsPDF);
 
-    await generatePdf(data, jsPDF, PDFDocument);
-  } catch (error) {
-    console.error("Failed to load PDF libraries or generate PDF: ", error);
-    alert("Error generating PDF. Please check the console for details.");
-  } finally {
-    const activeStates = workspace.getAllProtocolStates().filter(s => s.getProtocol());
-    const label = activeStates.length > 1 ? "Export All (PDF)" : "Export PDF";
+		await generatePdf(data, jsPDF, PDFDocument);
+	} catch (error) {
+		console.error("Failed to load PDF libraries or generate PDF: ", error);
+		alert("Error generating PDF. Please check the console for details.");
+	} finally {
+		const activeStates = workspace
+			.getAllProtocolStates()
+			.filter((s) => s.getProtocol());
+		const label = activeStates.length > 1 ? "Export All (PDF)" : "Export PDF";
 
-    if (pdfBtn) {
-      pdfBtn.textContent = label;
-      pdfBtn.removeAttribute("disabled");
-    }
-    if (modalPdfBtn) {
-      modalPdfBtn.textContent = "Generate PDF";
-    }
-  }
+		if (pdfBtn) {
+			pdfBtn.textContent = label;
+			pdfBtn.removeAttribute("disabled");
+		}
+		if (modalPdfBtn) {
+			modalPdfBtn.textContent = "Generate PDF";
+		}
+	}
 }
-
-

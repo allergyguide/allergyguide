@@ -8,92 +8,103 @@ import { type FoodData, type ProtocolData, type AuthListener } from "../types";
 type PreparedItem<T> = T & { prepared: Fuzzysort.Prepared };
 
 export class AppState {
-  // raw data loaded 
-  public foodsDatabase: FoodData[] = [];
-  public protocolsDatabase: ProtocolData[] = [];
-  // Indices used by UI
-  public foodsIndex: PreparedItem<FoodData>[] = [];
-  public protocolsIndex: PreparedItem<ProtocolData>[] = [];
+	// raw data loaded
+	public foodsDatabase: FoodData[] = [];
+	public protocolsDatabase: ProtocolData[] = [];
+	// Indices used by UI
+	public foodsIndex: PreparedItem<FoodData>[] = [];
+	public protocolsIndex: PreparedItem<ProtocolData>[] = [];
 
-  // Default PDF order 
-  // "protocol" is the keyword for the generated table
-  public pdfHandouts: string[] = [
-    'public_terms', 'protocol',
-  ];
+	// Default PDF order
+	// "protocol" is the keyword for the generated table
+	public pdfHandouts: string[] = ["public_terms", "protocol"];
 
-  public readonly warningsPageURL: string;
+	public readonly warningsPageURL: string;
 
-  // FOR AUTH
-  public isLoggedIn: boolean = false;
-  public username: string | null = null;
-  private authListeners: AuthListener[] = [];
+	// FOR AUTH
+	public isLoggedIn: boolean = false;
+	public username: string | null = null;
+	private authListeners: AuthListener[] = [];
 
-  constructor(publicData: { foods: FoodData[], protocols: ProtocolData[] }, warningsUrl: string) {
-    this.warningsPageURL = warningsUrl;
+	constructor(
+		publicData: { foods: FoodData[]; protocols: ProtocolData[] },
+		warningsUrl: string,
+	) {
+		this.warningsPageURL = warningsUrl;
 
-    // Initialize with CNF data + sample protocol
-    this.foodsDatabase = [...publicData.foods];
-    this.protocolsDatabase = [...publicData.protocols];
+		// Initialize with CNF data + sample protocol
+		this.foodsDatabase = [...publicData.foods];
+		this.protocolsDatabase = [...publicData.protocols];
 
-    this.rebuildIndices();
-  }
+		this.rebuildIndices();
+	}
 
-  /**
-   * Updates the application's authentication state and notifies all subscribed listeners.
-   * @param isLoggedIn - Whether the user is currently authenticated.
-   * @param username - The username of the authenticated user, or null if logged out.
-   */
-  public setAuthState(isLoggedIn: boolean, username: string | null) {
-    this.isLoggedIn = isLoggedIn;
-    this.username = username;
-    this.notifyAuthListeners();
-  }
+	/**
+	 * Updates the application's authentication state and notifies all subscribed listeners.
+	 * @param isLoggedIn - Whether the user is currently authenticated.
+	 * @param username - The username of the authenticated user, or null if logged out.
+	 */
+	public setAuthState(isLoggedIn: boolean, username: string | null) {
+		this.isLoggedIn = isLoggedIn;
+		this.username = username;
+		this.notifyAuthListeners();
+	}
 
-  /**
-   * Registers a callback function to be executed whenever the authentication state changes.
-   * The listener will be called immediately upon future state changes triggered by `setAuthState`.
-   * @param listener - A callback function that receives the new `isLoggedIn` boolean status.
-   */
-  public subscribeToAuth(listener: AuthListener) {
-    this.authListeners.push(listener);
-  }
+	/**
+	 * Registers a callback function to be executed whenever the authentication state changes.
+	 * The listener will be called immediately upon future state changes triggered by `setAuthState`.
+	 * @param listener - A callback function that receives the new `isLoggedIn` boolean status.
+	 */
+	public subscribeToAuth(listener: AuthListener) {
+		this.authListeners.push(listener);
+	}
 
-  /**
-   * Internal helper to broadcast the current login status to all registered listeners.
-   */
-  private notifyAuthListeners() {
-    this.authListeners.forEach((l) => l(this.isLoggedIn));
-  }
+	/**
+	 * Internal helper to broadcast the current login status to all registered listeners.
+	 */
+	private notifyAuthListeners() {
+		this.authListeners.forEach((l) => l(this.isLoggedIn));
+	}
 
-  /**
-   * Merges secure data (ie other custom foods, protocols) into the application state and rebuilds search indices
-   */
-  public addProvisionedData(provisioned_foods: FoodData[] | null, provisioned_protocols: ProtocolData[] | null, handoutOrder: string[] | null) {
-    // Merge Foods (Public + Custom)
-    // TODO! ?duplicate check
-    this.foodsDatabase = provisioned_foods ? [...this.foodsDatabase, ...provisioned_foods] : this.foodsDatabase;
+	/**
+	 * Merges secure data (ie other custom foods, protocols) into the application state and rebuilds search indices
+	 */
+	public addProvisionedData(
+		provisioned_foods: FoodData[] | null,
+		provisioned_protocols: ProtocolData[] | null,
+		handoutOrder: string[] | null,
+	) {
+		// Merge Foods (Public + Custom)
+		// TODO! ?duplicate check
+		this.foodsDatabase = provisioned_foods
+			? [...this.foodsDatabase, ...provisioned_foods]
+			: this.foodsDatabase;
 
-    // Set Protocols (Assuming protocols are entirely private/secure)
-    this.protocolsDatabase = provisioned_protocols ? provisioned_protocols : this.protocolsDatabase;
+		// Set Protocols (Assuming protocols are entirely private/secure)
+		this.protocolsDatabase = provisioned_protocols
+			? provisioned_protocols
+			: this.protocolsDatabase;
 
-    // set handouts order
-    this.pdfHandouts = handoutOrder ? handoutOrder : this.pdfHandouts;
+		// set handouts order
+		this.pdfHandouts = handoutOrder ? handoutOrder : this.pdfHandouts;
 
-    // Rebuild Search Indices
-    this.rebuildIndices();
-  }
+		// Rebuild Search Indices
+		this.rebuildIndices();
+	}
 
-  private rebuildIndices() {
-    this.foodsIndex = this.foodsDatabase.map((f) => ({
-      ...f,
-      prepared: fuzzysort.prepare(f.Food),
-    }));
+	private rebuildIndices() {
+		this.foodsIndex = this.foodsDatabase.map((f) => ({
+			...f,
+			prepared: fuzzysort.prepare(f.Food),
+		}));
 
-    this.protocolsIndex = this.protocolsDatabase.map((p) => ({
-      ...p,
-      prepared: fuzzysort.prepare(p.name),
-    }));
+		this.protocolsIndex = this.protocolsDatabase.map((p) => ({
+			...p,
+			prepared: fuzzysort.prepare(p.name),
+		}));
 
-    console.log(`Indices rebuilt: ${this.foodsDatabase.length} foods, ${this.protocolsDatabase.length} protocols`);
-  }
+		console.log(
+			`Indices rebuilt: ${this.foodsDatabase.length} foods, ${this.protocolsDatabase.length} protocols`,
+		);
+	}
 }

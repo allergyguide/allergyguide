@@ -1,10 +1,10 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 const password = process.argv[2];
 
 if (!password) {
-  console.error("Usage: npx tsx tools/hash_password.ts <password>");
-  process.exit(1);
+	console.error("Usage: npx tsx tools/hash_password.ts <password>");
+	process.exit(1);
 }
 
 const saltRounds = 10;

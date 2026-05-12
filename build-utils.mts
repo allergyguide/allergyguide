@@ -1,10 +1,9 @@
 import dotenv from "dotenv";
-import { existsSync, mkdirSync, cpSync, rmSync } from 'fs';
-import { resolve } from 'path';
-import { createClient } from '@supabase/supabase-js';
+import { existsSync, mkdirSync, cpSync, rmSync } from "fs";
+import { resolve } from "path";
+import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
-
 
 /**
  * Copies static/legacy JavaScript files from the root `_legacy_js/` folder to `static/js/`.
@@ -12,29 +11,29 @@ dotenv.config();
  * Cleans destination first to ensure exact mirroring.
  */
 export function copyLegacyJS() {
-  const src = resolve('_legacy_js');
-  const dest = resolve('static/js');
+	const src = resolve("_legacy_js");
+	const dest = resolve("static/js");
 
-  if (!existsSync(src)) {
-    console.warn("Warning: _legacy_js/ directory not found. Failing build");
-    process.exit(1);
-  }
+	if (!existsSync(src)) {
+		console.warn("Warning: _legacy_js/ directory not found. Failing build");
+		process.exit(1);
+	}
 
-  try {
-    // Clean destination first to prevent stale files
-    if (existsSync(dest)) {
-      rmSync(dest, { recursive: true, force: true });
-    }
+	try {
+		// Clean destination first to prevent stale files
+		if (existsSync(dest)) {
+			rmSync(dest, { recursive: true, force: true });
+		}
 
-    // Create fresh destination
-    mkdirSync(dest, { recursive: true });
+		// Create fresh destination
+		mkdirSync(dest, { recursive: true });
 
-    cpSync(src, dest, { recursive: true, force: true });
-    console.log(`Successfully synced _legacy_js to static/js`);
-  } catch (error: any) {
-    console.error("Failed to copy legacy JS files:", error.message);
-    process.exit(1);
-  }
+		cpSync(src, dest, { recursive: true, force: true });
+		console.log(`Successfully synced _legacy_js to static/js`);
+	} catch (error: any) {
+		console.error("Failed to copy legacy JS files:", error.message);
+		process.exit(1);
+	}
 }
 
 /**
@@ -46,25 +45,31 @@ export function copyLegacyJS() {
  * @returns a promise resolving to a buffer containing the file's raw content
  * @throws {Error} If the fetch fails or the response is not OK
  */
-export async function fetchFromGithubBinary(token: string, repo: string, filePath: string) {
-  const url = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+export async function fetchFromGithubBinary(
+	token: string,
+	repo: string,
+	filePath: string,
+) {
+	const url = `https://api.github.com/repos/${repo}/contents/${filePath}`;
 
-  // To fetch raw binary from GitHub API efficiently without base64 wrapper overhead, use the "Raw" media type header:
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github.raw', // Request raw content
-      'User-Agent': 'Netlify-Function'
-    }
-  });
+	// To fetch raw binary from GitHub API efficiently without base64 wrapper overhead, use the "Raw" media type header:
+	const response = await fetch(url, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: "application/vnd.github.raw", // Request raw content
+			"User-Agent": "Netlify-Function",
+		},
+	});
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${filePath}: ${response.status} ${response.statusText}`);
-  }
+	if (!response.ok) {
+		throw new Error(
+			`Failed to fetch ${filePath}: ${response.status} ${response.statusText}`,
+		);
+	}
 
-  // Get as ArrayBuffer and convert to Buffer for fs.writeFileSync
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+	// Get as ArrayBuffer and convert to Buffer for fs.writeFileSync
+	const arrayBuffer = await response.arrayBuffer();
+	return Buffer.from(arrayBuffer);
 }
 
 /**
@@ -85,32 +90,41 @@ export async function fetchFromGithubBinary(token: string, repo: string, filePat
   'tools/user_configs/alice_config.json'
 ]
  */
-export async function getPathsUsingGitTree(token: string, repo: string, branch: string, dirPath: string, extension: string): Promise<string[]> {
-  // ?recursive=1 fetches the entire file tree in one go
-  const url = `https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`;
-  const ext = extension.startsWith('.') ? extension : `.${extension}`;
+export async function getPathsUsingGitTree(
+	token: string,
+	repo: string,
+	branch: string,
+	dirPath: string,
+	extension: string,
+): Promise<string[]> {
+	// ?recursive=1 fetches the entire file tree in one go
+	const url = `https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`;
+	const ext = extension.startsWith(".") ? extension : `.${extension}`;
 
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github.v3+json',
-    }
-  });
+	const response = await fetch(url, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+			Accept: "application/vnd.github.v3+json",
+		},
+	});
 
-  if (!response.ok) {
-    throw new Error(`GitHub API Error for tree fetch: ${response.status} ${response.statusText}`);
-  }
+	if (!response.ok) {
+		throw new Error(
+			`GitHub API Error for tree fetch: ${response.status} ${response.statusText}`,
+		);
+	}
 
-  const data = await response.json();
+	const data = await response.json();
 
-  // The API returns a flat array of all files in the repo
-  return (data.tree as any[])
-    .filter(item =>
-      item.type === 'blob' &&                 // explicit check for file (blob)
-      item.path.startsWith(dirPath) &&        // inside target dir
-      item.path.endsWith(ext)                 // matches extension
-    )
-    .map(item => item.path);
+	// The API returns a flat array of all files in the repo
+	return (data.tree as any[])
+		.filter(
+			(item) =>
+				item.type === "blob" && // explicit check for file (blob)
+				item.path.startsWith(dirPath) && // inside target dir
+				item.path.endsWith(ext), // matches extension
+		)
+		.map((item) => item.path);
 }
 
 /**
@@ -119,63 +133,67 @@ export async function getPathsUsingGitTree(token: string, repo: string, branch: 
  * If the security config is invalid, the build terminates.
  */
 export async function verifyUsersData() {
-  console.log("Verifying Users Configuration...");
+	console.log("Verifying Users Configuration...");
 
-  const supabaseAdmin = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!
-  );
+	const supabaseAdmin = createClient(
+		process.env.SUPABASE_URL!,
+		process.env.SUPABASE_SECRET_KEY!,
+	);
 
-  async function getAllUsernames(): Promise<string[]> {
-    const { data, error } = await supabaseAdmin
-      .from('authorized_users')
-      .select('username'); // Select only what you need
+	async function getAllUsernames(): Promise<string[]> {
+		const { data, error } = await supabaseAdmin
+			.from("authorized_users")
+			.select("username"); // Select only what you need
 
-    if (error) {
-      console.error("Could not get list of authorized users from db", error);
-      process.exit(1);
-    }
-    return (data || []).map((row) => row.username);
-  }
+		if (error) {
+			console.error("Could not get list of authorized users from db", error);
+			process.exit(1);
+		}
+		return (data || []).map((row) => row.username);
+	}
 
-  const authUsers = await getAllUsernames();
+	const authUsers = await getAllUsernames();
 
-  // Load ADMIN_USERS (Optional exception list)
-  let adminUsers: string[] = [];
-  try {
-    adminUsers = JSON.parse(process.env.ADMIN_USERS || '[]');
-  } catch (e) {
-    console.warn("Warning: Could not parse ADMIN_USERS. Treating as empty list.");
-  }
+	// Load ADMIN_USERS (Optional exception list)
+	let adminUsers: string[] = [];
+	try {
+		adminUsers = JSON.parse(process.env.ADMIN_USERS || "[]");
+	} catch (e) {
+		console.warn(
+			"Warning: Could not parse ADMIN_USERS. Treating as empty list.",
+		);
+	}
 
-  // Check for File Existence
-  const usersMissingConfig: string[] = [];
+	// Check for File Existence
+	const usersMissingConfig: string[] = [];
 
-  // Resolve path relative to project root
-  const configBaseDir = resolve('secure_assets/user_configs');
+	// Resolve path relative to project root
+	const configBaseDir = resolve("secure_assets/user_configs");
 
-  authUsers.forEach(user => {
-    // If user is an Admin, they have implicit wildcard access, so no config file is strictly required.
-    if (adminUsers.includes(user)) {
-      return;
-    }
+	authUsers.forEach((user) => {
+		// If user is an Admin, they have implicit wildcard access, so no config file is strictly required.
+		if (adminUsers.includes(user)) {
+			return;
+		}
 
-    const configPath = resolve(configBaseDir, `${user}_config.json`);
+		const configPath = resolve(configBaseDir, `${user}_config.json`);
 
-    if (!existsSync(configPath)) {
-      usersMissingConfig.push(user);
-    }
-  });
+		if (!existsSync(configPath)) {
+			usersMissingConfig.push(user);
+		}
+	});
 
-  // Fail if any regular users are missing their config
-  if (usersMissingConfig.length > 0) {
-    console.error("Build Failed: The following users are in AUTH_USERS but missing a configuration file:");
-    console.error(JSON.stringify(usersMissingConfig, null, 2));
-    console.error(`>> Expected file path on client: secure_assets/user_configs/{username}_config.json`);
-    process.exit(1);
-  }
+	// Fail if any regular users are missing their config
+	if (usersMissingConfig.length > 0) {
+		console.error(
+			"Build Failed: The following users are in AUTH_USERS but missing a configuration file:",
+		);
+		console.error(JSON.stringify(usersMissingConfig, null, 2));
+		console.error(
+			`>> Expected file path on client: secure_assets/user_configs/{username}_config.json`,
+		);
+		process.exit(1);
+	}
 
-  console.log(`Security Config Verified: ${authUsers.length} users checked.`);
+	console.log(`Security Config Verified: ${authUsers.length} users checked.`);
 }
-
-

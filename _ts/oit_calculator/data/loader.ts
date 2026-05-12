@@ -4,18 +4,17 @@
  */
 import { z } from "zod";
 import {
-  type FoodData,
-  type ProtocolData,
-  FoodDataSchema,
-  ProtocolDataSchema,
-  type PublicData,
-  type UserDataResult,
+	type FoodData,
+	type ProtocolData,
+	FoodDataSchema,
+	ProtocolDataSchema,
+	type PublicData,
+	type UserDataResult,
 } from "../types";
 import { HttpError } from "../types";
-import { SAMPLE_PROTOCOL } from "../utils"
+import { SAMPLE_PROTOCOL } from "../utils";
 import { fetchOITBootstrap, loadSecureAsset } from "./api";
 import { appState } from "../main";
-
 
 /**
  * Validates an array of raw data items against a Zod schema
@@ -26,57 +25,65 @@ import { appState } from "../main";
  * @param {z.ZodType<T>} schema - The Zod schema definition for a single item
  * @param {string} itemName - A label for the data type (e.g., "Protocol", "CNF Food") used in error logging
  * @returns {T[]} A strongly-typed array of validated items
- * @throws {Error} If the input is not an array 
+ * @throws {Error} If the input is not an array
  */
-function validateList<T>(list: unknown, schema: z.ZodSchema<T>, itemName: string): T[] {
-  if (!Array.isArray(list)) {
-    console.error(`Expected array for ${itemName}, got`, list);
-    if (typeof window !== "undefined" && window.alert) {
-      window.alert(`Failed to load ${itemName}: Data is not an array.`);
-    }
-    throw Error(`Expected array for ${itemName}. Check console`)
-  }
+function validateList<T>(
+	list: unknown,
+	schema: z.ZodSchema<T>,
+	itemName: string,
+): T[] {
+	if (!Array.isArray(list)) {
+		console.error(`Expected array for ${itemName}, got`, list);
+		if (typeof window !== "undefined" && window.alert) {
+			window.alert(`Failed to load ${itemName}: Data is not an array.`);
+		}
+		throw Error(`Expected array for ${itemName}. Check console`);
+	}
 
-  const validItems: T[] = [];
-  let invalidCount = 0;
+	const validItems: T[] = [];
+	let invalidCount = 0;
 
-  list.forEach((item, index) => {
-    const result = schema.safeParse(item);
-    if (result.success) {
-      validItems.push(result.data);
-    } else {
-      invalidCount++;
-      console.warn(`Skipping invalid ${itemName} at index ${index}:`, result.error);
-    }
-  });
+	list.forEach((item, index) => {
+		const result = schema.safeParse(item);
+		if (result.success) {
+			validItems.push(result.data);
+		} else {
+			invalidCount++;
+			console.warn(
+				`Skipping invalid ${itemName} at index ${index}:`,
+				result.error,
+			);
+		}
+	});
 
-  if (invalidCount > 0) {
-    const msg = `Warning: Skipped ${invalidCount} malformed ${itemName}(s). Check console for details.`;
-    console.warn(msg);
-    if (typeof window !== "undefined" && window.alert) {
-      window.alert(msg);
-    }
-  }
+	if (invalidCount > 0) {
+		const msg = `Warning: Skipped ${invalidCount} malformed ${itemName}(s). Check console for details.`;
+		console.warn(msg);
+		if (typeof window !== "undefined" && window.alert) {
+			window.alert(msg);
+		}
+	}
 
-  return validItems;
+	return validItems;
 }
 
 export async function loadPublicDatabases(): Promise<PublicData> {
-  try {
-    const response = await fetch("/tool_assets/typed_foods.json");
-    if (!response.ok) throw new Error(`Failed to load CNF foods: ${response.statusText}`);
+	try {
+		const response = await fetch("/tool_assets/typed_foods.json");
+		if (!response.ok)
+			throw new Error(`Failed to load CNF foods: ${response.statusText}`);
 
-    const raw = await response.json();
-    const foods = validateList<FoodData>(raw, FoodDataSchema, "CNF Food");
+		const raw = await response.json();
+		const foods = validateList<FoodData>(raw, FoodDataSchema, "CNF Food");
 
-    return {
-      foods,
-      protocols: [SAMPLE_PROTOCOL] // the sample
-    };
-  } catch (error) {
-    console.error("Error loading public database:", error);
-    throw error;
-  }
+		return {
+			foods,
+			protocols: [SAMPLE_PROTOCOL], // the sample
+		};
+	} catch (error) {
+		console.error("Error loading public database:", error);
+		throw error;
+	}
 }
 
 /**
@@ -84,34 +91,42 @@ export async function loadPublicDatabases(): Promise<PublicData> {
  * Call after auth signal.
  */
 export async function loadUserConfiguration(): Promise<UserDataResult> {
-  try {
-    // Fetch everything in one go 
-    const bootstrapData = await fetchOITBootstrap();
+	try {
+		// Fetch everything in one go
+		const bootstrapData = await fetchOITBootstrap();
 
-    // Basic structure check
-    if (!bootstrapData || typeof bootstrapData !== 'object') {
-      throw new Error("Invalid bootstrap data");
-    }
+		// Basic structure check
+		if (!bootstrapData || typeof bootstrapData !== "object") {
+			throw new Error("Invalid bootstrap data");
+		}
 
-    // Validate Data
-    // fallback to [] if the call fails
-    const provisioned_foods = validateList<FoodData>(bootstrapData.provisioned_foods || [], FoodDataSchema, "Provisioned Food");
-    const provisioned_protocols = validateList<ProtocolData>(bootstrapData.provisioned_protocols || [], ProtocolDataSchema, "Provisioned Protocol");
+		// Validate Data
+		// fallback to [] if the call fails
+		const provisioned_foods = validateList<FoodData>(
+			bootstrapData.provisioned_foods || [],
+			FoodDataSchema,
+			"Provisioned Food",
+		);
+		const provisioned_protocols = validateList<ProtocolData>(
+			bootstrapData.provisioned_protocols || [],
+			ProtocolDataSchema,
+			"Provisioned Protocol",
+		);
 
-    return {
-      username: bootstrapData.username || "Unknown",
-      provisioned_foods: provisioned_foods,
-      provisioned_protocols: provisioned_protocols,
-      handouts: bootstrapData.handouts || []
-    };
-  } catch (error) {
-    if (error instanceof HttpError) {
-      throw error
-    }
-    // Generic fallback for other errors
-    console.error("Error loading user configuration:", error);
-    throw error;
-  }
+		return {
+			username: bootstrapData.username || "Unknown",
+			provisioned_foods: provisioned_foods,
+			provisioned_protocols: provisioned_protocols,
+			handouts: bootstrapData.handouts || [],
+		};
+	} catch (error) {
+		if (error instanceof HttpError) {
+			throw error;
+		}
+		// Generic fallback for other errors
+		console.error("Error loading user configuration:", error);
+		throw error;
+	}
 }
 
 /**
@@ -119,31 +134,30 @@ export async function loadUserConfiguration(): Promise<UserDataResult> {
  * Used on page load (if cookie exists) and after manual login
  */
 export async function handleUserLoad(): Promise<boolean> {
-  try {
-    // load user config and assets
-    // This throws if the bootstrap request fails or lacks oit_calculator config
-    const userData = await loadUserConfiguration();
+	try {
+		// load user config and assets
+		// This throws if the bootstrap request fails or lacks oit_calculator config
+		const userData = await loadUserConfiguration();
 
-    // update state (foods, protocols, and pdf order)
-    appState.addProvisionedData(
-      userData.provisioned_foods,
-      userData.provisioned_protocols,
-      userData.handouts
-    );
+		// update state (foods, protocols, and pdf order)
+		appState.addProvisionedData(
+			userData.provisioned_foods,
+			userData.provisioned_protocols,
+			userData.handouts,
+		);
 
-    appState.setAuthState(true, userData.username);
+		appState.setAuthState(true, userData.username);
 
-    return true;
-  } catch (e) {
-    appState.setAuthState(false, null);
+		return true;
+	} catch (e) {
+		appState.setAuthState(false, null);
 
-    if (e instanceof HttpError && e.status !== 401 && e.status !== 403) {
-      console.warn("User load failed (Non-Auth Error):", e);
-      return false
-    } else {
-      console.debug("No active session or failed to load user config:", e);
-      return false;
-    }
-  }
+		if (e instanceof HttpError && e.status !== 401 && e.status !== 403) {
+			console.warn("User load failed (Non-Auth Error):", e);
+			return false;
+		} else {
+			console.debug("No active session or failed to load user config:", e);
+			return false;
+		}
+	}
 }
-

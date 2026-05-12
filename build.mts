@@ -1,8 +1,8 @@
-import { execSync } from 'child_process';
-import { readFileSync, existsSync } from 'fs';
-import { loadTypstBinary, compileTypst } from './build-typ.mjs'
-import { buildTS } from './build-ts.mjs'
-import { verifyUsersData, copyLegacyJS } from './build-utils.mjs';
+import { execSync } from "child_process";
+import { readFileSync, existsSync } from "fs";
+import { loadTypstBinary, compileTypst } from "./build-typ.mjs";
+import { buildTS } from "./build-ts.mjs";
+import { verifyUsersData, copyLegacyJS } from "./build-utils.mjs";
 import dotenv from "dotenv";
 
 dotenv.config({ override: true });
@@ -13,7 +13,7 @@ dotenv.config({ override: true });
 
 // VERIFY NETLIFY ENV VARS EXIST - CRASH IF NOT
 const GITHUB_TOKEN = process.env.PRIVATE_TOKEN;
-const GITHUB_REPO = `${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}`;   // e.g., "username/repo-name"
+const GITHUB_REPO = `${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}`; // e.g., "username/repo-name"
 const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY_HOURS = process.env.TOKEN_EXPIRY_HOURS;
 const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET;
@@ -23,35 +23,44 @@ const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
 
 if (!GITHUB_REPO || !GITHUB_TOKEN) {
-  console.error("No GitHub repo or token found. Check netlify settings")
-  process.exit(1);
+	console.error("No GitHub repo or token found. Check netlify settings");
+	process.exit(1);
 }
 
-if (!JWT_SECRET || !TOKEN_EXPIRY_HOURS || !TURNSTILE_SECRET || !RESEND_API_KEY) {
-  console.error("Check your .env and netlify env vars, missing at least one of jwt token stuff, turnstile secret, resend api key")
-  process.exit(1);
+if (
+	!JWT_SECRET ||
+	!TOKEN_EXPIRY_HOURS ||
+	!TURNSTILE_SECRET ||
+	!RESEND_API_KEY
+) {
+	console.error(
+		"Check your .env and netlify env vars, missing at least one of jwt token stuff, turnstile secret, resend api key",
+	);
+	process.exit(1);
 }
 
 if (!SUPABASE_URL || !SUPABASE_SECRET_KEY || !SUPABASE_JWT_SECRET) {
-  console.error("no supabase stuff please check")
-  process.exit(1);
+	console.error("no supabase stuff please check");
+	process.exit(1);
 }
 
 // GET GIT COMMIT HASH FOR VERSION STAMPING
 let commit_hash: string;
 try {
-  commit_hash = execSync('git rev-parse --short HEAD').toString().trim();
+	commit_hash = execSync("git rev-parse --short HEAD").toString().trim();
 } catch (error) {
-  console.error("Failed to find commit_hash", error)
-  process.exit(1);
+	console.error("Failed to find commit_hash", error);
+	process.exit(1);
 }
 
 // GET TOOLS VERSIONING
-if (!existsSync('./tools_versioning.json')) {
-  console.error("tools_versioning.json not found");
-  process.exit(1);
+if (!existsSync("./tools_versioning.json")) {
+	console.error("tools_versioning.json not found");
+	process.exit(1);
 }
-const toolVersioning = JSON.parse(readFileSync('./tools_versioning.json', 'utf-8'));
+const toolVersioning = JSON.parse(
+	readFileSync("./tools_versioning.json", "utf-8"),
+);
 
 // ==========================================
 // BUILD PROCESS
