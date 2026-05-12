@@ -2,28 +2,90 @@
  * @module
  * Handles network requests for secure assets and to request protocol saving (email to dev).
  */
-import { HttpError, type SaveRequestPayload } from "../types";
+import {
+	HttpError,
+	type OITBootstrapResponse,
+	type SaveRequestPayload,
+} from "../types";
 
 /**
- * Fetches the user's provisioned foods, protocols, and config
- * Hits the dedicated bootstrap Netlify function.
+ * Attempts to safely extract a human-readable error message from a non successful HTTP response.
+ *
+ * Accounts for both JSON payloads and plain text/HTML responses. Noticed giant HTML error pages being returned before, so text responses are safely truncated to 100 characters.
+ *
+ * @param response - The failed fetch `Response` object to parse.
+ * @returns A promise resolving to the extracted error string, or `null` if the body cannot be read.
  */
-export async function fetchOITBootstrap() {
-	const response = await fetch("/.netlify/functions/oit-bootstrap");
+async function getErrorMessage(response: Response): Promise<string | null> {
+	try {
+		// is response JSON?
+		const text = await response.text(); // Stream consumed safely as text
+		const contentType = response.headers.get("content-type");
 
-	if (!response.ok) {
-		let errorMessage = "Unknown Error";
-		try {
-			const json = await response.json();
-			errorMessage = json.message || json.error || JSON.stringify(json);
-		} catch (e) {
-			errorMessage = "Could not read error body";
+		if (contentType?.includes("application/json") && text) {
+			const json = JSON.parse(text);
+			return json.message || json.error || JSON.stringify(json);
 		}
+		// Otherwise, return text but limit the length in case it's a giant HTML page
+		return text.length > 100 ? `${text.substring(0, 100)}...` : text;
+	} catch (e) {
+		// Fallback if parsing fails
+		console.error(`Could not read error body: `, e);
+		return null;
+	}
+}
 
-		throw new HttpError(`Error: ${errorMessage}`, response.status);
+/**
+ * Validates a fetch `Response`, throwing a standardized `HttpError` if the network request failed.
+ *
+ * If the response is not `ok`, it attempts to parse the server's specific error payload, and if not possible provides generic fallback err messages.
+ *
+ * @param response - The fetch `Response` object to validate.
+ * @throws {HttpError} Throws an error containing the server message (or fallback) and the HTTP status code.
+ */
+export async function ensureResponseOk(response: Response) {
+	if (response.ok) return;
+
+	// There's been an error of some sort: try to extract message
+	const serverMessage = await getErrorMessage(response);
+	if (serverMessage) {
+		// basically propagate err from endpoint
+		throw new HttpError(serverMessage, response.status);
 	}
 
-	return await response.json();
+	// in case message from endpoint err response is malformed or strange
+	const fallbacks: Record<number, string> = {
+		400: "Bad request",
+		401: "Unauthorized: No session found",
+		403: "Forbidden: Session expired or invalid",
+		404: "File not found",
+		500: "Internal server error",
+	};
+
+	throw new HttpError(
+		fallbacks[response.status] || "An unexpected error occurred",
+		response.status,
+	);
+}
+
+/**
+ * Fetches the user's provisioned foods, protocols, and config through bootstrap netlify endpoint
+ *
+ * @returns A promise resolving to the `OITBootstrapResponse` containing the user's provisioned data.
+ * @throws {HttpError} If the network request fails, session is unauthorized, or the server returns non-JSON content.
+ */
+export async function fetchOITBootstrap(): Promise<OITBootstrapResponse> {
+	const response = await fetch("/.netlify/functions/oit-bootstrap");
+	await ensureResponseOk(response);
+
+	const contentType = response.headers.get("content-type");
+	if (contentType?.includes("application/json")) {
+		return (await response.json()) as OITBootstrapResponse;
+	}
+	throw new HttpError(
+		"Server returned success but response was not JSON",
+		response.status,
+	);
 }
 
 /**
@@ -42,46 +104,7 @@ export async function loadSecureAsset(
 		`/.netlify/functions/get-secure-asset?file=${filepath}`,
 	);
 
-	// Handle Auth Errors
-	if (response.status === 400) {
-		throw new HttpError("Invalid filename requested", 400);
-	}
-	if (response.status === 401) {
-		throw new HttpError("Unauthorized: No session found", 401);
-	}
-	if (response.status === 403) {
-		throw new HttpError("Forbidden: Session expired or invalid", 403);
-	}
-	if (response.status === 404) {
-		throw new HttpError("File not found", 404);
-	}
-	if (response.status === 500) {
-		throw new HttpError("Internal server error", 500);
-	}
-	if (!response.ok) {
-		let errorMessage = "Unknown Err";
-
-		try {
-			// is response JSON?
-			const contentType = response.headers.get("content-type");
-
-			if (contentType && contentType.indexOf("application/json") !== -1) {
-				const json = await response.json();
-				errorMessage = json.message || json.error || JSON.stringify(json);
-			} else {
-				// Otherwise, get text, but limit the length in case it's a giant HTML page
-				const text = await response.text();
-				errorMessage =
-					text.length > 100 ? text.substring(0, 100) + "..." : text;
-			}
-		} catch (e) {
-			// Fallback if parsing fails
-			errorMessage = "Could not read error body";
-		}
-
-		// Throw the error
-		throw new HttpError(`Error: ${errorMessage}`, response.status);
-	}
+	await ensureResponseOk(response);
 
 	// Return Requested Format
 	if (format === "buffer") {
@@ -95,9 +118,9 @@ export async function loadSecureAsset(
 	// 'auto' mode (Default behavior)
 	const contentType = response.headers.get("content-type");
 
-	if (contentType && contentType.includes("application/json")) {
+	if (contentType?.includes("application/json")) {
 		return await response.json();
-	} else if (contentType && contentType.includes("application/pdf")) {
+	} else if (contentType?.includes("application/pdf")) {
 		const blob = await response.blob();
 		return URL.createObjectURL(blob);
 	}
@@ -126,14 +149,6 @@ export async function requestSaveProtocol(
 		},
 	);
 
-	if (!response.ok) {
-		let msg = "Failed to send request";
-		try {
-			const data = await response.json();
-			msg = data.message || msg;
-		} catch (e) {}
-		throw new HttpError(msg, response.status);
-	}
-
+	await ensureResponseOk(response);
 	return true;
 }

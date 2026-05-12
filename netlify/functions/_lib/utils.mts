@@ -1,5 +1,8 @@
 import { normalize } from "path";
 
+/**
+ * Error class for handling HTTP-specific exceptions in serverless functions.
+ */
 export class HttpError extends Error {
 	public statusCode: number;
 

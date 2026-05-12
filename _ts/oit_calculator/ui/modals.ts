@@ -306,12 +306,12 @@ export function attachLoginModalListeners(
 
 			if (errorMsg) {
 				if (error instanceof HttpError) {
-					if (error.status === 401 || error.status === 403) {
+					if (error.statusCode === 401 || error.statusCode === 403) {
 						errorMsg.textContent = "Invalid username or password.";
-					} else if (error.status === 400) {
+					} else if (error.statusCode === 400) {
 						errorMsg.textContent =
 							"Turnstile validation failed. Please try again.";
-					} else if (error.status === 500) {
+					} else if (error.statusCode === 500) {
 						errorMsg.textContent =
 							"Configuration Error: Netlify function API unavailable or internal err";
 					} else {

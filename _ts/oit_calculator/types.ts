@@ -417,11 +417,11 @@ export interface ReadableHistoryPayload {
 
 // ERRORS
 export class HttpError extends Error {
-	public readonly status: number;
+	public readonly statusCode: number;
 
-	constructor(message: string, status: number) {
+	constructor(message: string, statusCode: number) {
 		super(message);
-		this.status = status;
+		this.statusCode = statusCode;
 		this.name = "HttpError"; // Helpful for debugging
 
 		// lets 'instanceof' works
@@ -460,8 +460,8 @@ export interface PublicData {
 	protocols: ProtocolData[];
 }
 
-// Return type for secure load of provisioned resrouces
-export interface UserDataResult {
+// return type for load of provisioned resources on user login
+export interface OITBootstrapResponse {
 	username: string;
 	provisioned_foods: FoodData[];
 	provisioned_protocols: ProtocolData[];

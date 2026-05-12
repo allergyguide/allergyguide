@@ -4,10 +4,24 @@ import { promises as fs } from "fs";
 import { authenticateUser } from "./_lib/auth.mts";
 import { HttpError } from "./_lib/utils.mts";
 
-// 1. Read `user_configs/${user.username}_config.json`
-// 2. Ensure userConfig.tools.oit_calculator exists
-// 3. Read foodsPath and protocolsPath in parallel (Promise.all)
-// 4. Return the aggregated JSON payload
+/**
+ * Handles initial data load for users who login succesfully
+ *
+ * Handles authentication, reads the user's specific configuration file, and aggregates their provisioned foods and protocols into a single JSON response.
+ *
+ * - Requires a valid JWT session cookie.
+ * - Prevents path traversal attacks when resolving asset paths.
+ * - Returns strictly non-cacheable headers for sensitive patient data arrays.
+ *
+ * @param event - The incoming Netlify serverless request event containing headers and cookies.
+ * @returns {Promise<HandlerResponse>} A formatted HTTP response containing the aggregated tool data.
+ * * HTTP Response Codes:
+ * - `200 OK`: Successfully aggregated and returned the user's tools data.
+ * - `400 Bad Request`: If the provisioned paths in the user config attempt path traversal.
+ * - `401 Unauthorized`: If the user lacks a valid session cookie.
+ * - `403 Forbidden`: If the user config is missing, or lacks explicit permissions for the OIT tool.
+ * - `500 Internal Server Error`: For unexpected system or file-read failures.
+ */
 export const handler: Handler = async (event) => {
 	try {
 		const decoded = authenticateUser(event);
@@ -48,15 +62,17 @@ export const handler: Handler = async (event) => {
 		if (!protocolsPath.startsWith(secureRoot))
 			throw new HttpError("Invalid provisioned protocols path", 400);
 
+		const readSecureFile = async (path: string, configValue: string) => {
+			if (!configValue) return "[]"; // ie if userconfig has "" for provisioned_foods path
+			return fs.readFile(path, "utf-8").catch((e) => {
+				console.error(`Failed to load asset for ${username}:`, e);
+				return "[]";
+			});
+		};
+
 		const [foodsRaw, protocolsRaw] = await Promise.all([
-			fs.readFile(foodsPath, "utf-8").catch((e) => {
-				console.error(`Failed to load foods for ${username}:`, e);
-				return "[]";
-			}),
-			fs.readFile(protocolsPath, "utf-8").catch((e) => {
-				console.error(`Failed to load protocols for ${username}:`, e);
-				return "[]";
-			}),
+			readSecureFile(foodsPath, oitConfig.provisioned_foods),
+			readSecureFile(protocolsPath, oitConfig.provisioned_protocols),
 		]);
 
 		const responseData = {

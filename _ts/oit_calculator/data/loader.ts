@@ -9,7 +9,7 @@ import {
 	FoodDataSchema,
 	ProtocolDataSchema,
 	type PublicData,
-	type UserDataResult,
+	type OITBootstrapResponse,
 } from "../types";
 import { HttpError } from "../types";
 import { SAMPLE_PROTOCOL } from "../utils";
@@ -90,7 +90,7 @@ export async function loadPublicDatabases(): Promise<PublicData> {
  * Orchestrates loading the user configuration and consolidated assets via a bootstrap endpoint.
  * Call after auth signal.
  */
-export async function loadUserConfiguration(): Promise<UserDataResult> {
+export async function loadUserConfiguration(): Promise<OITBootstrapResponse> {
 	try {
 		// Fetch everything in one go
 		const bootstrapData = await fetchOITBootstrap();
@@ -152,12 +152,17 @@ export async function handleUserLoad(): Promise<boolean> {
 	} catch (e) {
 		appState.setAuthState(false, null);
 
-		if (e instanceof HttpError && e.status !== 401 && e.status !== 403) {
-			console.warn("User load failed (Non-Auth Error):", e);
-			return false;
-		} else {
-			console.debug("No active session or failed to load user config:", e);
+		if (e instanceof HttpError) {
+			if (e.statusCode === 401 || e.statusCode === 403) {
+				console.debug("No active session or failed to load user config:", e);
+			} else {
+				console.warn("User load failed (Non-Auth Error):", e);
+			}
 			return false;
 		}
+
+		// non http error, probably something we want more info on...
+		console.error("Undefined err in handleUserLoad: ", e);
+		return false;
 	}
 }
