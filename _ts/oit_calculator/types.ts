@@ -72,8 +72,6 @@ export const WarningCode = {
     RAPID_ESCALATION: "RAPID_ESCALATION",
   }
 } as const;
-// to use in Warning interface
-export type SpecificWarningCode = typeof WarningCode.Red[keyof typeof WarningCode.Red] | typeof WarningCode.Yellow[keyof typeof WarningCode.Yellow];
 
 // ============================================
 // TYPE ALIASES
@@ -159,16 +157,21 @@ export interface Protocol {
   config: ProtocolConfig;
 }
 
+type RedWarningCode = typeof WarningCode.Red[keyof typeof WarningCode.Red];
+type YellowWarningCode = typeof WarningCode.Yellow[keyof typeof WarningCode.Yellow];
+
+type BaseWarning = {
+  message: string;
+  stepIndex?: number;
+};
+
 /**
  * Validation result describing an issue with the protocol or a specific step.
  * severity is "red" (critical) or "yellow" (caution).
  */
-export interface Warning {
-  severity: "red" | "yellow";
-  code: SpecificWarningCode;
-  message: string;
-  stepIndex?: number;
-}
+export type Warning =
+  | (BaseWarning & { severity: "red"; code: RedWarningCode })
+  | (BaseWarning & { severity: "yellow"; code: YellowWarningCode });
 
 /**
  * Intermediate dilution candidate considered during planning.

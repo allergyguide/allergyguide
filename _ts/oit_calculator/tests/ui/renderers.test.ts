@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { updateWarnings, renderProtocolTable } from "../../ui/renderers";
 import type { Protocol, Warning } from "../../types";
+import { WarningCode } from "../../types";
 import * as litHtml from "lit-html";
 
 // Mock lit-html to spy on render calls
@@ -34,8 +35,8 @@ describe("Renderer: updateWarnings", () => {
   it("should render summary badges and warning groups", () => {
     const mockProtocol = {} as Protocol;
     const warnings: Warning[] = [
-      { severity: "red", code: "TOO_FEW_STEPS" as any, message: "Global Red" },
-      { severity: "yellow", code: "LOW_SERVINGS" as any, message: "Step 1 Yellow", stepIndex: 1 },
+      { severity: "red", code: WarningCode.Red.TOO_FEW_STEPS, message: "Global Red" },
+      { severity: "yellow", code: WarningCode.Yellow.LOW_SERVINGS, message: "Step 1 Yellow", stepIndex: 1 },
     ];
 
     updateWarnings(mockProtocol, rulesURL, warnings);
@@ -58,7 +59,7 @@ describe("Renderer: updateWarnings", () => {
   it("should format messages correctly (stripping prefixes)", () => {
     const mockProtocol = {} as Protocol;
     const warnings: Warning[] = [
-      { severity: "yellow", code: "LOW_SERVINGS" as any, message: "Step 1: Low servings", stepIndex: 1 },
+      { severity: "yellow", code: WarningCode.Yellow.LOW_SERVINGS, message: "Step 1: Low servings", stepIndex: 1 },
     ];
 
     updateWarnings(mockProtocol, rulesURL, warnings);

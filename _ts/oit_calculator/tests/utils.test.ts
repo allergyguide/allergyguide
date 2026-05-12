@@ -1,22 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import Decimal from 'decimal.js';
 import * as utils from '../utils';
-import { FoodType, WarningCode, Method, DosingStrategy, FoodAStrategy } from '../types';
+import { FoodType, Method, DosingStrategy, FoodAStrategy } from '../types';
 import type { Food, Protocol } from '../types';
 
 describe('Utils', () => {
-
-  describe('getWarningSeverity', () => {
-    it('should return "red" for critical warning codes', () => {
-      expect(utils.getWarningSeverity(WarningCode.Red.TOO_FEW_STEPS)).toBe('red');
-      expect(utils.getWarningSeverity(WarningCode.Red.IMPOSSIBLE_VOLUME)).toBe('red');
-    });
-
-    it('should return "yellow" for caution warning codes', () => {
-      expect(utils.getWarningSeverity(WarningCode.Yellow.LOW_SERVINGS)).toBe('yellow');
-      expect(utils.getWarningSeverity(WarningCode.Yellow.RAPID_ESCALATION)).toBe('yellow');
-    });
-  });
 
   describe('escapeHtml', () => {
     it('should escape critical HTML characters', () => {

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render } from "lit-html";
 import { WarningsSidebar, groupAndSortWarnings } from "../../../ui/components/WarningsSidebar";
 import type { Warning } from "../../../types";
+import { WarningCode } from "../../../types";
 
 describe("WarningsSidebar Component", () => {
   let mount: HTMLElement;
@@ -14,10 +15,10 @@ describe("WarningsSidebar Component", () => {
   describe("groupAndSortWarnings", () => {
     it("should group global and step-specific warnings", () => {
       const warnings: Warning[] = [
-        { severity: "red", code: "TOO_FEW_STEPS" as any, message: "Too few steps" },
-        { severity: "yellow", code: "LOW_SERVINGS" as any, message: "Step 1: Low servings", stepIndex: 1 },
-        { severity: "red", code: "PROTEIN_MISMATCH" as any, message: "Step 1: Protein mismatch", stepIndex: 1 },
-        { severity: "yellow", code: "DUPLICATE_STEP" as any, message: "Step 2: Duplicate", stepIndex: 2 },
+        { severity: "red", code: WarningCode.Red.TOO_FEW_STEPS, message: "Too few steps" },
+        { severity: "yellow", code: WarningCode.Yellow.LOW_SERVINGS, message: "Step 1: Low servings", stepIndex: 1 },
+        { severity: "red", code: WarningCode.Red.PROTEIN_MISMATCH, message: "Step 1: Protein mismatch", stepIndex: 1 },
+        { severity: "yellow", code: WarningCode.Yellow.DUPLICATE_STEP, message: "Step 2: Duplicate", stepIndex: 2 },
       ];
 
       const result = groupAndSortWarnings(warnings);
@@ -37,8 +38,8 @@ describe("WarningsSidebar Component", () => {
 
     it("should strip redundant prefixes from messages", () => {
       const warnings: Warning[] = [
-        { severity: "yellow", code: "LOW_SERVINGS" as any, message: "Step 1: Low servings", stepIndex: 1 },
-        { severity: "red", code: "TOO_FEW_STEPS" as any, message: "Protocol Issues: Global issue" },
+        { severity: "yellow", code: WarningCode.Yellow.LOW_SERVINGS, message: "Step 1: Low servings", stepIndex: 1 },
+        { severity: "red", code: WarningCode.Red.TOO_FEW_STEPS, message: "Protocol Issues: Global issue" },
       ];
 
       const result = groupAndSortWarnings(warnings);
@@ -62,9 +63,9 @@ describe("WarningsSidebar Component", () => {
 
     it("should render summary badges", () => {
       const warnings: Warning[] = [
-        { severity: "red", code: "TOO_FEW_STEPS" as any, message: "Red 1" },
-        { severity: "yellow", code: "LOW_SERVINGS" as any, message: "Yellow 1" },
-        { severity: "red", code: "PROTEIN_MISMATCH" as any, message: "Red 2" },
+        { severity: "red", code: WarningCode.Red.TOO_FEW_STEPS, message: "Red 1" },
+        { severity: "yellow", code: WarningCode.Yellow.LOW_SERVINGS, message: "Yellow 1" },
+        { severity: "red", code: WarningCode.Red.PROTEIN_MISMATCH, message: "Red 2" },
       ];
 
       render(WarningsSidebar(warnings, rulesURL), mount);
@@ -80,8 +81,8 @@ describe("WarningsSidebar Component", () => {
 
     it("should render global and step groups with correct classes", () => {
       const warnings: Warning[] = [
-        { severity: "red", code: "TOO_FEW_STEPS" as any, message: "Global Red" },
-        { severity: "yellow", code: "LOW_SERVINGS" as any, message: "Step 1 Yellow", stepIndex: 1 },
+        { severity: "red", code: WarningCode.Red.TOO_FEW_STEPS, message: "Global Red" },
+        { severity: "yellow", code: WarningCode.Yellow.LOW_SERVINGS, message: "Step 1 Yellow", stepIndex: 1 },
       ];
 
       render(WarningsSidebar(warnings, rulesURL), mount);
