@@ -142,8 +142,8 @@ describe("Core: Protocol Manipulation", () => {
 				oldStep.mixFoodAmount?.toNumber(),
 			);
 			// servings should halve approx
-			expect(newStep.servings?.toNumber()).toBeCloseTo(
-				oldStep.servings?.dividedBy(2).toNumber(),
+			expect(newStep.servings!.toNumber()).toBeCloseTo(
+				oldStep.servings!.dividedBy(2).toNumber(),
 			);
 		});
 
@@ -164,20 +164,20 @@ describe("Core: Protocol Manipulation", () => {
 			if (index === 0) return;
 
 			const oldStep = baseProtocol.steps[index - 1];
-			const newMixFood = oldStep.mixFoodAmount?.times(2);
+			const newMixFood = oldStep.mixFoodAmount!.times(2);
 
 			const newProto = updateStepMixFoodAmount(baseProtocol, index, newMixFood);
 			const newStep = newProto.steps[index - 1];
 
-			expect(newStep.mixFoodAmount?.toNumber()).toBe(newMixFood.toNumber());
+			expect(newStep.mixFoodAmount!.toNumber()).toBe(newMixFood.toNumber());
 			// targetMg and dailyAmount should be preserved
 			expect(newStep.targetMg.toNumber()).toBe(oldStep.targetMg.toNumber());
 			expect(newStep.dailyAmount.toNumber()).toBe(
 				oldStep.dailyAmount.toNumber(),
 			);
 			// servings should double (since mix protein doubled)
-			expect(newStep.servings?.toNumber()).toBeCloseTo(
-				oldStep.servings?.times(2).toNumber(),
+			expect(newStep.servings!.toNumber()).toBeCloseTo(
+				oldStep.servings!.times(2).toNumber(),
 			);
 		});
 

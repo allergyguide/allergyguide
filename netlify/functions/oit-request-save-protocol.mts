@@ -45,6 +45,7 @@ export const handler: Handler = async (event) => {
 	}
 
 	// PAYLOAD PARSING & VALIDATION
+	// biome-ignore lint/suspicious/noExplicitAny: <not a big deal here>
 	let payload: any;
 	try {
 		payload = JSON.parse(event.body || "{}");
@@ -94,7 +95,7 @@ Hello,
 
 We have received your request to save the protocol: "${protocolName}".
 
-Our team will review this request. Standard turnaround time at this time is 3-5 business days. 
+Our team will review this request. Standard turnaround time at this time is 3-5 business days.
 
 Protocol Summary:
 ${ascii}

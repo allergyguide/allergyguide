@@ -1,3 +1,4 @@
+import type { HandlerEvent } from "@netlify/functions";
 import cookie from "cookie";
 import jwt from "jsonwebtoken";
 import { HttpError } from "./utils.mts";
@@ -24,7 +25,7 @@ export interface UserToken {
  * @throws {HttpError} 403 - If the provided token is expired, tampered with, or otherwise invalid.
  * @throws {HttpError} 500 - If the `JWT_SECRET` environment variable is missing from the server configuration.
  */
-export function authenticateUser(event): UserToken {
+export function authenticateUser(event: HandlerEvent): UserToken {
 	const cookies = cookie.parse(event.headers.cookie || "");
 	const token = cookies.nf_jwt;
 
