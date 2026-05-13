@@ -76,4 +76,7 @@ Note:
 - **Bundler:** `esbuild`
 - **Hashing:** Output filenames include a commit hash (e.g., `tool.1.0.0-a1b2c3d.js`) for cache busting.
 - **Code Splitting:** Shared libraries (like `decimal.js`) are automatically extracted into `static/js/chunks/` to prevent code duplication between tools.
+- **Linting & Formatting:** This project uses [Biome](https://biomejs.dev/) for fast linting and formatting. 
+  - Run `npm run lint` to check for issues.
+  - Run `npm run lint:fix` to automatically apply fixes.
 - **Testing:** Run `npm test` to execute Vitest unit tests located inside `_ts/`.

@@ -69,22 +69,19 @@ Each `ProtocolState` maintains its own Undo/Redo stack. To prevent "history poll
 4. **Contextual Notification:** The `ProtocolState` notifies subscribers with an `UpdateContext` (`input`, `structural`, or `history`). This allows renderers to decide if they should debounce expensive operations (like validation) or render immediately.
 5. **Render:** `ui/renderers.ts` and individual components update the DOM.
 
-### Authentication & Secure Data Architecture
+### 3-Tier Data Architecture
 
-The tool uses a "Hybrid" data loading model to support multi-tenancy while keeping the base tool public.
+The tool uses a hybrid model to support multi-tenancy while keeping the base tool public:
 
-1. **Public Loading:** On init, `loader.ts` fetches the public CNF food database (`typed_foods.json`).
+1.  **Tier 1: Public Assets:** Fetched on initialization (e.g., the standard CNF `typed_foods.json`). Available to all users.
+2.  **Tier 2: Provisioned Assets:** Private food databases and protocol templates maintained by administrators in a private repository. These are bundled during build and served to authenticated users via the `oit-bootstrap` endpoint.
+3.  **Tier 3: Custom Assets (Future):** User-created foods and protocols that will be persisted in a Supabase database. This will allow for individual customization that persists across sessions.
 
-2. **Authentication:**
+### Authentication & Secure Data Flow
 
-- **Login:** `auth-login.mts` verifies credentials against the `authorized_users` table in Supabase. On success, it issues a signed Netlify JWT via an HttpOnly, Secure cookie (`nf_jwt`) and returns a Supabase JWT for client-side RLS.
-- **Auto-Load:** On app start, `loader.ts` attempts to fetch the user configuration. If a valid cookie exists, the session is restored automatically.
-
-3. **Secure Assets:**
-
-- **Gating:** `get-secure-asset.mts` verifies the JWT and checks the user config fetched from secure_assets to ensure the user is allowed to access the requested file.
-- **Configuration:** The tool uses an `oit_calculator-bootstrap` request, which the backend handles by reading `user_configs/{username}_config.json` and then aggregating the required food and protocol lists into a single JSON response for the frontend.
-- **Merging:** `AppState` merges the public foods/protocols with the provisioned ones received from the bootstrap payload, rebuilding search indices.
+- **Login:** `auth-login.mts` verifies credentials against Supabase. On success, it issues a signed Netlify JWT (`nf_jwt`) for backend access and a Supabase JWT for client-side RLS.
+- **Bootstrap:** On app start, `loader.ts` calls the `oit-bootstrap` endpoint. The backend reads the user's config file, aggregates their **Tier 2 (Provisioned)** assets, and returns a consolidated payload.
+- **Merging:** `AppState` merges the public, provisioned, and (eventually) custom data, rebuilding search indices to provide a seamless unified view.
 
 ### Hybrid Rendering Strategy
 
@@ -139,11 +136,13 @@ Deployment requires the following Netlify environment variables (and ideally wit
 
 - Ensure bounds in `data_integrity.test.ts` are comprehensive (e.g., ensure no food has 0g protein unless intended, check for duplicates).
 
-### User Authentication and ability to host custom foods/protocols
+### Data Persistence & Multi-Tenancy (3-Tier System)
 
-- This represents a major feature change and will require thorough review.
-- Will need to ensure stable and secure user authentication system that also is convenient
-- Need to stabilize spec of how users will save and edit custom foods/protocols
+- **Tier 1 (Public) & Tier 2 (Provisioned):** DONE. Signed-in users can load private food databases and protocols provisioned via the private GitHub repository.
+- **Tier 3 (Custom User Assets):** PLANNED. 
+- This represents a major feature change (Supabase persistence) and will require thorough review.
+- Will need to ensure stable and secure user authentication system that also is convenient.
+- Need to stabilize spec of how users will save and edit these custom foods/protocols directly through the UI.
 
 ### Search UI improvement
 

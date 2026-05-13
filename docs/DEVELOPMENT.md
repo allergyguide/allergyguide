@@ -28,7 +28,9 @@ Defined in `package.json` and orchestrated by `build.mts`.
 
 1. **Legacy JS Sync:** Copies raw JavaScript files from `_legacy_js/` to `static/js/`. This ensures custom scripts are present before the build continues.
 2. **Secure Assets:** `build-fetch-secure-assets.mts` uses `PRIVATE_TOKEN` to fetch strictly controlled assets (PDFs, JSON) from the private repository into the local `secure_assets/` folder.
-3. **Type Checking:** Runs `tsc --noEmit` to ensure TypeScript integrity.
+3. **Linting and Type Checking:** Runs `npm run check` which executes:
+   - `biome check`: Fast linting and formatting verification using Biome.
+   - `tsc --noEmit`: Ensures TypeScript type integrity.
 4. **Typst Compilation:** `build-typ.mts` checks for and downloads the Typst binary and compiles `.typ` source files from specified directories into PDFs.
 5. **TypeScript Bundling:** `build-ts.mts` reads `tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
 
