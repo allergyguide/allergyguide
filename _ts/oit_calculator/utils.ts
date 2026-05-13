@@ -4,20 +4,19 @@
  * Collection of utility functions
  */
 import Decimal from "decimal.js";
-
+import { LIQUID_RESOLUTION, SOLID_RESOLUTION } from "./constants";
 import {
 	DosingStrategy,
+	type Food,
 	FoodAStrategy,
 	FoodType,
 	Method,
-	type ProtocolData,
-	type Unit,
-	type Food,
+	type NumberLike,
 	type Protocol,
+	type ProtocolData,
 	type RowData,
+	type Unit,
 } from "./types";
-
-import { SOLID_RESOLUTION, LIQUID_RESOLUTION } from "./constants";
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -56,10 +55,23 @@ export function escapeHtml(unsafe: string): string {
  * @param decimals Number of fractional digits to render
  * @returns Formatted string (or "" for nullish input)
  */
-export function formatNumber(value: any, decimals: number): string {
+export function formatNumber(
+	value: NumberLike | null | undefined,
+	decimals: number,
+): string {
 	if (value === null || value === undefined) return "";
-	const num = typeof value === "number" ? value : value.toNumber();
-	return num.toFixed(decimals);
+
+	let num: number;
+	if (typeof value === "number") {
+		num = value;
+	} else if (typeof value === "string") {
+		num = Number.parseFloat(value);
+	} else {
+		// Assume Decimal object
+		num = value.toNumber();
+	}
+
+	return Number.isNaN(num) ? "" : num.toFixed(decimals);
 }
 
 /**
@@ -74,11 +86,25 @@ export function formatNumber(value: any, decimals: number): string {
  * @param unit Measuring unit: "g" or "ml" or "capsule"
  * @returns Formatted string, for example 0.1, or 0.12
  */
-export function formatAmount(value: any, unit: Unit): string {
+export function formatAmount(
+	value: NumberLike | null | undefined,
+	unit: Unit,
+): string {
 	if (value === null || value === undefined) return "";
 	if (unit === "capsule") return ""; // Dummy value for capsules is not shown
 
-	const num = typeof value === "number" ? value : value.toNumber();
+	let num: number;
+	if (typeof value === "number") {
+		num = value;
+	} else if (typeof value === "string") {
+		num = Number.parseFloat(value);
+	} else {
+		// Assume Decimal object
+		num = value.toNumber();
+	}
+
+	if (Number.isNaN(num)) return "";
+
 	if (unit === "g") {
 		return num.toFixed(SOLID_RESOLUTION);
 	} else {
@@ -122,11 +148,15 @@ export function serializeProtocol(
 ): ProtocolData {
 	// Map steps to RowData
 	const table: RowData[] = protocol.steps.map((step) => {
-		const foodType =
-			step.food === "A" ? protocol.foodA.type : protocol.foodB!.type;
-		const measureUnit: Unit = getMeasuringUnit(
-			step.food === "A" ? protocol.foodA : protocol.foodB!,
-		);
+		// Resolve the food source for this specific step
+		const stepFood = step.food === "A" ? protocol.foodA : protocol.foodB;
+
+		// Invariant: step.food B should only exist if protocol.foodB is defined
+		if (!stepFood) {
+			throw new Error(`Step referenced Food ${step.food} which is undefined`);
+		}
+
+		const measureUnit: Unit = getMeasuringUnit(stepFood);
 
 		const base = {
 			food: step.food,
@@ -145,12 +175,19 @@ export function serializeProtocol(
 				method: "CAPSULE",
 			};
 		} else {
+			// DILUTE
+			if (
+				step.mixFoodAmount === undefined ||
+				step.mixWaterAmount === undefined
+			) {
+				throw new Error("Dilution step missing mix amounts");
+			}
 			return {
 				...base,
 				method: "DILUTE",
 				daily_amount: formatAmount(step.dailyAmount, step.dailyAmountUnit),
-				mix_amount: formatAmount(step.mixFoodAmount!, measureUnit),
-				water_amount: formatAmount(step.mixWaterAmount!, "ml"),
+				mix_amount: formatAmount(step.mixFoodAmount, measureUnit),
+				water_amount: formatAmount(step.mixWaterAmount, "ml"),
 			};
 		}
 	});

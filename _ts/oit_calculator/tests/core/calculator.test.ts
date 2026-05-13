@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
 import Decimal from "decimal.js";
+import { describe, expect, it } from "vitest";
+import { DEFAULT_CONFIG } from "../../constants";
 import {
 	findDilutionCandidates,
-	generateStepForTarget,
 	generateDefaultProtocol,
+	generateStepForTarget,
 } from "../../core/calculator";
-import { FoodType, Method, FoodAStrategy, DosingStrategy } from "../../types";
-import { DEFAULT_CONFIG } from "../../constants";
 import type { Food, ProtocolConfig } from "../../types";
+import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../../types";
 
 // Helper: create a food object
 const createFood = (

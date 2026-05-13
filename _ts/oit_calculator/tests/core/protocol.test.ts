@@ -1,19 +1,19 @@
-import { describe, it, expect, beforeEach } from "vitest";
 import Decimal from "decimal.js";
+import { beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_CONFIG } from "../../constants";
+import { generateDefaultProtocol } from "../../core/calculator";
 import {
 	addFoodBToProtocol,
+	addStepAfter,
 	recalculateProtocol,
-	updateStepTargetMg,
+	removeStep,
+	toggleFoodType,
 	updateStepDailyAmount,
 	updateStepMixFoodAmount,
-	toggleFoodType,
-	removeStep,
-	addStepAfter,
+	updateStepTargetMg,
 } from "../../core/protocol";
-import { generateDefaultProtocol } from "../../core/calculator";
-import { FoodType, Method, DosingStrategy } from "../../types";
-import { DEFAULT_CONFIG } from "../../constants";
 import type { Food, Protocol } from "../../types";
+import { DosingStrategy, FoodType, Method } from "../../types";
 
 const createFood = (name: string, type: FoodType = FoodType.SOLID): Food => ({
 	name,
@@ -43,7 +43,7 @@ describe("Core: Protocol Manipulation", () => {
 			const newProto = addFoodBToProtocol(baseProtocol, foodB, threshold);
 
 			expect(newProto.foodB).toBeDefined();
-			expect(newProto.foodB!.name).toBe("Food B");
+			expect(newProto.foodB?.name).toBe("Food B");
 
 			const steps = newProto.steps;
 			const firstBIndex = steps.findIndex((s) => s.food === "B");
@@ -73,7 +73,7 @@ describe("Core: Protocol Manipulation", () => {
 
 		it("should re-apply Food B transition if it exists", () => {
 			const threshold = { unit: "g" as const, amount: new Decimal(1) };
-			let p = addFoodBToProtocol(baseProtocol, foodB, threshold);
+			const p = addFoodBToProtocol(baseProtocol, foodB, threshold);
 
 			// modify config causing recalc
 			p.dosingStrategy = DosingStrategy.SLOW;
@@ -143,7 +143,7 @@ describe("Core: Protocol Manipulation", () => {
 			);
 			// servings should halve approx
 			expect(newStep.servings?.toNumber()).toBeCloseTo(
-				oldStep.servings!.dividedBy(2).toNumber(),
+				oldStep.servings?.dividedBy(2).toNumber(),
 			);
 		});
 
@@ -164,7 +164,7 @@ describe("Core: Protocol Manipulation", () => {
 			if (index === 0) return;
 
 			const oldStep = baseProtocol.steps[index - 1];
-			const newMixFood = oldStep.mixFoodAmount!.times(2);
+			const newMixFood = oldStep.mixFoodAmount?.times(2);
 
 			const newProto = updateStepMixFoodAmount(baseProtocol, index, newMixFood);
 			const newStep = newProto.steps[index - 1];
@@ -177,12 +177,12 @@ describe("Core: Protocol Manipulation", () => {
 			);
 			// servings should double (since mix protein doubled)
 			expect(newStep.servings?.toNumber()).toBeCloseTo(
-				oldStep.servings!.times(2).toNumber(),
+				oldStep.servings?.times(2).toNumber(),
 			);
 		});
 
 		it("updateStepTargetMg should handle CAPSULE steps without error", () => {
-			let proto = toggleFoodType(baseProtocol, false, FoodType.CAPSULE);
+			const proto = toggleFoodType(baseProtocol, false, FoodType.CAPSULE);
 			const index = 1;
 
 			const newProto = updateStepTargetMg(proto, index, 50);

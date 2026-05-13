@@ -8,27 +8,25 @@
  * - create a default starting protocol based on a selected food
  */
 import Decimal from "decimal.js";
-
-import { FoodType, Method, FoodAStrategy, DosingStrategy } from "../types";
-
-import type {
-	Food,
-	Step,
-	Unit,
-	Protocol,
-	ProtocolConfig,
-	Candidate,
-} from "../types";
-
 import {
 	DILUTION_WATER_STEP_RESOLUTION,
 	DOSING_STRATEGIES,
 } from "../constants";
+
+import type {
+	Candidate,
+	Food,
+	Protocol,
+	ProtocolConfig,
+	Step,
+	Unit,
+} from "../types";
+import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../types";
 import {
 	findPercentDifference,
 	formatAmount,
-	getMeasuringUnit,
 	generateUniqueId,
+	getMeasuringUnit,
 } from "../utils";
 
 /**
@@ -496,7 +494,8 @@ export function findRoundedMixWaterAmount(
 		floorMixTotalVolume,
 		roundedDailyAmount,
 	);
-	const floorDifference = findPercentDifference(floorMg!, P);
+	if (!floorMg) return null;
+	const floorDifference = findPercentDifference(floorMg, P);
 
 	// test ceilWater if it's not the same as floor
 	if (!ceilWater.equals(floorWater)) {
@@ -513,7 +512,8 @@ export function findRoundedMixWaterAmount(
 			ceilMixTotalVolume,
 			roundedDailyAmount,
 		);
-		const ceilDifference = findPercentDifference(ceilMg!, P);
+		if (!ceilMg) return null;
+		const ceilDifference = findPercentDifference(ceilMg, P);
 
 		// find best out of ceilWater and floor water; if the best is still >= protein tolerance, return null
 		const minDiff = Decimal.min(floorDifference, ceilDifference);

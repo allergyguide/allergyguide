@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import Decimal from "decimal.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DosingStrategy, FoodAStrategy, FoodType } from "../../types";
 import {
 	renderFoodASettings,
 	renderFoodBSettings,
 } from "../../ui/components/FoodSettings";
-import { FoodType, FoodAStrategy, DosingStrategy } from "../../types";
 
 describe("FoodSettings Component", () => {
 	let mockWorkspace: any;

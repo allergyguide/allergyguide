@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { minifyProtocol } from "../../core/minify";
-import { FoodType, DosingStrategy, FoodAStrategy, Method } from "../../types";
 import Decimal from "decimal.js";
+import { describe, expect, it } from "vitest";
+import { minifyProtocol } from "../../core/minify";
+import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../../types";
 
 const mockProtocol = {
 	dosingStrategy: DosingStrategy.STANDARD,

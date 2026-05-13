@@ -1,6 +1,6 @@
-import { execSync } from "child_process";
-import { existsSync, readdirSync } from "fs";
-import path from "path";
+import { execSync } from "node:child_process";
+import { existsSync, readdirSync } from "node:fs";
+import path from "node:path";
 
 // Typst version mgment
 const TYPST_VERSION = "0.14.2";

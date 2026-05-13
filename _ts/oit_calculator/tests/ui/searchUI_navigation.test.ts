@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import * as searchUI from "../../ui/searchUI";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FoodType } from "../../types";
+import * as searchUI from "../../ui/searchUI";
 
 // Mock DOM
 const mockMount = (id: string) => {

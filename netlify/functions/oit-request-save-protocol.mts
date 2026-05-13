@@ -2,9 +2,9 @@
  * @module
  * Serverless function to handle protocol save requests via email.
  */
-import { Handler } from "@netlify/functions";
-import jwt from "jsonwebtoken";
+import type { Handler } from "@netlify/functions";
 import cookie from "cookie";
+import jwt from "jsonwebtoken";
 import { Resend } from "resend";
 
 // Initialize Resend with your API key
@@ -31,10 +31,10 @@ export const handler: Handler = async (event) => {
 	let username = "";
 	try {
 		if (!process.env.JWT_SECRET) throw new Error("Missing JWT_SECRET");
-		const secret = process.env.JWT_SECRET!;
+		const secret = process.env.JWT_SECRET;
 		const decoded = jwt.verify(token, secret) as { username: string };
 		username = decoded.username;
-	} catch (err) {
+	} catch {
 		return {
 			statusCode: 403,
 			headers: { "Content-Type": "application/json" },
@@ -45,10 +45,10 @@ export const handler: Handler = async (event) => {
 	}
 
 	// PAYLOAD PARSING & VALIDATION
-	let payload;
+	let payload: any;
 	try {
 		payload = JSON.parse(event.body || "{}");
-	} catch (e) {
+	} catch {
 		return { statusCode: 400, body: "Invalid JSON" };
 	}
 

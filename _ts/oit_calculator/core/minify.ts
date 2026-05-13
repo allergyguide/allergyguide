@@ -3,27 +3,27 @@
  * * Logic for minifying protocols and generating payloads for QR codes
  */
 import type {
-	Protocol,
-	HistoryItem,
-	MProtocol,
-	MFood,
-	MStep,
-	Step,
-	UserHistoryPayload,
 	Food,
+	HistoryItem,
+	MFood,
+	MProtocol,
+	MStep,
+	MWarning,
+	Protocol,
+	ReadableFood,
 	ReadableHistoryPayload,
 	ReadableProtocol,
-	ReadableFood,
 	ReadableStep,
-	Warning,
-	MWarning,
 	ReadableWarning,
+	Step,
+	UserHistoryPayload,
+	Warning,
 } from "../types";
 import {
-	FoodType,
-	Method,
 	DosingStrategy,
 	FoodAStrategy,
+	FoodType,
+	Method,
 	UserHistoryPayloadSchema,
 } from "../types";
 import { validateProtocol } from "./validator";

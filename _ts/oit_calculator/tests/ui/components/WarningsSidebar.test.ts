@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from "vitest";
 import { render } from "lit-html";
-import {
-	WarningsSidebar,
-	groupAndSortWarnings,
-} from "../../../ui/components/WarningsSidebar";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { Warning } from "../../../types";
 import { WarningCode } from "../../../types";
+import {
+	groupAndSortWarnings,
+	WarningsSidebar,
+} from "../../../ui/components/WarningsSidebar";
 
 describe("WarningsSidebar Component", () => {
 	let mount: HTMLElement;

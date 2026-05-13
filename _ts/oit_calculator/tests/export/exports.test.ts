@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 // Mock main before importing exports
 vi.mock("../../main", () => ({
@@ -7,11 +7,10 @@ vi.mock("../../main", () => ({
 	},
 }));
 
-import { generateAsciiContent } from "../../export/exports";
-import type { ProtocolExportData } from "../../types";
-import { FoodType, Method, DosingStrategy, FoodAStrategy } from "../../types";
 import Decimal from "decimal.js";
-import type { Protocol } from "../../types";
+import { generateAsciiContent } from "../../export/exports";
+import type { Protocol, ProtocolExportData } from "../../types";
+import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../../types";
 
 // Mock build-time globals
 beforeAll(() => {
@@ -20,7 +19,7 @@ beforeAll(() => {
 });
 
 // Helper to create a minimal protocol for testing
-const createMockProtocol = (name: string, foodAName: string): Protocol => ({
+const createMockProtocol = (_name: string, foodAName: string): Protocol => ({
 	dosingStrategy: DosingStrategy.STANDARD,
 	foodA: {
 		name: foodAName,

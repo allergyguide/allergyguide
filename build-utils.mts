@@ -1,9 +1,14 @@
-import dotenv from "dotenv";
-import { existsSync, mkdirSync, cpSync, rmSync } from "fs";
-import { resolve } from "path";
+import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
 
 dotenv.config();
+
+interface GitHubTreeItem {
+	path: string;
+	type: string;
+}
 
 /**
  * Copies static/legacy JavaScript files from the root `_legacy_js/` folder to `static/js/`.
@@ -30,8 +35,8 @@ export function copyLegacyJS() {
 
 		cpSync(src, dest, { recursive: true, force: true });
 		console.log(`Successfully synced _legacy_js to static/js`);
-	} catch (error: any) {
-		console.error("Failed to copy legacy JS files:", error.message);
+	} catch (error) {
+		console.error("Failed to copy legacy JS files:", error);
 		process.exit(1);
 	}
 }
@@ -117,7 +122,7 @@ export async function getPathsUsingGitTree(
 	const data = await response.json();
 
 	// The API returns a flat array of all files in the repo
-	return (data.tree as any[])
+	return (data.tree as GitHubTreeItem[])
 		.filter(
 			(item) =>
 				item.type === "blob" && // explicit check for file (blob)
@@ -135,9 +140,12 @@ export async function getPathsUsingGitTree(
 export async function verifyUsersData() {
 	console.log("Verifying Users Configuration...");
 
+	if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY)
+		throw new Error();
+
 	const supabaseAdmin = createClient(
-		process.env.SUPABASE_URL!,
-		process.env.SUPABASE_SECRET_KEY!,
+		process.env.SUPABASE_URL,
+		process.env.SUPABASE_SECRET_KEY,
 	);
 
 	async function getAllUsernames(): Promise<string[]> {
@@ -158,7 +166,7 @@ export async function verifyUsersData() {
 	let adminUsers: string[] = [];
 	try {
 		adminUsers = JSON.parse(process.env.ADMIN_USERS || "[]");
-	} catch (e) {
+	} catch {
 		console.warn(
 			"Warning: Could not parse ADMIN_USERS. Treating as empty list.",
 		);

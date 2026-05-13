@@ -2,10 +2,11 @@
 // ASSUMES: private-tools/ folder is main entry in git repo pri
 // runs on build
 
-import { getPathsUsingGitTree, fetchFromGithubBinary } from "./build-utils.mjs";
-import { writeFileSync, existsSync, mkdirSync } from "fs";
-import path from "path";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import dotenv from "dotenv";
+import { fetchFromGithubBinary, getPathsUsingGitTree } from "./build-utils.mjs";
+
 dotenv.config({ override: true });
 
 const SECURE_ASSETS_DIR = "secure_assets";

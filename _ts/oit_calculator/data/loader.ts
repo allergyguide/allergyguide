@@ -2,19 +2,19 @@
  * @module
  * Orchestrates loading of public food databases and user-specific config and secure assets.
  */
-import { z } from "zod";
+import type { z } from "zod";
+import { appState } from "../main";
 import {
 	type FoodData,
-	type ProtocolData,
 	FoodDataSchema,
+	HttpError,
+	type OITBootstrapResponse,
+	type ProtocolData,
 	ProtocolDataSchema,
 	type PublicData,
-	type OITBootstrapResponse,
 } from "../types";
-import { HttpError } from "../types";
 import { SAMPLE_PROTOCOL } from "../utils";
-import { fetchOITBootstrap, loadSecureAsset } from "./api";
-import { appState } from "../main";
+import { fetchOITBootstrap } from "./api";
 
 /**
  * Validates an array of raw data items against a Zod schema

@@ -4,15 +4,16 @@
  * Workspace Manager for Multi-Tab support.
  * Manages multiple ProtocolState instances.
  */
-import { ProtocolState } from "./protocolState";
-import {
-	type Protocol,
-	type TabListener,
-	type Tab,
-	type ProtocolListener,
-	type UpdateContext,
+
+import type {
+	Protocol,
+	ProtocolListener,
+	Tab,
+	TabListener,
+	UpdateContext,
 } from "../types";
 import { generateUniqueId } from "../utils";
+import { ProtocolState } from "./protocolState";
 
 /**
  * Manages multiple OIT protocol workspaces (tabs).
@@ -60,11 +61,11 @@ export class WorkspaceManager {
 		// Update the title of the active tab based on the protocol
 		const activeTab = this.tabs.find((t) => t.id === this.activeTabId);
 		if (activeTab) {
-			if (protocol && protocol.foodA) {
+			if (protocol?.foodA) {
 				// Truncate if too long
 				activeTab.title =
 					protocol.foodA.name.length > 20
-						? protocol.foodA.name.substring(0, 20) + "..."
+						? `${protocol.foodA.name.substring(0, 20)}...`
 						: protocol.foodA.name;
 			} else {
 				activeTab.title = `Untitled ${this.tabs.indexOf(activeTab) + 1}`;
@@ -75,7 +76,9 @@ export class WorkspaceManager {
 		this.notifyTabsListeners();
 
 		// Propagate to external protocol listeners (e.g. table renderer)
-		this.listeners.forEach((fn) => fn(protocol, note, context));
+		this.listeners.forEach((fn) => {
+			fn(protocol, note, context);
+		});
 	};
 
 	/**
@@ -125,7 +128,9 @@ export class WorkspaceManager {
 	 * Notifies all tab listeners of a change in the tab environment.
 	 */
 	private notifyTabsListeners() {
-		this.tabListeners.forEach((cb) => cb(this.tabs, this.activeTabId));
+		this.tabListeners.forEach((cb) => {
+			cb(this.tabs, this.activeTabId);
+		});
 	}
 
 	/**
@@ -227,7 +232,9 @@ export class WorkspaceManager {
 	 * @returns The ProtocolState of the currently active tab.
 	 */
 	public getActive(): ProtocolState {
-		return this.tabs.find((t) => t.id === this.activeTabId)!.state;
+		const activeTab = this.tabs.find((t) => t.id === this.activeTabId);
+		if (!activeTab) throw new Error("WorkspaceManager: Active tab not found");
+		return activeTab.state;
 	}
 
 	/**

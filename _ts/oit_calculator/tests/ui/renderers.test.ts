@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { updateWarnings, renderProtocolTable } from "../../ui/renderers";
+import * as litHtml from "lit-html";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Protocol, Warning } from "../../types";
 import { WarningCode } from "../../types";
-import * as litHtml from "lit-html";
+import { renderProtocolTable, updateWarnings } from "../../ui/renderers";
 
 // Mock lit-html to spy on render calls
 vi.mock("lit-html", async () => {

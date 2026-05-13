@@ -1,9 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { FoodDataSchema, ProtocolDataSchema } from "../types";
 import Decimal from "decimal.js";
-
+import { describe, expect, it } from "vitest";
 // Import static public JSONs
 import cnfFoods from "../../../static/tool_assets/typed_foods.json";
+import { FoodDataSchema, ProtocolDataSchema } from "../types";
 
 describe("Static Data Integrity", () => {
 	it("validates CNF foods (Structure & Physics)", () => {

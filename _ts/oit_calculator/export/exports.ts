@@ -4,21 +4,21 @@
  * Void functions that trigger: 1) PDF document to download in new tab 2) copy ASCII protocol to clipboard
  */
 
-import { FoodType, Method } from "../types";
-import type {
-	Unit,
-	Step,
-	Food,
-	HistoryItem,
-	ProtocolExportData,
-} from "../types";
-import { formatNumber, formatAmount, getMeasuringUnit } from "../utils";
-import { getFoodAStepCount } from "../core/protocol";
 import type { jsPDF } from "jspdf";
 import type { PDFDocument } from "pdf-lib";
 import { generateUserHistoryPayload } from "../core/minify";
-import { appState } from "../main"; // We need access to the global appState
+import { getFoodAStepCount } from "../core/protocol";
 import { loadSecureAsset } from "../data/api";
+import { appState } from "../main"; // We need access to the global appState
+import type {
+	Food,
+	HistoryItem,
+	ProtocolExportData,
+	Step,
+	Unit,
+} from "../types";
+import { FoodType, Method } from "../types";
+import { formatAmount, formatNumber, getMeasuringUnit } from "../utils";
 
 // Need global commit hash
 // And current tool version
@@ -57,8 +57,13 @@ function buildStepRows(
 		} else {
 			dailyAmountStr = `${formatAmount(step.dailyAmount, step.dailyAmountUnit)} ${step.dailyAmountUnit}`;
 			if (step.method === Method.DILUTE) {
+				if (!step.mixFoodAmount) {
+					throw new Error(
+						`Export failed: Step ${step.stepIndex} is DILUTE but missing mixFoodAmount`,
+					);
+				}
 				const mixUnit: Unit = foodType === FoodType.SOLID ? "g" : "ml";
-				mixDetails = `${formatAmount(step.mixFoodAmount!, mixUnit)} ${mixUnit} food + ${formatAmount(step.mixWaterAmount!, "ml")} ml water`;
+				mixDetails = `${formatAmount(step.mixFoodAmount, mixUnit)} ${mixUnit} food + ${formatAmount(step.mixWaterAmount, "ml")} ml water`;
 			}
 		}
 
@@ -149,7 +154,7 @@ function renderFoodSection(
 	doc: jsPDF,
 	y: number,
 	name: string,
-	food: any,
+	food: Food,
 	rows: ExportRow[],
 	titleMaxWidth?: number,
 ): number {
@@ -194,6 +199,7 @@ function renderFoodSection(
 		r.interval,
 	]);
 
+	// biome-ignore lint/suspicious/noExplicitAny: <Annoying>
 	(doc as any).autoTable({
 		startY: y,
 		head: [
@@ -228,11 +234,12 @@ function renderFoodSection(
 		margin: { left: 40, right: 40 },
 	});
 
+	// biome-ignore lint/suspicious/noExplicitAny: <Annoying>
 	return (doc as any).lastAutoTable.finalY + 20;
 }
 
 function renderNotes(doc: jsPDF, y: number, note: string): number {
-	if (!note || !note.trim()) return y;
+	if (!note?.trim()) return y;
 
 	if (y > 650) {
 		doc.addPage();
@@ -417,7 +424,9 @@ async function handlePdfMergeAndDownload(
 			srcDoc,
 			srcDoc.getPageIndices(),
 		);
-		copiedPages.forEach((page) => mergedPdf.addPage(page));
+		copiedPages.forEach((page) => {
+			mergedPdf.addPage(page);
+		});
 	}
 
 	const mergedPdfBytes = await mergedPdf.save();
@@ -505,9 +514,9 @@ export function generateAsciiContent(exportData: ProtocolExportData[]): string {
 		}
 
 		if (isBatch) {
-			text += "=".repeat(30) + "\n";
+			text += `${"=".repeat(30)}\n`;
 			text += `PROTOCOL ${i + 1}\n`;
-			text += "=".repeat(30) + "\n\n";
+			text += `${"=".repeat(30)}\n\n`;
 		}
 
 		// --- Table Generation ---
@@ -538,8 +547,8 @@ export function generateAsciiContent(exportData: ProtocolExportData[]): string {
 		}
 
 		// --- Notes ---
-		if (customNote && customNote.trim()) {
-			text += "\n" + "-".repeat(20) + "\n";
+		if (customNote?.trim()) {
+			text += `\n${"-".repeat(20)}\n`;
 			text += "NOTES\n";
 			text += `${customNote.trim()}\n`;
 		}
@@ -562,6 +571,6 @@ export function exportASCII(exportData: ProtocolExportData[]): void {
 
 	// --- Copy to Clipboard ---
 	navigator.clipboard.writeText(text).catch(() => {
-		alert("Failed to copy to clipboard. Please copy manually:\n\n" + text);
+		alert(`Failed to copy to clipboard. Please copy manually:\n\n${text}`);
 	});
 }

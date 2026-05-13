@@ -35,7 +35,13 @@ export function groupAndSortWarnings(warnings: Warning[]): WarningsViewModel {
 			if (!stepWarningsMap.has(w.stepIndex)) {
 				stepWarningsMap.set(w.stepIndex, []);
 			}
-			stepWarningsMap.get(w.stepIndex)!.push(formattedWarning);
+			const warningList = stepWarningsMap.get(w.stepIndex);
+			if (!warningList) {
+				throw new Error(
+					`Invariant failed: stepWarningsMap missing list for stepIndex ${w.stepIndex}`,
+				);
+			}
+			warningList.push(formattedWarning);
 		} else {
 			globalWarnings.push(formattedWarning);
 		}

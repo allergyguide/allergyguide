@@ -1,9 +1,12 @@
 import { schedule } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
 
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY)
+	throw new Error();
+
 const supabase = createClient(
-	process.env.SUPABASE_URL!,
-	process.env.SUPABASE_SECRET_KEY!,
+	process.env.SUPABASE_URL,
+	process.env.SUPABASE_SECRET_KEY,
 );
 
 /**
@@ -34,7 +37,7 @@ export const handler = schedule("0 0 */3 * *", async () => {
 			statusCode: 200,
 			body: JSON.stringify({ success: true, id: data?.id }),
 		};
-	} catch (err: any) {
+	} catch (err) {
 		console.error("Unexpected error during keep-alive:", err);
 		return {
 			statusCode: 500,

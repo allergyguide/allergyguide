@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { render, html } from "lit-html";
-import { activeSafe } from "../../../ui/directives/activeSafe";
 import Decimal from "decimal.js";
+import { html, render } from "lit-html";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { activeSafe } from "../../../ui/directives/activeSafe";
 
 describe("activeSafe directive", () => {
 	let container: HTMLDivElement;

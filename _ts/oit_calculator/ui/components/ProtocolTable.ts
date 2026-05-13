@@ -1,30 +1,30 @@
-import { html, type TemplateResult, noChange } from "lit-html";
-import { repeat } from "lit-html/directives/repeat.js";
+import Decimal from "decimal.js";
+import { html, noChange, type TemplateResult } from "lit-html";
 import {
-	directive,
 	Directive,
-	PartType,
+	directive,
 	type ElementPart,
 	type PartInfo,
+	PartType,
 } from "lit-html/directive.js";
-import { activeSafe } from "../directives/activeSafe";
+import { repeat } from "lit-html/directives/repeat.js";
+import {
+	addStepAfter,
+	removeStep,
+	updateStepDailyAmount,
+	updateStepMixFoodAmount,
+	updateStepTargetMg,
+} from "../../core/protocol";
+import { workspace } from "../../state/instances";
 import {
 	Method,
 	type Protocol,
 	type Step,
-	type Warning,
 	type Unit,
+	type Warning,
 } from "../../types";
-import { formatNumber, formatAmount, getMeasuringUnit } from "../../utils";
-import {
-	updateStepTargetMg,
-	updateStepDailyAmount,
-	updateStepMixFoodAmount,
-	addStepAfter,
-	removeStep,
-} from "../../core/protocol";
-import { workspace } from "../../state/instances";
-import Decimal from "decimal.js";
+import { formatAmount, formatNumber, getMeasuringUnit } from "../../utils";
+import { activeSafe } from "../directives/activeSafe";
 
 /**
  * focusMe Directive
@@ -118,9 +118,14 @@ export const ProtocolTable = (
 		const isStepFoodB = step.food === "B";
 		// if you're at the transition point A -> B
 		if (isStepFoodB && lastWasFoodA) {
+			if (!protocol.foodB) {
+				throw new Error(
+					"Invariant failed: step.food is B but protocol.foodB is undefined in ProtocolTable",
+				);
+			}
 			rows.push({
 				type: "header",
-				text: protocol.foodB!.name,
+				text: protocol.foodB.name,
 				id: "header-food-b",
 			});
 			lastWasFoodA = false;
@@ -165,7 +170,12 @@ export const ProtocolTable = (
 					const rowClass = warningClass
 						? `warning-highlight-${warningClass}`
 						: "";
-					const food = step.food === "B" ? protocol.foodB! : protocol.foodA;
+					const food = step.food === "B" ? protocol.foodB : protocol.foodA;
+					if (!food) {
+						throw new Error(
+							`Invariant failed: Food ${step.food} is undefined for step ${step.stepIndex} in ProtocolTable`,
+						);
+					}
 					const mixUnit: Unit = getMeasuringUnit(food);
 
 					const isNewStep = step.id === currentFocusId;
@@ -196,7 +206,7 @@ export const ProtocolTable = (
             <td class="col-method">${step.method}</td>
 
             ${
-							step.method === Method.DILUTE
+							(step.method === Method.DILUTE) && step.mixFoodAmount
 								? html`
               <td class="col-mix-food">
                 <input
@@ -204,16 +214,16 @@ export const ProtocolTable = (
                   type="number"
                   step="${getMeasuringUnit(food) === "g" ? 0.01 : 0.1}"
                   min="0"
-                  ${activeSafe(step.mixFoodAmount!.toNumber(), (v) => new Decimal(v as number).toFixed(getMeasuringUnit(food) === "g" ? 2 : 1))}
+                  ${activeSafe(step.mixFoodAmount.toNumber(), (v) => new Decimal(v as number).toFixed(getMeasuringUnit(food) === "g" ? 2 : 1))}
                   @input=${(e: Event) => handleInput(e, step.stepIndex, "mixFoodAmount")}
                   @keydown=${(e: KeyboardEvent) => handleKeydown(e)}
                 />
                 <span> ${mixUnit}</span>
               </td>
               <td class="non-editable col-mix-water">
-                ${formatAmount(step.mixWaterAmount!, "ml")} ml
+                ${formatAmount(step.mixWaterAmount, "ml")} ml
                 <span style="color: var(--oit-text-secondary); font-size: 0.85rem;">
-                  (${formatNumber(step.servings!, 1)} servings)
+                  (${formatNumber(step.servings, 1)} servings)
                 </span>
               </td>
             `
@@ -322,7 +332,7 @@ function handleInput(
 	try {
 		value = new Decimal(rawValue);
 		if (value.isNegative()) value = new Decimal(0);
-	} catch (e) {
+	} catch {
 		value = new Decimal(0);
 	}
 
@@ -333,23 +343,26 @@ function handleInput(
 	let label = "";
 
 	switch (field) {
-		case "targetMg":
+		case "targetMg": {
 			const oldTarget = current.steps[stepIndex - 1].targetMg; // prev value before the change in the input field
 			updated = updateStepTargetMg(current, stepIndex, value);
 			label = `Step ${stepIndex} Target: ${oldTarget} -> ${value} mg`;
 			break;
-		case "dailyAmount":
+		}
+		case "dailyAmount": {
 			const oldDaily = current.steps[stepIndex - 1].dailyAmount;
 			updated = updateStepDailyAmount(current, stepIndex, value);
 			label = `Step ${stepIndex} Daily Amount: ${oldDaily} -> ${value}`;
 			break;
-		case "mixFoodAmount":
+		}
+		case "mixFoodAmount": {
 			const oldMix = current.steps[stepIndex - 1].mixFoodAmount;
 			updated = updateStepMixFoodAmount(current, stepIndex, value);
 			label = oldMix
 				? `Step ${stepIndex} Mix Amount: ${oldMix} -> ${value}`
 				: `Step ${stepIndex} Mix Amount: ${value}`;
 			break;
+		}
 		default:
 			return;
 	}

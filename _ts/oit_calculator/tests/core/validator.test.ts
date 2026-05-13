@@ -1,10 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { validateProtocol } from "../../core/validator";
-import { generateDefaultProtocol } from "../../core/calculator";
-import { DEFAULT_CONFIG } from "../../constants";
-import { FoodType, Method, WarningCode } from "../../types";
 import Decimal from "decimal.js";
+import { describe, expect, it } from "vitest";
+import { DEFAULT_CONFIG } from "../../constants";
+import { generateDefaultProtocol } from "../../core/calculator";
+import { validateProtocol } from "../../core/validator";
 import type { Food } from "../../types";
+import { FoodType, Method, WarningCode } from "../../types";
 
 const createFood = (type: FoodType = FoodType.SOLID): Food => ({
 	name: "Peanut",
@@ -387,7 +387,9 @@ describe("Core: Validator", () => {
 			// Add Food B definition but don't add steps for it
 			protocol.foodB = { ...food, name: "Food B" };
 			// Manually ensure all steps are Food A
-			protocol.steps.forEach((s) => (s.food = "A"));
+			protocol.steps.forEach((s) => {
+				s.food = "A";
+			});
 
 			const warnings = validateProtocol(protocol);
 			expect(

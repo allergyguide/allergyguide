@@ -1,6 +1,6 @@
+import { promises as fs } from "node:fs";
+import { resolve } from "node:path";
 import type { Handler, HandlerResponse } from "@netlify/functions";
-import { resolve } from "path";
-import { promises as fs } from "fs";
 import { authenticateUser } from "./_lib/auth.mts";
 import { HttpError } from "./_lib/utils.mts";
 
@@ -22,7 +22,7 @@ import { HttpError } from "./_lib/utils.mts";
  * - `403 Forbidden`: If the user config is missing, or lacks explicit permissions for the OIT tool.
  * - `500 Internal Server Error`: For unexpected system or file-read failures.
  */
-export const handler: Handler = async (event) => {
+export const handler: Handler = async (event): Promise<HandlerResponse> => {
 	try {
 		const decoded = authenticateUser(event);
 		const username = decoded.username;
@@ -34,10 +34,10 @@ export const handler: Handler = async (event) => {
 		);
 
 		// A. Read User Config
-		let configRaw;
+		let configRaw: string;
 		try {
 			configRaw = await fs.readFile(configPath, "utf-8");
-		} catch (err) {
+		} catch {
 			throw new HttpError("Forbidden: User configuration not found", 403);
 		}
 		const userConfig = JSON.parse(configRaw);

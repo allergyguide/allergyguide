@@ -6,16 +6,16 @@
 /// <reference types="cloudflare-turnstile" />
 
 import {
-	OIT_CLICKWRAP_ACCEPTED_KEY,
 	CLICKWRAP_EXPIRY_DAYS,
+	OIT_CLICKWRAP_ACCEPTED_KEY,
 } from "../constants";
-import { HttpError } from "../types";
-import { requestSaveProtocol } from "../data/api";
-import { workspace } from "../state/instances";
-import { serializeProtocol } from "../utils";
-import { generateAsciiContent } from "../export/exports";
-import { login } from "../data/auth";
 import { validateProtocol } from "../core/validator";
+import { requestSaveProtocol } from "../data/api";
+import { login } from "../data/auth";
+import { generateAsciiContent } from "../export/exports";
+import { workspace } from "../state/instances";
+import { HttpError } from "../types";
+import { serializeProtocol } from "../utils";
 
 // STATE
 // ------------------
@@ -47,8 +47,8 @@ export function isClickwrapAccepted(): boolean {
 	try {
 		const { expiry } = JSON.parse(stored);
 		if (typeof expiry !== "number") return false;
-		return new Date().getTime() < expiry;
-	} catch (e) {
+		return Date.now() < expiry;
+	} catch {
 		return false;
 	}
 }
@@ -57,8 +57,7 @@ export function isClickwrapAccepted(): boolean {
  * Stores a clickwrap acceptance token in localStorage with a X-day expiry.
  */
 export function setClickwrapAcceptToken(): void {
-	const expiry =
-		new Date().getTime() + CLICKWRAP_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+	const expiry = Date.now() + CLICKWRAP_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
 	localStorage.setItem(OIT_CLICKWRAP_ACCEPTED_KEY, JSON.stringify({ expiry }));
 }
 
@@ -427,10 +426,8 @@ export function attachSaveRequestListeners() {
 
 				console.log("Request sent successfully.");
 				closeModal();
-			} catch (err: any) {
-				console.error(
-					`Error with Protocol Save Request submission: ${err.message}`,
-				);
+			} catch (err) {
+				console.error(`Error with Protocol Save Request submission: `, err);
 			} finally {
 				submitBtn.disabled = false;
 				submitBtn.textContent = originalText;

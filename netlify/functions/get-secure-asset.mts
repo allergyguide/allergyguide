@@ -2,10 +2,11 @@
  * @module
  * Serverless function to serve protected assets (JSON/PDF) securely.
  */
+
+import { promises as fs } from "node:fs";
+import { normalize, resolve } from "node:path";
 import type { Handler, HandlerResponse } from "@netlify/functions";
-import { normalize, resolve } from "path";
-import { promises as fs } from "fs";
-import { authenticateUser, UserToken } from "./_lib/auth.mts";
+import { authenticateUser, type UserToken } from "./_lib/auth.mts";
 import { HttpError } from "./_lib/utils.mts";
 
 /**
@@ -75,7 +76,7 @@ export const handler: Handler = async (event) => {
 	// C. Check permissions
 	else {
 		// Check Flattened Permissions in Token
-		if (tokenPermissions && tokenPermissions.includes(filename)) {
+		if (tokenPermissions?.includes(filename)) {
 			hasAccess = true;
 		}
 	}

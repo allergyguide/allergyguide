@@ -29,8 +29,7 @@ export const DOSING_STRATEGIES: { [key: string]: Decimal[] } = {
 	].map((num) => new Decimal(num)),
 };
 
-export let DEFAULT_CONFIG: ProtocolConfig;
-DEFAULT_CONFIG = {
+export const DEFAULT_CONFIG: ProtocolConfig = {
 	minMeasurableMass: new Decimal(0.2), // assume that scales for patients have resolution of 0.01g
 	minMeasurableVolume: new Decimal(0.2), // assume that syringes used has resolution of 0.1ml
 	minServingsForMix: new Decimal(3), // want mixture to last at least 3 days

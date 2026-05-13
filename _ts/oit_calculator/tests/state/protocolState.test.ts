@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import Decimal from "decimal.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ProtocolState } from "../../state/protocolState";
 import { DosingStrategy, FoodAStrategy, FoodType } from "../../types";
-import Decimal from "decimal.js";
 
 describe("State: ProtocolState", () => {
 	let state: ProtocolState;

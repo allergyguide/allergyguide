@@ -2,19 +2,22 @@
  * @module
  * Serverless function to authenticate users and issue JWT cookies.
  */
+
+import { promises as fs } from "node:fs";
+import { resolve } from "node:path";
 import type { Handler, HandlerResponse } from "@netlify/functions";
-import jwt from "jsonwebtoken";
-import cookie from "cookie";
-import bcrypt from "bcryptjs";
-import { resolve } from "path";
-import { promises as fs } from "fs";
-import { getAllFilePaths } from "./_lib/utils.mts";
 import { createClient } from "@supabase/supabase-js";
+import bcrypt from "bcryptjs";
+import cookie from "cookie";
+import jwt from "jsonwebtoken";
+import { getAllFilePaths } from "./_lib/utils.mts";
 
 // INITIALIZE SUPABASE ADMIN
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY)
+	throw new Error();
 const supabaseAdmin = createClient(
-	process.env.SUPABASE_URL!,
-	process.env.SUPABASE_SECRET_KEY!,
+	process.env.SUPABASE_URL,
+	process.env.SUPABASE_SECRET_KEY,
 );
 
 /**
@@ -103,7 +106,7 @@ export const handler: Handler = async (event) => {
 		let turnstile_secret = process.env.TURNSTILE_SECRET;
 
 		// If we are on a netlify.app URL (deploy preview)
-		const host = event.headers["host"] || "";
+		const host = event.headers.host || "";
 		if (host.includes("netlify.app")) {
 			turnstile_secret = CLOUDFLARE_TEST_SECRET;
 		}
@@ -201,12 +204,13 @@ export const handler: Handler = async (event) => {
 			},
 		);
 
+		if (!process.env.SUPABASE_JWT_SECRET) throw new Error();
 		const dbToken = jwt.sign(
 			{
 				role: "authenticated",
 				sub: username, // Important: must match auth.uid() in RLS
 			},
-			process.env.SUPABASE_JWT_SECRET!,
+			process.env.SUPABASE_JWT_SECRET,
 			{
 				expiresIn: expiryHours * 3600,
 			},

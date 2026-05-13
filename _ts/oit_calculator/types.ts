@@ -3,7 +3,7 @@
  *
  * Core data structures, enumerations, and type aliases
  */
-import Decimal from "decimal.js";
+import type Decimal from "decimal.js";
 import { z } from "zod";
 
 // ============================================
@@ -193,9 +193,12 @@ export interface Candidate {
 // Helper to ensure strings are valid numbers
 const NumericString = z
 	.string()
-	.refine((val) => !isNaN(parseFloat(val)) && isFinite(Number(val)), {
-		message: "Must be a valid number string",
-	});
+	.refine(
+		(val) => !Number.isNaN(parseFloat(val)) && Number.isFinite(Number(val)),
+		{
+			message: "Must be a valid number string",
+		},
+	);
 
 /**
  * Food database record (as loaded from JSON containing with data from Canadian Nutrient File, Health Canada, 2015).

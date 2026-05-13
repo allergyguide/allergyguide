@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { WorkspaceManager } from "../../state/workspaceManager";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProtocolState } from "../../state/protocolState";
+import { WorkspaceManager } from "../../state/workspaceManager";
 
 describe("State: WorkspaceManager", () => {
 	let manager: WorkspaceManager;

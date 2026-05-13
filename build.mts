@@ -1,9 +1,9 @@
-import { execSync } from "child_process";
-import { readFileSync, existsSync } from "fs";
-import { loadTypstBinary, compileTypst } from "./build-typ.mjs";
-import { buildTS } from "./build-ts.mjs";
-import { verifyUsersData, copyLegacyJS } from "./build-utils.mjs";
+import { execSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import dotenv from "dotenv";
+import { buildTS } from "./build-ts.mjs";
+import { compileTypst, loadTypstBinary } from "./build-typ.mjs";
+import { copyLegacyJS, verifyUsersData } from "./build-utils.mjs";
 
 dotenv.config({ override: true });
 

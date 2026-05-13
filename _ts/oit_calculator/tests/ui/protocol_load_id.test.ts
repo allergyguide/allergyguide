@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { selectProtocol } from "../../ui/actions";
+import { beforeEach, describe, expect, it } from "vitest";
 import { workspace } from "../../state/instances";
+import { selectProtocol } from "../../ui/actions";
 import { SAMPLE_PROTOCOL } from "../../utils";
 
 describe("Protocol Loading ID Injection", () => {

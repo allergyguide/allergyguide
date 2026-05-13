@@ -4,8 +4,8 @@
  */
 import { HISTORY_DEBOUNCE_MS } from "../constants";
 import type {
-	Protocol,
 	HistoryItem,
+	Protocol,
 	ProtocolListener,
 	UpdateContext,
 } from "../types";
@@ -267,6 +267,8 @@ export class ProtocolState {
 	 */
 	private notify(context: UpdateContext) {
 		const p = this.current ? this.current.protocol : null;
-		this.listeners.forEach((fn) => fn(p, this.customNote, context));
+		this.listeners.forEach((fn) => {
+			fn(p, this.customNote, context);
+		});
 	}
 }

@@ -4,22 +4,22 @@
  * High-level actions triggered by UI interactions
  */
 import Decimal from "decimal.js";
-import { workspace } from "../state/instances";
+import { DEFAULT_CONFIG } from "../constants";
 import {
 	generateDefaultProtocol,
 	generateStepForTarget,
 } from "../core/calculator";
 import { addFoodBToProtocol } from "../core/protocol";
+import { workspace } from "../state/instances";
 import type {
-	FoodData,
-	ProtocolData,
 	Food,
+	FoodData,
 	Protocol,
+	ProtocolData,
 	Step,
 	Unit,
 } from "../types";
-import { FoodType, DosingStrategy, FoodAStrategy, Method } from "../types";
-import { DEFAULT_CONFIG } from "../constants";
+import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../types";
 import { generateUniqueId } from "../utils";
 
 /**

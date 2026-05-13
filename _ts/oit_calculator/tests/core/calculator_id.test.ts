@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { generateStepForTarget } from "../../core/calculator";
-import { FoodType, FoodAStrategy } from "../../types";
 import Decimal from "decimal.js";
+import { describe, expect, it } from "vitest";
 import { DEFAULT_CONFIG } from "../../constants";
+import { generateStepForTarget } from "../../core/calculator";
+import { FoodAStrategy, FoodType } from "../../types";
 
 const mockFood = {
 	name: "Peanut",

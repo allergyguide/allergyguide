@@ -3,20 +3,21 @@
  *
  * DOM Rendering logic
  */
-import { DosingStrategy } from "../types";
+
+import { nothing, render } from "lit-html";
+import { validateProtocol } from "../core/validator";
+import { workspace } from "../state/instances";
 import type {
 	Protocol,
-	Warning,
 	ReadableHistoryPayload,
-	Tab,
 	ReadableWarning,
+	Tab,
+	Warning,
 } from "../types";
+import { DosingStrategy } from "../types";
 import { escapeHtml } from "../utils";
-import { workspace } from "../state/instances";
-import { nothing, render } from "lit-html";
 import { ProtocolTable } from "./components/ProtocolTable";
 import { WarningsSidebar } from "./components/WarningsSidebar";
-import { validateProtocol } from "../core/validator";
 
 // Need global commit hash
 declare const __COMMIT_HASH__: string;
@@ -81,7 +82,7 @@ export function updateFoodBDisabledState(protocol: Protocol | null): void {
 	) as HTMLElement;
 	if (!foodBContainer) return;
 
-	const hasFoodA = protocol && protocol.foodA;
+	const hasFoodA = protocol?.foodA;
 
 	if (hasFoodA) {
 		foodBContainer.classList.remove("disabled");

@@ -3,7 +3,8 @@
  * Global application state management (User, Auth, Databases).
  */
 import fuzzysort from "fuzzysort";
-import { type FoodData, type ProtocolData, type AuthListener } from "../types";
+import type { AuthListener, FoodData, ProtocolData } from "../types";
+
 // Helper type: Takes any object T and adds the 'prepared' property from Fuzzysort
 type PreparedItem<T> = T & { prepared: Fuzzysort.Prepared };
 
@@ -63,7 +64,9 @@ export class AppState {
 	 * Internal helper to broadcast the current login status to all registered listeners.
 	 */
 	private notifyAuthListeners() {
-		this.authListeners.forEach((l) => l(this.isLoggedIn));
+		this.authListeners.forEach((l) => {
+			l(this.isLoggedIn);
+		});
 	}
 
 	/**

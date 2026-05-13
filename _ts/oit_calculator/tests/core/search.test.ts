@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { performSearch } from "../../core/search";
 import fuzzysort from "fuzzysort";
+import { describe, expect, it } from "vitest";
+import { performSearch } from "../../core/search";
 
 describe("Core: Search", () => {
 	// Helper to prepare data

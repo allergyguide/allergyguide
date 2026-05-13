@@ -1,11 +1,11 @@
+import Decimal from "decimal.js";
 import {
-	directive,
 	Directive,
-	PartType,
+	directive,
 	type ElementPart,
 	type PartInfo,
+	PartType,
 } from "lit-html/directive.js";
-import Decimal from "decimal.js";
 
 /**
  * activeSafe Directive
@@ -30,7 +30,7 @@ class ActiveSafeDirective extends Directive {
 		super(partInfo);
 		if (partInfo.type !== PartType.ELEMENT) {
 			throw new Error(
-				"activeSafe must be used as an element directive: <input ${activeSafe(...)}>",
+				`activeSafe must be used as an element directive: <input \${activeSafe(...)}>`,
 			);
 		}
 	}
@@ -63,7 +63,7 @@ class ActiveSafeDirective extends Directive {
 					// Mathematically equivalent, skip DOM update to preserve cursor/state
 					return;
 				}
-			} catch (e) {
+			} catch {
 				// If parsing fails while focused => there's an intermediate (ie. "." or "-") that Decimal(x) will throw an err for
 				// return here avoids overwriting current input
 				return;

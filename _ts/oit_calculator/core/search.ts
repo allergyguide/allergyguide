@@ -4,13 +4,13 @@
  * Fuzzy search capabilities
  */
 import fuzzysort from "fuzzysort";
-import {
-	FoodType,
-	type SearchResult,
-	type FoodData,
-	type ProtocolData,
-} from "../types";
 import { SEARCH_DISPLAY_LIMIT } from "../constants";
+import {
+	type FoodData,
+	FoodType,
+	type ProtocolData,
+	type SearchResult,
+} from "../types";
 
 /**
  * Run fuzzy search against foods and/or protocol templates.
@@ -27,8 +27,8 @@ import { SEARCH_DISPLAY_LIMIT } from "../constants";
 export function performSearch(
 	query: string,
 	searchType: "food" | "protocol",
-	preparedFoods: any[],
-	preparedProtocols: any[],
+	preparedFoods: FoodData[],
+	preparedProtocols: ProtocolData[],
 ): SearchResult[] {
 	if (!query.trim()) return [];
 

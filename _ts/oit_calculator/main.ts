@@ -12,31 +12,21 @@
 // ============================================
 
 import Decimal from "decimal.js";
+import { VALIDATION_DEBOUNCE_MS } from "./constants";
+import { validateProtocol } from "./core/validator";
+import { logout } from "./data/auth";
+import {
+	handleUserLoad,
+	loadPublicDatabases,
+	loadUserConfiguration,
+} from "./data/loader";
 import { AppState } from "./state/appState";
 import { workspace } from "./state/instances";
 import type { Warning } from "./types";
-import { validateProtocol } from "./core/validator";
-
-// UI
-import {
-	showProtocolUI,
-	renderDosingStrategy,
-	renderProtocolTable,
-	updateWarnings,
-	updateFoodBDisabledState,
-	updateUndoRedoButtons,
-	renderTabs,
-} from "./ui/renderers";
 import {
 	renderFoodASettings,
 	renderFoodBSettings,
 } from "./ui/components/FoodSettings";
-import { initSearchEvents } from "./ui/searchUI";
-import {
-	attachClickwrapEventListeners,
-	attachLoginModalListeners,
-	attachSaveRequestListeners,
-} from "./ui/modals";
 import { initGlobalEvents } from "./ui/events";
 import {
 	initExportEvents,
@@ -44,12 +34,21 @@ import {
 	triggerPdfGeneration,
 } from "./ui/exports";
 import {
-	handleUserLoad,
-	loadPublicDatabases,
-	loadUserConfiguration,
-} from "./data/loader";
-import { logout } from "./data/auth";
-import { VALIDATION_DEBOUNCE_MS } from "./constants";
+	attachClickwrapEventListeners,
+	attachLoginModalListeners,
+	attachSaveRequestListeners,
+} from "./ui/modals";
+// UI
+import {
+	renderDosingStrategy,
+	renderProtocolTable,
+	renderTabs,
+	showProtocolUI,
+	updateFoodBDisabledState,
+	updateUndoRedoButtons,
+	updateWarnings,
+} from "./ui/renderers";
+import { initSearchEvents } from "./ui/searchUI";
 
 // Configure Decimal.js
 Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
@@ -66,7 +65,9 @@ export let appState: AppState;
 async function initializeCalculator(): Promise<void> {
 	// Get URL for rules page
 	const urlContainer = document.getElementById("url-container");
-	const rulesUrl = urlContainer ? urlContainer.dataset.targetUrl! : "";
+	const rulesUrl = urlContainer ? urlContainer.dataset.targetUrl : "";
+	if (!rulesUrl)
+		throw new Error("Missing url-container dataset: rulesUrl is required");
 
 	// Start loads
 	const publicDataPromise = loadPublicDatabases(); // for CNF foods basically
@@ -132,7 +133,7 @@ async function initializeCalculator(): Promise<void> {
 				localStorage.removeItem("oit_session_active");
 			}
 		}
-	} catch (e) {
+	} catch {
 		// Ignore corrupt localstorage
 	}
 
@@ -289,8 +290,13 @@ const init = async () => {
 		await initializeCalculator();
 	} catch (e) {
 		console.error("Critical init error", e);
-		document.querySelector(".oit_calculator")!.innerHTML =
-			`<div>Failed to load application data. Please refresh or contact support.</div>`;
+		const calc = document.querySelector(".oit_calculator");
+		if (!calc) {
+			throw new Error(
+				"Critical Error: .oit_calculator container not found in DOM",
+			);
+		}
+		calc.innerHTML = `<div>Failed to load application data. Please refresh or contact support.</div>`;
 	}
 };
 

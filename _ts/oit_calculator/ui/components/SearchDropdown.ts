@@ -1,7 +1,7 @@
 import { html } from "lit-html";
+import { SEARCH_DISPLAY_LIMIT } from "../../constants";
 import type { SearchResult } from "../../types";
 import type { SearchCallbacks } from "../searchUI";
-import { SEARCH_DISPLAY_LIMIT } from "../../constants";
 
 /**
  * Lit-html template for the search dropdown component

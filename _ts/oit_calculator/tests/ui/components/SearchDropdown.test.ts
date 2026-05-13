@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render } from "lit-html";
-import { SearchDropdown } from "../../../ui/components/SearchDropdown";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FoodType } from "../../../types";
+import { SearchDropdown } from "../../../ui/components/SearchDropdown";
 
 describe("SearchDropdown Component", () => {
 	let mount: HTMLElement;

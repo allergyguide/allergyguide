@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // THE GUARD CODE
 // This forces Netlify functions and POST requests to bypass the Service Worker
@@ -30,7 +30,7 @@ targets.forEach((file) => {
 
 			// Avoid double-patching if run multiple times
 			if (!originalContent.includes("PATCHED BY BUILD SCRIPT")) {
-				const newContent = guardCode + "\n" + originalContent;
+				const newContent = `${guardCode}\n${originalContent}`;
 				fs.writeFileSync(filePath, newContent);
 				console.log(`Successfully patched public/${file}`);
 				patchedCount++;

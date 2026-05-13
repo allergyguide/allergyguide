@@ -1,4 +1,4 @@
-import { normalize } from "path";
+import { normalize } from "node:path";
 
 /**
  * Error class for handling HTTP-specific exceptions in serverless functions.
@@ -22,12 +22,12 @@ const isFilePath = (str: string) => str.includes("/") || str.includes(".");
  * Recursively traverses an arbitrary configuration object (JSON) to collect all strings that appear to be file paths
  * It normalizes paths (e.g., resolving 'foo//bar' to 'foo/bar') to ensure consistent comparison against requested filenames.
  *
- * @param {any} config - The user configuration object (can be string, array, or nested object)
- * @param {Set<string>} [paths] - An accumulator Set used during recursion. Defaults to a new Set
- * @returns {Set<string>} A Set containing all unique, normalized file paths found within the config
+ * @param config - The user configuration object (can be string, array, or nested object)
+ * @param paths - An accumulator Set used during recursion. Defaults to a new Set
+ * @returns A Set containing all unique, normalized file paths found within the config
  */
 export function getAllFilePaths(
-	config: any,
+	config: unknown,
 	paths: Set<string> = new Set(),
 ): Set<string> {
 	if (typeof config === "string") {
@@ -36,9 +36,13 @@ export function getAllFilePaths(
 			paths.add(normalize(config));
 		}
 	} else if (Array.isArray(config)) {
-		config.forEach((item) => getAllFilePaths(item, paths));
+		for (const item of config) {
+			getAllFilePaths(item, paths);
+		}
 	} else if (config && typeof config === "object") {
-		Object.values(config).forEach((val) => getAllFilePaths(val, paths));
+		for (const val of Object.values(config)) {
+			getAllFilePaths(val, paths);
+		}
 	}
 	return paths;
 }

@@ -2,7 +2,7 @@
  * @module
  * Authentication functions for logging in and out via Netlify functions.
  */
-import { HttpError, type AuthLoginResult } from "../types";
+import { type AuthLoginResult, HttpError } from "../types";
 
 /**
  * Authenticates a user via the Netlify login function.
@@ -35,7 +35,7 @@ export async function login(
 	// Handle HTML/Crash responses
 	// make sure its a JSON - if it's not... then you're getting a malformed response, or the netlify function is not up and running properly
 	const contentType = response.headers.get("content-type");
-	if (!contentType || !contentType.includes("application/json")) {
+	if (!contentType?.includes("application/json")) {
 		const text = await response.text();
 		console.error(
 			"Received non-JSON response from login NF:",
@@ -64,7 +64,7 @@ export async function login(
 	try {
 		const data = await response.json();
 		serverMessage = data.message || data.error || JSON.stringify(data) || "";
-	} catch (e) {
+	} catch {
 		// Body was JSON but malformed, or empty
 	}
 	if (response.status === 400) {

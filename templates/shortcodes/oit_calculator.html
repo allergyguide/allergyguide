@@ -18,7 +18,7 @@
 			</button>
 			<a href="{{ get_url(path='@/tools/resources/oit_calculator_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span>v{{ tool_info.version }}</span></a>
 			<script>
-				(function() {
+				(() => {
 					try {
 						var s = JSON.parse(localStorage.getItem('oit_session_active'));
 						// If valid session exists

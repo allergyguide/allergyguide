@@ -4,18 +4,18 @@
  * Search UI components (dropdowns, navigation)
  * Does rely on glue from actions.ts
  */
-import { render, nothing } from "lit-html";
-import { SearchDropdown } from "./components/SearchDropdown";
-import type { FoodData, ProtocolData, SearchResult } from "../types";
+import { nothing, render } from "lit-html";
+import { SEARCH_DISPLAY_LIMIT } from "../constants";
 import { performSearch } from "../core/search";
-import { AppState } from "../state/appState";
+import type { AppState } from "../state/appState";
+import type { FoodData, ProtocolData, SearchResult } from "../types";
 import {
 	selectCustomFood,
-	selectProtocol,
 	selectFoodA,
 	selectFoodB,
+	selectProtocol,
 } from "./actions";
-import { SEARCH_DISPLAY_LIMIT } from "../constants";
+import { SearchDropdown } from "./components/SearchDropdown";
 
 // State for dropdown navigation
 let activeIndex: number = -1;
@@ -72,7 +72,7 @@ export function initSearchEvents(appState: AppState): void {
 		// Helper
 		const triggerSearch = (query: string) => {
 			// no search on empty strings
-			if (!query || !query.trim()) return;
+			if (!query?.trim()) return;
 
 			const results = performSearch(
 				query,

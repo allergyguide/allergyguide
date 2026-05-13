@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
 import Decimal from "decimal.js";
-import * as utils from "../utils";
-import { FoodType, Method, DosingStrategy, FoodAStrategy } from "../types";
+import { describe, expect, it } from "vitest";
 import type { Food, Protocol } from "../types";
+import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../types";
+import * as utils from "../utils";
 
 describe("Utils", () => {
 	describe("escapeHtml", () => {

@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { addStepAfter } from "../../core/protocol";
-import { generateDefaultProtocol } from "../../core/calculator";
-import { FoodType } from "../../types";
 import Decimal from "decimal.js";
+import { describe, expect, it } from "vitest";
 import { DEFAULT_CONFIG } from "../../constants";
+import { generateDefaultProtocol } from "../../core/calculator";
+import { addStepAfter } from "../../core/protocol";
+import { FoodType } from "../../types";
 
 const mockFood = {
 	name: "Peanut",

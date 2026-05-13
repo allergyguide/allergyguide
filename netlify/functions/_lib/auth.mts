@@ -36,8 +36,8 @@ export function authenticateUser(event): UserToken {
 	}
 
 	try {
-		return jwt.verify(token, process.env.JWT_SECRET!) as UserToken; // Returns UserToken
-	} catch (err) {
+		return jwt.verify(token, process.env.JWT_SECRET) as UserToken; // Returns UserToken
+	} catch {
 		// have token, but ? expired or invalid
 		throw new HttpError("Forbidden: Session expired or invalid", 403);
 	}

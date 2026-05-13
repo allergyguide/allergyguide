@@ -1,14 +1,13 @@
 import Decimal from "decimal.js";
 import {
-	updateFoodDetails,
 	recalculateStepMethods,
 	toggleFoodType,
 	updateFoodBAndRecalculate,
 	updateFoodBThreshold,
+	updateFoodDetails,
 } from "../../core/protocol";
-import { FoodType, FoodAStrategy } from "../../types";
-import type { Protocol } from "../../types";
 import type { ProtocolState } from "../../state/protocolState";
+import type { FoodAStrategy, FoodType, Protocol } from "../../types";
 import { parseSafeDecimal } from "../../utils";
 
 // --- Food A Handlers ---
@@ -154,7 +153,7 @@ export function handleFoodAThresholdChange(
  */
 export function handleFoodBNameChange(state: ProtocolState, name: string) {
 	const current = state.getProtocol();
-	if (current && current.foodB) {
+	if (current?.foodB) {
 		const updated = updateFoodDetails(current, "B", { name });
 		state.setProtocol(updated, `Renamed Food B`, { debounceHistory: true });
 	}
@@ -172,7 +171,7 @@ export function handleFoodBProteinChange(
 	valueStr: string,
 ) {
 	const current = state.getProtocol();
-	if (!current || !current.foodB) return;
+	if (!current?.foodB) return;
 
 	const val = parseSafeDecimal(valueStr, current.foodB.gramsInServing, 0);
 	const servingSize = current.foodB.servingSize;
@@ -196,7 +195,7 @@ export function handleFoodBServingSizeChange(
 	valueStr: string,
 ) {
 	const current = state.getProtocol();
-	if (!current || !current.foodB) return;
+	if (!current?.foodB) return;
 
 	const min = current.foodB.gramsInServing.toNumber();
 	const val = parseSafeDecimal(valueStr, current.foodB.servingSize, min);
@@ -218,7 +217,7 @@ export function handleFoodBServingSizeChange(
  */
 export function handleFoodBTypeChange(state: ProtocolState, type: FoodType) {
 	const current = state.getProtocol();
-	if (current && current.foodB && current.foodB.type !== type) {
+	if (current?.foodB && current.foodB.type !== type) {
 		state.setProtocol(
 			toggleFoodType(current, true, type),
 			`Set Food B to ${type}`,
@@ -239,7 +238,7 @@ export function handleFoodBThresholdChange(
 	valueStr: string,
 ) {
 	const current = state.getProtocol();
-	if (!current || !current.foodBThreshold) return;
+	if (!current?.foodBThreshold) return;
 
 	const val = parseSafeDecimal(valueStr, current.foodBThreshold.amount, 0);
 	const updated = updateFoodBThreshold(current, val);

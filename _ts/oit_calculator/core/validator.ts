@@ -4,23 +4,20 @@
  * Validation logic for OIT protocols
  */
 import Decimal from "decimal.js";
+import {
+	DEFAULT_CONFIG,
+	LIQUID_RESOLUTION,
+	SOLID_RESOLUTION,
+} from "../constants";
 
+import type { Food, Protocol, Step, Warning } from "../types";
 import { FoodType, Method, WarningCode } from "../types";
-
-import type { Protocol, Food, Step, Warning } from "../types";
-
 import {
 	escapeHtml,
-	formatNumber,
 	formatAmount,
+	formatNumber,
 	getMeasuringUnit,
 } from "../utils";
-
-import {
-	SOLID_RESOLUTION,
-	LIQUID_RESOLUTION,
-	DEFAULT_CONFIG,
-} from "../constants";
 
 /**
  * Validate protocol-level and per-step constraints, yielding warnings.
@@ -137,10 +134,17 @@ function validateAllSteps(protocol: Protocol): Warning[] {
 	// iterate through all steps
 	protocol.steps.forEach((step) => {
 		// Context object to pass around easily
+		const food = step.food === "B" ? protocol.foodB : protocol.foodA;
+		if (!food) {
+			throw new Error(
+				`Validation failed: Food ${step.food} is undefined for step ${step.stepIndex}`,
+			);
+		}
+
 		const ctx = {
 			step,
 			protocol,
-			food: step.food === "B" ? protocol.foodB! : protocol.foodA,
+			food: food,
 		};
 
 		// Run checks
@@ -280,11 +284,9 @@ function checkMeasurability({
 function checkAnyStepType({
 	step,
 	protocol,
-	food,
 }: {
 	step: Step;
 	protocol: Protocol;
-	food: Food;
 }): Warning[] {
 	const warnings: Warning[] = [];
 
@@ -342,6 +344,8 @@ function checkDilutionStep({
 			},
 		];
 	}
+	if (!step.mixFoodAmount)
+		throw new Error("mixFoodAmount cannot be null in checks of dilutions");
 
 	const warnings: Warning[] = [];
 
@@ -400,7 +404,7 @@ function checkDilutionStep({
 	// INSUFFICIENT_MIX_PROTEIN:
 	// NOTE: this does NOT use rounded values
 	if (step.servings?.lessThan(new Decimal(1))) {
-		const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
+		const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.INSUFFICIENT_MIX_PROTEIN,
@@ -413,9 +417,9 @@ function checkDilutionStep({
 	const mixTotalVolume =
 		food.type === FoodType.SOLID
 			? step.mixWaterAmount
-			: step.mixFoodAmount!.plus(step.mixWaterAmount!);
+			: step.mixFoodAmount.plus(step.mixWaterAmount);
 
-	if (mixTotalVolume!.lessThan(step.dailyAmount)) {
+	if (mixTotalVolume.lessThan(step.dailyAmount)) {
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.IMPOSSIBLE_VOLUME,
@@ -433,7 +437,7 @@ function checkDilutionStep({
 			stepIndex: step.stepIndex,
 		});
 	}
-	if (step.mixFoodAmount!.lessThanOrEqualTo(0)) {
+	if (step.mixFoodAmount.lessThanOrEqualTo(0)) {
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.INVALID_DILUTION_STEP_VALUES,
@@ -441,7 +445,7 @@ function checkDilutionStep({
 			stepIndex: step.stepIndex,
 		});
 	}
-	if (step.mixWaterAmount!.lessThan(0)) {
+	if (step.mixWaterAmount.lessThan(0)) {
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.INVALID_DILUTION_STEP_VALUES,
@@ -451,9 +455,14 @@ function checkDilutionStep({
 	}
 
 	// LOW_SERVINGS
+	if (!step.servings) {
+		throw new Error(
+			`Validation failed: Step ${step.stepIndex} is DILUTE but missing servings`,
+		);
+	}
 	if (
-		step.servings!.lessThan(protocol.config.minServingsForMix) &&
-		step.servings!.greaterThan(new Decimal(1))
+		step.servings.lessThan(protocol.config.minServingsForMix) &&
+		step.servings.greaterThan(new Decimal(1))
 	) {
 		warnings.push({
 			severity: "yellow",
@@ -466,23 +475,20 @@ function checkDilutionStep({
 	// HIGH_SOLID_CONCENTRATION
 	if (
 		food.type === FoodType.SOLID &&
-		step
-			.mixFoodAmount!.dividedBy(step.mixWaterAmount!)
+		step.mixFoodAmount
+			.dividedBy(step.mixWaterAmount)
 			.greaterThan(new Decimal(DEFAULT_CONFIG.MAX_SOLID_CONCENTRATION))
 	) {
 		warnings.push({
 			severity: "yellow",
 			code: WarningCode.Yellow.HIGH_SOLID_CONCENTRATION,
-			message: `Step ${step.stepIndex}: at ${formatNumber(step.mixFoodAmount, SOLID_RESOLUTION)} g of food in ${formatNumber(step.mixWaterAmount, LIQUID_RESOLUTION)} ml of water, the w/v is ${formatNumber(step.mixFoodAmount!.dividedBy(step.mixWaterAmount!).times(100), 1)}% (which is > ${formatNumber(DEFAULT_CONFIG.MAX_SOLID_CONCENTRATION.times(100), 0)}%). The assumption that the food contributes non-negligibly to the total volume of dilution is likely violated. Consider increasing the Daily Amount`,
+			message: `Step ${step.stepIndex}: at ${formatNumber(step.mixFoodAmount, SOLID_RESOLUTION)} g of food in ${formatNumber(step.mixWaterAmount, LIQUID_RESOLUTION)} ml of water, the w/v is ${formatNumber(step.mixFoodAmount.dividedBy(step.mixWaterAmount).times(100), 1)}% (which is > ${formatNumber(DEFAULT_CONFIG.MAX_SOLID_CONCENTRATION.times(100), 0)}%). The assumption that the food contributes non-negligibly to the total volume of dilution is likely violated. Consider increasing the Daily Amount`,
 			stepIndex: step.stepIndex,
 		});
 	}
 
 	// HIGH_MIX_WATER
-	if (
-		step.mixWaterAmount &&
-		step.mixWaterAmount.greaterThan(protocol.config.MAX_MIX_WATER)
-	) {
+	if (step.mixWaterAmount?.greaterThan(protocol.config.MAX_MIX_WATER)) {
 		warnings.push({
 			severity: "yellow",
 			code: WarningCode.Yellow.HIGH_MIX_WATER,

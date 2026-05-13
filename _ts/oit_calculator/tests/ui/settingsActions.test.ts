@@ -1,19 +1,19 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import Decimal from "decimal.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_CONFIG } from "../../constants";
+import { DosingStrategy, FoodAStrategy, FoodType } from "../../types";
 import {
 	handleFoodANameChange,
 	handleFoodAProteinChange,
 	handleFoodAServingSizeChange,
 	handleFoodAStrategyChange,
 	handleFoodAThresholdChange,
-	handleFoodBThresholdChange,
+	handleFoodATypeChange,
 	handleFoodBNameChange,
 	handleFoodBProteinChange,
+	handleFoodBThresholdChange,
 	handleFoodBTypeChange,
-	handleFoodATypeChange,
 } from "../../ui/actions/settingsActions";
-import { FoodType, FoodAStrategy, DosingStrategy } from "../../types";
-import { DEFAULT_CONFIG } from "../../constants";
 
 describe("Action Handlers", () => {
 	let mockActive: any;

@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach } from "vitest";
 import Decimal from "decimal.js";
-import { workspace } from "../../state/instances";
-import { clearFoodB } from "../../ui/actions";
+import { beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_CONFIG } from "../../constants";
 import { generateDefaultProtocol } from "../../core/calculator";
 import { addFoodBToProtocol, updateStepTargetMg } from "../../core/protocol";
-import { DEFAULT_CONFIG } from "../../constants";
-import { FoodType, type Food } from "../../types";
+import { workspace } from "../../state/instances";
+import { type Food, FoodType } from "../../types";
+import { clearFoodB } from "../../ui/actions";
 
 // Helper to create food
 const createFood = (name: string, type: FoodType = FoodType.SOLID): Food => ({

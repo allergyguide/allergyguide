@@ -6,20 +6,16 @@
  *
  */
 import Decimal from "decimal.js";
-
-import { FoodType, Method, FoodAStrategy, type NumberLike } from "../types";
-
-import type { Unit, Food, Step, Protocol } from "../types";
-
 import { DOSING_STRATEGIES } from "../constants";
 
+import type { Food, Protocol, Step, Unit } from "../types";
+import { FoodAStrategy, FoodType, Method, type NumberLike } from "../types";
+import { generateUniqueId, getMeasuringUnit } from "../utils";
 import {
+	findRoundedDirectAmount,
 	findRoundedMixWaterAmount,
 	generateStepForTarget,
-	findRoundedDirectAmount,
 } from "./calculator";
-
-import { getMeasuringUnit, generateUniqueId } from "../utils";
 
 /**
  * Count the number of Food A steps in a protocol
@@ -362,11 +358,16 @@ export function recalculateStepMethods(oldProtocol: Protocol): Protocol {
 	for (let i = 0; i < preservedTargets.length; i++) {
 		const targetMg = preservedTargets[i];
 		const isStepFoodB = preservedFoods[i] === "B";
-		const food = isStepFoodB ? newProtocol.foodB! : newProtocol.foodA;
+		const food = isStepFoodB ? newProtocol.foodB : newProtocol.foodA;
 		const foodAStrategy = isStepFoodB
 			? FoodAStrategy.DILUTE_NONE
 			: newProtocol.foodAStrategy;
 
+		if (!food) {
+			throw new Error(
+				`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${i + 1}`,
+			);
+		}
 		const step = generateStepForTarget(
 			targetMg,
 			i + 1,
@@ -420,14 +421,20 @@ export function updateStepTargetMg(
 
 	try {
 		step.targetMg = new Decimal(newTargetMg);
-	} catch (error) {
+	} catch {
 		console.error("Invalid number format for targetMg:", newTargetMg);
 		return oldProtocol;
 	}
 
 	// Determine which food
 	const isStepFoodB = step.food === "B";
-	const food = isStepFoodB ? oldProtocol.foodB! : oldProtocol.foodA;
+	const food = isStepFoodB ? oldProtocol.foodB : oldProtocol.foodA;
+
+	if (!food) {
+		throw new Error(
+			`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${stepIndex}`,
+		);
+	}
 
 	if (step.method === Method.DIRECT) {
 		// Recalculate dailyAmount (with safe snapping)
@@ -440,7 +447,10 @@ export function updateStepTargetMg(
 		);
 	} else if (step.method === Method.DILUTE) {
 		// DILUTE - keep mixFoodAmount and dailyAmount, recalculate servings and water
-		const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
+		if (!step.mixFoodAmount) {
+			throw new Error(`Step ${stepIndex} is DILUTE but missing mixFoodAmount`);
+		}
+		const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
 		step.servings = totalMixProtein.dividedBy(step.targetMg);
 		const mixTotalVolume = step.dailyAmount.times(step.servings);
 
@@ -453,7 +463,7 @@ export function updateStepTargetMg(
 				oldProtocol.config.PROTEIN_TOLERANCE,
 			);
 		} else {
-			const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
+			const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
 			updateStepWaterWithRounding(
 				step,
 				food,
@@ -497,14 +507,23 @@ export function updateStepDailyAmount(
 	step.dailyAmount = new Decimal(newDailyAmount);
 
 	const isStepFoodB = step.food === "B";
-	const food = isStepFoodB ? oldProtocol.foodB! : oldProtocol.foodA;
+	const food = isStepFoodB ? oldProtocol.foodB : oldProtocol.foodA;
+
+	if (!food) {
+		throw new Error(
+			`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${stepIndex}`,
+		);
+	}
 
 	if (step.method === Method.DIRECT) {
 		// Recalculate target protein
 		step.targetMg = step.dailyAmount.times(food.getMgPerUnit());
 	} else if (step.method === Method.DILUTE) {
 		// DILUTE - keep mixFoodAmount fixed, recalculate water
-		const totalMixProtein = step.mixFoodAmount!.times(food.getMgPerUnit());
+		if (!step.mixFoodAmount) {
+			throw new Error(`Step ${stepIndex} is DILUTE but missing mixFoodAmount`);
+		}
+		const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
 		step.servings = totalMixProtein.dividedBy(step.targetMg);
 
 		const mixTotalVolume = step.dailyAmount.times(step.servings);
@@ -517,7 +536,7 @@ export function updateStepDailyAmount(
 				oldProtocol.config.PROTEIN_TOLERANCE,
 			);
 		} else {
-			const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
+			const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
 			updateStepWaterWithRounding(
 				step,
 				food,
@@ -560,7 +579,13 @@ export function updateStepMixFoodAmount(
 	step.mixFoodAmount = new Decimal(newMixFoodAmount);
 
 	const isStepFoodB = step.food === "B";
-	const food = isStepFoodB ? oldProtocol.foodB! : oldProtocol.foodA;
+	const food = isStepFoodB ? oldProtocol.foodB : oldProtocol.foodA;
+
+	if (!food) {
+		throw new Error(
+			`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${stepIndex}`,
+		);
+	}
 
 	// Recalculate water to keep P and dailyAmount unchanged
 	const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
@@ -686,7 +711,13 @@ export function toggleFoodType(
 	if (!oldProtocol) return oldProtocol;
 
 	const newProtocol = { ...oldProtocol };
-	const food = isFoodB ? newProtocol.foodB! : newProtocol.foodA;
+	const food = isFoodB ? newProtocol.foodB : newProtocol.foodA;
+
+	if (!food) {
+		throw new Error(
+			`Protocol is missing Food ${isFoodB ? "B" : "A"} to toggle`,
+		);
+	}
 
 	// If already that type, do nothing
 	if (food.type === targetType) return newProtocol;
@@ -773,7 +804,12 @@ export function toggleFoodType(
 
 			// Recalculate servings and water based on new food type
 			// Note: getMgPerUnit() hasn't changed, so Total Protein is same. Servings usually same.
-			const totalMixProtein = step.mixFoodAmount!.times(newFood.getMgPerUnit());
+			if (!step.mixFoodAmount) {
+				throw new Error(
+					`Step ${step.stepIndex} is DILUTE but missing mixFoodAmount during form toggle`,
+				);
+			}
+			const totalMixProtein = step.mixFoodAmount.times(newFood.getMgPerUnit());
 			step.servings = totalMixProtein.dividedBy(step.targetMg);
 
 			if (newFood.type === FoodType.SOLID) {
@@ -785,7 +821,7 @@ export function toggleFoodType(
 				// Switched to liquid (was solid)
 				// For liquid: water = total - food
 				const mixTotalVolume = step.dailyAmount.times(step.servings);
-				step.mixWaterAmount = mixTotalVolume.minus(step.mixFoodAmount!);
+				step.mixWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
 			}
 		} else {
 			// DIRECT - just update unit
@@ -812,10 +848,12 @@ function updateStepWaterWithRounding(
 	idealWater: Decimal,
 	protein_tolerance: Decimal,
 ) {
+	if (!step.mixFoodAmount)
+		throw new Error("step.mixFoodAmount is undefined, which is impossible");
 	const rounded = findRoundedMixWaterAmount(
 		step.targetMg,
 		food,
-		step.mixFoodAmount!,
+		step.mixFoodAmount,
 		idealWater,
 		step.dailyAmount,
 		protein_tolerance,

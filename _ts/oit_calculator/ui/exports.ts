@@ -3,10 +3,11 @@
  *
  * Handle Export buttons (PDF, ASCII) and call actual export module from exports
  */
-import { workspace } from "../state/instances";
-import { isClickwrapAccepted, showClickwrapModal } from "./modals";
+
 import { exportASCII, generatePdf } from "../export/exports";
+import { workspace } from "../state/instances";
 import type { ProtocolExportData } from "../types";
+import { isClickwrapAccepted, showClickwrapModal } from "./modals";
 
 /**
  * Optimistic async loading of some heavy libraries needed for creation and merging of PDFs

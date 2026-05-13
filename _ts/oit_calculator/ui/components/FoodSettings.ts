@@ -1,22 +1,22 @@
-import { html, render, nothing } from "lit-html";
+import { html, nothing, render } from "lit-html";
 import { live } from "lit-html/directives/live.js";
-import { FoodType, FoodAStrategy, type Food } from "../../types";
-import { WorkspaceManager } from "../../state/workspaceManager";
-import { ProtocolState } from "../../state/protocolState";
+import type { ProtocolState } from "../../state/protocolState";
+import type { WorkspaceManager } from "../../state/workspaceManager";
+import { type Food, FoodAStrategy, FoodType } from "../../types";
+import { formatAmount } from "../../utils";
 import {
 	handleFoodANameChange,
 	handleFoodAProteinChange,
 	handleFoodAServingSizeChange,
-	handleFoodATypeChange,
 	handleFoodAStrategyChange,
 	handleFoodAThresholdChange,
+	handleFoodATypeChange,
 	handleFoodBNameChange,
 	handleFoodBProteinChange,
 	handleFoodBServingSizeChange,
-	handleFoodBTypeChange,
 	handleFoodBThresholdChange,
+	handleFoodBTypeChange,
 } from "../actions/settingsActions";
-import { formatAmount } from "../../utils";
 
 /**
  * Shared template for Food details (Name, Protein, Serving Size, Form).
@@ -214,9 +214,14 @@ export function renderFoodBSettings(
 ): void {
 	const activeState = ws.getActive();
 	const protocol = activeState.getProtocol();
-	if (!protocol || !protocol.foodB) {
+	if (!protocol?.foodB) {
 		render(nothing, mount);
 		return;
+	}
+	if (!protocol.foodBThreshold) {
+		throw new Error(
+			"Invariant failed: foodB is defined but foodBThreshold is missing in renderFoodBSettings",
+		);
 	}
 
 	const template = html`
@@ -241,11 +246,11 @@ export function renderFoodBSettings(
             type="number" 
             id="food-b-threshold" 
             min="0" 
-            .value="${live(formatAmount(protocol.foodBThreshold!.amount, protocol.foodBThreshold!.unit))}" 
+            .value="${live(formatAmount(protocol.foodBThreshold.amount, protocol.foodBThreshold.unit))}" 
             step="0.1" 
             @change="${(e: Event) => handleFoodBThresholdChange(activeState, (e.target as HTMLInputElement).value)}"
           />
-          <span>${protocol.foodBThreshold!.unit}</span>
+          <span>${protocol.foodBThreshold.unit}</span>
           <span class="info-tooltip" data-tooltip="Once you can measure at least this much food, transition from the first food to this food.">
           ⓘ
           </span>

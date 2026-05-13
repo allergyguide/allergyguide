@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
+import Decimal from "decimal.js";
+import { describe, expect, it } from "vitest";
 import type { Step } from "../types";
 import { Method } from "../types";
-import Decimal from "decimal.js";
 
 describe("Step Interface", () => {
 	it("should have an id property", () => {

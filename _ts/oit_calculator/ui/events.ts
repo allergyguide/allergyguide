@@ -6,14 +6,14 @@
  * Other more specialized UI event delegation and handling are done in other modules like ui/searchUI.ts, modals.ts
  * Slowly being chipped away to lit-html for high importance components
  */
-import { workspace } from "../state/instances";
-import { recalculateProtocol } from "../core/protocol";
-import { DosingStrategy } from "../types";
 
+import { recalculateProtocol } from "../core/protocol";
+import { appState } from "../main";
+import { workspace } from "../state/instances";
+import type { DosingStrategy } from "../types";
 import { clearFoodB } from "./actions";
 import { renderDebugResult } from "./renderers";
 import { resetSearch } from "./searchUI";
-import { appState } from "../main";
 
 // Debounce timers
 let noteDebounceTimer: number | null = null;
@@ -141,7 +141,7 @@ function attachDebugDelegation() {
 
 				console.group("DECODED PAYLOAD");
 				console.log("b64 length:", val.length);
-				console.log("Input:", val.substring(0, 20) + "...");
+				console.log("Input:", `${val.substring(0, 20)}...`);
 
 				const result = await decodeUserHistoryPayload(val);
 				console.log("Result:", result);
