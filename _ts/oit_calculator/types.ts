@@ -190,16 +190,6 @@ export interface Candidate {
 // JSON SCHEMAS / INTERFACES - expected structure of items in jsons loaded on init
 // ============================================
 
-// Helper to ensure strings are valid numbers
-const NumericString = z
-	.string()
-	.refine(
-		(val) => !Number.isNaN(parseFloat(val)) && Number.isFinite(Number(val)),
-		{
-			message: "Must be a valid number string",
-		},
-	);
-
 /**
  * Food database record (as loaded from JSON containing with data from Canadian Nutrient File, Health Canada, 2015).
  * Raw values are UI-facing and will be converted to internal Decimal where needed later.
@@ -214,19 +204,19 @@ export type FoodData = z.infer<typeof FoodDataSchema>;
 
 const BaseRow = z.strictObject({
 	food: z.enum(["A", "B"]),
-	protein: NumericString,
+	protein: z.number(),
 });
 
 const DirectRow = BaseRow.extend({
 	method: z.literal("DIRECT"),
-	daily_amount: NumericString,
+	daily_amount: z.number(),
 });
 
 const DiluteRow = BaseRow.extend({
 	method: z.literal("DILUTE"),
-	daily_amount: NumericString,
-	mix_amount: NumericString, // Now required!
-	water_amount: NumericString, // Now required!
+	daily_amount: z.number(),
+	mix_amount: z.number(), // Now required!
+	water_amount: z.number(), // Now required!
 });
 
 const CapsuleRow = BaseRow.extend({
@@ -250,20 +240,20 @@ export const ProtocolDataSchema = z.strictObject({
 	food_a: z.strictObject({
 		type: z.enum(FoodType),
 		name: z.string(),
-		gramsInServing: NumericString,
-		servingSize: NumericString,
+		gramsInServing: z.number(),
+		servingSize: z.number(),
 	}),
 	food_a_strategy: z.enum(FoodAStrategy),
-	di_threshold: NumericString,
+	di_threshold: z.number(),
 	food_b: z
 		.strictObject({
 			type: z.enum(FoodType),
 			name: z.string(),
-			gramsInServing: NumericString,
-			servingSize: NumericString,
+			gramsInServing: z.number(),
+			servingSize: z.number(),
 		})
 		.optional(),
-	food_b_threshold: NumericString.optional(),
+	food_b_threshold: z.number().optional(),
 	table: z.array(RowDataSchema),
 	custom_note: z.string().optional(),
 });
