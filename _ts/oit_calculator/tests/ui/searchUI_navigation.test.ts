@@ -17,10 +17,10 @@ describe("searchUI Navigation and Selection Logic", () => {
 		{
 			type: "food",
 			data: {
-				Food: "Milk",
-				Type: FoodType.LIQUID,
-				"Mean protein in grams": 3.3,
-				"Serving size": 100,
+				name: "Milk",
+				type: FoodType.LIQUID,
+				gramsInServing: 3.3,
+				servingSize: 100,
 			},
 		},
 		{

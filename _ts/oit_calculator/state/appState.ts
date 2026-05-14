@@ -98,7 +98,7 @@ export class AppState {
 	private rebuildIndices() {
 		this.foodsIndex = this.foodsDatabase.map((f) => ({
 			...f,
-			prepared: fuzzysort.prepare(f.Food),
+			prepared: fuzzysort.prepare(f.name),
 		}));
 
 		this.protocolsIndex = this.protocolsDatabase.map((p) => ({

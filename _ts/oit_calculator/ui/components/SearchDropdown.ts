@@ -53,8 +53,8 @@ export const SearchDropdown = (
 							result.type === "protocol"
 								? html`<strong>Protocol:</strong> ${result.data.name}`
 								: html`
-                  ${result.data.Food}
-                  <span class="food-type"> - ${result.data.Type} - Protein: ${result.data["Mean protein in grams"].toFixed(1)} g/${result.data["Serving size"]} ${result.data.Type === "SOLID" ? "g" : "ml"}</span>
+                  ${result.data.name}
+                  <span class="food-type"> - ${result.data.type} - Protein: ${result.data.gramsInServing.toFixed(1)} g/${result.data.servingSize} ${result.data.type === "SOLID" ? "g" : "ml"}</span>
                 `
 						}
           </div>

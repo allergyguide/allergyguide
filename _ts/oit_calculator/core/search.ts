@@ -41,7 +41,7 @@ export function performSearch(
 		});
 		// Filter out CAPSULE types and map to SearchResult
 		return results
-			.filter((r) => r.obj.Type !== FoodType.CAPSULE)
+			.filter((r) => r.obj.type !== FoodType.CAPSULE)
 			.map((r) => ({ type: "food" as const, data: r.obj as FoodData }));
 	} else {
 		// Search both foods and protocols for Food A

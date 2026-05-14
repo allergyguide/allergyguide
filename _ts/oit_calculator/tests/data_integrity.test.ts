@@ -20,18 +20,18 @@ describe("Static Data Integrity", () => {
 			}
 
 			// PHYSICS CHECK: Protein <= Serving Size
-			if (result.data["Mean protein in grams"] > result.data["Serving size"]) {
+			if (result.data.gramsInServing > result.data.servingSize) {
 				console.error(
-					`Impossible Food at index ${index} (${result.data.Food}): Protein > Serving Size`,
+					`Impossible Food at index ${index} (${result.data.name}): Protein > Serving Size`,
 				);
 				invalidCount++;
 			}
 
 			// SANITY CHECK: Positive Protein (Warn only, don't fail test)
 			// we handle 0 protein foods with a UI warning, so this isn't a hard data integrity failure
-			if (result.data["Mean protein in grams"] <= 0) {
+			if (result.data.gramsInServing <= 0) {
 				console.warn(
-					`[Quality Warning] Useless Food at index ${index} (${result.data.Food}): Protein <= 0`,
+					`[Quality Warning] Useless Food at index ${index} (${result.data.name}): Protein <= 0`,
 				);
 			}
 		});
@@ -68,9 +68,9 @@ describe("Static Data Integrity", () => {
 
 			if (Array.isArray(data)) {
 				// Try validating as FOODS first
-				const isFoodList = data.every(
-					(item) => "Food" in item && "Mean protein in grams" in item,
-				);
+				// Foods have 'gramsInServing' as top level property, protocols do not (nested deeper)
+				const isFoodList =
+					data.length > 0 && Object.keys(data[0]).includes("gramsInServing");
 
 				if (isFoodList) {
 					totalErrors += validateFoodList(data, path);
@@ -110,19 +110,19 @@ function validateFoodList(list: any[], filePath: string): number {
 		const data = result.data;
 
 		// Physics Check
-		if (data["Mean protein in grams"] > data["Serving size"]) {
+		if (data.gramsInServing > data.servingSize) {
 			console.error(
-				`[${filePath}] Impossible Food "${data.Food}": Protein > Serving`,
+				`[${filePath}] Impossible Food "${data.name}": Protein > Serving`,
 			);
 			errors++;
 		}
 
 		// Duplicates within file
-		if (seenNames.has(data.Food)) {
-			console.error(`[${filePath}] Duplicate Food: "${data.Food}"`);
+		if (seenNames.has(data.name)) {
+			console.error(`[${filePath}] Duplicate Food: "${data.name}"`);
 			errors++;
 		}
-		seenNames.add(data.Food);
+		seenNames.add(data.name);
 	});
 
 	return errors;
@@ -164,7 +164,6 @@ function validateProtocolList(list: any[], filePath: string): number {
 		}
 
 		// PHYSICS CHECK (Protocol Definitions)
-		// Note: These fields are strings in ProtocolData, need conversion
 		const foodAProtein = new Decimal(p.food_a.gramsInServing);
 		const foodAServing = new Decimal(p.food_a.servingSize);
 

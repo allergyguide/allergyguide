@@ -22,10 +22,10 @@ describe("SearchDropdown Component", () => {
 			{
 				type: "food",
 				data: {
-					Food: "Milk",
-					Type: FoodType.LIQUID,
-					"Mean protein in grams": 3.3,
-					"Serving size": 100,
+					name: "Milk",
+					type: FoodType.LIQUID,
+					gramsInServing: 3.3,
+					servingSize: 100,
 				},
 			},
 		];
@@ -55,10 +55,10 @@ describe("SearchDropdown Component", () => {
 			{
 				type: "food",
 				data: {
-					Food: "Milk",
-					Type: FoodType.LIQUID,
-					"Mean protein in grams": 3.3,
-					"Serving size": 100,
+					name: "Milk",
+					type: FoodType.LIQUID,
+					gramsInServing: 3.3,
+					servingSize: 100,
 				},
 			},
 			{
@@ -90,10 +90,10 @@ describe("SearchDropdown Component", () => {
 			{
 				type: "food",
 				data: {
-					Food: "Milk",
-					Type: FoodType.LIQUID,
-					"Mean protein in grams": 3.3,
-					"Serving size": 100,
+					name: "Milk",
+					type: FoodType.LIQUID,
+					gramsInServing: 3.3,
+					servingSize: 100,
 				},
 			},
 		];
@@ -134,10 +134,10 @@ describe("SearchDropdown Component", () => {
 			{
 				type: "food",
 				data: {
-					Food: "Milk",
-					Type: FoodType.LIQUID,
-					"Mean protein in grams": 3.3,
-					"Serving size": 100,
+					name: "Milk",
+					type: FoodType.LIQUID,
+					gramsInServing: 3.3,
+					servingSize: 100,
 				},
 			},
 		];
@@ -184,10 +184,10 @@ describe("SearchDropdown Component", () => {
 
 	it("should call onSelectFoodA when a food result is clicked for food-a-search", () => {
 		const food = {
-			Food: "Egg",
-			Type: FoodType.SOLID,
-			"Mean protein in grams": 6,
-			"Serving size": 50,
+			name: "Egg",
+			type: FoodType.SOLID,
+			gramsInServing: 6,
+			servingSize: 50,
 		};
 		render(
 			SearchDropdown(
@@ -208,10 +208,10 @@ describe("SearchDropdown Component", () => {
 
 	it("should call onSelectFoodB when a food result is clicked for food-b-search", () => {
 		const food = {
-			Food: "Egg",
-			Type: FoodType.SOLID,
-			"Mean protein in grams": 6,
-			"Serving size": 50,
+			name: "Egg",
+			type: FoodType.SOLID,
+			gramsInServing: 6,
+			servingSize: 50,
 		};
 		render(
 			SearchDropdown(

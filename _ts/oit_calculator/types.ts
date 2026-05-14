@@ -205,10 +205,10 @@ const NumericString = z
  * Raw values are UI-facing and will be converted to internal Decimal where needed later.
  */
 export const FoodDataSchema = z.strictObject({
-	Food: z.string(), // name
-	"Mean protein in grams": z.number(), // not all will be the mean: this applies mainly to CNF data, not custom foods
-	"Serving size": z.number(), // 100g for CNF but otherwise for custom foods will be variable
-	Type: z.enum(FoodType),
+	name: z.string(), // name
+	gramsInServing: z.number(), // not all will be the mean: this applies mainly to CNF data, not custom foods
+	servingSize: z.number(), // 100g for CNF but otherwise for custom foods will be variable
+	type: z.enum(FoodType),
 });
 export type FoodData = z.infer<typeof FoodDataSchema>;
 

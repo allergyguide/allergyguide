@@ -32,10 +32,10 @@ import { generateUniqueId } from "../utils";
 
 export function selectFoodA(foodData: FoodData): void {
 	const food: Food = {
-		name: foodData.Food,
-		type: foodData.Type,
-		gramsInServing: new Decimal(foodData["Mean protein in grams"]),
-		servingSize: new Decimal(foodData["Serving size"]),
+		name: foodData.name,
+		type: foodData.type,
+		gramsInServing: new Decimal(foodData.gramsInServing),
+		servingSize: new Decimal(foodData.servingSize),
 		getMgPerUnit: function () {
 			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
 		},
@@ -61,7 +61,7 @@ export function selectFoodA(foodData: FoodData): void {
  * @returns void
  */
 export function selectFoodB(foodData: FoodData): void {
-	if (foodData.Type === FoodType.CAPSULE) {
+	if (foodData.type === FoodType.CAPSULE) {
 		console.error("Capsule food type cannot be selected as Food B");
 		return;
 	}
@@ -70,10 +70,10 @@ export function selectFoodB(foodData: FoodData): void {
 	if (!current) return;
 
 	const food: Food = {
-		name: foodData.Food,
-		type: foodData.Type,
-		gramsInServing: new Decimal(foodData["Mean protein in grams"]),
-		servingSize: new Decimal(foodData["Serving size"]),
+		name: foodData.name,
+		type: foodData.type,
+		gramsInServing: new Decimal(foodData.gramsInServing),
+		servingSize: new Decimal(foodData.servingSize),
 		getMgPerUnit: function () {
 			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
 		},
