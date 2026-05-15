@@ -188,9 +188,9 @@ describe("Utils", () => {
 			expect(result.name).toBe("Custom Protocol Request");
 			expect(result.dosing_strategy).toBe(DosingStrategy.STANDARD);
 			expect(result.food_a.name).toBe("Milk");
-			expect(result.food_a.gramsInServing).toBe("8");
+			expect(result.food_a.gramsInServing).toBe(8);
 			expect(result.food_b?.name).toBe("Cheese");
-			expect(result.food_b_threshold).toBe("0.4");
+			expect(result.food_b_threshold).toBe(0.4);
 			expect(result.custom_note).toBe(notes);
 
 			// Check steps
@@ -199,27 +199,27 @@ describe("Utils", () => {
 			// Step 1: DILUTE
 			expect(result.table[0]).toEqual({
 				food: "A",
-				protein: "1",
+				protein: 1,
 				method: "DILUTE",
-				daily_amount: "1",
-				mix_amount: "1", // LIQUID food -> whole number -> "1"
-				water_amount: "19", // water is always ml -> whole number
+				daily_amount: 1,
+				mix_amount: 1, // LIQUID food -> whole number -> "1"
+				water_amount: 19, // water is always ml -> whole number
 			});
 
 			// Step 2: DIRECT
 			expect(result.table[1]).toEqual({
 				food: "A",
-				protein: "10",
+				protein: 10,
 				method: "DIRECT",
-				daily_amount: "0.3", // ml -> LIQUID_RESOLUTION (1)
+				daily_amount: 0.3, // ml -> LIQUID_RESOLUTION (1)
 			});
 
 			// Step 3: DIRECT (Food B)
 			expect(result.table[2]).toEqual({
 				food: "B",
-				protein: "100",
+				protein: 100,
 				method: "DIRECT",
-				daily_amount: "0.40", // g -> SOLID_RESOLUTION (2)
+				daily_amount: 0.4, // g -> SOLID_RESOLUTION (2)
 			});
 		});
 

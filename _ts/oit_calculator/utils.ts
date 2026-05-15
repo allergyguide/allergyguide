@@ -160,14 +160,16 @@ export function serializeProtocol(
 
 		const base = {
 			food: step.food,
-			protein: step.targetMg.toString(), // ProtocolData expects strings
+			protein: step.targetMg.toNumber(),
 		};
 
 		if (step.method === Method.DIRECT) {
 			return {
 				...base,
 				method: "DIRECT",
-				daily_amount: formatAmount(step.dailyAmount, step.dailyAmountUnit),
+				daily_amount: Number(
+					formatAmount(step.dailyAmount, step.dailyAmountUnit),
+				),
 			};
 		} else if (step.method === Method.CAPSULE) {
 			return {
@@ -185,9 +187,11 @@ export function serializeProtocol(
 			return {
 				...base,
 				method: "DILUTE",
-				daily_amount: formatAmount(step.dailyAmount, step.dailyAmountUnit),
-				mix_amount: formatAmount(step.mixFoodAmount, measureUnit),
-				water_amount: formatAmount(step.mixWaterAmount, "ml"),
+				daily_amount: Number(
+					formatAmount(step.dailyAmount, step.dailyAmountUnit),
+				),
+				mix_amount: Number(formatAmount(step.mixFoodAmount, measureUnit)),
+				water_amount: Number(formatAmount(step.mixWaterAmount, "ml")),
 			};
 		}
 	});
@@ -199,11 +203,11 @@ export function serializeProtocol(
 		food_a: {
 			type: protocol.foodA.type,
 			name: protocol.foodA.name,
-			gramsInServing: protocol.foodA.gramsInServing.toString(),
-			servingSize: protocol.foodA.servingSize.toString(),
+			gramsInServing: protocol.foodA.gramsInServing.toNumber(),
+			servingSize: protocol.foodA.servingSize.toNumber(),
 		},
 		food_a_strategy: protocol.foodAStrategy,
-		di_threshold: protocol.diThreshold.toString(),
+		di_threshold: protocol.diThreshold.toNumber(),
 		table: table,
 		custom_note: notes,
 	};
@@ -213,14 +217,13 @@ export function serializeProtocol(
 		data.food_b = {
 			type: protocol.foodB.type,
 			name: protocol.foodB.name,
-			gramsInServing: protocol.foodB.gramsInServing.toString(),
-			servingSize: protocol.foodB.servingSize.toString(),
+			gramsInServing: protocol.foodB.gramsInServing.toNumber(),
+			servingSize: protocol.foodB.servingSize.toNumber(),
 		};
 	}
 
 	if (protocol.foodBThreshold) {
-		// ProtocolDataSchema expects food_b_threshold as string (NumericString)
-		data.food_b_threshold = protocol.foodBThreshold.amount.toString();
+		data.food_b_threshold = protocol.foodBThreshold.amount.toNumber();
 	}
 
 	return data;
@@ -305,96 +308,96 @@ export const SAMPLE_PROTOCOL: ProtocolData = {
 	food_a: {
 		type: FoodType.LIQUID,
 		name: "Elmhurst Milked Almonds Unsweetened Beverage",
-		gramsInServing: "5",
-		servingSize: "250",
+		gramsInServing: 5,
+		servingSize: 250,
 	},
 	food_a_strategy: FoodAStrategy.DILUTE_INITIAL,
-	di_threshold: "0.5",
+	di_threshold: 0.5,
 	food_b: {
 		type: FoodType.SOLID,
 		name: "Almonds (dry roasted, unblanched)",
-		gramsInServing: "21",
-		servingSize: "100",
+		gramsInServing: 21,
+		servingSize: 100,
 	},
-	food_b_threshold: "0.4",
+	food_b_threshold: 0.4,
 	table: [
 		{
 			food: "A",
-			protein: "1",
+			protein: 1,
 			method: "DILUTE",
-			daily_amount: "1",
-			mix_amount: "1",
-			water_amount: "19",
+			daily_amount: 1,
+			mix_amount: 1,
+			water_amount: 19,
 		},
 		{
 			food: "A",
-			protein: "2.5",
+			protein: 2.5,
 			method: "DILUTE",
-			daily_amount: "1",
-			mix_amount: "1",
-			water_amount: "7",
+			daily_amount: 1,
+			mix_amount: 1,
+			water_amount: 7,
 		},
 		{
 			food: "A",
-			protein: "5",
+			protein: 5,
 			method: "DILUTE",
-			daily_amount: "1",
-			mix_amount: "1",
-			water_amount: "3",
+			daily_amount: 1,
+			mix_amount: 1,
+			water_amount: 3,
 		},
 		{
 			food: "A",
-			protein: "10",
+			protein: 10,
 			method: "DIRECT",
-			daily_amount: "0.5",
+			daily_amount: 0.5,
 		},
 		{
 			food: "A",
-			protein: "20",
+			protein: 20,
 			method: "DIRECT",
-			daily_amount: "1",
+			daily_amount: 1,
 		},
 		{
 			food: "A",
-			protein: "40",
+			protein: 40,
 			method: "DIRECT",
-			daily_amount: "2",
+			daily_amount: 2,
 		},
 		{
 			food: "A",
-			protein: "80",
+			protein: 80,
 			method: "DIRECT",
-			daily_amount: "4",
+			daily_amount: 4,
 		},
 		{
 			food: "B",
-			protein: "80",
+			protein: 80,
 			method: "DIRECT",
-			daily_amount: "0.4",
+			daily_amount: 0.4,
 		},
 		{
 			food: "B",
-			protein: "120",
+			protein: 120,
 			method: "DIRECT",
-			daily_amount: "0.6",
+			daily_amount: 0.6,
 		},
 		{
 			food: "B",
-			protein: "160",
+			protein: 160,
 			method: "DIRECT",
-			daily_amount: "0.8",
+			daily_amount: 0.8,
 		},
 		{
 			food: "B",
-			protein: "240",
+			protein: 240,
 			method: "DIRECT",
-			daily_amount: "1.1",
+			daily_amount: 1.1,
 		},
 		{
 			food: "B",
-			protein: "300",
+			protein: 300,
 			method: "DIRECT",
-			daily_amount: "1.4",
+			daily_amount: 1.4,
 		},
 	],
 	custom_note: "This is an example of a pre-defined protocol.",
