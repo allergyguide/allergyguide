@@ -53,32 +53,39 @@ export const handler: Handler = async (event): Promise<HandlerResponse> => {
 
 		// B. Read Assets Parallel
 		// Use catch() to return empty array if a specific file is missing/broken
+		const readSecureFiles = async (paths: string[]) => {
+			if (paths?.length === 0 || !Array.isArray(paths)) return [];
 
-		// path traversal security check
-		const foodsPath = resolve(secureRoot, oitConfig.provisioned_foods);
-		if (!foodsPath.startsWith(secureRoot))
-			throw new HttpError("Invalid provisioned foods path", 400);
-		const protocolsPath = resolve(secureRoot, oitConfig.provisioned_protocols);
-		if (!protocolsPath.startsWith(secureRoot))
-			throw new HttpError("Invalid provisioned protocols path", 400);
+			const results = await Promise.all(
+				paths.map(async (p) => {
+					if (!p) return []; // skip empty "" within array
 
-		const readSecureFile = async (path: string, configValue: string) => {
-			if (!configValue) return "[]"; // ie if userconfig has "" for provisioned_foods path
-			return fs.readFile(path, "utf-8").catch((e) => {
-				console.error(`Failed to load asset for ${username}:`, e);
-				return "[]";
-			});
+					const fullPath = resolve(secureRoot, p);
+					// path traversal security check
+					if (!fullPath.startsWith(secureRoot)) {
+						throw new HttpError(`Invalid asset path: ${p}`, 400);
+					}
+					try {
+						const content = await fs.readFile(fullPath, "utf-8");
+						return JSON.parse(content);
+					} catch (e) {
+						console.error(`Failed to load asset ${p} for ${username}:`, e);
+						return [];
+					}
+				}),
+			);
+			return results.flat();
 		};
 
-		const [foodsRaw, protocolsRaw] = await Promise.all([
-			readSecureFile(foodsPath, oitConfig.provisioned_foods),
-			readSecureFile(protocolsPath, oitConfig.provisioned_protocols),
+		const [provisioned_foods, provisioned_protocols] = await Promise.all([
+			readSecureFiles(oitConfig.provisioned_foods),
+			readSecureFiles(oitConfig.provisioned_protocols),
 		]);
 
 		const responseData = {
 			username: username,
-			provisioned_foods: JSON.parse(foodsRaw),
-			provisioned_protocols: JSON.parse(protocolsRaw),
+			provisioned_foods: provisioned_foods,
+			provisioned_protocols: provisioned_protocols,
 			handouts: oitConfig.handouts || [],
 		};
 
