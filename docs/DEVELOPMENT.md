@@ -24,15 +24,15 @@ Because we use private assets and dynamic TypeScript bundling, we cannot rely so
 
 **Command:** `npm run build:core`
 
-Defined in `package.json` and orchestrated by `build.mts`.
+Defined in `package.json` and orchestrated by `scripts/build.mts`.
 
 1. **Legacy JS Sync:** Copies raw JavaScript files from `_legacy_js/` to `static/js/`. This ensures custom scripts are present before the build continues.
-2. **Secure Assets:** `build-fetch-secure-assets.mts` uses `PRIVATE_TOKEN` to fetch strictly controlled assets (PDFs, JSON) from the private repository into the local `secure_assets/` folder.
+2. **Secure Assets:** `scripts/build-fetch-secure-assets.mts` uses `PRIVATE_TOKEN` to fetch strictly controlled assets (PDFs, JSON) from the private repository into the local `secure_assets/` folder.
 3. **Linting and Type Checking:** Runs `npm run check` which executes:
    - `biome check`: Fast linting and formatting verification using Biome.
    - `tsc --noEmit`: Ensures TypeScript type integrity.
-4. **Typst Compilation:** `build-typ.mts` checks for and downloads the Typst binary and compiles `.typ` source files from specified directories into PDFs.
-5. **TypeScript Bundling:** `build-ts.mts` reads `tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
+4. **Typst Compilation:** `scripts/build-typ.mts` checks for and downloads the Typst binary and compiles `.typ` source files from specified directories into PDFs.
+5. **TypeScript Bundling:** `scripts/build-ts.mts` reads `tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
 
 ### Stage 2: Site Generation (Zola)
 
@@ -74,10 +74,13 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 ```text
 .
-├── build.mts                  # Main Build Orchestrator
-├── build-ts.mts               # TypeScript Bundling Logic (esbuild)
-├── build-typ.mts              # Typst Logic (PDF creation)
-├── build-fetch-secure-assets.mts # Fetches private assets from GitHub
+├── scripts/
+│   ├── build.mts                  # Main Build Orchestrator
+│   ├── build-ts.mts               # TypeScript Bundling Logic (esbuild)
+│   ├── build-typ.mts              # Typst Logic (PDF creation)
+│   ├── build-fetch-secure-assets.mts # Fetches private assets from GitHub
+│   ├── build-utils.mts            # Shared utility functions
+│   └── build-config.mts           # Environment variables and config
 ├── build-patch-sw.js          # Service Worker Patcher (Critical for Auth)
 ├── config.toml                # Zola Configuration
 ├── netlify.toml               # Netlify Configuration (Headers, Redirects)
@@ -134,7 +137,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 ### Adding PDFs (Typst)
 
-- **Source:** Place `.typ` files in directories monitored by `build-typ.mts`.
+- **Source:** Place `.typ` files in directories monitored by `scripts/build-typ.mts`.
 - **Compilation:** The build script automatically finds them and compiles them to PDF in `static/`.
 - **Fonts:** Custom fonts must be in `fonts/` for Typst to detect them.
 
@@ -142,7 +145,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 - **Auth/Permissions:** Update `authorized_users` table in Supabase.
 - **User Configs:** Ensure the private repository contains the matching `user_configs/{username}_config.json` files and the files you want the user to be able to access.
-- **Build Logic:** If adding a new tool that requires private assets, you must manually add a `generateSecureAssets` call to `build-fetch-secure-assets.mts` to ensure the files are downloaded during build. See the end of that file.
+- **Build Logic:** If adding a new tool that requires private assets, you must manually add a `syncSecureFolder` or `fetchSecureFile` call to `scripts/build-fetch-secure-assets.mts` to ensure the files are downloaded during build. See the end of that file.
 - **Structure:** secure assets are flattened into `secure_assets/` locally during build.
 
 ## Netlify Functions & Auth

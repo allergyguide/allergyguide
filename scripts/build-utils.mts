@@ -1,9 +1,7 @@
 import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { ENV_VARS } from "./build-config.mjs";
 
 interface GitHubTreeItem {
 	path: string;
@@ -140,12 +138,9 @@ export async function getPathsUsingGitTree(
 export async function verifyUsersData() {
 	console.log("Verifying Users Configuration...");
 
-	if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY)
-		throw new Error();
-
 	const supabaseAdmin = createClient(
-		process.env.SUPABASE_URL,
-		process.env.SUPABASE_SECRET_KEY,
+		ENV_VARS.SUPABASE_URL,
+		ENV_VARS.SUPABASE_SECRET_KEY,
 	);
 
 	async function getAllUsernames(): Promise<string[]> {
@@ -165,7 +160,7 @@ export async function verifyUsersData() {
 	// Load ADMIN_USERS (Optional exception list)
 	let adminUsers: string[] = [];
 	try {
-		adminUsers = JSON.parse(process.env.ADMIN_USERS || "[]");
+		adminUsers = JSON.parse(ENV_VARS.ADMIN_USERS || "[]");
 	} catch {
 		console.warn(
 			"Warning: Could not parse ADMIN_USERS. Treating as empty list.",

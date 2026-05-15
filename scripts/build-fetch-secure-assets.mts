@@ -4,20 +4,10 @@
 
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import dotenv from "dotenv";
+import { ENV_VARS } from "./build-config.mjs";
 import { fetchFromGithubBinary, getPathsUsingGitTree } from "./build-utils.mjs";
 
-dotenv.config({ override: true });
-
 const SECURE_ASSETS_DIR = "secure_assets";
-
-// NETLIFY ENV VARS
-const GITHUB_TOKEN = process.env.PRIVATE_TOKEN;
-const GITHUB_REPO = `${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}`; // e.g., "username/repo-name"
-if (!GITHUB_REPO || !GITHUB_TOKEN) {
-	console.error("No GitHub repo or token found. Check netlify settings");
-	process.exit(1);
-}
 
 /**
  * Fetches secure assets from a private repo FOLDER MAIN BRANCH.
@@ -171,12 +161,20 @@ if (existsSync(SECURE_ASSETS_DIR)) {
 	rmSync(SECURE_ASSETS_DIR, { recursive: true, force: true });
 }
 console.log("\nGrabbing user configs...");
-await syncSecureFolder(GITHUB_TOKEN, GITHUB_REPO, "user_configs");
+await syncSecureFolder(
+	ENV_VARS.GITHUB_TOKEN,
+	ENV_VARS.GITHUB_REPO,
+	"user_configs",
+);
 console.log("\nGrabbing oit_calculator assets...");
-await syncSecureFolder(GITHUB_TOKEN, GITHUB_REPO, "oit_calculator");
+await syncSecureFolder(
+	ENV_VARS.GITHUB_TOKEN,
+	ENV_VARS.GITHUB_REPO,
+	"oit_calculator",
+);
 await fetchSecureFile(
-	GITHUB_TOKEN,
-	GITHUB_REPO,
+	ENV_VARS.GITHUB_TOKEN,
+	ENV_VARS.GITHUB_REPO,
 	"foods/meta.json",
 	"shared-tool-assets",
 );
