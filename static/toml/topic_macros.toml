@@ -150,11 +150,11 @@ consistency?
 Index reaction and sensitized to:
 No index reaction but sensitized to:
 
-Broadly, management options include: 1) strict avoidance, or 2) immunotherapy (oral-OIT; sublingual-SLIT). OIT/SLIT is a form of food desensitization for IgE mediated allergies. It is highly effective at very young ages and may help to outgrow the allergy completely. In older children, teenagers and adults, food allergies are felt to be more fixed. Lifelong OIT/SLIT in these situations may be more helpful to protect against accidental exposure as opposed to aid in outgrowing the food allergy, but OIT (especially in older patients) comes at relatively increased risk of treatment-induced anaphylaxis. The overall process, potential side effects/adverse reactions and time commitment was reviewed. 
+Broadly, management options include: 1) strict avoidance, or 2) immunotherapy (oral-OIT; sublingual-SLIT). OIT/SLIT is a form of food desensitization for IgE mediated allergies. It is highly effective at very young ages and may help to outgrow the allergy completely. In older children, teenagers and adults, food allergies are felt to be more fixed - lifelong OIT/SLIT in these situations may be more helpful to protect against accidental exposures as opposed to outgrowing the food allergy. OIT (especially in older patients) comes at relatively increased risk of treatment-induced anaphylaxis. The overall process, potential side effects/adverse reactions and time commitment was reviewed. 
 
 After discussing the above, they have decided to pursue: 
 
-In the interim, they should strictly avoid these foods. We have prescribed an epinephrine auto-injector x2 that should be carried on them at all times, and reviewed an anaphylaxis action plan. Antihistamines do not improve mortality in the setting of anaphylaxis: the *only* life saving treatment is timely administration of epinephrine.
+In the interim, they should strictly avoid these foods. We have prescribed an epinephrine auto-injector x2 that should be carried on them at all times, and reviewed an anaphylaxis action plan. Antihistamines do not improve mortality in the setting of anaphylaxis: the *ONLY* life saving treatment is timely administration of epinephrine.
 
 Their symptoms are most consistent with oral allergy syndrome, a type of reaction that typically remains localized and does not progress to anaphylaxis. Symptoms are characterized by predominantly oral itch, scratchy throat, mild rash or swelling of the lips and occasionally abdominal upset after eating certain fruits, vegetables or tree nuts. It results from cross-reactivity between tree pollens and several fresh fruits, nuts, and vegetables, and usually disappears with cooked or more processed foods. 
 
@@ -188,11 +188,11 @@ content = '''
 FPIES is a non-IgE mediated food allergy manifesting with delayed gastrointestinal symptoms. Typically, it is rare to have FPIES to multiple foods (25% of children react to 2 foods and less than 10% react to ≥ 3 foods). There is no diagnostic test for FPIES beyond oral challenge: diagnosis is usually based on clinical history. FPIES does not respond to epinephrine and there is no indication to carry an epinephrine auto-injector. The natural history of child-onset FPIES is excellent and most children will outgrow it within ~ 12 to 24 months.  
 
 There are two main management options:
-- 1) Strict avoidance of culprit foods, with consideration of oral challenge in ~1-2 years. However, with strict avoidance there is risk of development of an IgE mediated allergy
-- 2) Starting an FPIES ladder to slowly reintroduce the food at home, starting with 1/64 teaspoon of the trigger food (using mini measuring teaspoons
+- 1) Strict avoidance of culprit foods, with consideration of oral challenge in ~1-2 years. However, with strict avoidance there is risk of development of an IgE mediated allergy.
+- 2) Starting an FPIES ladder to slowly reintroduce the food at home, starting with 1/64 teaspoon of the trigger food (using mini measuring teaspoons); this carries risk of iatrogenic reaction, but also helps reduce the risk of developing an IgE mediated allergy.
 
 On discussion, they have elected to pursue: 
-We provided guidance on how to use the ladder and sent a copy to the family. In case of mild symptoms, previous tolerated dose should be resumed for another 4 weeks. They should otherwise strictly avoid the culprit food.
+We provided guidance on how to use the ladder and sent a copy to the family. In case of mild symptoms, the previous tolerated dose should be resumed for another 4 weeks. They should otherwise strictly avoid the culprit food.
 
 In case of accidental exposure or intractable nausea/emesis, Ondansetron 0.15 mg/kg can alleviate symptoms. Occasionally, moderate to severe dehydration may occur and requires IV rehydration, which may present as pallor, lethargy, or syncope - in this case, immediate medical attention should be sought.
 '''
@@ -217,11 +217,11 @@ Other exposures: (ie other drugs, herbals, bites)
 cofactors: [NSAIDs | exercise | alcohol | infection | poor sleep]
 
 # Reaction to:
-[scores]
-* ?histamine / tryptase
-* Skin test - only penicillin, rest not great; can still do SPT then intradermal
-* if currently in a Type 4 rx, order markers of end organ damage
-> Avoid / Challenge / desensitize
+ 
+- ?histamine / tryptase
+- Skin test - only penicillin, rest not great; can still do SPT then intradermal
+- if currently in a Type 4 rx, order markers of end organ damage
+- Avoid / Challenge / desensitize
 '''
 
 [drug-drug_challenge]
@@ -229,12 +229,16 @@ wip = true
 topic = "Drug challenge"
 keywords = ["drug", "drug challenge"]
 content = '''
-Placeholder
 
-# Topic
-[Details]
-* Investigations
-> Management
+DRUG CHALLENGE:
+Prior to challenge, risk of anaphylaxis and milder allergic reactions discussed. They do not have any concurrent illness, do not use betablockers/ACEi or NSAIDs, have not recently had alcohol, have not exercised strenuously <2h prior to this visit, and are not sleep deprived.
+
+Doses:
+Timing:
+
+They were monitored for 1 hour after the last dose.
+
+They had no complications.
 '''
 
 [drug-drug_desensitization]
@@ -256,9 +260,9 @@ topic = "Penicillin allergy"
 keywords = ["drug", "penicillin"]
 content = '''
 # Unlikely penicillin allergy
-Clinical history is not suggestive of an penicillin allergy as:
+Clinical history is not suggestive of an IgE mediated penicillin allergy as:
 
-Their cutaneous symptoms are not in keeping with urticaria expected in IgE-mediated allergy; the history was not concerning for serum sickness or severe cutaneous adverse drug reactions, such as Stevens Johnson Syndrome or Toxic Epidermal Necrolysis. Up to 95% of patients presenting with a rash following administration of an antibiotic do not in fact have a drug allergy, and rather the symptoms are most likely related to the infection itself rather than the penicillin.
+The history was also not concerning for serum sickness or severe cutaneous adverse drug reactions, such as Stevens Johnson Syndrome or Toxic Epidermal Necrolysis. Up to 95% of patients presenting with a rash following administration of an antibiotic do not in fact have a drug allergy, and rather the symptoms are most likely related to the infection itself rather than the penicillin.
 
 Unverified penicillin allergy labels are common, and are associated with increased mortality (6-7%), surgical site infections (60% increase), multidrug-resistant organism infections (42% increase), and C. difficile infections (23-26% increase), primarily due to the use of suboptimal alternative antibiotics (see: https://pubmed.ncbi.nlm.nih.gov/39834819/, https://pubmed.ncbi.nlm.nih.gov/40122092/). As such, there is strong motivation for these patients to undergo an oral challenge for delabelling.
 
@@ -318,16 +322,16 @@ missing work/school
 Reponse to treatment
 
 # Asthma
-Asthma is a chronic heterogeneous disease characterized by bronchial hyperresponsiveness and variable expiratory airflow limitation, usually associated with chronic airway inflammation. When left untreated, patients are at risk of severe life-threatening exacerbations and fibrosis from prolonged inflammation.
+Asthma is a chronic heterogeneous disease characterized by bronchial hyperresponsiveness and variable expiratory airflow limitation, usually associated with chronic airway inflammation. When left untreated, patients are at risk of severe life-threatening exacerbations and airway fibrosis from prolonged inflammation.
 
 Last spirometry: none | 
-Phenotype: allergic | non-allergic | exercise induced | occupational | Type 2 high | Type 2 low
+Phenotype: allergic | non-allergic | exercise induced | occupational | Type 2 high | Type 2 low | mixed
 Current control: well controlled | partly controlled | uncontrolled
 Current therapy:
 Risk factors: [Exacerbation in past yr | Low FEV1 | High SABA use | Smoking | Obesity | poor adherence/technique]
 
 PLAN:
-We will obtain pre-post spirometry to confirm diagnosis; if negative will consider methacholine challenge test. OPTIONAL: We will also obtain further phenotyping with FeNO, CBC, Sputum eosinophils.
+We will obtain pre-post spirometry to confirm the diagnosis; if negative will consider methacholine challenge test. OPTIONAL: We will also obtain further phenotyping with FeNO, CBC, Sputum eosinophils.
 
 AGE 12+
 Pharmacologically, inhaled corticosteroids are the cornerstone of management and significantly reduce the chance of severe exacerbation. SABA-only treatment is associated with increased risk of exacerbations. We provided:
@@ -358,6 +362,8 @@ Pharmacologically, inhaled corticosteroids are the cornerstone of management and
 
 
 (GINA step 4) basically all days or severe flares
+- Advair 
+- Symbicort 100/6 1-2 puffs BID + PRN (up to 8 puffs/daily) 
 
 
 SEVERE ASTHMA
@@ -441,7 +447,7 @@ Red flags: [anaphylaxis | thyroid | B symptoms | rheum]
 No burning or pain, bruising, systemic symptoms of fever, weight loss, bone pain, adenopathy, signs of inflammatory arthritis, no skin rashes, no photosensitivity, no Raynaud's, no dry eyes or dry mouth, no oral or genital ulcers.
 
 # Chronic spontaneous urticaria (CSU) / Chronic inducible urticaria (CIndU).
-This is a generally benign, histamine-mediated idiopathic primary skin disorder thought to be mediated by mast cells. CSU is typically a self-resolving condition over 1-5 years; CIndU is generally more long lived. In the vast majority of cases it is not a sign of more insidious underlying disease, though in some cases we arrange for baseline bloodwork to assess for rarer underlying causes.
+This is a generally benign, histamine-mediated skin disorder thought to be mediated by mast cells. CSU is typically a self-resolving condition over 1-5 years; CIndU is generally more long lived. In the vast majority of cases it is not a sign of more insidious underlying disease, though in some cases we arrange for baseline bloodwork to assess for rarer underlying causes.
 
 - We will obtain CBC, CRP, TSH, anti-TPO, IgE, Calcium, SPEP, H. pylori serology
 - We recommended avoidance of physical triggers, as well as NSAIDs and alcohol which can exacerbate symptoms
@@ -478,21 +484,25 @@ trials of AH, doses, duration
 # Angioedema
 AE-MC
 AE-BK
+AE-EN
+AE-DR
 AE-UK
 
 * We will send for C3/C4, C1-INH level and function, C1q; SPEP, CBC, Cr, Calcium/Albumin
-* Genetics
+* If the clinical picture remains convincing and empiric AH therapy fails, we will consider a genetic panel for HAE including: SERPING1, PLG, MYOF, KNG1, HS3ST6, F12, DAB2IP, CPN1, ANGPT1
 > We have advised the importance of avoiding stress, limiting alcohol, and no NSAID use
-> In the interim, we will start empiric treatment with second generation antihistamines; undifferentiated angioedema may still be mast-cell mediated
-  - Stared Blexten 40mg PO BID
+> In the interim, we will start empiric treatment with high dose second generation antihistamines; undifferentiated angioedema may still be mast-cell mediated. We started:
 
 *** confirmed HAE
-> acute mgment: C1-INH concentrate (Berinert), Bradykinin receptor antagonist Icatibant (FIRAZYR®), plasma kallikrein inhibition Lanadelumab (TAKHZYRO®), present to ED
-> short-term prophylaxis:
-> long term prophylaxis: C1-INH, ?androgrens but AEs
+
+Hereditary angioedema is a genetic disorder characterized by recurrent paroxysmal episodes of angioedema, which can be life-threatening depending on the location. Management is divided into several pillars:
+
+- Non-pharmacologically, triggers (such as infection, stress, estrogen, trauma) should be identified and avoided if possible
+- Acute PRN on-demand therapy should always be available. Options include pdC1-INH (Berinert) at 20 units/kg IV or the Bradykinin receptor antagonist Icatibant SC; if nothing else is available, fresh frozen plasma can be used, though unindeal. We have also provided the patient a letter to bring in case they present to the ED.
+- Short term prophylaxis: prior to any major procedures, a prophylactic dose of IV pdC1-INH of 20 units/kg 1 hour prior should be considered
+- Long term prophylaxis: in the setting of frequent or very severe attacks, long-term therapy can be considered. Options available in Canada include: SC pdC1-INH, anti-kallikrein therapy (e.g. Lanadelumab SC, Berotralstat PO), or anti-XIIa (garadacimab) therapy 
 
 Connect with HAE canada
-genetics? (which panel?)
 *** AAE ACEi supportive care, avoid ACEi and Entresto, ARBs ok in a pinch
 '''
 
