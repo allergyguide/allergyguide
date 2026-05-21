@@ -74,6 +74,10 @@ export async function loadPublicDatabases(): Promise<PublicData> {
 			throw new Error(`Failed to load CNF foods: ${response.statusText}`);
 
 		const raw = await response.json();
+
+		// TODO! for upcoming impl, consider adding:
+		// `transformed = raw.map(f => ({ ...f, source: 'GENERIC'}))` }));
+		// as opposed to just altering the typed_foods.json itself!
 		const foods = validateList<FoodData>(raw, FoodDataSchema, "CNF Food");
 
 		return {
