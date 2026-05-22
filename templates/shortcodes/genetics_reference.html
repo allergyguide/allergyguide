@@ -1,0 +1,7 @@
+{% set tools = load_data(path="/js/tools_versioning.json") %}
+{% set tool_info = tools.genetics_reference %}
+<div class="genetics_reference">
+	<!-- TBD TODO! -->
+</div>
+<!-- Load main script -->
+<script type="module" src="/js/{{ tool_info.file }}"></script>

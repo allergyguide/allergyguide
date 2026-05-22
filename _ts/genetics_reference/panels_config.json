@@ -1,0 +1,32 @@
+[
+	{
+		"name": "Comprehensive Immune and Cytopenia Panel",
+		"url": "https://www.blueprintgenetics.com/tests/panels/hematology/comprehensive-immune-and-cytopenia-panel/",
+		"source": "BLUEPRINT"
+	},
+	{
+		"name": "Primary Immunodeficiency Panel",
+		"url": "https://blueprintgenetics.com/tests/panels/immunology/primary-immunodeficiency-panel/",
+		"source": "BLUEPRINT"
+	},
+	{
+		"name": "Primary Immunodeficiency (PID) and Primary Ciliary Dyskinesia (PCD) Panel",
+		"url": "https://blueprintgenetics.com/tests/panels/immunology/primary-immunodeficiency-pid-and-primary-ciliary-dyskinesia-pcd-panel/",
+		"source": "BLUEPRINT"
+	},
+	{
+		"name": "Invitae Inborn Errors of Immunity and Cytopenias Panel",
+		"url": "https://www.invitae.com/providers/test-catalog/test-08104",
+		"source": "INVITAE"
+	},
+	{
+		"name": "Invitae Primary Immunodeficiency Panel",
+		"url": "https://www.invitae.com/providers/test-catalog/test-08100",
+		"source": "INVITAE"
+	},
+	{
+		"name": "Invitae Common Variable Immunodeficiency Panel",
+		"url": "https://www.invitae.com/providers/test-catalog/test-08112",
+		"source": "INVITAE"
+	}
+]

@@ -1,5 +1,6 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { buildGenetics } from "./build-genetics.mts";
 import { buildTS } from "./build-ts.mjs";
 import { compileTypst, loadTypstBinary } from "./build-typ.mjs";
 import { copyLegacyJS, verifyUsersData } from "./build-utils.mjs";
@@ -41,6 +42,11 @@ console.log("---------------------------\n");
 console.log("-----TYPST LOAD AND COMPILE-----");
 loadTypstBinary();
 compileTypst(commit_hash);
+console.log("---------------------------\n");
+
+// FETCH GENETICS PANEL DATA
+console.log("-----FETCHING UP TO DATE GENETICS PANEL DATA-----");
+await buildGenetics();
 console.log("---------------------------\n");
 
 // MOVE LEGACY JS INTO static/js
