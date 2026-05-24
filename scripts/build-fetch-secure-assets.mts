@@ -172,10 +172,11 @@ await syncSecureFolder(
 	ENV_VARS.GITHUB_REPO,
 	"oit_calculator",
 );
+console.log("\nFetching shared-tool-assets...");
 await fetchSecureFile(
 	ENV_VARS.GITHUB_TOKEN,
 	ENV_VARS.GITHUB_REPO,
-	"foods/meta.json",
+	"shared-tool-assets/brand_foods.json",
 	"shared-tool-assets",
 );
 console.log("---------------------------\n");
