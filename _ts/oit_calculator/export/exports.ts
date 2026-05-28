@@ -1,0 +1,576 @@
+/**
+ * @module
+ *
+ * Void functions that trigger: 1) PDF document to download in new tab 2) copy ASCII protocol to clipboard
+ */
+
+import type { jsPDF } from "jspdf";
+import type { PDFDocument } from "pdf-lib";
+import { generateUserHistoryPayload } from "../core/minify";
+import { getFoodAStepCount } from "../core/protocol";
+import { loadSecureAsset } from "../data/api";
+import { appState } from "../state/instances"; // We need access to the global appState
+import type {
+	Food,
+	HistoryItem,
+	ProtocolExportData,
+	Step,
+	Unit,
+} from "../types";
+import { FoodType, Method } from "../types";
+import { formatAmount, formatNumber, getMeasuringUnit } from "../utils";
+
+// Need global commit hash
+// And current tool version
+declare const __COMMIT_HASH__: string;
+declare const __VERSION_OIT_CALCULATOR__: string;
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+interface ExportRow {
+	stepIndex: number;
+	targetProtein: string;
+	method: Method;
+	mixDetails: string;
+	dailyAmount: string;
+	interval: string;
+}
+
+/**
+ * Prepares table rows for a subset of steps (Food A or Food B).
+ * Shared logic for formatting amounts and mix instructions.
+ */
+function buildStepRows(
+	steps: Step[],
+	foodType: FoodType,
+	isLastPhase: boolean,
+): ExportRow[] {
+	return steps.map((step, index) => {
+		let dailyAmountStr = "";
+		let mixDetails = "—";
+
+		if (step.method === Method.CAPSULE) {
+			dailyAmountStr = "Capsule(s) as per pharmacy";
+			mixDetails = "—";
+		} else {
+			dailyAmountStr = `${formatAmount(step.dailyAmount, step.dailyAmountUnit)} ${step.dailyAmountUnit}`;
+			if (step.method === Method.DILUTE) {
+				if (!step.mixFoodAmount) {
+					throw new Error(
+						`Export failed: Step ${step.stepIndex} is DILUTE but missing mixFoodAmount`,
+					);
+				}
+				const mixUnit: Unit = foodType === FoodType.SOLID ? "g" : "ml";
+				mixDetails = `${formatAmount(step.mixFoodAmount, mixUnit)} ${mixUnit} food + ${formatAmount(step.mixWaterAmount, "ml")} ml water`;
+			}
+		}
+
+		const isLastStep = index === steps.length - 1;
+		const interval =
+			isLastStep && isLastPhase ? "Continue long term" : "2-4 weeks";
+
+		return {
+			stepIndex: step.stepIndex,
+			targetProtein: `${formatNumber(step.targetMg, 1)} mg`,
+			method: step.method,
+			mixDetails,
+			dailyAmount: dailyAmountStr,
+			interval,
+		};
+	});
+}
+
+async function generateCompressedQrCode(
+	history: HistoryItem[],
+): Promise<string | null> {
+	try {
+		const payload = generateUserHistoryPayload(history);
+		if (!payload) return null;
+
+		const [{ default: QRCode }, { deflate }] = await Promise.all([
+			import("qrcode"),
+			import("pako"),
+		]);
+
+		const jsonStr = JSON.stringify(payload);
+		const compressed = deflate(jsonStr);
+
+		// Convert Uint8Array to binary string for btoa
+		// Using reduce for large arrays can stack overflow, simple loop is safer here
+		let binary = "";
+		const len = compressed.byteLength;
+		for (let i = 0; i < len; i++) {
+			binary += String.fromCharCode(compressed[i]);
+		}
+		const b64 = btoa(binary);
+
+		return await QRCode.toDataURL(b64, {
+			errorCorrectionLevel: "M",
+			width: 800,
+			margin: 1,
+		});
+	} catch (e) {
+		console.warn("Could not generate QR code", e);
+		return null;
+	}
+}
+
+/**
+ * Helper to fetch a PDF as buffer securely.
+ * Note: If the file path doesn't look like a file (e.g. "protocol"), this won't be called.
+ */
+async function fetchSecurePdfBytes(path: string): Promise<ArrayBuffer> {
+	// If it's a legacy public path (starts with /), fetch normally, otherwise secure
+	if (path.startsWith("/")) {
+		const res = await fetch(path);
+		if (!res.ok) throw new Error(`Failed to load ${path}`);
+		return res.arrayBuffer();
+	}
+
+	try {
+		const result = await loadSecureAsset(path, "buffer");
+		return result as ArrayBuffer;
+	} catch (err) {
+		console.error("Unable to fetch secure asset in exports.ts");
+		throw err;
+	}
+}
+
+// ============================================
+// PDF SECTION RENDERERS
+// ============================================
+// All renderers receive the doc and current Y, and return the new Y
+
+function renderHeader(doc: jsPDF, y: number): number {
+	doc.setFontSize(18);
+	doc.setFont("helvetica", "bold");
+	doc.text("Oral Immunotherapy Protocol", 40, y);
+	return y + 30;
+}
+
+function renderFoodSection(
+	doc: jsPDF,
+	y: number,
+	name: string,
+	food: Food,
+	rows: ExportRow[],
+	titleMaxWidth?: number,
+): number {
+	// Check page break before starting section
+	if (y > 650) {
+		doc.addPage();
+		y = 40;
+	}
+
+	// Title
+	doc.setFontSize(14);
+	doc.setFont("helvetica", "bold");
+
+	const splitTitle = doc.splitTextToSize(name, titleMaxWidth || 520);
+	// 440 for first food A
+	doc.text(splitTitle, 40, y);
+	y += 20 * splitTitle.length;
+
+	// Subtitle
+	doc.setFontSize(10);
+	doc.setFont("helvetica", "normal");
+
+	if (food.type === FoodType.CAPSULE) {
+		doc.text(`Form: Capsule (Pharmacy Compounded)`, 40, y);
+	} else {
+		const unit = getMeasuringUnit(food);
+		doc.text(
+			`Protein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${unit} serving.`,
+			40,
+			y,
+		);
+	}
+	y += 15;
+
+	// Table
+	const tableBody = rows.map((r) => [
+		r.stepIndex,
+		r.targetProtein,
+		r.method,
+		r.mixDetails,
+		r.dailyAmount,
+		r.interval,
+	]);
+
+	// biome-ignore lint/suspicious/noExplicitAny: <Annoying>
+	(doc as any).autoTable({
+		startY: y,
+		head: [
+			[
+				"Step",
+				"Protein",
+				"Method",
+				"How to make mix",
+				"Daily Amount",
+				"Interval",
+			],
+		],
+		body: tableBody,
+		theme: "striped",
+		headStyles: {
+			fillColor: [220, 220, 220],
+			textColor: [0, 0, 0],
+			fontStyle: "bold",
+		},
+		styles: {
+			fontSize: 9,
+			cellPadding: 6,
+			overflow: "linebreak",
+			valign: "middle",
+			halign: "left",
+		},
+		columnStyles: {
+			0: { halign: "center" },
+			1: { halign: "center" },
+			2: { halign: "center" },
+		},
+		margin: { left: 40, right: 40 },
+	});
+
+	// biome-ignore lint/suspicious/noExplicitAny: <Annoying>
+	return (doc as any).lastAutoTable.finalY + 20;
+}
+
+function renderNotes(doc: jsPDF, y: number, note: string): number {
+	if (!note?.trim()) return y;
+
+	if (y > 650) {
+		doc.addPage();
+		y = 40;
+	}
+
+	doc.setFontSize(14);
+	doc.setFont("helvetica", "bold");
+	doc.text("Notes", 40, y);
+	y += 15;
+
+	doc.setFontSize(10);
+	doc.setFont("helvetica", "normal");
+
+	const maxWidth = 520;
+	const lines = doc.splitTextToSize(note.trim(), maxWidth);
+
+	for (const line of lines) {
+		if (y > 730) {
+			doc.addPage();
+			y = 40;
+		}
+		doc.text(line, 40, y);
+		y += 14;
+	}
+	return y;
+}
+
+function renderFooterAndQR(doc: jsPDF, qrMap: Map<number, string | null>) {
+	const pageCount = doc.getNumberOfPages();
+	for (let i = 1; i <= pageCount; i++) {
+		doc.setPage(i);
+		doc.setFontSize(8);
+		doc.setFont("helvetica", "italic");
+		doc.setTextColor(100);
+		doc.text(
+			`Always verify calculations before clinical use. Current tool version-hash: v${__VERSION_OIT_CALCULATOR__}-${__COMMIT_HASH__}`,
+			40,
+			772,
+		);
+		doc.setTextColor(0);
+
+		// If this page has an associated QR code, render it
+		if (qrMap.has(i)) {
+			const qrDataUrl = qrMap.get(i);
+			if (qrDataUrl) {
+				doc.addImage(qrDataUrl, "PNG", 493, 10, 80, 80);
+			}
+		}
+	}
+}
+
+// --- MAIN EXPORT FUNCTION --
+
+/**
+ * Generate a printable PDF of the current protocol(s) using jsPDF + autoTable.
+ *
+ * Includes:
+ * - Food A section (and Food B when present)
+ * - step tables with intervals
+ * - optional notes section
+ * - footer disclaimer
+ *
+ * Opens in a new tab where possible; falls back to direct download.
+ *
+ * @param exportData Array of ProtocolExportData (one for each tab)
+ * @param JsPdfClass  - the jsPDF constructor
+ * @param PdfDocClass - static class for PDFDocument
+ * @returns void
+ */
+export async function generatePdf(
+	exportData: ProtocolExportData[],
+	JsPdfClass: typeof jsPDF,
+	PdfDocClass: typeof PDFDocument,
+): Promise<void> {
+	if (exportData.length === 0) return;
+
+	try {
+		// Initialize PDF
+		const doc: jsPDF = new JsPdfClass({ unit: "pt", format: "letter" });
+		const qrMap = new Map<number, string | null>();
+
+		for (let i = 0; i < exportData.length; i++) {
+			const { protocol, customNote, history } = exportData[i];
+			if (i > 0) doc.addPage();
+
+			const currentPageNum = doc.getNumberOfPages();
+
+			// GEN THE QR CODE for this protocol
+			const qrDataUrl = await generateCompressedQrCode(history);
+			qrMap.set(currentPageNum, qrDataUrl);
+
+			let y = 40;
+
+			// Render Header
+			y = renderHeader(doc, y);
+
+			// Calculate Step Counts to determine "Last Phase"
+			const foodAStepCount = getFoodAStepCount(protocol);
+			const hasFoodBSteps = foodAStepCount < protocol.steps.length;
+
+			// Food A
+			const foodASteps = protocol.steps.slice(0, foodAStepCount);
+			if (foodASteps.length > 0) {
+				const rows = buildStepRows(
+					foodASteps,
+					protocol.foodA.type,
+					!hasFoodBSteps,
+				);
+				y = renderFoodSection(
+					doc,
+					y,
+					protocol.foodA.name,
+					protocol.foodA,
+					rows,
+					440,
+				);
+			}
+
+			// Food B
+			const foodBSteps = protocol.steps.slice(foodAStepCount);
+			if (protocol.foodB && foodBSteps.length > 0) {
+				const rows = buildStepRows(foodBSteps, protocol.foodB.type, true);
+				y = renderFoodSection(
+					doc,
+					y,
+					protocol.foodB.name,
+					protocol.foodB,
+					rows,
+				);
+			}
+
+			// Notes
+			y = renderNotes(doc, y, customNote);
+		}
+
+		// Footer & QR (Global pass across all pages)
+		renderFooterAndQR(doc, qrMap);
+
+		// Merge & Download
+		await handlePdfMergeAndDownload(doc, PdfDocClass);
+	} catch (error) {
+		console.error("PDF Generation Failed:", error);
+		alert("An error occurred while generating the PDF.");
+	}
+}
+
+async function fetchBaseTermsSheet(): Promise<ArrayBuffer> {
+	const res = await fetch(
+		"/tool_assets/oit_calculator/public_oit_patient_resource_terms.pdf",
+	);
+	if (!res.ok) throw new Error("Failed to load public review sheet PDF");
+	return res.arrayBuffer();
+}
+
+async function handlePdfMergeAndDownload(
+	doc: jsPDF,
+	PdfDocClass: typeof PDFDocument,
+) {
+	const protocolPdfBytes = doc.output("arraybuffer");
+	const mergedPdf = await PdfDocClass.create();
+
+	// fetch all PDFs
+	const fetchPromises = appState.pdfHandouts.map(async (item) => {
+		if (item === "public_terms") return fetchBaseTermsSheet();
+		if (item === "protocol") return protocolPdfBytes;
+
+		try {
+			return await fetchSecurePdfBytes(item);
+		} catch (e) {
+			console.error(`Could not load handout: ${item}`, e);
+			return null;
+		}
+	});
+	const pdfBytesArray = await Promise.all(fetchPromises);
+
+	// merge PDFs in order specified in appState.pdfHandouts, e.g. ["alice_header.pdf", "protocol", "alice_footer.pdf"]
+	for (const pdfBytes of pdfBytesArray) {
+		if (!pdfBytes) continue; // Skip missing files
+		const srcDoc = await PdfDocClass.load(pdfBytes);
+		const copiedPages = await mergedPdf.copyPages(
+			srcDoc,
+			srcDoc.getPageIndices(),
+		);
+		copiedPages.forEach((page) => {
+			mergedPdf.addPage(page);
+		});
+	}
+
+	const mergedPdfBytes = await mergedPdf.save();
+	const blob = new Blob([mergedPdfBytes as Uint8Array<ArrayBuffer>], {
+		type: "application/pdf",
+	});
+	const blobUrl = URL.createObjectURL(blob);
+
+	// Mobile/Desktop handling
+	const isMobile =
+		/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+		(navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
+
+	if (isMobile) {
+		// Mobile: Use download link approach for better compatibility
+		const downloadLink = document.createElement("a");
+		downloadLink.href = blobUrl;
+		downloadLink.download = "protocol.pdf";
+		downloadLink.style.display = "none";
+
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+		document.body.removeChild(downloadLink);
+
+		// Clean up the blob URL after a short delay
+		setTimeout(() => {
+			URL.revokeObjectURL(blobUrl);
+		}, 1000);
+	} else {
+		// Desktop: Open in new tab (original behavior)
+		const w = window.open(blobUrl, "_blank");
+		if (!w) {
+			// Fallback to download if popup blocked
+			const downloadLink = document.createElement("a");
+			downloadLink.href = blobUrl;
+			downloadLink.download = "protocol.pdf";
+			downloadLink.style.display = "none";
+
+			document.body.appendChild(downloadLink);
+			downloadLink.click();
+			document.body.removeChild(downloadLink);
+		}
+
+		// Clean up the blob URL after a delay (longer for new tab scenario)
+		setTimeout(() => {
+			URL.revokeObjectURL(blobUrl);
+		}, 1000);
+	}
+}
+
+function generateRoughAsciiTableForFood(food: Food, rows: ExportRow[]): string {
+	if (!food || !rows) return "";
+
+	let text = "";
+	const foodType = food.type;
+	const foodUnit = food.type === FoodType.SOLID ? "g" : "ml";
+	text += `${food.name} (${foodType}).\nProtein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${foodUnit} serving.\n`;
+
+	for (const row of rows) {
+		if (row.method === Method.DILUTE) {
+			text += `(${row.stepIndex}): ${row.targetProtein} - ${row.dailyAmount} (Dilution: ${row.mixDetails})\n`;
+		} else {
+			text += `(${row.stepIndex}): ${row.targetProtein} - ${row.dailyAmount} (Direct)\n`;
+		}
+	}
+	return text;
+}
+
+/**
+ * Pure function to generate the ASCII string content for one or more protocols.
+ *
+ * @param exportData Array of ProtocolExportData
+ * @returns The formatted ASCII string
+ */
+export function generateAsciiContent(exportData: ProtocolExportData[]): string {
+	if (exportData.length === 0) return "";
+	let text = "";
+	const isBatch = exportData.length > 1;
+
+	for (let i = 0; i < exportData.length; i++) {
+		const { protocol, customNote } = exportData[i];
+
+		if (i > 0) {
+			text += "\n\n";
+		}
+
+		if (isBatch) {
+			text += `${"=".repeat(30)}\n`;
+			text += `PROTOCOL ${i + 1}\n`;
+			text += `${"=".repeat(30)}\n\n`;
+		}
+
+		// --- Table Generation ---
+
+		// Food A information
+		const foodAStepCount = getFoodAStepCount(protocol);
+		const hasFoodBSteps = foodAStepCount < protocol.steps.length;
+		const foodASteps = protocol.steps.slice(0, foodAStepCount);
+
+		if (foodASteps.length > 0) {
+			const foodARows = buildStepRows(
+				foodASteps,
+				protocol.foodA.type,
+				!hasFoodBSteps,
+			);
+			text += generateRoughAsciiTableForFood(protocol.foodA, foodARows);
+		}
+
+		// Food B Table
+		const totalSteps = protocol.steps.length;
+		if (protocol.foodB && foodAStepCount < totalSteps) {
+			if (foodASteps.length > 0) text += `\n--- TRANSITION TO ---\n\n`;
+
+			const foodBSteps = protocol.steps.slice(foodAStepCount);
+			const foodBRows = buildStepRows(foodBSteps, protocol.foodB.type, true);
+
+			text += generateRoughAsciiTableForFood(protocol.foodB, foodBRows);
+		}
+
+		// --- Notes ---
+		if (customNote?.trim()) {
+			text += `\n${"-".repeat(20)}\n`;
+			text += "NOTES\n";
+			text += `${customNote.trim()}\n`;
+		}
+	}
+
+	text += `\n---\nTool version-hash: v${__VERSION_OIT_CALCULATOR__}-${__COMMIT_HASH__}\n`;
+
+	return text;
+}
+
+/**
+ * Generate and copy an ASCII representation of the protocol(s) to clipboard.
+ *
+ * @param exportData Array of ProtocolExportData
+ * @returns void
+ */
+export function exportASCII(exportData: ProtocolExportData[]): void {
+	const text = generateAsciiContent(exportData);
+	if (!text) return;
+
+	// --- Copy to Clipboard ---
+	navigator.clipboard.writeText(text).catch(() => {
+		alert(`Failed to copy to clipboard. Please copy manually:\n\n${text}`);
+	});
+}

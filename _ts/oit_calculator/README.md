@@ -1,0 +1,235 @@
+# OIT Calculator Technical Architecture
+
+## Directory Structure
+
+```text
+oit_calculator/
+├── main.ts                 # entry point: initializes appstate, workspace, checks auth, and delegates setup 
+├── constants.ts            # configuration 
+├── types.ts                # shared interfaces and enums
+├── utils.ts                # generic helpers (formatting, escaping)
+├── core/                   # pure logic (should not alter any global state or DOM)
+│   ├── calculator.ts       # math for dilutions and step generation
+│   ├── protocol.ts         # protocol manipulation 
+│   ├── validator.ts        # red/yellow rule checking
+│   ├── search.ts           # fuzzy search
+│   └── minify.ts           # data for qr code compression and generation
+├── state/                  
+│   ├── appstate.ts         # global app config (merges public + secure data)
+│   ├── protocolstate.ts    # observable state container for a single protocol tab
+│   ├── workspaceManager.ts # manages multiple protocol states (tabs) and active view
+│   └── instances.ts        # singleton instances (workspace, appState)
+├── data/
+│   ├── loader.ts           # orchestrates loading of public JSONs and secure user assets
+│   ├── api.ts              # secure asset fetcher from secure_assets/
+│   └── auth.ts             # login/logout API interactions
+├── export/                 
+│   └── exports.ts          # pdf (jspdf) and ascii generation logic
+├── tests/                  
+│   ├── core/               
+│   ├── export/             
+│   └── data_integrity.test.ts  
+└── ui/                     
+    ├── components/         # declarative lit-html components (Table, Settings, Search, Sidebar)
+    ├── directives/         # specialized lit-html directives (activeSafe)
+    ├── actions/            # specialized action handlers (e.g. settingsActions.ts)
+    ├── renderers.ts        # orchestrates rendering; patches Tabs, Dosing, and Empty State manually
+    ├── events.ts           # global event delegation (Tabs, Dosing, Undo/Redo, Notes)
+    ├── actions.ts          # high-level actions connecting search/loading to state
+    ├── searchUI.ts         # search input events and dropdown orchestration
+    ├── modals.ts           # clickwrap, login, and save request modal logic
+    └── exports.ts          # export ui triggers
+
+Serverless Functions (Netlify)
+├── auth-login.mts          # Authenticates user & issues JWT (HttpOnly cookie)
+├── auth-logout.mts         # Clears session cookie
+├── get-secure-asset.mts    # Serves permission-gated assets (JSON/PDF) from secure storage
+├── request-save-oit-protocol.mts # Processes protocol save requests via Resend API
+└── utils.mts               # Shared utilities for serverless functions (e.g. escaping)
+```
+
+## Patterns
+
+### Workspace & Multi-Tab State Management
+
+The application uses a **"Single Active View"** architecture managed by `WorkspaceManager`.
+
+1. **Multiple States:** The `WorkspaceManager` holds an array of `Tab` objects, each containing its own independent `ProtocolState`.
+2. **Proxy Listener:** The UI subscribes to the _Workspace_, not individual protocols. The Workspace internally subscribes to the _currently active tab_ and forwards (proxies) events to the UI.
+3. **Switching:** When a user switches tabs, the Workspace unbinds from the old tab's state and binds to the new one, triggering an immediate UI refresh.
+
+#### History & Debouncing
+
+Each `ProtocolState` maintains its own Undo/Redo stack. To prevent "history pollution" during rapid text input (e.g., typing a food name), `setProtocol` supports a `debounceHistory` flag. This groups consecutive keystrokes into a single undo step while keeping the live state instantly synchronized for a responsive UI.
+
+### Unidirectional Data Flow
+
+1. **Event:** DOM interaction. This is handled either via global delegation in `ui/events.ts` (for shell UI) or via inline bindings in `lit-html` components (for the table and settings).
+2. **Action:** A handler in `ui/actions/` calls a logic function and updates the state.
+3. **State Update:** The action updates the _Active_ protocol via `workspace.getActive().setProtocol(updated, label, options)`.
+4. **Contextual Notification:** The `ProtocolState` notifies subscribers with an `UpdateContext` (`input`, `structural`, or `history`). This allows renderers to decide if they should debounce expensive operations (like validation) or render immediately.
+5. **Render:** `ui/renderers.ts` and individual components update the DOM.
+
+### 3-Tier Data Architecture
+
+The tool uses a hybrid model to support multi-tenancy while keeping the base tool public:
+
+1. **Tier 1: Public Assets:** Fetched on initialization (e.g., the standard CNF `cnf_foods.json`). Available to all users.
+2. **Tier 2: Provisioned Assets:** Private food databases and protocol templates maintained by administrators in a private repository. These are bundled during build and served to authenticated users via the `oit-bootstrap` endpoint.
+3. **Tier 3: Custom Assets (Future):** User-created foods and protocols that will be persisted in a Supabase database. This will allow for individual customization that persists across sessions.
+
+### Authentication & Secure Data Flow
+
+- **Login:** `auth-login.mts` verifies credentials against Supabase. On success, it issues a signed Netlify JWT (`nf_jwt`) for backend access and a Supabase JWT for client-side RLS.
+- **Bootstrap:** On app start, `loader.ts` calls the `oit-bootstrap` endpoint. The backend reads the user's config file, aggregates their **Tier 2 (Provisioned)** assets, and returns a consolidated payload.
+- **Merging:** `AppState` merges the public, provisioned, and (eventually) custom data, rebuilding search indices to provide a seamless unified view.
+
+### Hybrid Rendering Strategy
+
+The app uses a hybrid approach combining **`lit-html`** for complex, reactive components and **manual DOM patching** for the stable application shell.
+
+#### 1. lit-html Components (`ui/components/`)
+
+Core UI modules (Protocol Table, Food Settings, Search Dropdowns, Warnings Sidebar) are implemented as declarative `lit-html` templates.
+
+- **Stability:** For the table, uses stable UUIDs (generated on step creation) as keys in the `repeat()` directive. This ensures that adding or removing rows doesn't cause unrelated inputs to lose focus or state.
+- **UX:** The **`activeSafe`** directive (`ui/directives/`) prevents disruptive cursor jumps during debounced re-renders. It only updates an input's value if the new state is mathematically different from the current user input, and enforces canonical formatting (e.g., "1.0") on blur.
+
+#### 2. Manual DOM Patching (`ui/renderers.ts`)
+
+The application shell (Tabs, Dosing Strategy toggles, Export buttons, and the Empty State) uses a lightweight manual patching strategy. Since these elements change infrequently or have simple structures, this avoids the overhead of a full framework for the top-level layout.
+
+### Event Delegation and Initialization
+
+- **Global Listeners:** Attached once to container elements (`#oit-tabs-list`, `.bottom-section`) via `initGlobalEvents` in `ui/events.ts`.
+- **Specific feature listeners (Search, Export)** are initialized in their respective modules (`initSearchEvents`, `initExportEvents`) called by `main.ts`
+- **Tab Bar Logic:** Tab switching/closing logic is centralized in `attachTabBarDelegation`.
+- **Component Listeners:** High-interactivity components (like the Table) use `lit-html`'s native `@event` bindings, which are automatically cleaned up and re-attached by the library.
+- **Debouncing:** Input events are synchronized immediately to state, but the **Validation Engine** (in `main.ts`) is debounced by 250ms during 'input' contexts to keep the interface snappy.
+
+## Environment Configuration
+
+Deployment requires the following Netlify environment variables (and ideally within local .env):
+
+- `JWT_SECRET`: Secret key for signing Netlify session tokens.
+- `SUPABASE_URL`: The URL of your Supabase project.
+- `SUPABASE_SECRET_KEY`: The key for backend administration.
+- `SUPABASE_JWT_SECRET`: The JWT secret from Supabase.
+- `TOKEN_EXPIRY_HOURS`: Session duration (default 24).
+- `TURNSTILE_SECRET`: Cloudflare Turnstile secret for login verification.
+
+## Roadmap to v1.0.0
+
+### Stabilized Food interface
+
+- Include a 'CAPSULE' food type to account for pharmacy prescribed capsules. These do not have any weights or calculations to measure and must therefore be exempted from _some_ aspects of the validator engine. DONE.
+- Inclusion of relevant metadata (ID, source URL, keywords). DONE.
+- "Chain of Custody" protection: editing curated foods automatically converts them to USER source and strips sensitive metadata. DONE.
+
+### Branded Food Database
+
+- Creation of maintainable database of common branded foods used in OIT. DONE.
+- Implementation of "Formulation Drift" detection to alert users when a loaded protocol uses an outdated version of a branded food. DONE.
+- Automatic validation and periodic checks to update out-of-date foods. DONE.
+
+### Safety and Core Logic Validation
+
+- The logic in `calculator.ts` and `protocol.ts` (dose calculations, dilution determination) must be **stable**. At present time there are no obvious bugs, but requires thorough user testing with multiple testers.
+- Will consider feature where a range of possible measurements is provided (ie to be within X% of the target mg). May not be worth it UX wise - will need to think about it.
+- `validator.ts` must be robust and comprehensive as possible. Current warnings should be reviewed and other possible warnings should be brainstormed and implemented if valid.
+
+### Data Integrity and "Rough" Assets
+
+- Ensure bounds in `data_integrity.test.ts` are comprehensive (e.g., ensure no food has 0g protein unless intended, check for duplicates).
+
+### Data Persistence & Multi-Tenancy (3-Tier System)
+
+- **Tier 1 (Public) & Tier 2 (Provisioned):** DONE. Signed-in users can load private food databases and protocols provisioned via the private GitHub repository.
+- **Tier 3 (Custom User Assets):** PLANNED.
+- This represents a major feature change (Supabase persistence) and will require thorough review.
+- Will need to ensure stable and secure user authentication system that also is convenient.
+- Need to stabilize spec of how users will save and edit these custom foods/protocols directly through the UI.
+
+### Development of export content / format
+
+- Refine and stabilize format of the protocol PDF
+- Include an OIT consent package in the PDF - ? include physician attestation on it as well? Publicly available consent forms are published already which can be used.
+
+### Testing, QA
+
+- **Unit Test Coverage:** Mainly want high coverage for `core/` files. Some edge cases:
+  - Transitioning foods with vastly different protein concentrations.
+  - Switching from Solid to Liquid mid-protocol.
+  - Floating point precision (round-trip verification).
+- **User Testing:** Stress testing by non-developers to try and generate nonsensical protocols or any bugs. Making sure the UI is intuitive and there are no further breaking features to implement.
+- **Mobile Testing:** while this is intended for desktop and will not look good on a small mobile screen, it should work as expected on mobile in a pinch. Or a large tablet.
+
+---
+
+# OIT Calculator Overview and Rationale (Non-Technical)
+
+Oral Immunotherapy (OIT) is a treatment for IgE-mediated food allergies that involves gradually introducing increasing amounts of allergen to desensitize the patient. Implementing effective OIT protocols for at-home use by patients and their families requires careful planning; however, existing tooling for generating OIT protocols are sparse and do not offer sufficient flexibility for the diversity of protocol phenotypes seen in clinical practice.
+
+This open-source tool aims to addresses these challenges by providing a robust and flexible platform to generate safe and customizable OIT protocols. It aims to simplify protocol creation, reduce manual errors, and support clinicians and patients with clear, exportable, and verifiable plans.
+
+**Key Capabilities:**
+
+- **Customizable Dose Progression:** Generate OIT protocols with configurable dose progressions, with sensible initial defaults based on existing published literature.
+- **Diverse Food Support:** Handle both solid and liquid foods, performing automatic dilution calculations where necessary.
+- **Food Transitioning:** Support transitions from a primary food (Food A) to a secondary food (Food B) at a customizable threshold.
+- **Interactive Protocol Tables:** Fully editable tables for protocol steps, food characteristics, and dilution strategies.
+- **Real-time Validation:** Immediate, colour-coded warnings for potential safety or practicality concerns during protocol creation.
+- **Export Options:** ASCII export to clipboard and PDF export of plan for patients.
+
+## 1. The problem
+
+### 1.1 There is substantial variability in OIT implementation
+
+OIT protocols involve a series of increasing allergen doses over time. The specific progression of protein targets, food form (e.g., powder, whole food, liquid), dilution methods, and total steps can vary significantly between clinicians, even within a single food. This heterogeneity makes standardized protocol generation difficult: while the calculations are easy, there are many steps and repetitions: manual methods are time-consuming and are more prone to human error.
+
+From personal experience:
+
+- OIT is done many different ways
+- Current approaches do not handle this complexity and diversity well enough to provide an efficient way to individualize protocols easily for patients and providers
+- Manual calculations are easy but very time consuming, and there are many variables, heuristics, and assumptions to keep in mind that don't appear in calculations:
+
+  > What is a practical dose I should choose for a step?
+  > For dilutions, what values are practical to measure and deliver? How consistent should I make them?
+  > What are the limits of my instrument resolution?
+
+- Because there are sometimes many possible ways to 'correctly' create a valid OIT step, it requires the tool to be opinionated, select sensible default solutions, and present them in a neat, _easily editable_ way
+
+### 1.2 Underlying Assumptions and Defaults
+
+The calculator operates based on a set of clinical and practical assumptions to ensure generated protocols are both safe and measurable in a home setting:
+
+- **Dosing Strategies:** Two protein dose progression strategies are provided as starting points: standard, and slow. These can be adjusted by the user. The standard progression comes directly from published papers.
+  - **Standard** (11 steps): [1, 2.5, 5, 10, 20, 40, 80, 120, 160, 240, 300] mg
+  - **Slow** (19 steps): [0.5, 1, 1.5, 2.5, 5, 10, 20, 30, 40, 60, 80, 100, 120, 140, 160, 190, 220, 260, 300] mg
+- **OIT Phenotypes:** We assume four main OIT implementation types based on this developer's observations:
+
+  1. _Food A with initial dilutions_, transitioning to direct dosing once the weight of undiluted food is easily measurable. By default, that threshold is set at 0.2 grams or 0.2 ml.
+
+  2. _Food A with dilutions maintained throughout the protocol._
+
+  3. _Food A with no dilutions_. Usually not feasible especially with low dose steps; can be done if compounded by pharmacy but not widely available.
+
+  4. _Transition from Food A to Food B_, where Food A can follow any of the above dilution strategies. Food B is assumed to always be given directly without dilution. Food B is switched to once the weight of undiluted food is easily measurable: by default, that threshold is 0.2 grams or 0.2 ml.
+
+- **Dilution Mechanics:**
+  - For solid foods diluted in liquid, the volume contribution of the solid is considered negligible if its weight-to-volume ratio is below 5%. This threshold is arbitrary. For example: if 1 ml of a solution of 0.2g of peanut powder in 40ml of liquid is given, we assume that only 0.2g * 1/40 = 0.005g is actually ingested.
+    - If this assumption is not met, it can lead to miscalculation of delivered protein content. A mixture made with 5g of peanut powder mixed with 5ml of water is a paste, with a final volume that is hard to determine. _It would be extremely difficult to know with certainty the protein content in 1ml of that slurry_.
+  - For liquid foods, the volume contribution of the food is considered non-negligible in calculations.
+  - Dilution calculations prioritize practical patient measurements (e.g., minimum measurable mass/volume by standard scales/syringes - see below). They also aim to make at least 3 servings of daily doses for ease of use.
+- **Measurement resolution:** We assume default precision settings for scales (0.01g resolution) and syringes (0.1ml resolution). However, we also assume the practical minimal measurement is often HIGHER than the actual tool resolution:
+  - **Practical minimum measurements:** We assume the minimum measurable mass and volume are 0.2g and 0.2ml, respectively. This is arbitrary but comes from personal experience.
+- **Validation:** Because of the freedom provided to the user to edit a protocol, unintended side-effects inevitably can arise despite best efforts to programmatically limit 'unreachable' or 'unrealistic' scenarios. Protocols are therefore continuously validated against a set of rules (critical "red" warnings and cautionary "yellow" warnings) to highlight potential issues _without blocking_ the user's workflow. Detailed validation rules are available [here](@/tools/resources/oit_calculator_validation.md). These validation rules **ARE NOT EXHAUSTIVE** and it is stressed that the tool user still has to self-verify the outputs.
+- **Pre-defined Foods:** The tool utilizes food protein data from Health Canada's Canadian Nutrient File (2015). If an actual Nutrition Facts label is available, it should ALWAYS be used for accuracy. The original CNF 2015 dataset does not specify what is a solid versus a liquid, and _that characteristic has been added in with an error-prone method_. An assumption is made that for liquids, 100g is approximately equivalent to 100ml for protein concentration purposes; however, users should verify this in practice.
+- **Pre-defined protocols:** existing protocols with real-world use can be added on the backend by the developer and be available for search. These protocols are loaded 'as-is', but can still be edited by the user after.
+
+### 1.3 User Workflow
+
+1. **Select Food A or Pre-existing Protocol:** Begin by searching for a primary food (Food A) or loading a pre-existing protocol template. Users can also define custom foods.
+2. **Customize Protocol:** Adjust Food A settings (name, protein concentration, form, dilution strategy, threshold), select a dosing strategy (Standard, Slow), and modify individual steps. Optionally, add a transition Food B, whose settings (name, protein concentration, form, threshold) can also be customized. A custom note can also be added.
+3. **Review and Refine:** The tool displays real-time warnings (red for critical, yellow for caution) and can edit the protocol as required to fix these.
+4. **Export:** Once satisfied, export the protocol in ASCII format or as a PDF for patient handout.

@@ -1,24 +1,18 @@
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "lib": [
-      "ES2017",
-      "DOM"
-    ],
-    "module": "ES2020",
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "rootDir": "./static/ts",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": false,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
-  },
-  "include": [
-    "static/ts/**/*"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+	"compilerOptions": {
+		"types": ["vitest/importMeta", "vite/client", "node"],
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"verbatimModuleSyntax": true, // for Esbuild compatibility
+		"rootDir": "./_ts",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true
+	},
+	"include": ["_ts/**/*"],
+	"exclude": ["node_modules"]
 }

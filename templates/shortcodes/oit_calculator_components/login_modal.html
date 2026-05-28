@@ -1,0 +1,24 @@
+<div id="oit-login-modal" class="oit-modal-overlay" style="display: none;">
+	<div class="oit-modal-content oit-login-content">
+		<h2>Custom Access</h2>
+		<p class="login-instruction">Sign in to securely load your custom protocols, foods, and plan multi-food OIT.</p>
+		<form id="oit-login-form">
+			<div class="oit-form-group">
+				<label for="login-username">Username</label>
+				<input type="text" id="login-username" class="search-input" required autocomplete="username" placeholder="Enter username">
+			</div>
+			<div class="oit-form-group">
+				<label for="login-password">Password</label>
+				<input type="password" id="login-password" class="search-input" required autocomplete="current-password" placeholder="Enter password">
+			</div>
+			<div id="oit-login-error" class="oit-error-message"></div>
+			<div class="oit-form-group">
+				<div id="turnstile-widget"></div>
+			</div>
+			<div class="oit-modal-buttons">
+				<button type="button" id="btn-login-cancel" class="btn-secondary">Cancel</button>
+				<button type="submit" class="btn-export">Login</button>
+			</div>
+		</form>
+	</div>
+</div>

@@ -1,0 +1,43 @@
+[
+	{
+		"comment": "Invalid: Missing name",
+		"gramsInServing": 10,
+		"servingSize": 100,
+		"type": "SOLID",
+		"source": "GENERIC"
+	},
+	{
+		"comment": "Invalid: Physics - Protein > Serving Size",
+		"name": "Impossible Food",
+		"gramsInServing": 110,
+		"servingSize": 100,
+		"type": "SOLID",
+		"source": "GENERIC"
+	},
+	{
+		"comment": "Invalid: BRAND source missing id and source_url",
+		"name": "Bad Brand Food",
+		"gramsInServing": 5,
+		"servingSize": 10,
+		"type": "SOLID",
+		"source": "BRAND"
+	},
+	{
+		"comment": "Invalid: Protein <= 0",
+		"name": "Zero Protein Food",
+		"gramsInServing": 0,
+		"servingSize": 100,
+		"type": "SOLID",
+		"source": "GENERIC"
+	},
+	{
+		"comment": "Invalid: Invalid URL",
+		"name": "Bad URL Food",
+		"gramsInServing": 5,
+		"servingSize": 10,
+		"type": "SOLID",
+		"source": "BRAND",
+		"id": "bad-url-1",
+		"source_url": "not-a-url"
+	}
+]

@@ -1,0 +1,42 @@
+<!-- Clickwrap Modal -->
+<div id="oit-clickwrap-modal" class="oit-modal-overlay" style="display: none;">
+	<div class="oit-modal-content">
+		<h2>Provider Attestation</h2>
+		<p><i>This tool is strictly for use by licensed healthcare professionals. It does not replace professional medical advice.</i>
+		The generated PDF is a draft and
+		<b>must be reviewed and approved by a qualified healthcare professional before use</b>. To generate the PDF, you must confirm the following:</p>
+		<div class="oit-modal-checkbox-container">
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-0">
+				<b>I have reviewed the
+					<a href="{{ get_url(path='@/tools/resources/oit_calculator_terms.md') }}" target="_blank" rel="noopener noreferrer">Terms of Use</a>.</b>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-1">
+				<span><b>I certify that I am a licensed physician or a healthcare professional acting under the direct supervision of a licensed physician.</b>
+				I understand that
+				<i>OIT carries a risk of life-threatening anaphylaxis and other harms</i>
+				and that attempting these protocols without emergency equipment and medical oversight is dangerous. I understand that using this tool without professional medical credentials or using it to self-treat without the supervision of a qualified healthcare professional is a violation of the Terms of Use.</span>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-2">
+				<span><b>I acknowledge this tool is a calculation and documentation aid only.</b>
+				It provides mathematical support for dosing schedules, but does not exercise clinical judgment or detect all input or output errors. I assume full responsibility for assessing the patient as an appropriate candidate for OIT, verifying all calculations, and reviewing any associated patient educational material before clinical use.</span>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-3">
+				<span><b>I have verified the protein content(s) on the specific food nutrition label(s) matches the values used in this protocol.</b>
+				Searchable foods are estimates, and manufacturers can change formulations. It is my responsibility to ensure the protein content is accurate.</span>
+			</label>
+			<label>
+				<input type="checkbox" id="clickwrap-checkbox-4">
+				<span><b>I understand this produces a draft document.</b>
+				I must physically review its contents.</span>
+			</label>
+		</div>
+		<div class="oit-modal-buttons">
+			<button id="clickwrap-cancel-btn" class="btn-secondary">Cancel</button>
+			<button id="clickwrap-generate-btn" class="btn-export" disabled>Generate PDF</button>
+		</div>
+	</div>
+</div>
