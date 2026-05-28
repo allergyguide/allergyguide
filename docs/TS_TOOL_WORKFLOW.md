@@ -7,6 +7,7 @@ For complex tools (like the OIT Calculator) and interactive components, we use *
 ```text
 .
 ├── _ts/                       # Source TypeScript
+│   ├── tools_versioning.json  # Configuration: Maps tool names to versions
 │   ├── simple_script.ts       # Standalone script example
 │   └── oit_calculator/        # Complex Project 
 │       ├── main.ts            # Entry point 
@@ -15,11 +16,11 @@ For complex tools (like the OIT Calculator) and interactive components, we use *
 ├── static/
 │   └── js/                    # Output (built files)
 │       ├── simple_script.1.0.0-a1b2c3d.js
-│       ├── oit_calculator.0.8.0-a1b2c3d.js
+│       ├── oit_calculator.0.8.0-a1213b2c.js
 │       ├── tools_versioning.json # Generated map for Zola/Shortcodes
 │       └── chunks/            # Shared code (e.g. libraries)
 │
-└── tools_versioning.json      # Configuration: Maps tool names to versions
+└── ...
 ```
 
 ## How to Add a New Tool
@@ -34,7 +35,7 @@ Create a folder `_ts/my_tool/` and ensure it has a `main.ts` file as the entry p
 
 ### 2. Register the Tool
 
-Open `tools_versioning.json` in the root directory and add your tool with a version number. The key must match your filename or folder name.
+Open `_ts/tools_versioning.json` and add your tool with a version number. The key must match your filename or folder name.
 
 ```json
 {
@@ -61,7 +62,7 @@ In your shortcode or HTML template, dynamically load the hashed filename:
 
 Run `npm run serve`. This will:
 
-1. Detect the new entry in `tools_versioning.json`.
+1. Detect the new entry in `_ts/tools_versioning.json`.
 2. Compile the TS to `static/js/my_new_tool.{version}-{hash}.js`.
 3. Update `static/js/tools_versioning.json` with the final hashed filename.
 4. Start the Zola server using `netlify dev`.

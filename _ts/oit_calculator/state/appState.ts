@@ -9,12 +9,16 @@ import type { AuthListener, FoodData, ProtocolData } from "../types";
 type PreparedItem<T> = T & { prepared: Fuzzysort.Prepared };
 
 export class AppState {
-	// raw data loaded
-	public foodsDatabase: FoodData[] = [];
-	public protocolsDatabase: ProtocolData[] = [];
-	// Indices used by UI
+	// Raw data storage
+	private publicFoods: FoodData[] = [];
+	private publicProtocols: ProtocolData[] = [];
+	private provisionedFoods: FoodData[] = [];
+	private provisionedProtocols: ProtocolData[] = [];
+
+	// Derived indices used by UI
 	public foodsIndex: PreparedItem<FoodData>[] = [];
 	public protocolsIndex: PreparedItem<ProtocolData>[] = [];
+	public foodsById = new Map<string, FoodData>(); // used for O(1) lookup by ID for foods
 
 	// Default PDF order
 	// "protocol" is the keyword for the generated table
@@ -34,8 +38,8 @@ export class AppState {
 		this.warningsPageURL = warningsUrl;
 
 		// Initialize with CNF data + sample protocol
-		this.foodsDatabase = [...publicData.foods];
-		this.protocolsDatabase = [...publicData.protocols];
+		this.publicFoods = [...publicData.foods];
+		this.publicProtocols = [...publicData.protocols];
 
 		this.rebuildIndices();
 	}
@@ -77,16 +81,8 @@ export class AppState {
 		provisioned_protocols: ProtocolData[] | null,
 		handoutOrder: string[] | null,
 	) {
-		// Merge Foods (Public + Custom)
-		// TODO! ?duplicate check
-		this.foodsDatabase = provisioned_foods
-			? [...this.foodsDatabase, ...provisioned_foods]
-			: this.foodsDatabase;
-
-		// Set Protocols (Assuming protocols are entirely private/secure)
-		this.protocolsDatabase = provisioned_protocols
-			? provisioned_protocols
-			: this.protocolsDatabase;
+		this.provisionedFoods = provisioned_foods || [];
+		this.provisionedProtocols = provisioned_protocols || [];
 
 		// set handouts order
 		this.pdfHandouts = handoutOrder ? handoutOrder : this.pdfHandouts;
@@ -95,19 +91,45 @@ export class AppState {
 		this.rebuildIndices();
 	}
 
+	/*
+	 * Rebuilds the search indices for foods and protocols.
+	 * Creates a prepared search index for each food and protocol, using their name and keywords.
+	 * Foods available for the UI are those that are active (ie not disabled).
+	 */
 	private rebuildIndices() {
-		this.foodsIndex = this.foodsDatabase.map((f) => ({
-			...f,
-			prepared: fuzzysort.prepare(f.name),
-		}));
+		const allFoods = [...this.publicFoods, ...this.provisionedFoods];
+		const allProtocols = [
+			...this.publicProtocols,
+			...this.provisionedProtocols,
+		];
 
-		this.protocolsIndex = this.protocolsDatabase.map((p) => ({
+		this.foodsIndex = allFoods
+			.filter((f) => !("is_active" in f) || f.is_active !== false)
+			.map((f) => {
+				// Surrogate key for searching: name + keywords
+				const keywordStr = Array.isArray(f.keywords)
+					? f.keywords.join(" ")
+					: "";
+				const surrogate = `${f.name} ${keywordStr}`.trim();
+				return {
+					...f,
+					prepared: fuzzysort.prepare(surrogate),
+				};
+			});
+
+		// clear and regenerate foodsById
+		this.foodsById.clear();
+		allFoods.forEach((f) => {
+			if ("id" in f && f.id) this.foodsById.set(f.id, f);
+		});
+
+		this.protocolsIndex = allProtocols.map((p) => ({
 			...p,
 			prepared: fuzzysort.prepare(p.name),
 		}));
 
 		console.log(
-			`Indices rebuilt: ${this.foodsDatabase.length} foods, ${this.protocolsDatabase.length} protocols`,
+			`Indices rebuilt: ${allFoods.length} foods, ${allProtocols.length} protocols`,
 		);
 	}
 }

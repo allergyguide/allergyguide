@@ -5,10 +5,9 @@
  * Does rely on glue from actions.ts
  */
 import { nothing, render } from "lit-html";
-import { SEARCH_DISPLAY_LIMIT } from "../constants";
-import { performSearch } from "../core/search";
+import { performSearch, type StructuredSearchResults } from "../core/search";
 import type { AppState } from "../state/appState";
-import type { FoodData, ProtocolData, SearchResult } from "../types";
+import type { FoodData, ProtocolData } from "../types";
 import {
 	selectCustomFood,
 	selectFoodA,
@@ -20,7 +19,7 @@ import { SearchDropdown } from "./components/SearchDropdown";
 // State for dropdown navigation
 let activeIndex: number = -1;
 let currentDropdownInputId: string = "";
-let currentResults: SearchResult[] = [];
+let currentResults: StructuredSearchResults = { protocols: [], foods: [] };
 let currentQuery: string = "";
 let currentCallbacks: SearchCallbacks | null = null;
 let searchDebounceTimer: number | null = null;
@@ -156,13 +155,13 @@ export function resetSearch(): void {
  * Uses lit-html to render into the dedicated mount point
  *
  * @param inputId - DOM ID of the input element (e.g., "food-a-search").
- * @param results - Array of SearchResult
+ * @param results - StructuredSearchResults containing protocols and foods
  * @param query - current text value of the input, used for the "Custom" entry
  * @param callbacks - interface containing methods to handle selection
  */
 export function showSearchDropdown(
 	inputId: string,
-	results: SearchResult[],
+	results: StructuredSearchResults,
 	query: string,
 	callbacks: SearchCallbacks,
 ): void {
@@ -176,14 +175,19 @@ export function showSearchDropdown(
 	currentQuery = query;
 	currentCallbacks = callbacks;
 
-	if (results.length === 0 && !query.trim()) {
+	const hasResults = results.protocols.length > 0 || results.foods.length > 0;
+
+	if (!hasResults && !query.trim()) {
 		render(nothing, mount);
 		return;
 	}
 
+	// Flatten results for rendering (Protocols first, then Foods)
+	const flattened = [...results.protocols, ...results.foods];
+
 	// there's stuff, render
 	render(
-		SearchDropdown(inputId, results, query, activeIndex, callbacks),
+		SearchDropdown(inputId, flattened, query, activeIndex, callbacks),
 		mount,
 	);
 
@@ -223,7 +227,7 @@ export function hideSearchDropdown(inputId: string): void {
 		// reset everything
 		activeIndex = -1;
 		currentDropdownInputId = "";
-		currentResults = [];
+		currentResults = { protocols: [], foods: [] };
 		currentQuery = "";
 	}
 }
@@ -234,8 +238,8 @@ export function hideSearchDropdown(inputId: string): void {
 export function navigateDropdown(direction: "up" | "down"): void {
 	if (!currentDropdownInputId || !currentCallbacks) return;
 
-	const results = currentResults.slice(0, SEARCH_DISPLAY_LIMIT);
-	const totalItems = results.length + 1; // +1 for Custom Food
+	const flattened = [...currentResults.protocols, ...currentResults.foods];
+	const totalItems = flattened.length + 1; // +1 for Custom Food
 	if (totalItems === 0) return;
 
 	// Update index
@@ -265,17 +269,17 @@ export function navigateDropdown(direction: "up" | "down"): void {
 export function selectHighlightedDropdownItem(): void {
 	if (!currentDropdownInputId || activeIndex < 0 || !currentCallbacks) return;
 
-	const results = currentResults.slice(0, SEARCH_DISPLAY_LIMIT);
+	const flattened = [...currentResults.protocols, ...currentResults.foods];
 
-	if (activeIndex === results.length) {
+	if (activeIndex === flattened.length) {
 		// Custom Food is now at the end (Index N)
 		currentCallbacks.onSelectCustom(
 			currentQuery || "New Food",
 			currentDropdownInputId,
 		);
-	} else if (activeIndex < results.length) {
+	} else if (activeIndex < flattened.length) {
 		// it's a food or protocol from search
-		const result = results[activeIndex];
+		const result = flattened[activeIndex];
 		if (result.type === "protocol") {
 			currentCallbacks.onSelectProtocol(result.data);
 		} else {

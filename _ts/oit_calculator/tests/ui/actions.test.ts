@@ -4,7 +4,7 @@ import { DEFAULT_CONFIG } from "../../constants";
 import { generateDefaultProtocol } from "../../core/calculator";
 import { addFoodBToProtocol, updateStepTargetMg } from "../../core/protocol";
 import { workspace } from "../../state/instances";
-import { type Food, FoodType } from "../../types";
+import { type Food, FoodType, SourceType } from "../../types";
 import { clearFoodB } from "../../ui/actions";
 
 // Helper to create food
@@ -13,6 +13,7 @@ const createFood = (name: string, type: FoodType = FoodType.SOLID): Food => ({
 	type,
 	gramsInServing: new Decimal(10),
 	servingSize: new Decimal(100),
+	source: SourceType.GENERIC,
 	getMgPerUnit() {
 		return this.gramsInServing.times(1000).dividedBy(this.servingSize); // 100 mg/unit
 	},

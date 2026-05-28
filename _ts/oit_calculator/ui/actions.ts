@@ -19,8 +19,14 @@ import type {
 	Step,
 	Unit,
 } from "../types";
-import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../types";
-import { generateUniqueId } from "../utils";
+import {
+	DosingStrategy,
+	FoodAStrategy,
+	FoodType,
+	Method,
+	SourceType,
+} from "../types";
+import { generateUniqueId, hydrateFoodData } from "../utils";
 
 /**
  * Select Food A from database entry and initialize a default protocol.
@@ -29,17 +35,8 @@ import { generateUniqueId } from "../utils";
  * @param foodData Entry from the foods database
  * @returns void
  */
-
 export function selectFoodA(foodData: FoodData): void {
-	const food: Food = {
-		name: foodData.name,
-		type: foodData.type,
-		gramsInServing: new Decimal(foodData.gramsInServing),
-		servingSize: new Decimal(foodData.servingSize),
-		getMgPerUnit: function () {
-			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-		},
-	};
+	const food: Food = hydrateFoodData(foodData);
 
 	const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
 	workspace
@@ -69,15 +66,7 @@ export function selectFoodB(foodData: FoodData): void {
 	const current = workspace.getActive().getProtocol();
 	if (!current) return;
 
-	const food: Food = {
-		name: foodData.name,
-		type: foodData.type,
-		gramsInServing: new Decimal(foodData.gramsInServing),
-		servingSize: new Decimal(foodData.servingSize),
-		getMgPerUnit: function () {
-			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-		},
-	};
+	const food: Food = hydrateFoodData(foodData);
 
 	const threshold = {
 		unit: food.type === FoodType.SOLID ? ("g" as Unit) : ("ml" as Unit),
@@ -112,8 +101,8 @@ export function selectCustomFood(name: string, inputId: string): void {
 		getMgPerUnit: function () {
 			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
 		},
+		source: SourceType.USER,
 	};
-
 	if (inputId === "food-a-search") {
 		const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
 		workspace
@@ -148,15 +137,7 @@ export function selectCustomFood(name: string, inputId: string): void {
  * @returns void
  */
 export function selectProtocol(protocolData: ProtocolData): void {
-	const foodA: Food = {
-		name: protocolData.food_a.name,
-		type: protocolData.food_a.type,
-		gramsInServing: new Decimal(protocolData.food_a.gramsInServing),
-		servingSize: new Decimal(protocolData.food_a.servingSize),
-		getMgPerUnit: function () {
-			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-		},
-	};
+	const foodA: Food = hydrateFoodData(protocolData.food_a);
 
 	const protocol: Protocol = {
 		dosingStrategy:
@@ -170,7 +151,6 @@ export function selectProtocol(protocolData: ProtocolData): void {
 		steps: [],
 		config: DEFAULT_CONFIG,
 	};
-
 	if (protocolData.custom_note) {
 		workspace.getActive().setCustomNote(protocolData.custom_note);
 	}
@@ -245,16 +225,7 @@ export function selectProtocol(protocolData: ProtocolData): void {
 
 	// Load Food B if present
 	if (protocolData.food_b) {
-		protocol.foodB = {
-			name: protocolData.food_b.name,
-			type: protocolData.food_b.type as FoodType,
-			gramsInServing: new Decimal(protocolData.food_b.gramsInServing),
-			servingSize: new Decimal(protocolData.food_b.servingSize),
-			getMgPerUnit: function () {
-				return this.gramsInServing.times(1000).dividedBy(this.servingSize);
-			},
-		};
-
+		protocol.foodB = hydrateFoodData(protocolData.food_b);
 		if (protocolData.food_b_threshold) {
 			protocol.foodBThreshold = {
 				unit: protocol.foodB.type === FoodType.SOLID ? "g" : "ml",

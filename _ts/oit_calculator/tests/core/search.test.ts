@@ -1,6 +1,7 @@
 import fuzzysort from "fuzzysort";
 import { describe, expect, it } from "vitest";
 import { performSearch } from "../../core/search";
+import { SourceType } from "../../types";
 
 describe("Core: Search", () => {
 	// Helper to prepare data
@@ -12,14 +13,14 @@ describe("Core: Search", () => {
 	};
 
 	const foods = [
-		{ Food: "Peanut", Type: "SOLID" },
-		{ Food: "Milk", Type: "LIQUID" },
-		{ Food: "Egg", Type: "SOLID" },
+		{ Food: "Peanut", Type: "SOLID", source: SourceType.GENERIC },
+		{ Food: "Milk", Type: "LIQUID", source: SourceType.GENERIC },
+		{ Food: "Egg", Type: "SOLID", source: SourceType.GENERIC },
 	];
 
 	const protocols = [
-		{ name: "Peanut Standard", food_a: { name: "Peanut" } },
-		{ name: "Milk Slow", food_a: { name: "Milk" } },
+		{ name: "Peanut Standard", food_a: { name: "Peanut", source: SourceType.GENERIC }, source: SourceType.GENERIC },
+		{ name: "Milk Slow", food_a: { name: "Milk", source: SourceType.GENERIC }, source: SourceType.GENERIC },
 	];
 
 	const preparedFoods = prepare(foods, "Food");
@@ -32,9 +33,9 @@ describe("Core: Search", () => {
 			preparedFoods,
 			preparedProtocols,
 		);
-		expect(results.length).toBeGreaterThan(0);
-		expect(results[0].type).toBe("food");
-		expect((results[0].data as any).Food).toBe("Peanut");
+		expect(results.foods.length).toBeGreaterThan(0);
+		expect(results.foods[0].type).toBe("food");
+		expect((results.foods[0].data as any).Food).toBe("Peanut");
 	});
 
 	it("should find protocols matching query", () => {
@@ -44,9 +45,9 @@ describe("Core: Search", () => {
 			preparedFoods,
 			preparedProtocols,
 		);
-		expect(results.length).toBeGreaterThan(0);
-		expect(results[0].type).toBe("protocol");
-		expect((results[0].data as any).name).toBe("Peanut Standard");
+		expect(results.protocols.length).toBeGreaterThan(0);
+		expect(results.protocols[0].type).toBe("protocol");
+		expect((results.protocols[0].data as any).name).toBe("Peanut Standard");
 	});
 
 	it("should combine results for protocol search type", () => {
@@ -58,10 +59,10 @@ describe("Core: Search", () => {
 			preparedProtocols,
 		);
 
-		const hasFood = results.some(
+		const hasFood = results.foods.some(
 			(r) => r.type === "food" && (r.data as any).Food === "Milk",
 		);
-		const hasProtocol = results.some(
+		const hasProtocol = results.protocols.some(
 			(r) => r.type === "protocol" && (r.data as any).name === "Milk Slow",
 		);
 
@@ -76,6 +77,7 @@ describe("Core: Search", () => {
 			preparedFoods,
 			preparedProtocols,
 		);
-		expect(results).toEqual([]);
+		expect(results.foods).toEqual([]);
+		expect(results.protocols).toEqual([]);
 	});
 });

@@ -1,9 +1,11 @@
+import Decimal from "decimal.js";
 import { html, nothing, render } from "lit-html";
 import { live } from "lit-html/directives/live.js";
+import { appState } from "../../state/instances";
 import type { ProtocolState } from "../../state/protocolState";
 import type { WorkspaceManager } from "../../state/workspaceManager";
-import { type Food, FoodAStrategy, FoodType } from "../../types";
-import { formatAmount } from "../../utils";
+import { type Food, FoodAStrategy, FoodType, SourceType } from "../../types";
+import { formatAmount, formatNumber, getMeasuringUnit } from "../../utils";
 import {
 	handleFoodANameChange,
 	handleFoodAProteinChange,
@@ -17,6 +19,42 @@ import {
 	handleFoodBThresholdChange,
 	handleFoodBTypeChange,
 } from "../actions/settingsActions";
+
+/**
+ * Helper to render source badges (BRAND, USER) and food metadata pills
+ */
+function renderBadge(food: Food, driftTooltip?: string) {
+	const driftIcon = driftTooltip
+		? html`<span class="info-tooltip drift-icon" data-tooltip="${driftTooltip}">ⓘ</span>`
+		: nothing;
+
+	switch (food.source) {
+		case SourceType.BRAND:
+			return html`
+        <div class="food-metadata-pill">
+          <a
+            href="${food.source_url}"
+            class="badge badge-brand"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Verify Nutrition Label"
+          >BRAND ↗</a>
+          ${driftIcon}
+        </div>
+      `;
+		case SourceType.USER:
+			return html`
+        <div class="food-metadata-pill">
+          <span class="badge badge-custom">CUSTOM</span>
+          ${driftIcon}
+        </div>
+      `;
+		default:
+			return driftTooltip
+				? html`<div class="food-metadata-pill">${driftIcon}</div>`
+				: nothing;
+	}
+}
 
 /**
  * Shared template for Food details (Name, Protein, Serving Size, Form).
@@ -44,33 +82,73 @@ const baseFoodForm = (
 	const isCapsule = food.type === FoodType.CAPSULE;
 	const unit = food.type === FoodType.SOLID ? "g" : "ml";
 
+	// DRIFT CHECK
+	let driftTooltip = "";
+	if (food.id) {
+		const masterFood = appState.foodsById.get(food.id);
+		if (masterFood) {
+			if ("is_active" in masterFood && masterFood.is_active === false) {
+				driftTooltip = `DEPRECATED FOOD: ${masterFood.name} is no longer maintained. Please switch.`;
+			} else {
+				const masterProtein = new Decimal(masterFood.gramsInServing);
+				const masterServing = new Decimal(masterFood.servingSize);
+
+				const proteinDiff = !masterProtein.equals(food.gramsInServing);
+				const servingDiff = !masterServing.equals(food.servingSize);
+				const nameDiff = masterFood.name.trim() !== food.name.trim();
+
+				if (proteinDiff || servingDiff || nameDiff) {
+					let formattedDate = "unknown";
+					if ("last_updated" in masterFood && masterFood.last_updated) {
+						formattedDate = new Date(
+							masterFood.last_updated,
+						).toLocaleDateString("en-CA", {
+							year: "numeric",
+							month: "short",
+							day: "numeric",
+						});
+					}
+					driftTooltip = `${masterFood.name} was updated on ${formattedDate}. Latest protein is: ${formatNumber(
+						masterProtein,
+						1,
+					)} g / ${masterFood.servingSize} ${getMeasuringUnit(
+						masterFood as unknown as Food,
+					)}.`;
+				}
+			}
+		}
+	}
+
 	return html`
-    <input 
-      type="text" 
-      class="food-name-input" 
-      id="${idPrefix}-name" 
-      .value="${food.name}"
-      @input="${(e: Event) => handlers.onName(state, (e.target as HTMLInputElement).value)}"
-    />
-    <div class="setting-row">
+<div class="food-name-container">
+<input
+  type="text"
+  class="food-name-input"
+  id="${idPrefix}-name"
+  .value="${food.name}"
+  @input="${(e: Event) => handlers.onName(state, (e.target as HTMLInputElement).value)}"
+/>
+${renderBadge(food, driftTooltip)}
+</div>
+<div class="setting-row">
       <label>Protein:</label>
       <div class="input-unit-group">
-        <input 
-          type="number" 
-          min="0" 
-          id="${idPrefix}-protein" 
-          .value="${live(food.gramsInServing.toFixed(1))}" 
-          step="0.1" 
+        <input
+          type="number"
+          min="0"
+          id="${idPrefix}-protein"
+          .value="${live(food.gramsInServing.toFixed(1))}"
+          step="0.1"
           ?disabled="${isCapsule}"
           @change="${(e: Event) => handlers.onProtein(state, (e.target as HTMLInputElement).value)}"
         />
         <span>g per</span>
-        <input 
-          type="number" 
-          min="0" 
-          id="${idPrefix}-serving-size" 
-          .value="${live(food.servingSize.toFixed(1))}" 
-          step="0.1" 
+        <input
+          type="number"
+          min="0"
+          id="${idPrefix}-serving-size"
+          .value="${live(food.servingSize.toFixed(1))}"
+          step="0.1"
           ?disabled="${isCapsule}"
           @change="${(e: Event) => handlers.onServing(state, (e.target as HTMLInputElement).value)}"
         />
@@ -78,24 +156,24 @@ const baseFoodForm = (
       </div>
     </div>
     <div class="input-warning-text">
-      Manufacturers can change formulations. Always verify these values match the Nutrition Facts label.
+      Always verify with the Nutrition Facts label.
     </div>
     <div class="setting-row">
       <label>Form:</label>
       <div class="toggle-group">
-        <button 
-          class="toggle-btn ${food.type === FoodType.SOLID ? "active" : ""}" 
+        <button
+          class="toggle-btn ${food.type === FoodType.SOLID ? "active" : ""}"
           @click="${() => handlers.onType(state, FoodType.SOLID)}"
         >Solid</button>
-        <button 
-          class="toggle-btn ${food.type === FoodType.LIQUID ? "active" : ""}" 
+        <button
+          class="toggle-btn ${food.type === FoodType.LIQUID ? "active" : ""}"
           @click="${() => handlers.onType(state, FoodType.LIQUID)}"
         >Liquid</button>
         ${
 					options.allowCapsules
 						? html`
-          <button 
-            class="toggle-btn ${food.type === FoodType.CAPSULE ? "active" : ""}" 
+          <button
+            class="toggle-btn ${food.type === FoodType.CAPSULE ? "active" : ""}"
             @click="${() => handlers.onType(state, FoodType.CAPSULE)}"
           >Capsule</button>
         `
@@ -145,8 +223,8 @@ export function renderFoodASettings(
 				{ allowCapsules: true },
 			)}
 
-      <details 
-        class="oit-advanced-settings" 
+      <details
+        class="oit-advanced-settings"
         ?open="${activeState.isAdvancedSettingsOpen}"
         style="${isCapsule ? "display: none;" : "display: block;"}"
         @toggle="${(e: Event) => activeState.setAdvancedSettingsOpen((e.target as HTMLDetailsElement).open)}"
@@ -156,16 +234,16 @@ export function renderFoodASettings(
           <div class="setting-row">
             <label>Dilution strategy:</label>
             <div class="toggle-group">
-              <button 
-                class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL ? "active" : ""}" 
+              <button
+                class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_INITIAL ? "active" : ""}"
                 @click="${() => handleFoodAStrategyChange(activeState, FoodAStrategy.DILUTE_INITIAL)}"
               >Initial dilution</button>
-              <button 
-                class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL ? "active" : ""}" 
+              <button
+                class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_ALL ? "active" : ""}"
                 @click="${() => handleFoodAStrategyChange(activeState, FoodAStrategy.DILUTE_ALL)}"
               >Dilution throughout</button>
-              <button 
-                class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE ? "active" : ""}" 
+              <button
+                class="toggle-btn ${protocol.foodAStrategy === FoodAStrategy.DILUTE_NONE ? "active" : ""}"
                 @click="${() => handleFoodAStrategyChange(activeState, FoodAStrategy.DILUTE_NONE)}"
               >No dilutions</button>
             </div>
@@ -176,12 +254,12 @@ export function renderFoodASettings(
             <div class="setting-row threshold-setting">
               <label>Directly dose when neat amount ≥</label>
               <div class="input-unit-group">
-                <input 
-                  type="number" 
-                  id="food-a-threshold" 
-                  min="0" 
-                  .value="${live(formatAmount(protocol.diThreshold, unit))}" 
-                  step="0.1" 
+                <input
+                  type="number"
+                  id="food-a-threshold"
+                  min="0"
+                  .value="${live(formatAmount(protocol.diThreshold, unit))}"
+                  step="0.1"
                   @change="${(e: Event) => handleFoodAThresholdChange(activeState, (e.target as HTMLInputElement).value)}"
                 />
                 <span>${unit}</span>
@@ -242,12 +320,12 @@ export function renderFoodBSettings(
       <div class="setting-row threshold-setting">
         <label>Transition when daily amount ≥</label>
         <div class="input-unit-group">
-          <input 
-            type="number" 
-            id="food-b-threshold" 
-            min="0" 
-            .value="${live(formatAmount(protocol.foodBThreshold.amount, protocol.foodBThreshold.unit))}" 
-            step="0.1" 
+          <input
+            type="number"
+            id="food-b-threshold"
+            min="0"
+            .value="${live(formatAmount(protocol.foodBThreshold.amount, protocol.foodBThreshold.unit))}"
+            step="0.1"
             @change="${(e: Event) => handleFoodBThresholdChange(activeState, (e.target as HTMLInputElement).value)}"
           />
           <span>${protocol.foodBThreshold.unit}</span>

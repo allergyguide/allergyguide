@@ -9,12 +9,14 @@ import {
 	DosingStrategy,
 	type Food,
 	FoodAStrategy,
+	type FoodData,
 	FoodType,
 	Method,
 	type NumberLike,
 	type Protocol,
 	type ProtocolData,
 	type RowData,
+	SourceType,
 	type Unit,
 } from "./types";
 
@@ -116,10 +118,10 @@ export function formatAmount(
 /**
  * Get the measuring unit for a food by its form.
  *
- * @param food Food definition
+ * @param food Food that has to contain a `type` field of type `FoodType`
  * @returns "g" for SOLID; "ml" for LIQUID; "capsule" for CAPSULE
  */
-export function getMeasuringUnit(food: Food): Unit {
+export function getMeasuringUnit(food: { type: FoodType }): Unit {
 	if (food.type === FoodType.LIQUID) {
 		return "ml";
 	} else if (food.type === FoodType.CAPSULE) {
@@ -205,7 +207,21 @@ export function serializeProtocol(
 			name: protocol.foodA.name,
 			gramsInServing: protocol.foodA.gramsInServing.toNumber(),
 			servingSize: protocol.foodA.servingSize.toNumber(),
-		},
+			source: protocol.foodA.source,
+			...(protocol.foodA.id !== undefined && { id: protocol.foodA.id }),
+			...(protocol.foodA.source_url !== undefined && {
+				source_url: protocol.foodA.source_url,
+			}),
+			...(protocol.foodA.keywords !== undefined && {
+				keywords: protocol.foodA.keywords,
+			}),
+			...(protocol.foodA.last_updated !== undefined && {
+				last_updated: protocol.foodA.last_updated,
+			}),
+			...(protocol.foodA.is_active !== undefined && {
+				is_active: protocol.foodA.is_active,
+			}),
+		} as FoodData,
 		food_a_strategy: protocol.foodAStrategy,
 		di_threshold: protocol.diThreshold.toNumber(),
 		table: table,
@@ -219,7 +235,21 @@ export function serializeProtocol(
 			name: protocol.foodB.name,
 			gramsInServing: protocol.foodB.gramsInServing.toNumber(),
 			servingSize: protocol.foodB.servingSize.toNumber(),
-		};
+			source: protocol.foodB.source,
+			...(protocol.foodB.id !== undefined && { id: protocol.foodB.id }),
+			...(protocol.foodB.source_url !== undefined && {
+				source_url: protocol.foodB.source_url,
+			}),
+			...(protocol.foodB.keywords !== undefined && {
+				keywords: protocol.foodB.keywords,
+			}),
+			...(protocol.foodB.last_updated !== undefined && {
+				last_updated: protocol.foodB.last_updated,
+			}),
+			...(protocol.foodB.is_active !== undefined && {
+				is_active: protocol.foodB.is_active,
+			}),
+		} as FoodData;
 	}
 
 	if (protocol.foodBThreshold) {
@@ -302,14 +332,46 @@ export function generateUniqueId(): string {
 	});
 }
 
+/**
+ * Hydrates a FoodData object into a Food object.
+ *
+ * @param foodData The FoodData object to hydrate.
+ * @returns The hydrated Food object.
+ */
+export function hydrateFoodData(foodData: FoodData): Food {
+	const isCurated =
+		foodData.source === SourceType.BRAND ||
+		foodData.source === SourceType.PROVISIONED;
+	return {
+		name: foodData.name,
+		type: foodData.type,
+		gramsInServing: new Decimal(foodData.gramsInServing),
+		servingSize: new Decimal(foodData.servingSize),
+		getMgPerUnit: function () {
+			return this.gramsInServing.times(1000).dividedBy(this.servingSize);
+		},
+		source: foodData.source,
+		id:
+			isCurated || foodData.source === SourceType.USER
+				? foodData.id
+				: undefined,
+		source_url:
+			foodData.source === SourceType.BRAND ? foodData.source_url : undefined,
+		keywords: foodData.keywords,
+		last_updated: isCurated ? foodData.last_updated : undefined,
+		is_active: isCurated ? foodData.is_active : undefined,
+	};
+}
+
 export const SAMPLE_PROTOCOL: ProtocolData = {
 	name: "Almond milk to whole almonds",
 	dosing_strategy: DosingStrategy.STANDARD,
 	food_a: {
 		type: FoodType.LIQUID,
-		name: "Elmhurst Milked Almonds Unsweetened Beverage",
+		name: "Almond Milk",
 		gramsInServing: 5,
 		servingSize: 250,
+		source: SourceType.GENERIC,
 	},
 	food_a_strategy: FoodAStrategy.DILUTE_INITIAL,
 	di_threshold: 0.5,
@@ -318,6 +380,7 @@ export const SAMPLE_PROTOCOL: ProtocolData = {
 		name: "Almonds (dry roasted, unblanched)",
 		gramsInServing: 21,
 		servingSize: 100,
+		source: SourceType.GENERIC,
 	},
 	food_b_threshold: 0.4,
 	table: [

@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ProtocolState } from "../../state/protocolState";
-import { DosingStrategy, FoodAStrategy, FoodType } from "../../types";
+import { DosingStrategy, FoodAStrategy, FoodType, SourceType } from "../../types";
 
 describe("State: ProtocolState", () => {
 	let state: ProtocolState;
@@ -13,6 +13,7 @@ describe("State: ProtocolState", () => {
 			type: FoodType.SOLID,
 			gramsInServing: new Decimal(1),
 			servingSize: new Decimal(100),
+			source: SourceType.GENERIC,
 			getMgPerUnit: () => new Decimal(10),
 		},
 		foodAStrategy: FoodAStrategy.DILUTE_INITIAL,

@@ -67,7 +67,22 @@ export const handler: Handler = async (event): Promise<HandlerResponse> => {
 					}
 					try {
 						const content = await fs.readFile(fullPath, "utf-8");
-						return JSON.parse(content);
+						const parsed = JSON.parse(content);
+
+						// Check if the parsed JSON is an envelope { metadata: ..., data: [...] } in the case this is the brand_foods.json
+						// NOTE: THIS IS A POTENTIALLY BRITTLE HEURISTIC
+						if (
+							parsed &&
+							typeof parsed === "object" &&
+							!Array.isArray(parsed) &&
+							parsed.metadata &&
+							"schema_version" in parsed.metadata &&
+							Array.isArray(parsed.data)
+						) {
+							return parsed.data;
+						}
+
+						return parsed;
 					} catch (e) {
 						console.error(`Failed to load asset ${p} for ${username}:`, e);
 						return [];

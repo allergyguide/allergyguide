@@ -8,6 +8,7 @@ import { ENV_VARS } from "./build-config.mjs";
 import { fetchFromGithubBinary, getPathsUsingGitTree } from "./build-utils.mjs";
 
 const SECURE_ASSETS_DIR = "secure_assets";
+const BRAND_FOODS_EXPECTED_SCHEMA_VERSION = 0;
 
 /**
  * Fetches secure assets from a private repo FOLDER MAIN BRANCH.
@@ -135,6 +136,26 @@ async function fetchSecureFile(
 
 		const content = await fetchFromGithubBinary(token, repo, fullRemotePath);
 		const filename = path.basename(remotePath);
+
+		// SCHEMA VALIDATION for brand_foods.json
+		if (filename === "brand_foods.json") {
+			try {
+				const json = JSON.parse(content.toString());
+				const version = json.metadata?.schema_version;
+				if (version !== BRAND_FOODS_EXPECTED_SCHEMA_VERSION) {
+					throw new Error(
+						`Schema Version Mismatch for ${filename}: Expected ${BRAND_FOODS_EXPECTED_SCHEMA_VERSION}, got ${version}`,
+					);
+				}
+				console.log(`Validated ${filename} (Schema v${version})`);
+			} catch (e: unknown) {
+				console.error(
+					`Validation failed for ${filename}:`,
+					(e as Error).message,
+				);
+				process.exit(1);
+			}
+		}
 
 		// account if localSubdir exists
 		const localOutputPath = localSubdir

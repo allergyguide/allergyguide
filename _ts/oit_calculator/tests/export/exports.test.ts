@@ -10,7 +10,7 @@ vi.mock("../../main", () => ({
 import Decimal from "decimal.js";
 import { generateAsciiContent } from "../../export/exports";
 import type { Protocol, ProtocolExportData } from "../../types";
-import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../../types";
+import { DosingStrategy, FoodAStrategy, FoodType, Method, SourceType } from "../../types";
 
 // Mock build-time globals
 beforeAll(() => {
@@ -26,6 +26,7 @@ const createMockProtocol = (_name: string, foodAName: string): Protocol => ({
 		type: FoodType.SOLID,
 		gramsInServing: new Decimal(10),
 		servingSize: new Decimal(100),
+		source: SourceType.GENERIC,
 		getMgPerUnit: () => new Decimal(100),
 	},
 	foodAStrategy: FoodAStrategy.DILUTE_INITIAL,
@@ -125,6 +126,7 @@ describe("Export: ASCII Generation", () => {
 			type: FoodType.LIQUID,
 			gramsInServing: new Decimal(3.3),
 			servingSize: new Decimal(100),
+			source: SourceType.GENERIC,
 			getMgPerUnit: () => new Decimal(33),
 		};
 		// Add a Food B step

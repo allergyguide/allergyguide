@@ -11,6 +11,16 @@ import { z } from "zod";
 // ============================================
 
 /**
+ * Origin source of food data
+ */
+export enum SourceType {
+	GENERIC = "GENERIC", // Public: built into the tool, accessible for all users by default.
+	BRAND = "BRAND", // Private: provisioned curated Branded Database, accessible only to authenticated users.
+	USER = "USER", // Private: User's own custom food, accessible only to authenticated users.
+	PROVISIONED = "PROVISIONED", // Private: provisioned foods that aren't branded, accessible only to authenticated users.
+}
+
+/**
  * Dosing plan presets for target protein steps.
  * STANDARD, SLOW, map to arrays in DOSING_STRATEGIES.
  */
@@ -104,6 +114,14 @@ export interface Food {
 	gramsInServing: Decimal;
 	servingSize: Decimal;
 	getMgPerUnit(): Decimal; // mg of protein per gram or ml of food. Canonical protein unit for calculations in the tool
+	source: SourceType;
+
+	// Metadata
+	id?: string;
+	source_url?: string;
+	keywords?: string[];
+	last_updated?: string;
+	is_active?: boolean;
 }
 
 /**
@@ -190,16 +208,52 @@ export interface Candidate {
 // JSON SCHEMAS / INTERFACES - expected structure of items in jsons loaded on init
 // ============================================
 
-/**
- * Food database record (as loaded from JSON containing with data from Canadian Nutrient File, Health Canada, 2015).
- * Raw values are UI-facing and will be converted to internal Decimal where needed later.
- */
-export const FoodDataSchema = z.strictObject({
-	name: z.string(), // name
-	gramsInServing: z.number(), // not all will be the mean: this applies mainly to CNF data, not custom foods
-	servingSize: z.number(), // 100g for CNF but otherwise for custom foods will be variable
+const BaseFoodData = z.strictObject({
+	name: z.string(),
 	type: z.enum(FoodType),
+	gramsInServing: z.number(),
+	servingSize: z.number(),
+	keywords: z.array(z.string()).optional(),
 });
+
+/**
+ * Food database record (as loaded from JSON)
+ * Discriminated union based on source to enforce metadata requirements
+ */
+export const FoodDataSchema = z.discriminatedUnion("source", [
+	// Generic Data (e.g. CNF)
+	BaseFoodData.extend({
+		source: z.literal(SourceType.GENERIC),
+	}),
+
+	// Custom User Data
+	// id optional; may have to r/a in setting of upcoming custom user food impl
+	BaseFoodData.extend({
+		source: z.literal(SourceType.USER),
+		id: z.string().optional(),
+		last_updated: z.string().optional(),
+	}),
+
+	// Curated Branded Database
+	// Branded foods MUST have an id, source_url, last_updated, and is_active
+	BaseFoodData.extend({
+		source: z.literal(SourceType.BRAND),
+		id: z.string(),
+		source_url: z.url(),
+		last_updated: z.string(),
+		is_active: z.boolean(),
+	}),
+
+	// Other Provisioned Assets
+	// Right now ID is mandatory; the others are optional but may be required in the future
+	BaseFoodData.extend({
+		source: z.literal(SourceType.PROVISIONED),
+		id: z.string(),
+		last_updated: z.string().optional(),
+		is_active: z.boolean().optional(),
+	}),
+]);
+
 export type FoodData = z.infer<typeof FoodDataSchema>;
 
 const BaseRow = z.strictObject({
@@ -232,31 +286,20 @@ export type RowData = z.infer<typeof RowDataSchema>;
 
 /**
  * Protocol template record (as loaded from JSON).
- * String fields representing numbers are parsed into Decimal during load.
+ * Unified schema that optionally includes metadata.
  */
 export const ProtocolDataSchema = z.strictObject({
 	name: z.string(),
 	dosing_strategy: z.enum(DosingStrategy),
-	food_a: z.strictObject({
-		type: z.enum(FoodType),
-		name: z.string(),
-		gramsInServing: z.number(),
-		servingSize: z.number(),
-	}),
+	food_a: FoodDataSchema,
 	food_a_strategy: z.enum(FoodAStrategy),
 	di_threshold: z.number(),
-	food_b: z
-		.strictObject({
-			type: z.enum(FoodType),
-			name: z.string(),
-			gramsInServing: z.number(),
-			servingSize: z.number(),
-		})
-		.optional(),
+	food_b: FoodDataSchema.optional(),
 	food_b_threshold: z.number().optional(),
 	table: z.array(RowDataSchema),
 	custom_note: z.string().optional(),
 });
+
 export type ProtocolData = z.infer<typeof ProtocolDataSchema>;
 
 // ============================================
@@ -291,6 +334,7 @@ export const MFoodSchema = z.strictObject({
 	t: z.number().int(), // 0=SOLID, 1=LIQUID, 2=CAPSULE
 	p: z.number(), // gramsInServing
 	s: z.number(), // servingSize
+	src: z.number().int(), // SourceType mapped integer
 });
 export type MFood = z.infer<typeof MFoodSchema>;
 
@@ -332,19 +376,6 @@ export const UserHistoryPayloadSchema = z.strictObject({
 });
 export type UserHistoryPayload = z.infer<typeof UserHistoryPayloadSchema>;
 
-/**
- * Result of a successful authentication attempt.
- */
-export interface AuthLoginResult {
-	/** Indicates if the authentication was successful. */
-	valid: boolean;
-	/** Unix timestamp (milliseconds) when the session expires. */
-	expiresAt: number;
-	username: string;
-	/** JWT token needed to access data */
-	dbToken: string;
-}
-
 // ============================================
 // READABLE INTERFACES (For Decoded Payload)
 // ============================================
@@ -359,6 +390,7 @@ export interface ReadableFood {
 	gramsInServing: number;
 	servingSize: number;
 	proteinConcentrationMgPerUnit: number;
+	source: string;
 }
 
 /**
@@ -446,6 +478,19 @@ export type TabListener = (tabs: Tab[], activeId: string) => void;
 // ============================================
 // API & LOADER INTERFACES
 // ============================================
+
+/**
+ * Result of a successful authentication attempt.
+ */
+export interface AuthLoginResult {
+	/** Indicates if the authentication was successful. */
+	valid: boolean;
+	/** Unix timestamp (milliseconds) when the session expires. */
+	expiresAt: number;
+	username: string;
+	/** JWT token needed to access data */
+	dbToken: string;
+}
 
 // Return type for public loads
 export interface PublicData {

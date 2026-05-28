@@ -7950,12 +7950,6 @@
 		"type": "SOLID"
 	},
 	{
-		"name": "Beans, hyacinth, raw",
-		"gramsInServing": 2.1,
-		"servingSize": 100,
-		"type": "SOLID"
-	},
-	{
 		"name": "Beans, hyacinth, boiled, drained",
 		"gramsInServing": 2.95,
 		"servingSize": 100,
@@ -13700,12 +13694,6 @@
 	{
 		"name": "Black-eyed peas (cowpeas, crowder, southern), common, mature seeds, canned with pork",
 		"gramsInServing": 2.74,
-		"servingSize": 100,
-		"type": "SOLID"
-	},
-	{
-		"name": "Beans, hyacinth, raw",
-		"gramsInServing": 23.9,
 		"servingSize": 100,
 		"type": "SOLID"
 	},

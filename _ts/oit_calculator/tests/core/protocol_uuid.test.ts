@@ -3,13 +3,14 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_CONFIG } from "../../constants";
 import { generateDefaultProtocol } from "../../core/calculator";
 import { addStepAfter } from "../../core/protocol";
-import { FoodType } from "../../types";
+import { FoodType, SourceType } from "../../types";
 
 const mockFood = {
 	name: "Peanut",
 	type: FoodType.SOLID,
 	gramsInServing: new Decimal(20),
 	servingSize: new Decimal(100),
+	source: SourceType.GENERIC,
 	getMgPerUnit: () => new Decimal(200),
 };
 

@@ -8,8 +8,7 @@
  */
 
 import { recalculateProtocol } from "../core/protocol";
-import { appState } from "../main";
-import { workspace } from "../state/instances";
+import { appState, workspace } from "../state/instances";
 import type { DosingStrategy } from "../types";
 import { clearFoodB } from "./actions";
 import { renderDebugResult } from "./renderers";

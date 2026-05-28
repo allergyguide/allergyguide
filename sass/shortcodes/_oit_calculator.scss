@@ -124,7 +124,7 @@
     display: flex;
     align-items: flex-end; // Align tabs to the bottom line
     gap: 4px; // Small gap between tabs
-    padding: 0 0.5rem; // Indent slightly
+    padding: 0 0.5rem; // Intent slightly
     overflow-x: auto;
     flex: 1 1 auto;
     min-width: 0; // Essential for allowing scroll within flex item
@@ -445,10 +445,38 @@
       padding-left: calc(1rem - 3px);
     }
 
-    .food-type {
+    .search-result-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+
+      .icon {
+        flex-shrink: 0;
+        opacity: 0.8;
+
+        &.icon-brand {
+          color: var(--oit-button-primary);
+        }
+
+        &.icon-user {
+          color: var(--oit-text-secondary);
+        }
+      }
+
+      .food-name {
+        font-weight: 450;
+        color: var(--oit-text);
+        font-size: 0.90rem;
+      }
+    }
+
+    .food-type,
+    .food-info {
       color: var(--oit-text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-style: italic;
+      width: 100%;
     }
 
     strong {
@@ -466,6 +494,73 @@
       &.highlighted {
         background-color: var(--oit-bg-hover);
       }
+    }
+  }
+
+  .food-name-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.5rem;
+
+    .food-name-input {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background-color: var(--oit-input-bg);
+      color: var(--oit-text);
+      border: 2px solid var(--oit-input-border);
+      border-radius: 6px;
+      transition: border-color 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: var(--oit-button-primary);
+      }
+    }
+
+    // Border-label pattern
+    .food-metadata-pill {
+      position: absolute;
+      top: -0.7rem; // Sits on top border
+      right: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      z-index: 5;
+
+      background-color: var(--oit-bg);
+      border: 1px solid var(--oit-border);
+      padding: 0.1rem 0.5rem;
+      border-radius: 50px; // Pill shape
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .badge {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: var(--oit-text-secondary);
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: all 0.2s;
+      background-color: transparent !important; // Reset background
+
+      &:hover {
+        color: var(--oit-button-primary);
+      }
+
+      &.badge-brand {
+        color: var(--oit-button-primary);
+      }
+    }
+
+    .drift-icon {
+      color: var(--oit-warning-yellow-text);
+      font-weight: 800;
+      cursor: help;
+      font-size: 0.8rem;
     }
   }
 
@@ -537,23 +632,6 @@
       summary::before {
         transform: rotate(90deg);
       }
-    }
-  }
-
-  .food-name-input {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    background-color: var(--oit-input-bg);
-    color: var(--oit-text);
-    border: 2px solid var(--oit-input-border);
-    border-radius: 6px;
-    transition: border-color 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: var(--oit-button-primary);
     }
   }
 

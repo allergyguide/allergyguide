@@ -9,7 +9,7 @@ import type { PDFDocument } from "pdf-lib";
 import { generateUserHistoryPayload } from "../core/minify";
 import { getFoodAStepCount } from "../core/protocol";
 import { loadSecureAsset } from "../data/api";
-import { appState } from "../main"; // We need access to the global appState
+import { appState } from "../state/instances"; // We need access to the global appState
 import type {
 	Food,
 	HistoryItem,

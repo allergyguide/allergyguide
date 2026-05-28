@@ -4,11 +4,41 @@ import {
 	toggleFoodType,
 	updateFoodBAndRecalculate,
 	updateFoodBThreshold,
-	updateFoodDetails,
 } from "../../core/protocol";
 import type { ProtocolState } from "../../state/protocolState";
-import type { FoodAStrategy, FoodType, Protocol } from "../../types";
+import {
+	type Food,
+	type FoodAStrategy,
+	type FoodType,
+	type Protocol,
+	SourceType,
+} from "../../types";
 import { parseSafeDecimal } from "../../utils";
+
+/**
+ * Strips metadata and flips source to USER if the food was previously any other source.
+ * @param food The food object to evaluate and potentially modify
+ * @returns A new food object with the chain of custody broken if necessary, or the original food
+ */
+function breakChainOfCustody(food: Food): Food {
+	if (food.source !== SourceType.USER) {
+		const {
+			id,
+			source_url,
+			keywords,
+			last_updated,
+			is_active,
+			getMgPerUnit,
+			...rest
+		} = food;
+		return {
+			...rest,
+			source: SourceType.USER,
+			getMgPerUnit,
+		};
+	}
+	return food;
+}
 
 // --- Food A Handlers ---
 
@@ -21,8 +51,16 @@ import { parseSafeDecimal } from "../../utils";
 export function handleFoodANameChange(state: ProtocolState, name: string) {
 	const current = state.getProtocol();
 	if (current) {
-		const updated = updateFoodDetails(current, "A", { name });
-		state.setProtocol(updated, `Renamed Food A`, { debounceHistory: true });
+		// Meaningful name change check (case-sensitive, trimmed)
+		const isMeaningfulChange = name.trim() !== current.foodA.name.trim();
+
+		let updatedFoodA = { ...current.foodA, name };
+		if (isMeaningfulChange) {
+			updatedFoodA = breakChainOfCustody(updatedFoodA);
+		}
+
+		const updated = { ...current, foodA: updatedFoodA };
+		state.setProtocol(updated, "Renamed Food A", { debounceHistory: true });
 	}
 }
 
@@ -45,11 +83,15 @@ export function handleFoodAProteinChange(
 	const servingSize = current.foodA.servingSize;
 	const clamped = val.greaterThan(servingSize) ? servingSize : val;
 
-	const updated = updateFoodDetails(current, "A", { gramsInServing: clamped });
-	state.setProtocol(
-		recalculateStepMethods(updated),
-		`Food A Protein changed to: ${clamped}`,
-	);
+	const isMeaningfulChange = !clamped.equals(current.foodA.gramsInServing);
+
+	let updatedFoodA = { ...current.foodA, gramsInServing: clamped };
+	if (isMeaningfulChange) {
+		updatedFoodA = breakChainOfCustody(updatedFoodA);
+	}
+
+	const updated = recalculateStepMethods({ ...current, foodA: updatedFoodA });
+	state.setProtocol(updated, `Food A Protein changed to: ${clamped}`);
 }
 
 /**
@@ -75,11 +117,15 @@ export function handleFoodAServingSizeChange(
 	if (finalVal.lessThanOrEqualTo(0)) finalVal = new Decimal(1); // makes sure serving size can't be <=0, in case of protein content being 0
 	if (finalVal.greaterThan(1000)) finalVal = new Decimal(1000);
 
-	const updated = updateFoodDetails(current, "A", { servingSize: finalVal });
-	state.setProtocol(
-		recalculateStepMethods(updated),
-		`Food A Serving Size changed to: ${finalVal}`,
-	);
+	const isMeaningfulChange = !finalVal.equals(current.foodA.servingSize);
+
+	let updatedFoodA = { ...current.foodA, servingSize: finalVal };
+	if (isMeaningfulChange) {
+		updatedFoodA = breakChainOfCustody(updatedFoodA);
+	}
+
+	const updated = recalculateStepMethods({ ...current, foodA: updatedFoodA });
+	state.setProtocol(updated, `Food A Serving Size changed to: ${finalVal}`);
 }
 
 /**
@@ -92,10 +138,9 @@ export function handleFoodAServingSizeChange(
 export function handleFoodATypeChange(state: ProtocolState, type: FoodType) {
 	const current = state.getProtocol();
 	if (current && current.foodA.type !== type) {
-		state.setProtocol(
-			toggleFoodType(current, false, type),
-			`Set Food A to ${type}`,
-		);
+		const updated = toggleFoodType(current, false, type);
+		updated.foodA = breakChainOfCustody(updated.foodA);
+		state.setProtocol(updated, `Set Food A to ${type}`);
 	}
 }
 
@@ -154,8 +199,15 @@ export function handleFoodAThresholdChange(
 export function handleFoodBNameChange(state: ProtocolState, name: string) {
 	const current = state.getProtocol();
 	if (current?.foodB) {
-		const updated = updateFoodDetails(current, "B", { name });
-		state.setProtocol(updated, `Renamed Food B`, { debounceHistory: true });
+		const isMeaningfulChange = name.trim() !== current.foodB.name.trim();
+
+		let updatedFoodB = { ...current.foodB, name };
+		if (isMeaningfulChange) {
+			updatedFoodB = breakChainOfCustody(updatedFoodB);
+		}
+
+		const updated = { ...current, foodB: updatedFoodB };
+		state.setProtocol(updated, "Renamed Food B", { debounceHistory: true });
 	}
 }
 
@@ -177,9 +229,17 @@ export function handleFoodBProteinChange(
 	const servingSize = current.foodB.servingSize;
 	const clamped = val.greaterThan(servingSize) ? servingSize : val;
 
-	const updated = updateFoodBAndRecalculate(current, {
-		gramsInServing: clamped,
-	});
+	const isMeaningfulChange = !clamped.equals(current.foodB.gramsInServing);
+
+	let updatedFoodB = { ...current.foodB, gramsInServing: clamped };
+	if (isMeaningfulChange) {
+		updatedFoodB = breakChainOfCustody(updatedFoodB);
+	}
+
+	const updated = updateFoodBAndRecalculate(
+		{ ...current, foodB: updatedFoodB },
+		{},
+	);
 	state.setProtocol(updated, `Food B Protein changed to: ${clamped}`);
 }
 
@@ -204,7 +264,17 @@ export function handleFoodBServingSizeChange(
 	if (finalVal.lessThanOrEqualTo(0)) finalVal = new Decimal(1);
 	if (finalVal.greaterThan(1000)) finalVal = new Decimal(1000);
 
-	const updated = updateFoodBAndRecalculate(current, { servingSize: finalVal });
+	const isMeaningfulChange = !finalVal.equals(current.foodB.servingSize);
+
+	let updatedFoodB = { ...current.foodB, servingSize: finalVal };
+	if (isMeaningfulChange) {
+		updatedFoodB = breakChainOfCustody(updatedFoodB);
+	}
+
+	const updated = updateFoodBAndRecalculate(
+		{ ...current, foodB: updatedFoodB },
+		{},
+	);
 	state.setProtocol(updated, `Food B Serving Size changed to: ${finalVal}`);
 }
 
@@ -218,10 +288,11 @@ export function handleFoodBServingSizeChange(
 export function handleFoodBTypeChange(state: ProtocolState, type: FoodType) {
 	const current = state.getProtocol();
 	if (current?.foodB && current.foodB.type !== type) {
-		state.setProtocol(
-			toggleFoodType(current, true, type),
-			`Set Food B to ${type}`,
-		);
+		const updated = toggleFoodType(current, true, type);
+		if (updated.foodB) {
+			updated.foodB = breakChainOfCustody(updated.foodB);
+		}
+		state.setProtocol(updated, `Set Food B to ${type}`);
 	}
 }
 

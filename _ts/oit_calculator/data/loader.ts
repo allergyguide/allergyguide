@@ -3,7 +3,7 @@
  * Orchestrates loading of public food databases and user-specific config and secure assets.
  */
 import type { z } from "zod";
-import { appState } from "../main";
+import { appState } from "../state/instances";
 import {
 	type FoodData,
 	FoodDataSchema,
@@ -12,6 +12,7 @@ import {
 	type ProtocolData,
 	ProtocolDataSchema,
 	type PublicData,
+	SourceType,
 } from "../types";
 import { SAMPLE_PROTOCOL } from "../utils";
 import { fetchOITBootstrap } from "./api";
@@ -24,6 +25,7 @@ import { fetchOITBootstrap } from "./api";
  * @param {unknown} list - The raw input data (expected to be an array of objects)
  * @param {z.ZodType<T>} schema - The Zod schema definition for a single item
  * @param {string} itemName - A label for the data type (e.g., "Protocol", "CNF Food") used in error logging
+ * @param {Function} [transformer] - Optional function to transform each item before validation
  * @returns {T[]} A strongly-typed array of validated items
  * @throws {Error} If the input is not an array
  */
@@ -31,6 +33,7 @@ function validateList<T>(
 	list: unknown,
 	schema: z.ZodSchema<T>,
 	itemName: string,
+	transformer?: (item: Record<string, unknown>) => Record<string, unknown>,
 ): T[] {
 	if (!Array.isArray(list)) {
 		console.error(`Expected array for ${itemName}, got`, list);
@@ -44,7 +47,10 @@ function validateList<T>(
 	let invalidCount = 0;
 
 	list.forEach((item, index) => {
-		const result = schema.safeParse(item);
+		const transformed = transformer
+			? transformer(item as Record<string, unknown>)
+			: item;
+		const result = schema.safeParse(transformed);
 		if (result.success) {
 			validItems.push(result.data);
 		} else {
@@ -67,22 +73,66 @@ function validateList<T>(
 	return validItems;
 }
 
+/**
+ * Normalizes raw food data by determining the correct source based on present fields.
+ * This prevents validation failures when legacy data is missing mandatory curated fields.
+ *
+ * @param {Record<string, unknown>} item - The raw food item to normalize
+ * @param {SourceType} defaultSource - The default source to use if no explicit source is provided
+ * @returns {Record<string, unknown>} The normalized food item with a determined source
+ */
+function normalizeFoodData(
+	item: Record<string, unknown>,
+	defaultSource: SourceType,
+): Record<string, unknown> {
+	// Use explicit source if provided
+	if (item.source) return item;
+
+	// determine source based on present fields
+	// NOTE: this is somewhat brittle, based on heuristics
+	let source = defaultSource;
+	if (item.source_url) {
+		source = SourceType.BRAND;
+	} else if (item.id) {
+		source = SourceType.PROVISIONED;
+	}
+
+	// if it's labeled as curated (BRAND/PROV) but lacks an ID, downgraded to GENERIC. Curated features require an ID to function.
+	if (
+		(source === SourceType.BRAND || source === SourceType.PROVISIONED) &&
+		!item.id
+	) {
+		source = SourceType.GENERIC;
+		console.warn(
+			`Downgrading ${item.name} from ${source} to GENERIC due to missing ID`,
+		);
+	}
+
+	return { ...item, source };
+}
+
+/**
+ * Loads and validates the public databases (CNF foods and protocols).
+ * @returns {Promise<PublicData>} A promise that resolves to the loaded and validated public data
+ */
 export async function loadPublicDatabases(): Promise<PublicData> {
 	try {
-		const response = await fetch("/tool_assets/typed_foods.json");
+		const response = await fetch("/tool_assets/cnf_foods.json");
 		if (!response.ok)
 			throw new Error(`Failed to load CNF foods: ${response.statusText}`);
 
 		const raw = await response.json();
 
-		// TODO! for upcoming impl, consider adding:
-		// `transformed = raw.map(f => ({ ...f, source: 'GENERIC'}))` }));
-		// as opposed to just altering the typed_foods.json itself!
-		const foods = validateList<FoodData>(raw, FoodDataSchema, "CNF Food");
+		const foods = validateList<FoodData>(
+			raw,
+			FoodDataSchema,
+			"CNF Food",
+			(item) => ({ ...item, source: SourceType.GENERIC }),
+		);
 
 		return {
 			foods,
-			protocols: [SAMPLE_PROTOCOL], // the sample
+			protocols: [ProtocolDataSchema.parse(SAMPLE_PROTOCOL)], // the sample
 		};
 	} catch (error) {
 		console.error("Error loading public database:", error);
@@ -110,11 +160,30 @@ export async function loadUserConfiguration(): Promise<OITBootstrapResponse> {
 			bootstrapData.provisioned_foods || [],
 			FoodDataSchema,
 			"Provisioned Food",
+			(item) => normalizeFoodData(item, SourceType.PROVISIONED),
 		);
 		const provisioned_protocols = validateList<ProtocolData>(
 			bootstrapData.provisioned_protocols || [],
 			ProtocolDataSchema,
 			"Provisioned Protocol",
+			(item) => {
+				const proto = { ...item };
+				// Ensure nested foods are normalized
+				// This is basically a fallback for any missing source fields if the backend has made a mistake
+				if (proto.food_a) {
+					proto.food_a = normalizeFoodData(
+						proto.food_a as Record<string, unknown>,
+						SourceType.GENERIC,
+					);
+				}
+				if (proto.food_b) {
+					proto.food_b = normalizeFoodData(
+						proto.food_b as Record<string, unknown>,
+						SourceType.GENERIC,
+					);
+				}
+				return proto;
+			},
 		);
 
 		return {

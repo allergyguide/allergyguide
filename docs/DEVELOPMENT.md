@@ -32,7 +32,7 @@ Defined in `package.json` and orchestrated by `scripts/build.mts`.
    - `biome check`: Fast linting and formatting verification using Biome.
    - `tsc --noEmit`: Ensures TypeScript type integrity.
 4. **Typst Compilation:** `scripts/build-typ.mts` checks for and downloads the Typst binary and compiles `.typ` source files from specified directories into PDFs.
-5. **TypeScript Bundling:** `scripts/build-ts.mts` reads `tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
+5. **TypeScript Bundling:** `scripts/build-ts.mts` reads `_ts/tools_versioning.json` and bundles client-side applications (like the OIT Calculator) into `static/js/` using `esbuild`.
 
 ### Stage 2: Site Generation (Zola)
 
@@ -85,7 +85,6 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 ├── config.toml                # Zola Configuration
 ├── netlify.toml               # Netlify Configuration (Headers, Redirects)
 ├── package.json               # NPM Scripts & Dependencies
-├── tools_versioning.json      # Configuration: Maps tool names to versions
 ├── tools/                     # Developer utilities (not part of site build)
 │   └── hash_password.ts       # Utility to generate bcrypt hashes
 │
@@ -106,7 +105,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │   └──  tool_assets          # for public resources for tools
 │       ├──  oit_calculator   # tools should have their own folder
 │       │   └──  public_oit_patient_resource_terms.typ
-│       └──  typed_foods.json # if resources are shared by multiple tools 
+│       └──  cnf_foods.json # if resources are shared by multiple tools 
 
 │   └── ...
 ├──  sass
@@ -115,6 +114,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │   └──  shortcodes 
 │
 ├── _ts/                       # Source TypeScript for client-side tools
+│   ├── tools_versioning.json  # Configuration: Maps tool names to versions
 │   ├── oit_calculator/        # Complex Tool (Folder-based)
 │   └── simple_script.ts       # Standalone script
 │
