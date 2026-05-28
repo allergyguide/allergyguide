@@ -21,4 +21,12 @@ status="not-started" # options include not-started, wip, or ready
 
 <div class="blur-container">
 
+# guiding questions
+
+- how does it work?
+- how can I make a protocol?
+- does it work for all types of hypersensitivity reactions or just Type I?
+- what are the risks?
+- how does it work for medications that can only be given SC or orally?
+
 </div>

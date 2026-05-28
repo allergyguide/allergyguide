@@ -1,9 +1,9 @@
 +++
-title = "Mast cell disorders"
+title = "Mast cell disorders overview"
 description = "[description of md page]"
 date = 2025-01-01
 draft = false
-weight=3
+weight=2
 
 [taxonomies]
 tags = ["hypersensitivity","anaphylaxis"]
@@ -62,5 +62,10 @@ epi PRN
 venom immunotherapy
 cofactors mgment
 ige blocker
+
+# Guiding questions
+
+- How do you categorize mast cell disorders?
+- How does it all fit in?
 
 </div>
