@@ -61,3 +61,4 @@ export const HISTORY_DEBOUNCE_MS = 300;
 export const VALIDATION_DEBOUNCE_MS = 250;
 
 export const SEARCH_DISPLAY_LIMIT = 50;
+export const PROTOCOL_DISPLAY_LIMIT = 5; // for search dropdown UI

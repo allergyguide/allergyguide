@@ -19,12 +19,12 @@ try {
 }
 
 // GET TOOLS VERSIONING
-if (!existsSync("./tools_versioning.json")) {
-	console.error("tools_versioning.json not found");
+if (!existsSync("./_ts/tools_versioning.json")) {
+	console.error("./_ts/tools_versioning.json not found");
 	process.exit(1);
 }
 const toolVersioning = JSON.parse(
-	readFileSync("./tools_versioning.json", "utf-8"),
+	readFileSync("./_ts/tools_versioning.json", "utf-8"),
 );
 
 // ==========================================

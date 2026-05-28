@@ -20,8 +20,7 @@ import {
 	loadPublicDatabases,
 	loadUserConfiguration,
 } from "./data/loader";
-import { AppState } from "./state/appState";
-import { workspace } from "./state/instances";
+import { appState, initializeAppState, workspace } from "./state/instances";
 import type { Warning } from "./types";
 import {
 	renderFoodASettings,
@@ -57,8 +56,6 @@ Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 // INITIALIZATION
 // ============================================
 
-export let appState: AppState;
-
 /**
  * Initialize the OIT calculator after DOM is ready
  */
@@ -77,7 +74,7 @@ async function initializeCalculator(): Promise<void> {
 	const publicData = await publicDataPromise;
 
 	// Init AppState and Subscribers
-	appState = new AppState(publicData, rulesUrl);
+	initializeAppState(publicData, rulesUrl);
 
 	// Cache for warnings to avoid flickering during debounced updates
 	let cachedWarnings: Warning[] = [];

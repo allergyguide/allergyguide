@@ -181,7 +181,8 @@ function checkMeasurability({
 	protocol: Protocol;
 	food: Food;
 }): Warning[] {
-	if (step.method === Method.CAPSULE) return [];
+	if (step.method === Method.CAPSULE || food.type === FoodType.CAPSULE)
+		return [];
 
 	const warnings: Warning[] = [];
 	const config = protocol.config;
@@ -332,6 +333,8 @@ function checkDilutionStep({
 	protocol: Protocol;
 	food: Food;
 }): Warning[] {
+	if (food.type === FoodType.CAPSULE) return [];
+
 	// Guard clause for malformed data
 	if (step.mixFoodAmount == null || step.mixWaterAmount == null) {
 		// Push a technical error warning or return early
@@ -351,13 +354,16 @@ function checkDilutionStep({
 
 	// Setup Rounded Values for Calculation
 	const mixUnit = getMeasuringUnit(food);
-	const roundedMixFoodAmount = new Decimal(
-		formatAmount(step.mixFoodAmount, mixUnit),
-	);
-	const roundedMixWaterAmount = new Decimal(
-		formatAmount(step.mixWaterAmount, "ml"),
-	);
-	const roundedDailyAmount = new Decimal(formatAmount(step.dailyAmount, "ml"));
+
+	const mixFoodStr = formatAmount(step.mixFoodAmount, mixUnit);
+	const mixWaterStr = formatAmount(step.mixWaterAmount, "ml");
+	const dailyAmountStr = formatAmount(step.dailyAmount, "ml");
+
+	if (!mixFoodStr || !mixWaterStr || !dailyAmountStr) return [];
+
+	const roundedMixFoodAmount = new Decimal(mixFoodStr);
+	const roundedMixWaterAmount = new Decimal(mixWaterStr);
+	const roundedDailyAmount = new Decimal(dailyAmountStr);
 
 	// Calculate Protein based on what the user actually measures
 	const totalMixProteinBasedOnRounded = roundedMixFoodAmount.times(
@@ -514,12 +520,17 @@ function checkDirectStep({
 	protocol: Protocol;
 	food: Food;
 }): Warning[] {
+	if (food.type === FoodType.CAPSULE) return [];
+
 	const warnings: Warning[] = [];
 
 	const dailyAmountUnit = step.dailyAmountUnit;
-	const roundedDailyAmount = new Decimal(
-		formatAmount(step.dailyAmount, dailyAmountUnit),
-	);
+
+	// Defensive check for Decimal constructor
+	const amountStr = formatAmount(step.dailyAmount, dailyAmountUnit);
+	if (!amountStr) return [];
+
+	const roundedDailyAmount = new Decimal(amountStr);
 	const calculatedProtein = roundedDailyAmount.times(food.getMgPerUnit());
 
 	// PROTEIN_MISMATCH

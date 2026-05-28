@@ -13,13 +13,14 @@ import {
 	updateStepTargetMg,
 } from "../../core/protocol";
 import type { Food, Protocol } from "../../types";
-import { DosingStrategy, FoodType, Method } from "../../types";
+import { DosingStrategy, FoodType, Method, SourceType } from "../../types";
 
 const createFood = (name: string, type: FoodType = FoodType.SOLID): Food => ({
 	name,
 	type,
 	gramsInServing: new Decimal(10),
 	servingSize: new Decimal(100),
+	source: SourceType.GENERIC,
 	getMgPerUnit() {
 		return this.gramsInServing.times(1000).dividedBy(this.servingSize); // 100 mg/unit
 	},

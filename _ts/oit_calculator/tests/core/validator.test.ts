@@ -4,13 +4,14 @@ import { DEFAULT_CONFIG } from "../../constants";
 import { generateDefaultProtocol } from "../../core/calculator";
 import { validateProtocol } from "../../core/validator";
 import type { Food } from "../../types";
-import { FoodType, Method, WarningCode } from "../../types";
+import { FoodType, Method, SourceType, WarningCode } from "../../types";
 
 const createFood = (type: FoodType = FoodType.SOLID): Food => ({
 	name: "Peanut",
 	type,
 	gramsInServing: new Decimal(10), // 10g protein
 	servingSize: new Decimal(100), // per 100g/ml
+	source: SourceType.GENERIC,
 	getMgPerUnit() {
 		return this.gramsInServing.times(1000).dividedBy(this.servingSize); // 100 mg/unit
 	},

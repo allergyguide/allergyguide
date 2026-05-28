@@ -59,6 +59,7 @@ The application uses a **"Single Active View"** architecture managed by `Workspa
 3. **Switching:** When a user switches tabs, the Workspace unbinds from the old tab's state and binds to the new one, triggering an immediate UI refresh.
 
 #### History & Debouncing
+
 Each `ProtocolState` maintains its own Undo/Redo stack. To prevent "history pollution" during rapid text input (e.g., typing a food name), `setProtocol` supports a `debounceHistory` flag. This groups consecutive keystrokes into a single undo step while keeping the live state instantly synchronized for a responsive UI.
 
 ### Unidirectional Data Flow
@@ -73,9 +74,9 @@ Each `ProtocolState` maintains its own Undo/Redo stack. To prevent "history poll
 
 The tool uses a hybrid model to support multi-tenancy while keeping the base tool public:
 
-1.  **Tier 1: Public Assets:** Fetched on initialization (e.g., the standard CNF `typed_foods.json`). Available to all users.
-2.  **Tier 2: Provisioned Assets:** Private food databases and protocol templates maintained by administrators in a private repository. These are bundled during build and served to authenticated users via the `oit-bootstrap` endpoint.
-3.  **Tier 3: Custom Assets (Future):** User-created foods and protocols that will be persisted in a Supabase database. This will allow for individual customization that persists across sessions.
+1. **Tier 1: Public Assets:** Fetched on initialization (e.g., the standard CNF `cnf_foods.json`). Available to all users.
+2. **Tier 2: Provisioned Assets:** Private food databases and protocol templates maintained by administrators in a private repository. These are bundled during build and served to authenticated users via the `oit-bootstrap` endpoint.
+3. **Tier 3: Custom Assets (Future):** User-created foods and protocols that will be persisted in a Supabase database. This will allow for individual customization that persists across sessions.
 
 ### Authentication & Secure Data Flow
 
@@ -88,11 +89,14 @@ The tool uses a hybrid model to support multi-tenancy while keeping the base too
 The app uses a hybrid approach combining **`lit-html`** for complex, reactive components and **manual DOM patching** for the stable application shell.
 
 #### 1. lit-html Components (`ui/components/`)
+
 Core UI modules (Protocol Table, Food Settings, Search Dropdowns, Warnings Sidebar) are implemented as declarative `lit-html` templates.
+
 - **Stability:** For the table, uses stable UUIDs (generated on step creation) as keys in the `repeat()` directive. This ensures that adding or removing rows doesn't cause unrelated inputs to lose focus or state.
 - **UX:** The **`activeSafe`** directive (`ui/directives/`) prevents disruptive cursor jumps during debounced re-renders. It only updates an input's value if the new state is mathematically different from the current user input, and enforces canonical formatting (e.g., "1.0") on blur.
 
 #### 2. Manual DOM Patching (`ui/renderers.ts`)
+
 The application shell (Tabs, Dosing Strategy toggles, Export buttons, and the Empty State) uses a lightweight manual patching strategy. Since these elements change infrequently or have simple structures, this avoids the overhead of a full framework for the top-level layout.
 
 ### Event Delegation and Initialization
@@ -119,12 +123,14 @@ Deployment requires the following Netlify environment variables (and ideally wit
 ### Stabilized Food interface
 
 - Include a 'CAPSULE' food type to account for pharmacy prescribed capsules. These do not have any weights or calculations to measure and must therefore be exempted from _some_ aspects of the validator engine. DONE.
-- Inclusion of relevant metadata - WIP.
+- Inclusion of relevant metadata (ID, source URL, keywords). DONE.
+- "Chain of Custody" protection: editing curated foods automatically converts them to USER source and strips sensitive metadata. DONE.
 
 ### Branded Food Database
 
-- Creation of maintainable database of common branded foods used in OIT
-- Must include automatic validation and periodic checks to update out-of-date foods
+- Creation of maintainable database of common branded foods used in OIT. DONE.
+- Implementation of "Formulation Drift" detection to alert users when a loaded protocol uses an outdated version of a branded food. DONE.
+- Automatic validation and periodic checks to update out-of-date foods. DONE.
 
 ### Safety and Core Logic Validation
 
@@ -139,16 +145,10 @@ Deployment requires the following Netlify environment variables (and ideally wit
 ### Data Persistence & Multi-Tenancy (3-Tier System)
 
 - **Tier 1 (Public) & Tier 2 (Provisioned):** DONE. Signed-in users can load private food databases and protocols provisioned via the private GitHub repository.
-- **Tier 3 (Custom User Assets):** PLANNED. 
+- **Tier 3 (Custom User Assets):** PLANNED.
 - This represents a major feature change (Supabase persistence) and will require thorough review.
 - Will need to ensure stable and secure user authentication system that also is convenient.
 - Need to stabilize spec of how users will save and edit these custom foods/protocols directly through the UI.
-
-### Search UI improvement
-
-- On the search dropdown, the user should see a badge that concisely communicates the metadata. Ie. the source (CNF, BRAND, USER), versus styling of the dropdown list item itself
-- Will consider making the "Create Custom" sticky at the bottom of the search bar instead of index 0
-- Versus keeping a single vertical scrollable list with headers that define the source, with user > brand > CNF if possible
 
 ### Development of export content / format
 
@@ -233,4 +233,3 @@ The calculator operates based on a set of clinical and practical assumptions to 
 2. **Customize Protocol:** Adjust Food A settings (name, protein concentration, form, dilution strategy, threshold), select a dosing strategy (Standard, Slow), and modify individual steps. Optionally, add a transition Food B, whose settings (name, protein concentration, form, threshold) can also be customized. A custom note can also be added.
 3. **Review and Refine:** The tool displays real-time warnings (red for critical, yellow for caution) and can edit the protocol as required to fix these.
 4. **Export:** Once satisfied, export the protocol in ASCII format or as a PDF for patient handout.
-

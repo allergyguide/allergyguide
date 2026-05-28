@@ -17,7 +17,8 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"includes": ["**", "!_ts/oit_calculator/tests/**"]
 	},
 	"linter": {
 		"enabled": true,

@@ -1,0 +1,213 @@
+[
+	{
+		"name": "Protocol with < 5 steps",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "SOLID",
+			"name": "Peanut",
+			"gramsInServing": 25,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 1, "method": "DIRECT", "daily_amount": 0.004 },
+			{ "food": "A", "protein": 2, "method": "DIRECT", "daily_amount": 0.008 },
+			{ "food": "A", "protein": 4, "method": "DIRECT", "daily_amount": 0.016 }
+		]
+	},
+	{
+		"name": "Protein Mismatch in Dilution",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "SOLID",
+			"name": "Peanut",
+			"gramsInServing": 25,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 100, "method": "DILUTE", "daily_amount": 1, "mix_amount": 1, "water_amount": 99 },
+			{ "food": "A", "protein": 200, "method": "DIRECT", "daily_amount": 0.8 },
+			{ "food": "A", "protein": 300, "method": "DIRECT", "daily_amount": 1.2 },
+			{ "food": "A", "protein": 400, "method": "DIRECT", "daily_amount": 1.6 },
+			{ "food": "A", "protein": 500, "method": "DIRECT", "daily_amount": 2.0 }
+		],
+		"comment": "1g peanut (250mg protein) in 99ml water = 2.5mg/ml. 1ml daily = 2.5mg. Target is 100mg. Mismatch!"
+	},
+	{
+		"name": "Impossible Volume",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "LIQUID",
+			"name": "Milk",
+			"gramsInServing": 3.3,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 1, "method": "DILUTE", "daily_amount": 10, "mix_amount": 1, "water_amount": 5 },
+			{ "food": "A", "protein": 2, "method": "DIRECT", "daily_amount": 0.8 },
+			{ "food": "A", "protein": 3, "method": "DIRECT", "daily_amount": 1.2 },
+			{ "food": "A", "protein": 4, "method": "DIRECT", "daily_amount": 1.6 },
+			{ "food": "A", "protein": 5, "method": "DIRECT", "daily_amount": 2.0 }
+		],
+		"comment": "daily_amount 10ml > total volume 6ml (1+5)"
+	},
+	{
+		"name": "Rapid Escalation",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "SOLID",
+			"name": "Peanut",
+			"gramsInServing": 25,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.04 },
+			{ "food": "A", "protein": 50, "method": "DIRECT", "daily_amount": 0.2 },
+			{ "food": "A", "protein": 100, "method": "DIRECT", "daily_amount": 0.4 },
+			{ "food": "A", "protein": 150, "method": "DIRECT", "daily_amount": 0.6 },
+			{ "food": "A", "protein": 200, "method": "DIRECT", "daily_amount": 0.8 }
+		],
+		"comment": "10mg -> 50mg is 5x increase (> 2x)"
+	},
+	{
+		"name": "Duplicate Steps",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "SOLID",
+			"name": "Peanut",
+			"gramsInServing": 25,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.04 },
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.04 },
+			{ "food": "A", "protein": 20, "method": "DIRECT", "daily_amount": 0.08 },
+			{ "food": "A", "protein": 30, "method": "DIRECT", "daily_amount": 0.12 },
+			{ "food": "A", "protein": 40, "method": "DIRECT", "daily_amount": 0.16 }
+		]
+	},
+	{
+		"name": "Non-Ascending Steps",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "SOLID",
+			"name": "Peanut",
+			"gramsInServing": 25,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 20, "method": "DIRECT", "daily_amount": 0.08 },
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.04 },
+			{ "food": "A", "protein": 30, "method": "DIRECT", "daily_amount": 0.12 },
+			{ "food": "A", "protein": 40, "method": "DIRECT", "daily_amount": 0.16 },
+			{ "food": "A", "protein": 50, "method": "DIRECT", "daily_amount": 0.2 }
+		]
+	},
+	{
+		"name": "Nested Food A Physics Error",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "SOLID",
+			"name": "Impossible Peanut",
+			"gramsInServing": 110,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.04 },
+			{ "food": "A", "protein": 20, "method": "DIRECT", "daily_amount": 0.08 },
+			{ "food": "A", "protein": 30, "method": "DIRECT", "daily_amount": 0.12 },
+			{ "food": "A", "protein": 40, "method": "DIRECT", "daily_amount": 0.16 },
+			{ "food": "A", "protein": 50, "method": "DIRECT", "daily_amount": 0.2 }
+		]
+	},
+	{
+		"name": "Nested Food B Metadata Error",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "LIQUID",
+			"name": "Milk",
+			"gramsInServing": 3.3,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"food_b": {
+			"type": "SOLID",
+			"name": "Curated Nut",
+			"gramsInServing": 5,
+			"servingSize": 10,
+			"source": "BRAND"
+		},
+		"food_b_threshold": 0.4,
+		"table": [
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.3 },
+			{ "food": "A", "protein": 20, "method": "DIRECT", "daily_amount": 0.6 },
+			{ "food": "A", "protein": 30, "method": "DIRECT", "daily_amount": 0.9 },
+			{ "food": "A", "protein": 40, "method": "DIRECT", "daily_amount": 1.2 },
+			{ "food": "B", "protein": 50, "method": "DIRECT", "daily_amount": 0.1 }
+		],
+		"comment": "Food B is BRAND but missing id and source_url"
+	},
+	{
+		"name": "Food B Steps without Food B Definition",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "LIQUID",
+			"name": "Milk",
+			"gramsInServing": 3.3,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.3 },
+			{ "food": "A", "protein": 20, "method": "DIRECT", "daily_amount": 0.6 },
+			{ "food": "A", "protein": 30, "method": "DIRECT", "daily_amount": 0.9 },
+			{ "food": "A", "protein": 40, "method": "DIRECT", "daily_amount": 1.2 },
+			{ "food": "B", "protein": 50, "method": "DIRECT", "daily_amount": 0.1 }
+		]
+	},
+	{
+		"name": "Below Resolution",
+		"dosing_strategy": "STANDARD",
+		"food_a": {
+			"type": "SOLID",
+			"name": "Peanut",
+			"gramsInServing": 25,
+			"servingSize": 100,
+			"source": "GENERIC"
+		},
+		"food_a_strategy": "DILUTE_INITIAL",
+		"di_threshold": 0.5,
+		"table": [
+			{ "food": "A", "protein": 0.01, "method": "DIRECT", "daily_amount": 0.00004 },
+			{ "food": "A", "protein": 10, "method": "DIRECT", "daily_amount": 0.04 },
+			{ "food": "A", "protein": 20, "method": "DIRECT", "daily_amount": 0.08 },
+			{ "food": "A", "protein": 30, "method": "DIRECT", "daily_amount": 0.12 },
+			{ "food": "A", "protein": 40, "method": "DIRECT", "daily_amount": 0.16 }
+		],
+		"comment": "daily_amount 0.00004g is below typical resolution"
+	}
+]

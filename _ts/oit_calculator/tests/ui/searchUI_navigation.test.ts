@@ -13,21 +13,25 @@ const mockMount = (id: string) => {
 describe("searchUI Navigation and Selection Logic", () => {
 	let aMount: HTMLElement;
 
-	const mockResults = [
-		{
-			type: "food",
-			data: {
-				name: "Milk",
-				type: FoodType.LIQUID,
-				gramsInServing: 3.3,
-				servingSize: 100,
+	const mockResults = {
+		protocols: [
+			{
+				type: "protocol",
+				data: { name: "Peanut Protocol", dosing_strategy: "STANDARD" },
 			},
-		},
-		{
-			type: "protocol",
-			data: { name: "Peanut Protocol", dosing_strategy: "STANDARD" },
-		},
-	];
+		],
+		foods: [
+			{
+				type: "food",
+				data: {
+					name: "Milk",
+					type: FoodType.LIQUID,
+					gramsInServing: 3.3,
+					servingSize: 100,
+				},
+			},
+		],
+	};
 
 	const mockCallbacks = {
 		onSelectCustom: vi.fn(),
@@ -93,14 +97,14 @@ describe("searchUI Navigation and Selection Logic", () => {
 	});
 
 	it("selectHighlightedDropdownItem should call correct action for result indices", () => {
-		// Index 0: Milk (food)
+		// Index 0: Peanut Protocol (protocol)
 		searchUI.navigateDropdown("down"); // to index 0
 		searchUI.selectHighlightedDropdownItem();
-		expect(mockCallbacks.onSelectFoodA).toHaveBeenCalledWith(
-			mockResults[0].data,
+		expect(mockCallbacks.onSelectProtocol).toHaveBeenCalledWith(
+			mockResults.protocols[0].data,
 		);
 
-		// Index 1: Peanut Protocol (protocol)
+		// Index 1: Milk (food)
 		searchUI.showSearchDropdown(
 			"food-a-search",
 			mockResults as any,
@@ -110,8 +114,8 @@ describe("searchUI Navigation and Selection Logic", () => {
 		searchUI.navigateDropdown("down");
 		searchUI.navigateDropdown("down"); // to index 1
 		searchUI.selectHighlightedDropdownItem();
-		expect(mockCallbacks.onSelectProtocol).toHaveBeenCalledWith(
-			mockResults[1].data,
+		expect(mockCallbacks.onSelectFoodA).toHaveBeenCalledWith(
+			mockResults.foods[0].data,
 		);
 	});
 });

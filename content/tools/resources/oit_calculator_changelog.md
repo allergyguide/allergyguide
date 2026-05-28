@@ -1,6 +1,6 @@
 +++
 title = "CHANGELOG"
-date = 2025-12-07
+date = 2026-05-28
 draft = false
 
 [extra]
@@ -12,10 +12,15 @@ authors = ["Joshua Yu"]
 
 ### Added
 
+- Branded food database: Search and select curated brand name foods directly in the calculator for authorized users.
+- Nutrition label verification: Branded foods now feature direct links to view the manufacturer nutrition label online.
+- Formulation drift alerts: If the protein content or serving size of a branded food previously used in a protocol changes, a warning icon will alerts the change.
+- Visual badges: Foods in the search dropdown and settings now display badges indicating if they are a verified brand or a custom user creation.
 - Support for pharmacy-compounded capsules for "Food A", allowing generation of protocols for doses without manual measurement or dilution.
 - UX: Login modal can now be closed by pressing the `Esc` key.
 - UX: When adding a new step to the protocol, the "Protein (mg)" field is now automatically focused and selected.
-- UI: The "Create Custom Food" option in the search dropdown is now sticky at the bottom, ensuring it remains accessible when there are many search results.
+- UX: Protocols are capped at around ~5 top searches in the search dropdown
+- UX: The "Create Custom Food" option in the search dropdown is now sticky at the bottom, ensuring it remains accessible when there are many search results.
 
 ### Changed
 

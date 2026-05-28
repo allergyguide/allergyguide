@@ -7,7 +7,7 @@ import {
 	generateStepForTarget,
 } from "../../core/calculator";
 import type { Food, ProtocolConfig } from "../../types";
-import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../../types";
+import { DosingStrategy, FoodAStrategy, FoodType, Method, SourceType } from "../../types";
 
 // Helper: create a food object
 const createFood = (
@@ -18,6 +18,7 @@ const createFood = (
 	type,
 	gramsInServing: new Decimal(proteinPercent), // e.g. 10g protein
 	servingSize: new Decimal(100), // per 100g/ml
+	source: SourceType.GENERIC,
 	getMgPerUnit() {
 		return this.gramsInServing.times(1000).dividedBy(this.servingSize); // e.g. 100 mg/unit
 	},

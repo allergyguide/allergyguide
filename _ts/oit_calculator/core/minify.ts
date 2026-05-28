@@ -24,6 +24,7 @@ import {
 	FoodAStrategy,
 	FoodType,
 	Method,
+	SourceType,
 	UserHistoryPayloadSchema,
 } from "../types";
 import { validateProtocol } from "./validator";
@@ -52,6 +53,7 @@ declare const __VERSION_OIT_CALCULATOR__: string;
  *  - t: Type (0=SOLID, 1=LIQUID, 2=CAPSULE)
  *  - p: Protein grams in serving
  *  - s: Serving Size
+ *  - src: Source (0=GENERIC, 1=BRAND, 2=USER, 3=PROVISIONED)
  *
  * MStep (s):
  *  - i: Step Index
@@ -101,12 +103,19 @@ function minifyFood(f: Food): MFood {
 	if (f.type === FoodType.LIQUID) t = 1;
 	else if (f.type === FoodType.CAPSULE) t = 2;
 
+	// Map SourceType to integer
+	let src = 0; // GENERIC
+	if (f.source === SourceType.BRAND) src = 1;
+	else if (f.source === SourceType.USER) src = 2;
+	else if (f.source === SourceType.PROVISIONED) src = 3;
+
 	// f is type Food, but we access properties to convert Decimal
 	return {
 		n: f.name,
 		t: t,
 		p: f.gramsInServing.toNumber(),
 		s: f.servingSize.toNumber(),
+		src: src,
 	};
 }
 
@@ -314,7 +323,29 @@ function expandFood(f: MFood): ReadableFood {
 		gramsInServing: f.p,
 		servingSize: f.s,
 		proteinConcentrationMgPerUnit: (f.p * 1000) / f.s,
+		source: mapSourceType(f.src),
 	};
+}
+
+/**
+ * Maps the minified source type integer to its corresponding string representation
+ *
+ * @param val - The integer value representing the source type
+ * @returns The string representation of the source type
+ */
+function mapSourceType(val: number): string {
+	switch (val) {
+		case 0:
+			return SourceType.GENERIC;
+		case 1:
+			return SourceType.BRAND;
+		case 2:
+			return SourceType.USER;
+		case 3:
+			return SourceType.PROVISIONED;
+		default:
+			return SourceType.GENERIC;
+	}
 }
 
 /**

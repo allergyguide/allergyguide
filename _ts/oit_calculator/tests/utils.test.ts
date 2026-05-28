@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { describe, expect, it } from "vitest";
 import type { Food, Protocol } from "../types";
-import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../types";
+import { DosingStrategy, FoodAStrategy, FoodType, Method, SourceType } from "../types";
 import * as utils from "../utils";
 
 describe("Utils", () => {
@@ -124,6 +124,7 @@ describe("Utils", () => {
 			type: FoodType.LIQUID,
 			gramsInServing: new Decimal(8),
 			servingSize: new Decimal(250),
+			source: SourceType.GENERIC,
 			getMgPerUnit() {
 				return new Decimal(32);
 			},
@@ -134,6 +135,7 @@ describe("Utils", () => {
 			type: FoodType.SOLID,
 			gramsInServing: new Decimal(25),
 			servingSize: new Decimal(100),
+			source: SourceType.GENERIC,
 			getMgPerUnit() {
 				return new Decimal(250);
 			},
