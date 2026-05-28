@@ -23,12 +23,17 @@ status="wip" # options include not-started, wip, or ready
 
 Lots of variability in how it presents, nummular, extensor, flexor ... this varies by age as well
 skin tone also changes appearance
+variability also in terms of ethnicity too
 
 Other findings:
 
 - Follicular prominence (looks like they have goosebumps)
 - Post inflammatory pigmentary change (hypopigmentation)
 - Hyper-linear palms, especially more noticeable in kids > adults
+
+More often in pediatrics or those on immuosuppressive treatments
+
+- Eczema herpeticum - classically punched out appearance of blisters usually not pustular - swab for HSV
 
 ## infected?
 
@@ -144,5 +149,17 @@ dupi - very well toelrated... but 5% conjunctivits, 12% skin infections vs 24% p
 updacitivb
 
 ubccpd.ca/course/pediatric-atopic-dermatitis
+
+# guiding questions
+
+- How can you best explain importance of TCS
+- How can you divide broadly principles of management?
+  - What are some first line options? And their doses for adults vs peds?
+  - How do you wet wrap? How do you do bleach baths?
+  - When can you mix and match things?
+  - When do you start to consider systemic therapy?
+  - For each province, what are practical limitations when it comes to funding for some of the biologic agents?
+- What are the differentials to consider?
+- What are other types of eczema to keep in mind? Ie. dyshyrotic eczema
 
 </div>

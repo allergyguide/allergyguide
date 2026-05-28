@@ -7,6 +7,9 @@
 - Setting up a new practice (password content)
   - Billing tips (would have to be province specific -- VERY fellow/new staff focused)
   - Supplies, etc.
+- Handouts
+  - Typst, PDF, reviewed
+  - Should move to static/ instead of within content/? since there could be a tool that allows for quick compilation and printout of multiple handouts at once, where it would probably be easier just to have them in static/ ...
 
 # Shortcodes
 

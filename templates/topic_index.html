@@ -41,94 +41,94 @@ description=description
 {%- endblock seo %}
 {%- block content %}
 <div>
-	<nav class="status-legend" aria-label="Topic status legend">
-		<ul class="status-legend-list">
-			<li class="legend-item">
-				{{ badges::status_badge(status="not-started", msg="") }}
-				<span class="legend-text">Not started</span>
-			</li>
-			<li class="legend-item">
-				{{ badges::status_badge(status="wip", msg="") }}
-				<span class="legend-text">Work in progress</span>
-			</li>
-			<li class="legend-item">
-				{{ badges::status_badge(status="ready", msg="") }}
-				<span class="legend-text">Ready</span>
-			</li>
-		</ul>
-	</nav>
-	<div class="two_columns_fancy">
-		<div class="column">
-			<u><h2>Hypersensitivity disorders</h2></u>
-			<ul>
-				{{
+  <nav class="status-legend" aria-label="Topic status legend">
+    <ul class="status-legend-list">
+      <li class="legend-item">
+        {{ badges::status_badge(status="not-started", msg="") }}
+        <span class="legend-text">Not started</span>
+      </li>
+      <li class="legend-item">
+        {{ badges::status_badge(status="wip", msg="") }}
+        <span class="legend-text">Work in progress</span>
+      </li>
+      <li class="legend-item">
+        {{ badges::status_badge(status="ready", msg="") }}
+        <span class="legend-text">Ready</span>
+      </li>
+    </ul>
+  </nav>
+  <div class="two_columns_fancy">
+    <div class="column">
+      <u><h2>Hypersensitivity disorders</h2></u>
+      <ul>
+        {{
 				topic_links::get_page_li(page_path="topics/hypersensitivity/hypersensitivity_approach.md")
 				}}
-			</ul>
-			<h5>Food</h5>
-			<ul>
-				{{
+      </ul>
+      <h5>Food</h5>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/hypersensitivity/foods/_index.md")
 				}}
-			</ul>
-			<h5>Drugs</h5>
-			<ul>
-				{{
+      </ul>
+      <h5>Drugs</h5>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/hypersensitivity/drugs/_index.md")
 				}}
-			</ul>
-			<h5>Airway and ENT</h5>
-			<ul>
-				{{
+      </ul>
+      <h5>Airway and ENT</h5>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/hypersensitivity/airway_ent/_index.md")
 				}}
-			</ul>
-			<h5>Dermatology</h5>
-			<ul>
-				{{
+      </ul>
+      <h5>Dermatology</h5>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/hypersensitivity/dermatology/_index.md")
 				}}
-			</ul>
-		</div>
-		<div class="column">
-			<u><h2>Hypersensitivity disorders continued</h2></u>
-			<h5>Anaphylaxis</h5>
-			<ul>
-				{{
+      </ul>
+    </div>
+    <div class="column">
+      <u><h2>Hypersensitivity disorders continued</h2></u>
+      <h5>Anaphylaxis and mast cell disorders</h5>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/hypersensitivity/anaphylaxis/_index.md")
 				}}
-			</ul>
-			<h5>Misc</h5>
-			<ul>
-				{{
+      </ul>
+      <h5>Misc</h5>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/hypersensitivity/misc/_index.md")
 				}}
-			</ul>
-			<u><h2>Basic physiology</h2></u>
-			<ul>
-				{{
+      </ul>
+      <u><h2>Basic physiology</h2></u>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/basic_physiology/_index.md")
 				}}
-			</ul>
-			<u><h2>Immunology</h2></u>
-			<ul>
-				{{
+      </ul>
+      <u><h2>Immunology</h2></u>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/immunology/_index.md")
 				}}
-			</ul>
-			<u><h2>Tests</h2></u>
-			<ul>
-				{{
+      </ul>
+      <u><h2>Tests</h2></u>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/tests/_index.md")
 				}}
-			</ul>
-			<u><h2>Other key topics</h2></u>
-			<ul>
-				{{
+      </ul>
+      <u><h2>Other key topics</h2></u>
+      <ul>
+        {{
 				topic_links::get_section_li(section_path="topics/misc/_index.md")
 				}}
-			</ul>
-		</div>
-	</div>
+      </ul>
+    </div>
+  </div>
 </div>
 {%- endblock content %}
