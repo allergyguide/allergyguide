@@ -33,7 +33,7 @@ title = "Chronic rhinosinusitis"
 text = "An approach to chronic rhinosinusitis with some research deep-dives"
 
 [title6]
-url = "/tools/food-protein-index/"
-src = "/images/food_protein_index.png"
-title = "Food protein index reference"
+url = "/tools/ofc-index/"
+src = "/images/ofc_index.png"
+title = "Oral food challenge index"
 text = "Searchable database with oral food challenge dose calculations"

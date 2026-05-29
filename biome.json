@@ -28,7 +28,7 @@
 	},
 	"overrides": [
 		{
-			"includes": ["_ts/oit_calculator/tests/**"],
+			"includes": ["_ts/oit_calculator/tests/**", "_ts/ofc_index/tests/**"],
 			"linter": {
 				"rules": {
 					"suspicious": {
