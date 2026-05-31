@@ -15,7 +15,7 @@ const fontPath = "fonts";
 const typstSrcDirs = [
 	"secure_assets/oit_calculator",
 	"static/tool_assets/oit_calculator",
-	"content/handouts",
+	"static/handouts",
 ];
 
 /**

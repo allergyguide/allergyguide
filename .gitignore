@@ -9,5 +9,7 @@ node_modules
 .netlify/
 secure_assets
 static/js/*
+static/handouts/*.pdf
 temp_*
 .gemini/
+/static/tool_assets/oit_calculator/public_oit_patient_resource_terms.pdf

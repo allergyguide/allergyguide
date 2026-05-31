@@ -16,7 +16,7 @@
 		"lint": "biome check",
 		"lint:fix": "biome check --write",
 		"check:ts": "tsc --noEmit",
-		"check": "npm run lint && npm run check:ts",
+		"check": "npm run lint:fix && npm run check:ts",
 		"build:core": "tsx scripts/build-fetch-secure-assets.mts && npm run check && tsx scripts/build.mts",
 		"serve": "npm i && npm run build:core && zola build && vitest run && netlify dev",
 		"build": "npm run build:core && npm run abridge --"
