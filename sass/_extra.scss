@@ -1,6 +1,15 @@
 /******************************************************************************
  *   Extra - Put your extra SASS/CSS here, it will get bundled with abridge.css
  *****************************************************************************/
+@use "core/variables";
+@use "core/mixins";
+@use "core/typography";
+@use "core/buttons";
+@use "core/modals";
+@use "core/auth-modals";
+@use "core/forms";
+@use "core/signup";
+@use "core/toolbar";
 @use "shortcodes/card_grid";
 @use "shortcodes/contributors";
 @use "shortcodes/important";
@@ -39,6 +48,7 @@
 @use "shortcodes/ofc_index";
 @use "other/homepage";
 @use "shortcodes/oit_calculator";
+
 
 /* Markdown code blocks soft wrap */
 pre.language-md {

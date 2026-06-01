@@ -28,6 +28,10 @@ export async function buildTS(
 	const define = {
 		"import.meta.vitest": "undefined",
 		__COMMIT_HASH__: JSON.stringify(commit_hash),
+		__SUPABASE_URL__: JSON.stringify(process.env.SUPABASE_URL),
+		__SUPABASE_PUBLISHABLE_KEY__: JSON.stringify(
+			process.env.SUPABASE_PUBLISHABLE_KEY,
+		),
 	};
 
 	// Helper to track output filenames for Zola

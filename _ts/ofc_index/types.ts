@@ -13,14 +13,14 @@ export enum FoodType {
 }
 
 /**
- * Source classification of the food data.
+ * Source classification of the food data
  */
 export enum SourceType {
-	/** Publicly available data (basically from the Canadian Nutrient File)  */
+	/** Publicly available data (basically from Canadian Nutrient File) */
 	GENERIC = "GENERIC",
 	/** Branded food product from private repo */
 	BRAND = "BRAND",
-	/** Other provisioned clinical data for authenticated users */
+	/** Other provisioned data for authenticated users */
 	PROVISIONED = "PROVISIONED",
 }
 
@@ -30,11 +30,11 @@ export enum SourceType {
 export const FoodDataSchema = z.object({
 	name: z.string(),
 	type: z.enum(FoodType),
-	/** Protein content in grams per serving size. */
+	/** Protein content in grams per serving size */
 	gramsInServing: z.number(),
-	/** The size of the serving (e.g., 100g, 250ml) */
+	/** Size of serving (e.g., 100g, 250ml) */
 	servingSize: z.number(),
-	/** food group field present in CNF */
+	/** Food group field present in CNF */
 	group: z.string().optional(),
 	source: z.enum(SourceType).optional().default(SourceType.GENERIC),
 	source_url: z.url().optional(),
@@ -53,7 +53,7 @@ export type FoodData = z.infer<typeof FoodDataSchema>;
 export type Unit = "g" | "ml" | "capsule";
 
 /**
- * Internal representation of a food item used within the application state and UI.
+ * Internal representation of a food item used within application state and UI
  */
 export interface Food {
 	name: string;
@@ -68,62 +68,63 @@ export interface Food {
 	/** Prepared key for fuzzysort searching */
 	preparedKey?: unknown;
 }
-
 /**
- * Result structure for the user data loading process
+ * Result structure for user data loading process
  */
 export interface UserLoadResult {
-	/** Array of provisioned food items specific to the user */
+	/** Array of provisioned food items specific to user */
 	foods: Food[];
-	/** The username of the logged-in user, or null if unauthenticated */
-	username: string | null;
-	/** Boolean flag indicating if the user is currently logged in */
+	/** Email of logged-in user, or null if unauthenticated */
+	email: string | null;
+	/** Boolean flag indicating if user is currently logged in */
 	isLoggedIn: boolean;
 }
 
 /**
- * Data structure returned by the OFC bootstrap API endpoint
+ * Data structure returned by OFC API endpoint
  */
 export interface OfcBootstrapResponse {
-	/** The username of the authenticated user */
-	username: string;
+	/** UUID of authenticated user */
+	uuid: string;
+	/** Email of authenticated user */
+	email: string;
 	/** Array of raw provisioned food data */
 	provisioned_foods: unknown[];
 }
 
 /**
- * Global application state for the OFC Index.
+ * Global application state for OFC Index
  */
 export interface OfcState {
 	/** Authentication status */
 	isLoggedIn: boolean;
-	/** Username of the authenticated user, if any */
-	username: string | null;
-	/** List of public food items loaded from the CNF database */
+	/** Email of authenticated user, if any */
+	email: string | null;
+	/** List of public food items loaded from CNF database */
 	publicFoods: Food[];
-	/** List of securely provisioned food items for the logged-in user */
+	/** List of securely provisioned food items for logged-in user */
 	provisionedFoods: Food[];
 	/** Consolidated list of all foods with search optimizations */
 	searchableFoods: Food[];
-	/** Current raw search query from the input field */
+	/** Current raw search query from input field */
 	searchQuery: string;
-	/** Debounced search query used for filtering the results */
+	/** Debounced search query used for filtering results */
 	debouncedSearchQuery: string;
-	/** The food item currently selected for protocol generation */
+	/** Food item currently selected for protocol generation */
 	selectedFood: Food | null;
 
-	/** Protein content (g) being used in the current modal calculation */
+	/** Protein content (g) being used in current modal calculation */
 	modalGramsInServing: number;
-	/** Serving size being used in the current modal calculation */
+	/** Serving size being used in current modal calculation */
 	modalServingSize: number;
-	/** Target protein amounts (mg) for the PRACTALL-5 protocol */
+	/** Target protein amounts (mg) for PRACTALL-5 protocol */
 	modalSteps5: number[];
-	/** Target protein amounts (mg) for the PRACTALL-7 protocol */
+	/** Target protein amounts (mg) for PRACTALL-7 protocol */
 	modalSteps7: number[];
 }
 
 /**
- * Custom error class for HTTP-related failures.
+ * Custom error class for HTTP-related failures
  */
 export class HttpError extends Error {
 	public statusCode: number;

@@ -30,62 +30,14 @@
   border: 1px solid var(--ofc-border);
   border-radius: var(--ofc-radius);
   overflow: hidden;
-  box-shadow: var(--ofc-shadow-sm);
 
-  /* --- Toolbar & Search --- */
-
-  .ofc-toolbar {
-    display: grid;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.5rem 1rem;
-    background: var(--ofc-bg-surface);
-    border-bottom: 1px solid var(--ofc-border);
-    gap: 0.75rem;
-    align-items: center;
-    justify-content: end;
+  /* --- Auth override --- */
+  .core-toolbar {
+    background: var(--core-surface);
+    border-bottom: 0.075rem solid var(--core-border);
   }
 
-  .ofc-version-auth {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--ofc-text-muted);
-    font-size: 0.85rem;
-
-    .separator {
-      opacity: 0.4;
-      margin: 0 0.125rem;
-      user-select: none;
-    }
-  }
-
-  .login-link-btn {
-    background: none;
-    border: none;
-    color: var(--ofc-accent);
-    cursor: pointer;
-    padding: 0.25rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    svg {
-      display: block;
-    }
-  }
-
-  .ofc-version {
-    color: var(--ofc-accent);
-    font-weight: 500;
-    line-height: 1;
-  }
+  /* --- Search --- */
 
   .ofc-header {
     padding: 1rem;
@@ -679,21 +631,6 @@
     }
   }
 
-  /* --- Badges on Page --- */
-  .ofc-user-badge {
-    background: var(--ofc-row-hover);
-    color: var(--ofc-accent);
-    border: 1px solid oklch(from var(--ofc-accent) l c h / 0.3);
-    padding: 0.1rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    max-width: 7rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   /* --- Mobile Adaptations --- */
   @media (max-width: 48rem) {
 
@@ -739,7 +676,6 @@
   --ofc-text-muted: var(--c4, #555);
   --ofc-row-hover: oklch(from var(--ofc-accent) l c h / 0.05);
   --ofc-row-alt: oklch(from var(--ofc-text-primary) l c h / 0.02);
-  box-shadow: var(--ofc-shadow-sm);
 }
 
 /* Utility Helpers */

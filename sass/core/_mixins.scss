@@ -1,0 +1,37 @@
+// sass/core/_mixins.scss
+@use "variables" as *;
+
+// RESPONSIVE BREAKPOINTS
+// -------------------------
+
+$breakpoints: (
+  "sm": 36rem,
+  "md": 48rem,
+  "lg": 62rem,
+  "xl": 75rem,
+);
+
+@mixin core-mq($key) {
+  $size: map-get($breakpoints, $key);
+
+  @media (min-width: $size) {
+    @content;
+  }
+}
+
+// ACCESSIBLE FOCUS
+// -------------------------
+
+@mixin core-focus {
+  outline: 0.125rem solid $core-color-primary;
+  outline-offset: 0.125rem;
+}
+
+// FLEX HELPERS
+// -------------------------
+
+@mixin core-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

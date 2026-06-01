@@ -2,6 +2,7 @@
  * @module
  * Handles network requests for secure assets and to request protocol saving (email to dev).
  */
+import { supabase } from "../../core/api/supabase";
 import {
 	HttpError,
 	type OITBootstrapResponse,
@@ -68,6 +69,21 @@ export async function ensureResponseOk(response: Response) {
 	);
 }
 
+/** Helper to grab the active token */
+async function getAuthHeaders(): Promise<Record<string, string>> {
+	const {
+		data: { session },
+		error,
+	} = await supabase.auth.getSession();
+	if (error || !session) {
+		throw new HttpError("Unauthorized: No active session", 401);
+	}
+	return {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${session.access_token}`,
+	};
+}
+
 /**
  * Fetches the user's provisioned foods, protocols, and config through bootstrap netlify endpoint
  *
@@ -75,7 +91,10 @@ export async function ensureResponseOk(response: Response) {
  * @throws {HttpError} If the network request fails, session is unauthorized, or the server returns non-JSON content.
  */
 export async function fetchOITBootstrap(): Promise<OITBootstrapResponse> {
-	const response = await fetch("/.netlify/functions/oit-bootstrap");
+	const headers = await getAuthHeaders();
+	const response = await fetch("/.netlify/functions/oit-bootstrap", {
+		headers,
+	});
 	await ensureResponseOk(response);
 
 	const contentType = response.headers.get("content-type");
@@ -100,8 +119,12 @@ export async function loadSecureAsset(
 	filepath: string,
 	format: "auto" | "buffer" | "blob" | "json",
 ) {
+	const headers = await getAuthHeaders();
 	const response = await fetch(
 		`/.netlify/functions/get-secure-asset?file=${filepath}`,
+		{
+			headers: { Authorization: headers.Authorization },
+		},
 	);
 
 	await ensureResponseOk(response);
@@ -140,11 +163,15 @@ export async function loadSecureAsset(
 export async function requestSaveProtocol(
 	payload: SaveRequestPayload,
 ): Promise<boolean> {
+	const headers = await getAuthHeaders();
 	const response = await fetch(
 		"/.netlify/functions/oit-request-save-protocol",
 		{
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: headers.Authorization,
+			},
 			body: JSON.stringify(payload),
 		},
 	);

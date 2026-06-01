@@ -41,11 +41,10 @@ oit_calculator/
     └── exports.ts          # export ui triggers
 
 Serverless Functions (Netlify)
-├── auth-login.mts          # Authenticates user & issues JWT (HttpOnly cookie)
-├── auth-logout.mts         # Clears session cookie
-├── get-secure-asset.mts    # Serves permission-gated assets (JSON/PDF) from secure storage
+├── get-secure-asset.mts    # Serves permission-gated assets (JSON/PDF) using Supabase UUID
+├── oit-bootstrap.mts       # Aggregates provisioned protocols and foods for authenticated users
 ├── request-save-oit-protocol.mts # Processes protocol save requests via Resend API
-└── utils.mts               # Shared utilities for serverless functions (e.g. escaping)
+└── _lib/auth.mts           # Verifies Supabase tokens and extracts user claims
 ```
 
 ## Patterns
@@ -80,9 +79,9 @@ The tool uses a hybrid model to support multi-tenancy while keeping the base too
 
 ### Authentication & Secure Data Flow
 
-- **Login:** `auth-login.mts` verifies credentials against Supabase. On success, it issues a signed Netlify JWT (`nf_jwt`) for backend access and a Supabase JWT for client-side RLS.
-- **Bootstrap:** On app start, `loader.ts` calls the `oit-bootstrap` endpoint. The backend reads the user's config file, aggregates their **Tier 2 (Provisioned)** assets, and returns a consolidated payload.
-- **Merging:** `AppState` merges the public, provisioned, and (eventually) custom data, rebuilding search indices to provide a seamless unified view.
+- **Login:** Handled by `_ts/core/auth/login-client.ts`. Users authenticate with Supabase using a derived high-entropy hash as their password.
+- **Bootstrap:** On app start, `loader.ts` calls the `oit-bootstrap` endpoint with the Supabase access token. The backend verifies the token and aggregates **Tier 2 (Provisioned)** assets.
+- **Merging:** `AppState` merges the public, provisioned, and custom data, rebuilding search indices to provide a seamless unified view.
 
 ### Hybrid Rendering Strategy
 

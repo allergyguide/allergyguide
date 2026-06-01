@@ -143,29 +143,19 @@ export async function verifyUsersData() {
 		ENV_VARS.SUPABASE_SECRET_KEY,
 	);
 
-	async function getAllUsernames(): Promise<string[]> {
+	async function getAllUserIds(): Promise<string[]> {
 		const { data, error } = await supabaseAdmin
 			.from("authorized_users")
-			.select("username"); // Select only what you need
+			.select("id"); // Select UUID
 
 		if (error) {
 			console.error("Could not get list of authorized users from db", error);
 			process.exit(1);
 		}
-		return (data || []).map((row) => row.username);
+		return (data || []).map((row) => row.id);
 	}
 
-	const authUsers = await getAllUsernames();
-
-	// Load ADMIN_USERS (Optional exception list)
-	let adminUsers: string[] = [];
-	try {
-		adminUsers = JSON.parse(ENV_VARS.ADMIN_USERS || "[]");
-	} catch {
-		console.warn(
-			"Warning: Could not parse ADMIN_USERS. Treating as empty list.",
-		);
-	}
+	const authUserIds = await getAllUserIds();
 
 	// Check for File Existence
 	const usersMissingConfig: string[] = [];
@@ -173,30 +163,25 @@ export async function verifyUsersData() {
 	// Resolve path relative to project root
 	const configBaseDir = resolve("secure_assets/user_configs");
 
-	authUsers.forEach((user) => {
-		// If user is an Admin, they have implicit wildcard access, so no config file is strictly required.
-		if (adminUsers.includes(user)) {
-			return;
-		}
-
-		const configPath = resolve(configBaseDir, `${user}_config.json`);
+	authUserIds.forEach((uuid) => {
+		const configPath = resolve(configBaseDir, `${uuid}_config.json`);
 
 		if (!existsSync(configPath)) {
-			usersMissingConfig.push(user);
+			usersMissingConfig.push(uuid);
 		}
 	});
 
 	// Fail if any regular users are missing their config
 	if (usersMissingConfig.length > 0) {
 		console.error(
-			"Build Failed: The following users are in AUTH_USERS but missing a configuration file:",
+			"Build Failed: The following UUIDs are in authorized_users but missing a configuration file:",
 		);
 		console.error(JSON.stringify(usersMissingConfig, null, 2));
 		console.error(
-			`>> Expected file path on client: secure_assets/user_configs/{username}_config.json`,
+			`>> Expected file path on client: secure_assets/user_configs/{uuid}_config.json`,
 		);
 		process.exit(1);
 	}
 
-	console.log(`Security Config Verified: ${authUsers.length} users checked.`);
+	console.log(`Security Config Verified: ${authUserIds.length} users checked.`);
 }

@@ -500,7 +500,8 @@ export interface PublicData {
 
 // return type for load of provisioned resources on user login
 export interface OITBootstrapResponse {
-	username: string;
+	uuid: string;
+	email: string;
 	provisioned_foods: FoodData[];
 	provisioned_protocols: ProtocolData[];
 	handouts: string[];

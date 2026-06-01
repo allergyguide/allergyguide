@@ -1,0 +1,247 @@
+// sass/core/_signup.scss
+@use "variables" as *;
+@use "mixins" as *;
+@use "typography" as *;
+
+#signup-mount {
+  .signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: $core-space-xl $core-space-md;
+    min-height: 50vh;
+  }
+
+  .form-group {
+    margin-bottom: $core-space-md;
+
+    label {
+      display: block;
+      margin-bottom: $core-space-xs;
+      font-weight: 600;
+      color: $core-color-ink;
+      font-size: $core-font-size-sm;
+    }
+  }
+
+  .signup-card {
+    background-color: $core-color-bg;
+    border: 0.0625rem solid $core-color-border;
+    border-radius: $core-space-xs;
+    padding: $core-space-xl;
+    width: 100%;
+    max-width: 32rem;
+    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+
+    h3 {
+      margin-top: 0;
+      color: $core-color-ink;
+      font-size: $core-font-size-2xl;
+    }
+
+    p {
+      color: $core-color-ink-muted;
+      line-height: 1.6;
+    }
+  }
+
+  .center-text {
+    text-align: center;
+  }
+
+  .signup-header {
+    margin-bottom: $core-space-lg;
+
+    .user-identity {
+      font-size: $core-font-size-sm;
+      background: $core-color-surface;
+      padding: $core-space-xs $core-space-md;
+      border-radius: $core-space-3xs;
+      display: inline-block;
+    }
+  }
+
+  .warning-box {
+    background-color: $core-color-red-light;
+    border-left: 0.25rem solid $core-color-red;
+    padding: $core-space-md;
+    margin-bottom: $core-space-xl;
+
+    .warning-title {
+      color: $core-color-red;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: $core-space-xs;
+      margin-bottom: $core-space-xs;
+    }
+
+    p {
+      margin: 0;
+      font-size: $core-font-size-sm;
+      color: $core-color-ink;
+
+      &+p {
+        margin-top: $core-space-xs;
+      }
+    }
+  }
+
+  .error-message {
+    color: $core-color-red;
+    background-color: $core-color-red-light;
+    border: 0.0625rem solid $core-color-red;
+    padding: $core-space-sm;
+    border-radius: $core-space-3xs;
+    font-size: $core-font-size-sm;
+    margin-bottom: $core-space-md;
+    text-align: center;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .signup-form {
+    .inline-error {
+      color: $core-color-red;
+      font-size: 0.8rem;
+      margin-top: $core-space-3xs;
+    }
+  }
+
+  .checkbox-group {
+    margin: $core-space-lg 0;
+  }
+
+  .checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 2rem;
+    cursor: pointer;
+    font-size: $core-font-size-sm;
+    user-select: none;
+    color: $core-color-ink-muted;
+
+    input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 1.25rem;
+      width: 1.25rem;
+      background-color: $core-color-surface;
+      border: 0.0625rem solid $core-color-border;
+      border-radius: $core-space-3xs;
+    }
+
+    &:hover input~.checkmark {
+      border-color: $core-color-primary;
+    }
+
+    input:checked~.checkmark {
+      background-color: $core-color-primary;
+      border-color: $core-color-primary;
+    }
+
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    input:checked~.checkmark:after {
+      display: block;
+    }
+
+    input:focus-visible~.checkmark {
+      outline: 0.125rem solid $core-color-primary;
+      outline-offset: 0.125rem;
+    }
+
+    .checkmark:after {
+      left: 0.4rem;
+      top: 0.15rem;
+      width: 0.35rem;
+      height: 0.7rem;
+      border: solid white;
+      border-width: 0 0.125rem 0.125rem 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  .signup-actions {
+    margin-top: $core-space-xl;
+
+    .full-width {
+      width: 100%;
+    }
+  }
+
+  .status-icon {
+    font-size: 4rem;
+    margin-bottom: $core-space-md;
+
+    &.success-icon {
+      color: $core-color-green;
+    }
+
+    &.error-icon {
+      color: $core-color-red;
+    }
+  }
+
+  .loading-state {
+    text-align: center;
+    padding: $core-space-3xl;
+  }
+
+  // Simple spinner
+  .spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0.25rem solid $core-color-surface;
+    border-top: 0.25rem solid $core-color-primary;
+    border-radius: 50%;
+    margin: 0 auto $core-space-lg;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .pulse {
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+
+    50% {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+  }
+}

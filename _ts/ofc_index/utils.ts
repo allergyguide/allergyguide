@@ -1,10 +1,10 @@
 import { FoodType, type Unit } from "./types";
 
 /**
- * Get the measuring unit for a food by its physical form
+ * Get measuring unit for a food by its physical form
  *
  * @param food - Food object containing a `type` field of type `FoodType`
- * @returns {Unit} "g" for SOLID; "ml" for LIQUID; "capsule" for CAPSULE
+ * @returns {Unit} "g" for SOLID, "ml" for LIQUID, "capsule" for CAPSULE
  */
 export function getMeasuringUnit(food: { type: FoodType }): Unit {
 	if (food.type === FoodType.LIQUID) {

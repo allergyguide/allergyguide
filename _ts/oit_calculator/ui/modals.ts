@@ -11,10 +11,8 @@ import {
 } from "../constants";
 import { validateProtocol } from "../core/validator";
 import { requestSaveProtocol } from "../data/api";
-import { login } from "../data/auth";
 import { generateAsciiContent } from "../export/exports";
 import { workspace } from "../state/instances";
-import { HttpError } from "../types";
 import { serializeProtocol } from "../utils";
 
 // STATE
@@ -27,13 +25,6 @@ let clickwrapCheckbox3: HTMLInputElement | null = null;
 let clickwrapCheckbox4: HTMLInputElement | null = null;
 let clickwrapGenerateBtn: HTMLButtonElement | null = null;
 let clickwrapCancelBtn: HTMLButtonElement | null = null;
-
-let turnstileWidgetId: string | null | undefined = null;
-// ------------------
-
-// Official Cloudflare Testing Key (Always Passes)
-// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
-const TURNSTILE_TEST_SITE_KEY = "1x00000000000000000000AA";
 
 /**
  * Checks if the user has a valid, non-expired clickwrap acceptance token
@@ -166,165 +157,6 @@ export function attachClickwrapEventListeners(
 		setClickwrapAcceptToken();
 		hideClickwrapModal();
 		await onGenerate();
-	});
-}
-
-/**
- * Renders the Turnstile widget if it hasn't been rendered yet.
- */
-function ensureTurnstileRendered() {
-	const widgetContainer = document.getElementById("turnstile-widget");
-	if (!widgetContainer || !turnstile) return;
-
-	// If already rendered, just reset it
-	if (turnstileWidgetId) {
-		turnstile.reset(turnstileWidgetId);
-		return;
-	}
-
-	let sitekey = "0x4AAAAAACK7_weh_BsWxOhN";
-
-	// for private netlify deploys
-	if (window.location.hostname.includes("netlify.app")) {
-		sitekey = TURNSTILE_TEST_SITE_KEY;
-	}
-
-	// Render
-	try {
-		turnstileWidgetId = turnstile.render("#turnstile-widget", {
-			sitekey: sitekey,
-		});
-	} catch (err) {
-		console.error("Failed to render Turnstile:", err);
-	}
-}
-
-/**
- * Attach listeners to the login modal.
- * @param onLoginAttempt - Callback that triggers data loading. Must return TRUE if load succeeded, FALSE otherwise.
- */
-export function attachLoginModalListeners(
-	onLoginAttempt: () => Promise<boolean>,
-) {
-	const loginBtn = document.getElementById("btn-login-trigger"); // The button in the main UI
-	const modal = document.getElementById("oit-login-modal");
-	const form = document.getElementById("oit-login-form") as HTMLFormElement;
-	const errorMsg = document.getElementById("oit-login-error");
-	const cancelBtn = document.getElementById("btn-login-cancel");
-
-	if (!loginBtn || !modal || !form) return;
-
-	// Show Modal
-	loginBtn.addEventListener("click", () => {
-		modal.style.display = "flex";
-		document.body.style.overflow = "hidden"; // Lock scroll
-		if (errorMsg) errorMsg.textContent = "";
-
-		// init turnstile
-		ensureTurnstileRendered();
-
-		// PING auth-login, warm up netlify function
-		fetch("/.netlify/functions/auth-login", {
-			method: "OPTIONS",
-		}).catch(() => {});
-	});
-
-	// Hide Modal
-	const hide = () => {
-		modal.style.display = "none";
-		document.body.style.overflow = ""; // Restore scroll
-		form.reset();
-		if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
-	};
-
-	if (cancelBtn) cancelBtn.addEventListener("click", hide);
-
-	// Allow ESC to close
-	document.addEventListener("keydown", (e) => {
-		if (e.key === "Escape" && modal && modal.style.display === "flex") {
-			hide();
-		}
-	});
-
-	// Submit
-	form.addEventListener("submit", async (e) => {
-		e.preventDefault();
-		const username = (
-			document.getElementById("login-username") as HTMLInputElement
-		).value;
-		const password = (
-			document.getElementById("login-password") as HTMLInputElement
-		).value;
-		const submitBtn = form.querySelector(
-			"button[type='submit']",
-		) as HTMLButtonElement;
-
-		// GET TURNSTILE TOKEN
-		const turnstileToken = turnstileWidgetId
-			? turnstile.getResponse(turnstileWidgetId)
-			: "";
-		if (!turnstileToken) {
-			if (errorMsg)
-				errorMsg.textContent = "Please complete the Turnstile verification.";
-			return;
-		}
-
-		try {
-			submitBtn.textContent = "Logging in...";
-			submitBtn.disabled = true;
-			if (errorMsg) errorMsg.textContent = "";
-
-			// AUTH password
-			const authSuccess = await login(username, password, turnstileToken);
-
-			if (authSuccess) {
-				const loadSuccess = await onLoginAttempt();
-				if (loadSuccess) {
-					hide();
-					localStorage.setItem(
-						"oit_session_active",
-						JSON.stringify({
-							valid: true,
-							expiresAt: authSuccess.expiresAt,
-							username: authSuccess.username,
-						}),
-					);
-				} else {
-					// FAIL: Keep modal open, show error to user
-					// This implies auth worked, but they don't have the OIT tool config or lacks permissions
-					if (errorMsg)
-						errorMsg.textContent =
-							"Login successful, but this account lacks access to the OIT Calculator.";
-					// Reset turnstile because the token is single-use
-					if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
-				}
-			}
-		} catch (error) {
-			// ALWAYS RESET TURNSTILE ON ERROR (Token cannot be reused)
-			if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
-
-			if (errorMsg) {
-				if (error instanceof HttpError) {
-					if (error.statusCode === 401 || error.statusCode === 403) {
-						errorMsg.textContent = "Invalid username or password.";
-					} else if (error.statusCode === 400) {
-						errorMsg.textContent =
-							"Turnstile validation failed. Please try again.";
-					} else if (error.statusCode === 500) {
-						errorMsg.textContent =
-							"Configuration Error: Netlify function API unavailable or internal err";
-					} else {
-						errorMsg.textContent = "Login failed. Please try again.";
-					}
-				} else {
-					console.log(error);
-					errorMsg.textContent = "Login failed. Please try again.";
-				}
-			}
-		} finally {
-			submitBtn.textContent = "Login";
-			submitBtn.disabled = false;
-		}
 	});
 }
 

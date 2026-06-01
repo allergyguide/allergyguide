@@ -2,25 +2,33 @@
  * Core UI orchestration and main template
  */
 import { html, nothing, render, type TemplateResult } from "lit-html";
+import { coreToolbarTemplate } from "../../core/ui/toolbar";
 import { appState } from "../state/state";
 import type { Food, OfcState } from "../types";
 import { protocolModalTemplate } from "./protocol-modal";
 import { resultsTableTemplate } from "./results-table";
-import { toolbarTemplate } from "./toolbar";
 
 let lastSearchQuery = "";
 let isFirstRender = true;
+
+export interface AppOptions {
+	onLogin: () => void;
+	onLogout: () => void;
+	version: string;
+	changelogUrl: string;
+}
 
 /**
  * Initializes the OFC index application by subscribing to state changes and rendering the UI
  * Also handles the transition from the static skeleton loader to the interactive app
  *
  * @param mountPoint - The DOM element where the app should be rendered
+ * @param options - Configuration options and callbacks
  */
-export function initApp(mountPoint: HTMLElement) {
+export function initApp(mountPoint: HTMLElement, options: AppOptions) {
 	appState.subscribe((state) => {
 		const filteredFoods = appState.getFilteredFoods();
-		render(appTemplate(state, filteredFoods), mountPoint);
+		render(appTemplate(state, filteredFoods, options), mountPoint);
 
 		// Handoff: hide skeleton and show app on first successful render
 		if (isFirstRender) {
@@ -53,15 +61,24 @@ export function initApp(mountPoint: HTMLElement) {
  *
  * @param state - Current application state
  * @param filteredFoods - Array of foods filtered by the search query
+ * @param options - Configuration options and callbacks
  * @returns {TemplateResult} The lit-html template result
  */
 const appTemplate = (
 	state: OfcState,
 	filteredFoods: Food[],
+	options: AppOptions,
 ): TemplateResult => html`
     <div class="ofc-container">
         <!-- Declarative Toolbar -->
-        ${toolbarTemplate(state)}
+        ${coreToolbarTemplate({
+					isLoggedIn: state.isLoggedIn,
+					userEmail: state.email,
+					version: options.version,
+					changelogUrl: options.changelogUrl,
+					onLogin: options.onLogin,
+					onLogout: options.onLogout,
+				})}
 
         <!-- Search Header -->
         <div class="ofc-header">
@@ -88,7 +105,7 @@ const appTemplate = (
 					state.debouncedSearchQuery.trim()
 						? html`
             <div class="ofc-results-info">
-                Found ${filteredFoods.length} foods
+                Found ${filteredFoods.length >= 100 ? "100+" : filteredFoods.length} foods
             </div>
         `
 						: html`

@@ -5,6 +5,10 @@
  */
 
 import { nothing, render } from "lit-html";
+import {
+	type CoreToolbarProps,
+	coreToolbarTemplate,
+} from "../../core/ui/toolbar";
 import { validateProtocol } from "../core/validator";
 import { workspace } from "../state/instances";
 import type {
@@ -25,6 +29,25 @@ declare const __COMMIT_HASH__: string;
 // ============================================
 // MODULE SPECIFIC INTERFACES
 // ============================================
+
+/**
+ * Renders the interactive toolbar into the mount point.
+ * Replaces the static skeleton loader.
+ *
+ * @param props - properties for the toolbar
+ */
+export function renderToolbar(props: CoreToolbarProps): void {
+	const mount = document.getElementById("core-toolbar-mount");
+	if (mount) {
+		render(coreToolbarTemplate(props), mount);
+
+		// Hide skeleton on first successful render
+		const skeleton = document.getElementById("oit-toolbar-skeleton");
+		if (skeleton) {
+			skeleton.style.display = "none";
+		}
+	}
+}
 
 /**
  * Updates the disabled/enabled state of the Undo and Redo buttons.

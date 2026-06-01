@@ -1,17 +1,27 @@
-/**
- * Direct API calls to netlify serverless functions
- */
+import { supabase } from "../../core/api/supabase";
 import { HttpError, type OfcBootstrapResponse } from "../types";
 
 /**
- * Fetches the consolidated bootstrap data from the serverless function
- * This endpoint provides provisioned food lists and authentication confirmation
+ * Fetches consolidated bootstrap data from the serverless function
+ * Provides provisioned food lists and authentication confirmation
  *
- * @returns {Promise<OfcBootstrapResponse | null>} The bootstrap data if authenticated, or null if the session is unauthorized
- * @throws {HttpError} If the server returns a non-OK status other than 401/403
+ * @returns {Promise<OfcBootstrapResponse | null>} Bootstrap data if authenticated, or null if unauthorized
+ * @throws {HttpError} If server returns a non-OK status other than 401/403
  */
 export async function fetchOFCBootstrap(): Promise<OfcBootstrapResponse | null> {
-	const response = await fetch("/.netlify/functions/ofc-bootstrap");
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
+
+	if (!session) {
+		return null;
+	}
+
+	const response = await fetch("/.netlify/functions/ofc-bootstrap", {
+		headers: {
+			Authorization: `Bearer ${session.access_token}`,
+		},
+	});
 
 	if (response.status === 401 || response.status === 403) {
 		return null;

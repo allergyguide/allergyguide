@@ -12,16 +12,14 @@
 // ============================================
 
 import Decimal from "decimal.js";
+import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
+import { runCrudTest } from "../core/data/test-crud";
+import { renderAuthUI } from "../core/ui/auth-modals";
 import { VALIDATION_DEBOUNCE_MS } from "./constants";
 import { validateProtocol } from "./core/validator";
-import { logout } from "./data/auth";
-import {
-	handleUserLoad,
-	loadPublicDatabases,
-	loadUserConfiguration,
-} from "./data/loader";
+import { loadPublicDatabases, loadUserConfiguration } from "./data/loader";
 import { appState, initializeAppState, workspace } from "./state/instances";
-import type { Warning } from "./types";
+import { HttpError, type Warning } from "./types";
 import {
 	renderFoodASettings,
 	renderFoodBSettings,
@@ -34,7 +32,6 @@ import {
 } from "./ui/exports";
 import {
 	attachClickwrapEventListeners,
-	attachLoginModalListeners,
 	attachSaveRequestListeners,
 } from "./ui/modals";
 // UI
@@ -42,6 +39,7 @@ import {
 	renderDosingStrategy,
 	renderProtocolTable,
 	renderTabs,
+	renderToolbar,
 	showProtocolUI,
 	updateFoodBDisabledState,
 	updateUndoRedoButtons,
@@ -49,12 +47,64 @@ import {
 } from "./ui/renderers";
 import { initSearchEvents } from "./ui/searchUI";
 
+// And current tool version
+declare const __VERSION_OIT_CALCULATOR__: string;
+
 // Configure Decimal.js
 Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 
 // ============================================
 // INITIALIZATION
 // ============================================
+
+// 1. Create the hydration callback
+const handleSuccessfulAuth = async () => {
+	try {
+		// Attempt to fetch the secure Netlify config
+		const userData = await loadUserConfiguration();
+
+		appState.addProvisionedData(
+			userData.provisioned_foods,
+			userData.provisioned_protocols,
+			userData.handouts,
+		);
+		appState.setAuthState(true, userData.email);
+
+		// Everything worked! Close the modal
+		renderAuthUI("HIDDEN");
+	} catch (e) {
+		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
+		await lockAndSignOut(null);
+
+		let userFacingMessage =
+			"An unexpected error occurred while loading your profile.";
+
+		if (e instanceof HttpError) {
+			if (e.statusCode === 401) {
+				console.debug("No active session or token expired:", e);
+				userFacingMessage = "Your session has expired. Please log in again.";
+			} else if (e.statusCode === 403) {
+				console.debug("Failed to load user config (Not Provisioned):", e);
+				userFacingMessage =
+					"Login successful, but this account lacks access to the OIT Calculator.";
+			} else if (e.statusCode >= 500) {
+				console.warn("User load failed (Server Error):", e);
+				userFacingMessage =
+					"Server error retrieving your profile. Please try again later.";
+			} else {
+				console.warn(`User load failed (${e.statusCode}):`, e);
+			}
+		} else {
+			// Non-HTTP error (e.g., TypeError from JSON parsing, Network drop)
+			console.error("Undefined err in handleSuccessfulAuth: ", e);
+			userFacingMessage =
+				"Network or connection error. Please check your internet and try again.";
+		}
+
+		// Keep the modal open and show the error!
+		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+	}
+};
 
 /**
  * Initialize the OIT calculator after DOM is ready
@@ -68,8 +118,6 @@ async function initializeCalculator(): Promise<void> {
 
 	// Start loads
 	const publicDataPromise = loadPublicDatabases(); // for CNF foods basically
-	const userDataPromise = loadUserConfiguration().catch(() => null);
-
 	// Await Public Data (Required for AppState init)
 	const publicData = await publicDataPromise;
 
@@ -80,27 +128,32 @@ async function initializeCalculator(): Promise<void> {
 	let cachedWarnings: Warning[] = [];
 	let validationTimer: number | null = null;
 
-	appState.subscribeToAuth((isLoggedIn) => {
-		const loginBtn = document.getElementById("btn-login-trigger");
-		const logoutBtn = document.getElementById("btn-logout-trigger");
-		const badge = document.getElementById("user-badge");
+	const onLogin = () => renderAuthUI("LOGIN", handleSuccessfulAuth);
+	const onLogout = async () => {
+		if (confirm("Are you sure you want to log out?")) {
+			await lockAndSignOut();
+		}
+	};
 
+	const changelogLink =
+		(document.querySelector(".changelog-link") as HTMLAnchorElement)?.href ||
+		"#";
+
+	const getToolbarProps = () => ({
+		isLoggedIn: appState.isLoggedIn,
+		userEmail: appState.email,
+		version: __VERSION_OIT_CALCULATOR__,
+		changelogUrl: changelogLink,
+		onLogin,
+		onLogout,
+	});
+
+	appState.subscribeToAuth((isLoggedIn) => {
 		// Update workspace auth
 		workspace.setAuth(isLoggedIn);
 
-		if (isLoggedIn) {
-			if (loginBtn) loginBtn.style.display = "none";
-			if (logoutBtn) logoutBtn.style.display = "inline-block";
-			if (badge) {
-				badge.textContent = `${appState.username}`;
-				badge.style.display = "inline-block";
-			}
-		} else {
-			// Public Mode
-			if (loginBtn) loginBtn.style.display = "inline-block";
-			if (logoutBtn) logoutBtn.style.display = "none";
-			if (badge) badge.style.display = "none";
-		}
+		// Render interactive toolbar
+		renderToolbar(getToolbarProps());
 
 		// Force UI refresh if protocol exists
 		const p = workspace.getActive().getProtocol();
@@ -116,48 +169,35 @@ async function initializeCalculator(): Promise<void> {
 		}
 	});
 
-	// OPTIMISTIC UI
-	// Check if we expect to be logged in based on local flag
-	let optimisticLogin = false;
-	try {
-		const sessionRaw = localStorage.getItem("oit_session_active");
-		if (sessionRaw) {
-			const session = JSON.parse(sessionRaw);
-			if (session.valid && session.expiresAt > Date.now()) {
-				optimisticLogin = true;
-				appState.setAuthState(true, session.username || "..."); // Show "User: Loading..." immediately
-			} else {
-				localStorage.removeItem("oit_session_active");
-			}
-		}
-	} catch {
-		// Ignore corrupt localstorage
-	}
+	// SETUP AUTH
+	// Determine identity and vault state
+	const vaultState = await determineVaultState();
+	if (vaultState === "UNAUTHENTICATED") {
+		// Public mode. Application is usable with publicFoods.
+		appState.setAuthState(false, null);
+		// renderToolbar is called by subscribeToAuth via setAuthState
+	} else if (vaultState === "LOCKED") {
+		// They are logged in to Supabase, but the DEK is missing in this tab.
+		// Force them to unlock before loading the calculator.
+		renderAuthUI("UNLOCK", handleSuccessfulAuth);
+	} else if (vaultState === "UNLOCKED") {
+		// 3. Fully Authenticated and Decrypted! Load the user data.
+		renderAuthUI("HIDDEN");
 
-	// Await User Data (The actual auth check + data load)
-	const userData = await userDataPromise;
-
-	// If successful auth in
-	if (userData) {
-		console.log("Session restored: Loading provisioned assets.");
-		appState.addProvisionedData(
-			userData.provisioned_foods,
-			userData.provisioned_protocols,
-			userData.handouts,
-		);
-
-		// Set Real Auth State (Triggers listeners again with real name)
-		appState.setAuthState(true, userData.username);
-
-		// remove sync loading indicator from the optimistic UI
-		const badge = document.getElementById("user-badge");
-		if (badge) badge.classList.remove("oit-data-syncing");
-	} else {
-		// If we optimistically showed login but the request failed (cookie expired, network err), revert to public
-		if (optimisticLogin) {
-			console.log("Session invalid or expired. Reverting to public mode.");
-			appState.setAuthState(false, null);
-			localStorage.removeItem("oit_session_active"); // Cleanup
+		try {
+			const userData = await loadUserConfiguration(); // This now uses Bearer token securely!
+			appState.addProvisionedData(
+				userData.provisioned_foods,
+				userData.provisioned_protocols,
+				userData.handouts,
+			);
+			appState.setAuthState(true, userData.email);
+			// renderToolbar is called by subscribeToAuth
+		} catch {
+			console.error(
+				"Failed to load provisioned assets. User may not have access.",
+			);
+			// Optionally handle 403s here
 		}
 	}
 
@@ -248,22 +288,6 @@ async function initializeCalculator(): Promise<void> {
 	// Set up clickwrap modal
 	attachClickwrapEventListeners(triggerPdfGeneration);
 
-	// setup login logic
-	attachLoginModalListeners(handleUserLoad);
-
-	// wire up logout logic:
-	const logoutBtn = document.getElementById("btn-logout-trigger");
-	if (logoutBtn) {
-		logoutBtn.addEventListener("click", async () => {
-			const confirming = confirm("Are you sure you want to log out?");
-			if (confirming) {
-				await logout();
-				// Reload the page to clear all memory/state
-				window.location.reload();
-			}
-		});
-	}
-
 	// wire up protocol save request modal
 	attachSaveRequestListeners();
 
@@ -273,6 +297,21 @@ async function initializeCalculator(): Promise<void> {
 		const debugPanel = document.getElementById("oit-debug-panel");
 		if (debugPanel) {
 			debugPanel.style.display = "block";
+			// Wire up the CRUD test button!
+			const crudBtn = document.getElementById(
+				"btn-run-crud-test",
+			) as HTMLButtonElement;
+			if (crudBtn) {
+				crudBtn.addEventListener("click", async () => {
+					crudBtn.innerText = "Running...";
+					crudBtn.disabled = true;
+
+					await runCrudTest();
+
+					crudBtn.innerText = "Run Database Test";
+					crudBtn.disabled = false;
+				});
+			}
 		}
 	}
 

@@ -1,0 +1,27 @@
+@use "variables" as *;
+@use "mixins" as *;
+@use "typography" as *;
+
+.core-input {
+  width: 100%;
+  padding: $core-space-sm;
+  border: 0.0625rem solid $core-color-border;
+  border-radius: $core-space-3xs;
+  font-family: $core-font-sans;
+  background-color: transparent; // Let the surface show through
+  color: $core-color-ink;
+
+  &:focus {
+    border-color: $core-color-primary;
+    @include core-focus;
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-text-fill-color: $core-color-ink;
+    -webkit-box-shadow: 0 0 0 62.5rem $core-color-bg inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+}
