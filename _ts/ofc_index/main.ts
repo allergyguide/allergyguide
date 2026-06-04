@@ -1,21 +1,68 @@
-/**
- * Application entry point
- * Initialization, global event listeners, data bootstrapping
- */
-
+import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
+import { renderAuthUI } from "../core/ui/auth-modals";
 import { handleUserLoad, loadPublicFoods } from "./data/loader";
 import { appState } from "./state/state";
+import { HttpError } from "./types";
 import { initApp } from "./ui/app";
-import { attachLoginModalListeners } from "./ui/login-modal";
+
+/** Build-time injected version string */
+declare const __VERSION_OFC_INDEX__: string;
+
+/**
+ * Shared callback for successful authentication and vault unlock
+ * Orchestrates loading of protected assets
+ */
+async function handleSuccessfulAuth() {
+	try {
+		const userResult = await handleUserLoad();
+		const currentPublicFoods = appState.getState().publicFoods;
+
+		appState.setAuthState(userResult.isLoggedIn, userResult.email);
+		appState.setFoods(currentPublicFoods, userResult.foods);
+
+		// Hide the modal on success
+		renderAuthUI("HIDDEN");
+	} catch (e) {
+		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
+		await lockAndSignOut(null);
+
+		let userFacingMessage =
+			"An unexpected error occurred while loading your profile.";
+
+		if (e instanceof HttpError) {
+			if (e.statusCode === 401) {
+				console.debug("No active session or token expired:", e);
+				userFacingMessage = "Your session has expired. Please log in again.";
+			} else if (e.statusCode === 403) {
+				console.debug("Failed to load user config (Not Provisioned):", e);
+				userFacingMessage =
+					"Login successful, but this account lacks access to this tool.";
+			} else if (e.statusCode >= 500) {
+				console.warn("User load failed (Server Error):", e);
+				userFacingMessage =
+					"Server error retrieving your profile. Please try again later.";
+			} else {
+				console.warn(`User load failed (${e.statusCode}):`, e);
+			}
+		} else {
+			// Non-HTTP error (e.g., TypeError from JSON parsing, Network drop)
+			console.error("Undefined err in handleSuccessfulAuth: ", e);
+			userFacingMessage =
+				"Network or connection error. Please check your internet and try again.";
+		}
+
+		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+	}
+}
 
 /**
  * Main initialization function
  *
- * 1. Find the mount point in the DOM
- * 2. Set up global state subscriptions
- * 3. Register global keyboard shortcuts
- * 4. Parallel loading of public and user-specific food data
- * 5. Mount the Lit-html application and wire up login modal
+ * 1. Finds mount point in DOM
+ * 2. Sets up global state subscriptions
+ * 3. Registers global keyboard shortcuts
+ * 4. Determines identity and vault state
+ * 5. Mounts Lit-html application
  */
 async function initializeOFC() {
 	const mountPoint = document.getElementById("ofc-app-mount");
@@ -41,36 +88,46 @@ async function initializeOFC() {
 		}
 	});
 
-	// Start loading public data
-	const publicFoodsPromise = loadPublicFoods();
+	// --- AUTHENTICATION AND DATA LOAD ---
 
-	// Check for user login and load provisioned data
-	const userLoadPromise = handleUserLoad();
+	// Load public data immediately (always available)
+	const publicFoods = await loadPublicFoods();
+	appState.setFoods(publicFoods, []);
 
-	// Wire up login modal
-	attachLoginModalListeners(async () => {
+	// Determine Identity and Vault State
+	const vaultState = await determineVaultState();
+
+	if (vaultState === "UNAUTHENTICATED") {
+		// Public mode => publicFoods
+		appState.setAuthState(false, null);
+	} else if (vaultState === "LOCKED") {
+		// Logged in to Supabase, but DEK missing: force unlock
+		renderAuthUI("UNLOCK", handleSuccessfulAuth);
+	} else if (vaultState === "UNLOCKED") {
+		// Fully Authenticated and Decrypted! Load user data
 		const userResult = await handleUserLoad();
-		const publicFoods = await publicFoodsPromise;
-		appState.setAuthState(userResult.isLoggedIn, userResult.username);
+		appState.setAuthState(userResult.isLoggedIn, userResult.email);
 		appState.setFoods(publicFoods, userResult.foods);
-		return true;
-	});
-
-	try {
-		const [publicFoods, userResult] = await Promise.all([
-			publicFoodsPromise,
-			userLoadPromise,
-		]);
-
-		appState.setAuthState(userResult.isLoggedIn, userResult.username);
-		appState.setFoods(publicFoods, userResult.foods);
-		console.log("OFC Index Data loaded successfully");
-
-		// Init UI to replace skeleton UI in shortcode html, now that data is loaded
-		initApp(mountPoint);
-	} catch (e) {
-		console.error("Failed to load OFC index data", e);
 	}
+
+	const changelogLink =
+		(
+			document.querySelector(
+				".ofc-skeleton-container .changelog-link",
+			) as HTMLAnchorElement
+		)?.href || "#";
+
+	// init UI (removes skeleton)
+	initApp(mountPoint, {
+		onLogin: () => renderAuthUI("LOGIN", handleSuccessfulAuth),
+		onLogout: async () => {
+			if (confirm("Are you sure you want to log out?")) {
+				await lockAndSignOut();
+			}
+		},
+		version: __VERSION_OFC_INDEX__,
+		changelogUrl: changelogLink,
+	});
 }
 
 // Initialize when DOM is ready

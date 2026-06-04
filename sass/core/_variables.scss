@@ -1,0 +1,87 @@
+// sass/core/_variables.scss
+
+// ============================================
+// THEME ADAPTIVE TOKENS (CSS Variables)
+// ============================================
+
+:root {
+  /* DARK MODE (Default) */
+
+  // Surfaces, Text
+  --core-bg: oklch(0.12 0 0);
+  --core-surface: oklch(0.18 0.01 64);
+  --core-ink: oklch(0.95 0 0);
+  --core-ink-muted: oklch(0.7 0.01 64);
+  --core-border: oklch(0.25 0.01 64);
+
+  // Brand
+  --core-primary: oklch(0.77 0.17 64); // Brand Orange
+  --core-primary-hover: oklch(0.82 0.15 64); // Slightly brighter for dark mode interaction
+
+  // Status
+  --core-danger: oklch(0.65 0.20 25);
+  --core-danger-bg: oklch(0.2 0.1 25);
+  --core-success: oklch(0.75 0.15 140);
+}
+
+:root.switch {
+  /* LIGHT MODE */
+
+  // Surfaces, Text
+  --core-bg: oklch(1 0 0);
+  --core-surface: oklch(0.98 0.005 64);
+  --core-ink: oklch(0.15 0 0);
+  --core-ink-muted: oklch(0.45 0.01 64);
+  --core-border: oklch(0.9 0.01 64);
+
+  // Brand (Hardened for light mode contrast)
+  --core-primary: oklch(0.65 0.18 64); // Deepened orange for white backgrounds
+  --core-primary-hover: oklch(0.55 0.19 64); // Darker for hover
+
+  // Status
+  --core-danger: oklch(0.55 0.22 25); // Sharpened red
+  --core-danger-bg: oklch(0.96 0.02 25);
+  --core-success: oklch(0.45 0.16 140); // Darker green for readability
+}
+
+// ============================================
+// SCSS ALIASES (For component logic)
+// ============================================
+
+$core-color-bg: var(--core-bg);
+$core-color-surface: var(--core-surface);
+$core-color-ink: var(--core-ink);
+$core-color-ink-muted: var(--core-ink-muted);
+$core-color-border: var(--core-border);
+
+$core-color-primary: var(--core-primary);
+$core-color-primary-dark: var(--core-primary-hover);
+
+$core-color-red: var(--core-danger);
+$core-color-red-light: var(--core-danger-bg);
+$core-color-green: var(--core-success);
+
+// ============================================
+// SPACING SCALE (rem-based)
+// ============================================
+
+$core-space-3xs: 0.125rem;
+$core-space-2xs: 0.25rem;
+$core-space-xs: 0.5rem;
+$core-space-sm: 0.75rem;
+$core-space-md: 1rem;
+$core-space-lg: 1.5rem;
+$core-space-xl: 2rem;
+$core-space-2xl: 3rem;
+$core-space-3xl: 4rem;
+
+// ============================================
+// Z-INDEX SCALE
+// ============================================
+
+$core-z-dropdown: 1000;
+$core-z-sticky: 1100;
+$core-z-overlay: 2000;
+$core-z-modal: 2100;
+$core-z-toast: 3000;
+$core-z-tooltip: 4000;

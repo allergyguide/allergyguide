@@ -26,6 +26,14 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.10.0] - 2026-06-04
+
+### Security
+
+- Upgraded login system UI
+- Passwords are no longer stored on the server
+- Account data recovery is no longer possible if a password is lost
+
 ## [0.9.0] - 2026-05-30
 
 This release migrates the legacy implementation to TypeScript, with user authentication for additional features.

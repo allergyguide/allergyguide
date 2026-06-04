@@ -12,6 +12,22 @@ authors = ["Joshua Yu"]
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+---
+
+## [0.16.0] - 2026-06-04
+
+### Added
+
 - Branded food database: Search and select curated brand name foods directly in the calculator for authorized users.
 - Nutrition label verification: Branded foods now feature direct links to view the manufacturer nutrition label online.
 - Formulation drift alerts: If the protein content or serving size of a branded food previously used in a protocol changes, a warning icon will alerts the change.
@@ -30,17 +46,15 @@ authors = ["Joshua Yu"]
 - UI: Safety warnings and row highlighting update with a slight delay during typing to reduce visual distraction
 - Exports: Updated PDF and ASCII export logic to format capsule steps as "Capsule(s) as per pharmacy".
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - UI: Fixed an issue where the background page would still scroll when the login modal was open.
 
 ### Security
 
----
+- Upgraded login system UI
+- Passwords now locally encrypt custom data and are never sent to or stored on the server
+- Account data recovery is no longer possible if a password is lost due to the new encryption model
 
 ## [0.15.0] - 2026-01-11
 

@@ -28,7 +28,7 @@ export class AppState {
 
 	// FOR AUTH
 	public isLoggedIn: boolean = false;
-	public username: string | null = null;
+	public email: string | null = null;
 	private authListeners: AuthListener[] = [];
 
 	constructor(
@@ -47,11 +47,11 @@ export class AppState {
 	/**
 	 * Updates the application's authentication state and notifies all subscribed listeners.
 	 * @param isLoggedIn - Whether the user is currently authenticated.
-	 * @param username - The username of the authenticated user, or null if logged out.
+	 * @param email - The email of the authenticated user, or null if logged out.
 	 */
-	public setAuthState(isLoggedIn: boolean, username: string | null) {
+	public setAuthState(isLoggedIn: boolean, email: string | null) {
 		this.isLoggedIn = isLoggedIn;
-		this.username = username;
+		this.email = email;
 		this.notifyAuthListeners();
 	}
 

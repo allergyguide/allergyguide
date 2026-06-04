@@ -1,0 +1,62 @@
+// sass/core/_auth-modals.scss
+@use "variables" as *;
+@use "mixins" as *;
+@use "typography" as *;
+
+.core-auth-modal-overlay {
+
+  .core-auth-login-content {
+    font-family: $core-font-sans;
+
+    h2 {
+      color: $core-color-ink;
+      margin-bottom: $core-space-md;
+    }
+
+    p {
+      line-height: 1.6;
+      margin-bottom: $core-space-lg;
+    }
+
+  }
+
+  .core-auth-form-group {
+    margin-bottom: $core-space-md;
+
+    label {
+      display: block;
+      margin-bottom: $core-space-xs;
+      font-weight: 600;
+      color: $core-color-ink;
+      font-size: $core-font-size-sm;
+    }
+  }
+
+  .core-auth-error-message {
+    color: $core-color-red;
+    background-color: $core-color-red-light;
+    border: 0.0625rem solid $core-color-red;
+    padding: $core-space-sm;
+    border-radius: $core-space-3xs;
+    font-size: $core-font-size-sm;
+    margin-bottom: $core-space-md;
+    text-align: center;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .core-auth-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: $core-space-md;
+    margin-top: $core-space-lg;
+  }
+
+  .login-instruction {
+    font-size: $core-font-size-sm;
+    color: $core-color-ink-muted;
+    margin-bottom: $core-space-lg;
+  }
+}

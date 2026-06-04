@@ -1,0 +1,54 @@
+// sass/core/_modals.scss
+@use "variables" as *;
+@use "mixins" as *;
+
+// MODAL OVERLAY (BACKDROP)
+// ---------------------------
+
+.core-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(0.25rem);
+  z-index: $core-z-overlay;
+  padding: $core-space-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// MODAL CONTENT
+// ---------------------------
+
+.core-modal-content {
+  background-color: $core-color-bg;
+  color: $core-color-ink;
+  border-radius: $core-space-xs;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 0.0625rem solid $core-color-border;
+  width: 100%;
+  padding: $core-space-xl;
+  z-index: $core-z-modal;
+
+  h2 {
+    margin-top: 0;
+    color: $core-color-ink;
+  }
+}
+
+// WIDTH VARIANTS (rem-based)
+// ---------------------------
+
+.core-modal-sm {
+  max-width: 25rem;
+}
+
+.core-modal-md {
+  max-width: 40rem;
+}
+
+.core-modal-lg {
+  max-width: 60rem;
+}

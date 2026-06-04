@@ -120,4 +120,11 @@ describe("AppState", () => {
 		appState.setModalServingSize(-10);
 		expect(appState.getState().modalServingSize).toBe(1);
 	});
+
+	it("should update auth state", () => {
+		appState.setAuthState(true, "test@example.com");
+		const state = appState.getState();
+		expect(state.isLoggedIn).toBe(true);
+		expect(state.email).toBe("test@example.com");
+	});
 });

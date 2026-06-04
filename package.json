@@ -16,7 +16,7 @@
 		"lint": "biome check",
 		"lint:fix": "biome check --write",
 		"check:ts": "tsc --noEmit",
-		"check": "npm run lint && npm run check:ts",
+		"check": "npm run lint:fix && npm run check:ts",
 		"build:core": "tsx scripts/build-fetch-secure-assets.mts && npm run check && tsx scripts/build.mts",
 		"serve": "npm i && npm run build:core && zola build && vitest run && netlify dev",
 		"build": "npm run build:core && npm run abridge --"
@@ -51,6 +51,7 @@
 		"@types/jsdom": "^28.0.3",
 		"@types/node": "^22.0.0",
 		"@types/qrcode": "^1.5.6",
+		"@vitest/coverage-v8": "^4.1.8",
 		"esbuild": "^0.27.0",
 		"jsdom": "^27.2.0",
 		"tsx": "^4.21.0",

@@ -24,14 +24,11 @@ import { HttpError } from "./_lib/utils.mts";
  */
 export const handler: Handler = async (event): Promise<HandlerResponse> => {
 	try {
-		const decoded = authenticateUser(event);
-		const username = decoded.username;
+		const decoded = await authenticateUser(event);
+		const uuid = decoded.uuid;
 
 		const secureRoot = resolve("./secure_assets");
-		const configPath = resolve(
-			secureRoot,
-			`user_configs/${username}_config.json`,
-		);
+		const configPath = resolve(secureRoot, `user_configs/${uuid}_config.json`);
 
 		// A. Read User Config
 		let configRaw: string;
@@ -43,9 +40,7 @@ export const handler: Handler = async (event): Promise<HandlerResponse> => {
 		const userConfig = JSON.parse(configRaw);
 
 		if (!userConfig.tools?.oit_calculator) {
-			console.warn(
-				`User ${username} logged in but lacks oit_calculator config.`,
-			);
+			console.warn(`User ${uuid} logged in but lacks oit_calculator config.`);
 			throw new HttpError("Forbidden: No OIT Configuration found", 403);
 		}
 
@@ -84,7 +79,7 @@ export const handler: Handler = async (event): Promise<HandlerResponse> => {
 
 						return parsed;
 					} catch (e) {
-						console.error(`Failed to load asset ${p} for ${username}:`, e);
+						console.error(`Failed to load asset ${p} for ${uuid}:`, e);
 						return [];
 					}
 				}),
@@ -98,7 +93,8 @@ export const handler: Handler = async (event): Promise<HandlerResponse> => {
 		]);
 
 		const responseData = {
-			username: username,
+			uuid: uuid,
+			email: decoded.email,
 			provisioned_foods: provisioned_foods,
 			provisioned_protocols: provisioned_protocols,
 			handouts: oitConfig.handouts || [],

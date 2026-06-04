@@ -82,7 +82,7 @@ export async function handleUserLoad(): Promise<UserLoadResult> {
 
 			return {
 				foods: provisionedFoods,
-				username: userData.username,
+				email: userData.email,
 				isLoggedIn: true,
 			};
 		}
@@ -91,7 +91,7 @@ export async function handleUserLoad(): Promise<UserLoadResult> {
 	}
 	return {
 		foods: [],
-		username: null,
+		email: null,
 		isLoggedIn: false,
 	};
 }

@@ -28,7 +28,12 @@
 	},
 	"overrides": [
 		{
-			"includes": ["_ts/oit_calculator/tests/**", "_ts/ofc_index/tests/**"],
+			"includes": [
+				"_ts/oit_calculator/tests/**",
+				"_ts/ofc_index/tests/**",
+				"_ts/core/tests/**",
+				"_ts/setup-tests.ts"
+			],
 			"linter": {
 				"rules": {
 					"suspicious": {

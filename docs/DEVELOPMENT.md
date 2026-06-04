@@ -154,14 +154,10 @@ Some tools rely on Serverless Functions for authentication and data access.
 
 ### 1. Authentication Flow
 
-- **Login:** The client `POST`s credentials to `/.netlify/functions/auth-login`.
-- **Validation:** The function checks the credentials against the `authorized_users` table in Supabase using the `SUPABASE_SECRET_KEY`.
-- **Session:** On success:
-  1. It issues a **Supabase-compatible JWT** for client-side Row Level Security (RLS).
-  2. It reads the user's config file (`user_configs/{username}_config.json`), extracts all valid file paths, and embeds this flattened **permissions list** into the `nf_jwt` **HttpOnly cookie**.
-  - The `nf_jwt` is signed with `JWT_SECRET` for Netlify Function access.
-  - The Supabase JWT is signed with `SUPABASE_JWT_SECRET`.
-- **Logout:** `POST` to `/.netlify/functions/auth-logout` clears the cookie.
+- **Identity:** Handled natively by Supabase Auth (`auth.users`).
+- **Zero-Knowledge Encryption:** The user's password never leaves the client. It is used to create an Auth Hash (sent to Supabase for login) and a Key Encryption Key (KEK) used to unwrap the local Data Encryption Key (DEK).
+- **Session:** Supabase issues an access token which is passed as a `Bearer` token to Netlify Functions.
+- **Logout:** Supabase handles session termination via `supabase.auth.signOut()`. Local encryption keys in memory and session storage are wiped.
 
 ### 2. Fetching Secure Assets
 
@@ -169,21 +165,19 @@ Private assets (PDFs, JSON data) are **not** served statically. They reside in t
 
 - **Endpoint:** `/.netlify/functions/get-secure-asset?file={filename}`
 - **Logic:**
-  - The function verifies the `nf_jwt` cookie.
+  - The function verifies the Supabase access token using `supabase.auth.getClaims()`.
   - **Authorization:**
-    - **Standard files:** It checks if the requested `{filename}` exists in the **permissions list** embedded in the JWT. This allows for instant, stateless verification without reading the user's config from disk on every request.
-    - **Exception: `me.json`:** If `{filename}` is `me.json`, the function reads the user's config file from disk (`user_configs/{username}_config.json`) to return the full configuration object (which cannot be fully reconstructed from the flat permissions list).
-    - **Exception: `oit_calculator-bootstrap`:** This endpoint bypasses the JWT permissions list. It reads the user's configuration file on the server, aggregates the associated food and protocol files, and returns a consolidated "bootstrap" payload for efficient app initialization.
+    - **Standard files:** It reads the user's config file (`user_configs/{uuid}_config.json`) from disk to flatten and check if the requested `{filename}` exists in their permissions list.
+    - **Exception: `me.json`:** If `{filename}` is `me.json`, the function reads the user's config file from disk to return the full configuration object.
+    - **Exception: `oit_calculator-bootstrap` / `ofc-bootstrap`:** These endpoints read the user's configuration file on the server, aggregate the associated food and protocol files, and return a consolidated "bootstrap" payload for efficient app initialization.
 
 ### 3. Managing Users
 
-Passwords are stored as **bcrypt hashes** in the Supabase `authorized_users` table.
+This application uses an invite-only onboarding process managed through Supabase Auth.
 
-1. **Generate Hash:** Run the helper script locally:
-   ```bash
-   npx tsx tools/hash_password.ts "MyNewPassword123"
-   ```
-2. **Update Database:** Insert the username and hash into the `authorized_users` table in Supabase.
+1. **Administrator Invitation:** Admins invite users via the Supabase Admin API (`inviteUserByEmail`).
+2. **Configuration:** Admin creates `{user_uuid}_config.json` in the private repository for the user's provisioned assets.
+3. **User Onboarding:** User clicks the invite link, sets their password locally at `/signup/`, and the client handles deriving the Supabase auth credential and encryption metadata.
 
 ---
 

@@ -81,33 +81,12 @@
     box-sizing: border-box;
   }
 
-  // versioning and auth
-  .oit-toolbar {
-    display: grid;
-    width: 100%;
-    gap: 0.5rem;
-    margin-bottom: 0rem;
-    margin-top: -0.5em;
-    align-items: center;
-    justify-content: end;
-
-    .oit-version-auth {
-      font-size: 0.85rem;
-      color: var(--oit-text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      .separator {
-        opacity: 0.5;
-      }
-    }
-
-    .oit-data-syncing {
-      opacity: 0.6 !important;
-      cursor: progress;
-    }
+  /* --- Auth override --- */
+  .core-toolbar {
+    margin-bottom: -0.5rem;
+    margin-top: -1rem;
   }
+
 
   // Workspace Header (Tabs + Actions)
   .oit-workspace-header {
@@ -1690,66 +1669,6 @@
   }
 }
 
-.login-link-btn {
-  background: transparent;
-  border: none;
-  // Use secondary text color so it blends in with the version number
-  color: var(--oit-button-primary-hover);
-  cursor: pointer;
-  padding: 0rem;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.1s;
-  vertical-align: middle;
-
-  // Ensure SVG scales nicely with text
-  svg {
-    padding-top: 0rem;
-    width: 1.3rem;
-    height: 1.3rem;
-  }
-
-  // Hover effect: Primary color + subtle background
-  &:hover {
-    color: var(--oit-success-border);
-    background-color: var(--oit-bg-hover);
-  }
-}
-
-.user-badge {
-  font-weight: 600;
-  vertical-align: middle;
-  text-align: center;
-  color: var(--oit-success-text);
-  border: 1px solid var(--oit-success-border);
-  background-color: var(--oit-success-bg);
-  padding: 0.1rem 0.4rem 0.1rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-
-  /* If name too long cut off*/
-  max-width: 7rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  animation: badgeEnter 0.3s ease-out forwards;
-}
-
-@keyframes badgeEnter {
-  0% {
-    opacity: 0;
-    transform: translateY(-5px);
-    /* Slides down slightly */
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 // --- Login Modal Specifics ---
 
 // Modifier class for the modal content to make it smaller than the Clickwrap modal
@@ -1840,13 +1759,4 @@
   &:empty {
     display: none;
   }
-}
-
-#btn-logout-trigger {
-  &:hover {
-    color: var(--oit-warning-red-text);
-    background-color: var(--oit-warning-highlight-red);
-  }
-
-  animation: badgeEnter 0.3s ease-out forwards;
 }

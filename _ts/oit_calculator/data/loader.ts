@@ -3,7 +3,6 @@
  * Orchestrates loading of public food databases and user-specific config and secure assets.
  */
 import type { z } from "zod";
-import { appState } from "../state/instances";
 import {
 	type FoodData,
 	FoodDataSchema,
@@ -187,7 +186,8 @@ export async function loadUserConfiguration(): Promise<OITBootstrapResponse> {
 		);
 
 		return {
-			username: bootstrapData.username || "Unknown",
+			uuid: bootstrapData.uuid,
+			email: bootstrapData.email || "Unknown",
 			provisioned_foods: provisioned_foods,
 			provisioned_protocols: provisioned_protocols,
 			handouts: bootstrapData.handouts || [],
@@ -199,43 +199,5 @@ export async function loadUserConfiguration(): Promise<OITBootstrapResponse> {
 		// Generic fallback for other errors
 		console.error("Error loading user configuration:", error);
 		throw error;
-	}
-}
-
-/**
- * Shared logic to load user data and update the UI
- * Used on page load (if cookie exists) and after manual login
- */
-export async function handleUserLoad(): Promise<boolean> {
-	try {
-		// load user config and assets
-		// This throws if the bootstrap request fails or lacks oit_calculator config
-		const userData = await loadUserConfiguration();
-
-		// update state (foods, protocols, and pdf order)
-		appState.addProvisionedData(
-			userData.provisioned_foods,
-			userData.provisioned_protocols,
-			userData.handouts,
-		);
-
-		appState.setAuthState(true, userData.username);
-
-		return true;
-	} catch (e) {
-		appState.setAuthState(false, null);
-
-		if (e instanceof HttpError) {
-			if (e.statusCode === 401 || e.statusCode === 403) {
-				console.debug("No active session or failed to load user config:", e);
-			} else {
-				console.warn("User load failed (Non-Auth Error):", e);
-			}
-			return false;
-		}
-
-		// non http error, probably something we want more info on...
-		console.error("Undefined err in handleUserLoad: ", e);
-		return false;
 	}
 }

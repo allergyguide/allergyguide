@@ -7,25 +7,23 @@ import { promises as fs } from "node:fs";
 import { normalize, resolve } from "node:path";
 import type { Handler, HandlerResponse } from "@netlify/functions";
 import { authenticateUser, type UserToken } from "./_lib/auth.mts";
-import { HttpError } from "./_lib/utils.mts";
+import { getAllFilePaths, HttpError } from "./_lib/utils.mts";
 
 /**
  * Netlify Function: Secure Asset Handler
  * Serves private assets (.jsons, .pdfs) from within a protected directory secure_assets/ which is built during build-time
  * NOTE: ONLY WORKS FOR JSONS AND PDFS AT THIS TIME.
  *
- * It authenticates the user via a JWT cookie and checks specific file permissions before serving the content
+ * It authenticates the user via their Supabase access token and checks specific file permissions before serving the content
  * @param event - The Netlify event object containing headers and query parameters
  * @returns A response containing the base64 encoded file or an error status
  */
 export const handler: Handler = async (event) => {
-	let username = "";
-	let tokenPermissions: string[];
+	let uuid = "";
 
 	try {
-		const decoded = authenticateUser(event) as UserToken;
-		username = decoded.username;
-		tokenPermissions = decoded.permissions;
+		const decoded = (await authenticateUser(event)) as UserToken;
+		uuid = decoded.uuid;
 	} catch (err) {
 		if (err instanceof HttpError) {
 			return {
@@ -57,39 +55,60 @@ export const handler: Handler = async (event) => {
 	filename = normalize(filename);
 
 	// CHANGE FILENAME IF GENERIC `me.json` REQUESTED TO GRAB USER CONFIG
+	// MAP TO USER UUID
 	if (filename === "me.json") {
-		filename = `user_configs/${username}_config.json`;
+		filename = `user_configs/${uuid}_config.json`;
 	}
 
-	// AUTHORIZATION LOGIC
+	// AUTHORIZATION LOGIC JIT
+	// ------------------------
 	let hasAccess = false;
-	// ---
-	// A. Check if User in Admin
-	const adminUsers = JSON.parse(process.env.ADMIN_USERS || "[]");
-	if (adminUsers.includes(username)) {
+
+	// everyone should have access to their own config file
+	if (filename === `user_configs/${uuid}_config.json`) {
 		hasAccess = true;
 	}
-	// B. everyone should have access to their own config file
-	else if (filename === `user_configs/${username}_config.json`) {
-		hasAccess = true;
-	}
-	// C. Check permissions
+	// Check permissions
 	else {
-		// Check Flattened Permissions in Token
-		if (tokenPermissions?.includes(filename)) {
-			hasAccess = true;
+		let permissions: string[] = [];
+		try {
+			const configPath = resolve(
+				`./secure_assets/user_configs/${uuid}_config.json`,
+			);
+			const configRaw = await fs.readFile(configPath, "utf-8");
+			const userConfig = JSON.parse(configRaw);
+
+			// Flatten config to just a list of allowed paths
+			permissions = Array.from(getAllFilePaths(userConfig));
+
+			// now check
+			if (permissions.includes(filename)) {
+				hasAccess = true;
+			}
+		} catch (e) {
+			console.error(`Could not load config for ${uuid} during login:`, e);
+			return {
+				statusCode: 403,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					message: `Could not load config for ${uuid} during login.`,
+				}),
+			};
+		}
+
+		// if no permission for the file...
+		if (!hasAccess) {
+			console.log(`User ${uuid} denied access to ${filename}`);
+			return {
+				statusCode: 403,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ message: "Forbidden: Access Denied" }),
+			};
 		}
 	}
 
-	if (!hasAccess) {
-		console.log(`User ${username} denied access to ${filename}`);
-		return {
-			statusCode: 403,
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ message: "Forbidden: Access Denied" }),
-		};
-	}
-
+	// ============================================================
+	// RESOLVE AND SERVE FILE
 	// ============================================================
 
 	// RESOLVE FILE PATH
@@ -100,7 +119,7 @@ export const handler: Handler = async (event) => {
 
 		// security check
 		if (!filePath.startsWith(secureRoot)) {
-			console.error(`Path traversal attempt by ${username}: ${filename}`);
+			console.error(`Path traversal attempt by ${uuid}: ${filename}`);
 			return {
 				statusCode: 403,
 				headers: { "Content-Type": "application/json" },

@@ -20,7 +20,7 @@ import { debounce } from "../utils";
 export class AppState {
 	private state: OfcState = {
 		isLoggedIn: false,
-		username: null,
+		email: null,
 		publicFoods: [],
 		provisionedFoods: [],
 		searchableFoods: [],
@@ -67,11 +67,11 @@ export class AppState {
 	}
 
 	/**
-	 * Updates the authentication status and username
+	 * Updates the authentication status and email
 	 */
-	setAuthState(isLoggedIn: boolean, username: string | null) {
+	setAuthState(isLoggedIn: boolean, email: string | null) {
 		this.state.isLoggedIn = isLoggedIn;
-		this.state.username = username;
+		this.state.email = email;
 		this.notify();
 	}
 
