@@ -7,6 +7,7 @@ describe("State: ProtocolState", () => {
 	let state: ProtocolState;
 
 	const mockProtocol = (name: string) => ({
+		source: SourceType.USER,
 		dosingStrategy: DosingStrategy.STANDARD,
 		foodA: {
 			name,
@@ -108,5 +109,23 @@ describe("State: ProtocolState", () => {
 
 		state.redo();
 		expect(listener).toHaveBeenLastCalledWith(expect.anything(), "", "history");
+	});
+
+	it("should manage savingFoodKey state", () => {
+		const listener = vi.fn();
+		state.subscribe(listener);
+
+		expect(state.getSavingFoodKey()).toBeNull();
+
+		state.setSavingFoodKey("A");
+		expect(state.getSavingFoodKey()).toBe("A");
+		expect(listener).toHaveBeenLastCalledWith(
+			state.getProtocol(),
+			"",
+			"structural",
+		);
+
+		state.setSavingFoodKey(null);
+		expect(state.getSavingFoodKey()).toBeNull();
 	});
 });

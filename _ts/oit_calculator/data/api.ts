@@ -3,11 +3,7 @@
  * Handles network requests for secure assets and to request protocol saving (email to dev).
  */
 import { supabase } from "../../core/api/supabase";
-import {
-	HttpError,
-	type OITBootstrapResponse,
-	type SaveRequestPayload,
-} from "../types";
+import { HttpError, type OITBootstrapResponse } from "../types";
 
 /**
  * Attempts to safely extract a human-readable error message from a non successful HTTP response.
@@ -149,33 +145,4 @@ export async function loadSecureAsset(
 	}
 
 	return await response.text();
-}
-
-/**
- * Sends a request to save a protocol through netlify function.
- *
- * This triggers an email workflow via the Resend API to notify administrators and provide a confirmation receipt to the user.
- *
- * @param payload - The protocol data and user metadata.
- * @returns A Promise that resolves to true if the request was successfully accepted.
- * @throws {HttpError} If the server returns a non-200 status or if the session is invalid.
- */
-export async function requestSaveProtocol(
-	payload: SaveRequestPayload,
-): Promise<boolean> {
-	const headers = await getAuthHeaders();
-	const response = await fetch(
-		"/.netlify/functions/oit-request-save-protocol",
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: headers.Authorization,
-			},
-			body: JSON.stringify(payload),
-		},
-	);
-
-	await ensureResponseOk(response);
-	return true;
 }

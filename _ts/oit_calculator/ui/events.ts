@@ -11,6 +11,7 @@ import { recalculateProtocol } from "../core/protocol";
 import { appState, workspace } from "../state/instances";
 import type { DosingStrategy } from "../types";
 import { clearFoodB } from "./actions";
+import { saveActiveProtocol } from "./actions/vaultActions";
 import { renderDebugResult } from "./renderers";
 import { resetSearch } from "./searchUI";
 
@@ -31,7 +32,7 @@ export function initGlobalEvents(): void {
 
 	attachDosingStrategyDelegation();
 	attachCustomNoteDelegation();
-	attachUndoRedoDelegation();
+	attachKeyboardShortcuts();
 	attachDebugDelegation();
 	attachTabBarDelegation();
 
@@ -47,11 +48,11 @@ export function initGlobalEvents(): void {
 }
 
 /**
- * Attaches event listeners for Undo and Redo operations
+ * Attaches event listeners for global keyboard shortcuts (Undo/Redo, Save)
  * Wires up the UI buttons (#btn-undo, #btn-redo) to the active protocol state
  * Excludes the Custom Note textarea from these shortcuts to preserve native browser text editing behavior
  */
-function attachUndoRedoDelegation() {
+export function attachKeyboardShortcuts() {
 	const undoBtn = document.getElementById("btn-undo");
 	const redoBtn = document.getElementById("btn-redo");
 
@@ -63,15 +64,31 @@ function attachUndoRedoDelegation() {
 
 	// keyboard shortcuts
 	document.addEventListener("keydown", (e) => {
+		// Disable global shortcuts when any modal is open
+		if (document.body.style.overflow === "hidden") return;
+
 		// Allow native undo/redo for the Custom Note textarea
 		if ((e.target as HTMLElement).tagName === "TEXTAREA") return;
 
 		if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
 			e.preventDefault();
-			e.shiftKey ? workspace.getActive().redo() : workspace.getActive().undo();
+			if (e.shiftKey) {
+				workspace.getActive().redo();
+			} else {
+				workspace.getActive().undo();
+			}
 		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
 			e.preventDefault();
 			workspace.getActive().redo();
+		} else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+			e.preventDefault();
+			if (appState.isLoggedIn) {
+				if (e.shiftKey) {
+					saveActiveProtocol(true);
+				} else {
+					saveActiveProtocol(false);
+				}
+			}
 		}
 	});
 }
@@ -187,7 +204,9 @@ function attachTabBarDelegation() {
 			if (target.classList.contains("oit-tab-add")) {
 				if (!appState.isLoggedIn) {
 					// Trigger login modal if public tries to add tab
-					const loginBtn = document.getElementById("btn-login-trigger");
+					const loginBtn = document.querySelector(
+						"#core-toolbar-mount .login-link-btn",
+					) as HTMLElement;
 					if (loginBtn) loginBtn.click();
 				} else {
 					workspace.addTab();

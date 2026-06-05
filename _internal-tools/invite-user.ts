@@ -1,5 +1,5 @@
 // test_admin_invite.ts
-// Grab email from command line args: `npx tsx invite-user.ts dr.smith@example.com`
+// `npx tsx _internal-tools/invite-user.ts dr.smith@example.com`
 
 import { execFileSync } from "node:child_process";
 import { existsSync, writeFileSync } from "node:fs";
@@ -66,7 +66,10 @@ async function inviteAndProvision(email: string) {
 			oit_calculator: {
 				provisioned_foods: ["shared-tool-assets/brand_foods.json"],
 				provisioned_protocols: [],
-				handouts: [],
+				handouts: [
+					"protocol",
+					"oit_calculator/_master_oit_patient_resource.pdf",
+				],
 			},
 			ofc_index: {
 				provisioned_foods: ["shared-tool-assets/brand_foods.json"],
@@ -87,7 +90,7 @@ async function inviteAndProvision(email: string) {
 
 	// Commit
 	try {
-		console.log("Committing and pushing to GitHub...");
+		console.log("Committing to GitHub...");
 		// Executes git commands in the directory of your private repo
 		const fileName = `${uuid}_config.json`;
 		execFileSync("git", ["add", fileName], { cwd: PRIVATE_REPO_PATH });
@@ -96,7 +99,6 @@ async function inviteAndProvision(email: string) {
 			["commit", "-m", `Provision config for ${email}`, "--only", fileName],
 			{ cwd: PRIVATE_REPO_PATH },
 		);
-		// execSync(`git push`, { cwd: PRIVATE_REPO_PATH });
 		console.log("✅ Successfully committed locally");
 	} catch (gitErr) {
 		console.error(
@@ -105,7 +107,7 @@ async function inviteAndProvision(email: string) {
 		);
 	}
 
-	console.log("User fully provisioned!");
+	console.log("User provisioned");
 }
 
 function isValidEmail(email: string): boolean {
@@ -119,7 +121,7 @@ function isValidEmail(email: string): boolean {
 	const parts = email.split("@");
 	if (parts.length !== 2 || parts[0].length > 64) return false;
 
-	// Comprehensive regex for structure and characters
+	// regex for structure and characters
 	const emailRegex =
 		/^(?!\.)(?!.*\.\.)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
 
@@ -131,5 +133,5 @@ const targetEmail = process.argv[2];
 if (targetEmail && isValidEmail(targetEmail)) {
 	inviteAndProvision(targetEmail);
 } else {
-	console.error("Please provide a valid email address.");
+	console.error("provide a valid email address.");
 }

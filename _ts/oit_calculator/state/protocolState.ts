@@ -2,13 +2,19 @@
  * @module
  * State management for the active protocol, including history (undo/redo).
  */
+import Decimal from "decimal.js";
+import deepEqual from "fast-deep-equal";
 import { HISTORY_DEBOUNCE_MS } from "../constants";
-import type {
-	HistoryItem,
-	Protocol,
-	ProtocolListener,
-	UpdateContext,
+import {
+	type FoodData,
+	type HistoryItem,
+	type Protocol,
+	type ProtocolData,
+	type ProtocolListener,
+	SourceType,
+	type UpdateContext,
 } from "../types";
+import { serializeProtocol } from "../utils";
 
 /**
  * State manager for a single OIT Protocol (one tab).
@@ -28,6 +34,14 @@ export class ProtocolState {
 	/** UI state for the advanced settings accordion */
 	public isAdvancedSettingsOpen: boolean = false;
 
+	/** UI state to track which food slot is currently being saved to the database */
+	private savingFoodKey: "A" | "B" | null = null;
+
+	// State for dirty checks
+	private baselineProtocolState: ProtocolData | null = null;
+	private foodABaselineHash: string | null = null;
+	private foodBBaselineHash: string | null = null;
+
 	private listeners: ProtocolListener[] = [];
 
 	// Debounce tracking
@@ -40,6 +54,129 @@ export class ProtocolState {
 	 */
 	public getProtocol(): Protocol | null {
 		return this.current ? this.current.protocol : null;
+	}
+
+	/**
+	 * Sets the baseline for dirty state comparison for the protocolState
+	 * Excludes last_updated from the comparison
+	 */
+	public setBaseline() {
+		const p = this.getProtocol();
+		if (!p) {
+			this.baselineProtocolState = null;
+			return;
+		}
+
+		// Serialize it to strip Decimals and normalize structure
+		const serialized = serializeProtocol(p, this.customNote);
+
+		// Strip volatile metadata
+		serialized.last_updated = undefined;
+
+		this.baselineProtocolState = serialized;
+		this.notify("structural"); // Trigger UI refresh for Save button color
+	}
+
+	/**
+	 * Sets the baseline for a specific food (A or B)
+	 * Clears the dirty state for that specific food without affecting the protocol baseline
+	 */
+	public setFoodBaseline(foodKey: "A" | "B") {
+		const p = this.getProtocol();
+		if (!p) return;
+
+		const food = foodKey === "A" ? p.foodA : p.foodB;
+		if (!food) {
+			if (foodKey === "A") this.foodABaselineHash = null;
+			else this.foodBBaselineHash = null;
+			return;
+		}
+
+		const hash = JSON.stringify({ ...food, last_updated: undefined });
+		if (foodKey === "A") this.foodABaselineHash = hash;
+		else this.foodBBaselineHash = hash;
+
+		this.notify("structural");
+	}
+
+	/**
+	 * Helper to reset all baselines (Protocol, Food A, Food B)
+	 * Use when loading a completely new protocol from the library
+	 */
+	public setAllBaselines() {
+		this.setBaseline();
+		this.setFoodBaseline("A");
+		this.setFoodBaseline("B");
+	}
+
+	/**
+	 * @returns true if the protocol has changed since the last baseline
+	 */
+	public isDirty(): boolean {
+		const p = this.getProtocol();
+		if (!p) return false;
+		if (!p.id) return true; // Brand new is always dirty
+		if (!this.baselineProtocolState) return true;
+
+		// Serialize current state
+		const currentSerialized = serializeProtocol(p, this.customNote);
+
+		// Strip volatile metadata
+		currentSerialized.last_updated = undefined;
+
+		// Deep compare standard JS objects
+		return !deepEqual(currentSerialized, this.baselineProtocolState);
+	}
+
+	/**
+	 * Checks if a specific food has changed since its last specific baseline
+	 *
+	 * 1. If it lacks an ID, it's a new custom food -> Dirty
+	 * 2. If it matches the global library (globalFoods) -> Clean
+	 * 3. Otherwise, compare against its local session baselineHash
+	 */
+	public isFoodDirty(
+		foodKey: "A" | "B",
+		globalFoods?: Map<string, FoodData>,
+	): boolean {
+		const p = this.getProtocol();
+		if (!p) return false;
+
+		const currentFood = foodKey === "A" ? p.foodA : p.foodB;
+		if (!currentFood) return false;
+
+		// If it lacks an ID, it's a brand new custom food -> Dirty
+		if (!currentFood.id) return true;
+
+		// Global Library Check (Satisfies manual drift resolution UX)
+		if (globalFoods) {
+			const masterFood = globalFoods.get(currentFood.id);
+			if (masterFood) {
+				const masterProtein = new Decimal(masterFood.gramsInServing);
+				const masterServing = new Decimal(masterFood.servingSize);
+
+				const proteinMatch = masterProtein.equals(currentFood.gramsInServing);
+				const servingMatch = masterServing.equals(currentFood.servingSize);
+				const nameMatch = masterFood.name.trim() === currentFood.name.trim();
+				const typeMatch = masterFood.type === currentFood.type;
+
+				if (proteinMatch && servingMatch && nameMatch && typeMatch) {
+					return false; // It perfectly matches the library, hide Update buttons
+				}
+			}
+		}
+
+		// Local Baseline Fallback
+		const baselineHash =
+			foodKey === "A" ? this.foodABaselineHash : this.foodBBaselineHash;
+
+		if (!baselineHash) return true;
+
+		const currentHash = JSON.stringify({
+			...currentFood,
+			last_updated: undefined,
+		});
+		return currentHash !== baselineHash;
 	}
 
 	/**
@@ -72,7 +209,24 @@ export class ProtocolState {
 	}
 
 	/**
-	 * @returns true if there is history available to undo.
+	 * Sets which food slot is currently in a processing/saving state
+	 *
+	 * @param key - "A", "B", or null
+	 */
+	public setSavingFoodKey(key: "A" | "B" | null) {
+		this.savingFoodKey = key;
+		this.notify("structural");
+	}
+
+	/**
+	 * @returns The slot currently being saved, if any
+	 */
+	public getSavingFoodKey(): "A" | "B" | null {
+		return this.savingFoodKey;
+	}
+
+	/**
+	 * @returns true if the protocol has changed since the last baseline.
 	 */
 	public getCanUndo(): boolean {
 		return this.history.length > 0;
@@ -91,18 +245,36 @@ export class ProtocolState {
 	 * @param label Description of the action (e.g., "Changed target from 100 to 200")
 	 * @param options.addToHistory Default true
 	 * @param options.debounceHistory If true, groups rapid updates into a single undo step Default false
+	 * @param options.isLoad If true, skips protocol-level chain of custody breaking (e.g. initial load)
 	 */
 	public setProtocol(
 		p: Protocol | null,
 		label: string,
-		options?: { addToHistory?: boolean; debounceHistory?: boolean },
+		options?: {
+			addToHistory?: boolean;
+			debounceHistory?: boolean;
+			isLoad?: boolean;
+		},
 	) {
 		const addToHistory = options?.addToHistory ?? true;
 		const debounceHistory = options?.debounceHistory ?? false;
+		const isLoad = options?.isLoad ?? false;
 
 		if (!p) {
 			this.clearAll();
 			return;
+		}
+
+		let finalP = p;
+
+		// enforce chain of custody
+		// If it's not a fresh load and the protocol isn't already a USER protocol, strip its identity to convert it into a new USER document.
+		if (!isLoad && finalP.source !== SourceType.USER) {
+			finalP = {
+				...finalP,
+				source: SourceType.USER,
+				id: undefined,
+			};
 		}
 
 		if (addToHistory) {
@@ -110,7 +282,7 @@ export class ProtocolState {
 			this.future = [];
 		}
 
-		this.applyNewState(p, label, debounceHistory ? "input" : "structural");
+		this.applyNewState(finalP, label, debounceHistory ? "input" : "structural");
 	}
 
 	/**
@@ -228,11 +400,11 @@ export class ProtocolState {
 	 *
 	 * @param note - new text string for the note.
 	 * @param options - Configuration options
-	 * @param options.skipRender - If `true`, listeners will NOT be notified of this change
+	 * @param options.skipRender - If `true`, listeners will be notified with "input" context instead of "structural"
 	 */
 	public setCustomNote(note: string, options?: { skipRender: boolean }) {
 		this.customNote = note;
-		if (!options?.skipRender) this.notify("structural");
+		this.notify(options?.skipRender ? "input" : "structural");
 	}
 
 	/**

@@ -1,0 +1,94 @@
+@use "variables" as *;
+
+// CORE MODAL SHARED COMPONENTS
+// ---------------------------
+// These could eventually move to _modals.scss if more core modals are added
+
+.core-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $core-space-lg;
+  width: 100%;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.core-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: $core-color-ink-muted;
+  padding: $core-space-xs;
+  margin-top: -$core-space-xs;
+  margin-right: -$core-space-xs;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $core-color-red;
+  }
+}
+
+.core-form-group {
+  margin-bottom: $core-space-md;
+
+  label {
+    display: block;
+    margin-bottom: $core-space-xs;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: $core-color-ink;
+  }
+}
+
+.core-error-message {
+  color: $core-color-red;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: $core-space-2xs;
+  margin-bottom: $core-space-2xs;
+}
+
+// FEEDBACK SPECIFIC
+// ---------------------------
+
+.core-feedback-form {
+  margin-top: $core-space-md;
+}
+
+.core-success-banner {
+  background-color: var(--core-success-bg, oklch(0.2 0.08 145 / 0.1));
+  border: 1px solid $core-color-green;
+  border-radius: 8px;
+  color: $core-color-green;
+  margin-top: $core-space-md;
+  text-align: center;
+  padding: $core-space-xl;
+
+  h3 {
+    color: $core-color-green;
+    margin-top: 0;
+  }
+
+  .success-icon {
+    font-size: 3rem;
+    margin-bottom: $core-space-md;
+  }
+
+  .core-btn {
+    margin-top: $core-space-lg;
+  }
+}
+
+:root.switch .core-success-banner {
+  background-color: oklch(0.96 0.03 145 / 0.5);
+}
+
+// Ensure the feedback mount is handled correctly
+#core-feedback-mount {
+  display: contents;
+}

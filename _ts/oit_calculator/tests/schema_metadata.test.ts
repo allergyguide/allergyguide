@@ -68,7 +68,11 @@ describe("ProtocolDataSchema with Metadata", () => {
             di_threshold: 0.5,
             table: []
         };
-        expect(ProtocolDataSchema.parse(data)).toEqual(data);
+        const expected = {
+            ...data,
+            source: SourceType.USER
+        };
+        expect(ProtocolDataSchema.parse(data)).toEqual(expected);
     });
 });
 

@@ -4,7 +4,8 @@
  * DOM Rendering logic
  */
 
-import { nothing, render } from "lit-html";
+import { html, nothing, render, type TemplateResult } from "lit-html";
+import { showFeedbackModal } from "../../core/ui/feedback-modal";
 import {
 	type CoreToolbarProps,
 	coreToolbarTemplate,
@@ -20,6 +21,11 @@ import type {
 } from "../types";
 import { DosingStrategy } from "../types";
 import { escapeHtml } from "../utils";
+import {
+	renameActiveProtocol,
+	saveActiveProtocol,
+} from "./actions/vaultActions";
+import { showLibraryModal } from "./components/LibraryModal";
 import { ProtocolTable } from "./components/ProtocolTable";
 import { WarningsSidebar } from "./components/WarningsSidebar";
 
@@ -39,7 +45,66 @@ declare const __COMMIT_HASH__: string;
 export function renderToolbar(props: CoreToolbarProps): void {
 	const mount = document.getElementById("core-toolbar-mount");
 	if (mount) {
-		render(coreToolbarTemplate(props), mount);
+		const activeTab = workspace.getActive();
+		const p = activeTab.getProtocol();
+		const isDirty = activeTab.isDirty();
+
+		const oitExtra: TemplateResult | typeof nothing = props.isLoggedIn
+			? html`
+			<div class="oit-toolbar-actions">
+				${
+					p
+						? html`
+					${
+						p.id && p.name
+							? html`
+						<span class="oit-protocol-name" title="Rename Protocol" @click=${() => renameActiveProtocol()}>
+							${p.name}
+						</span>
+					`
+							: nothing
+					}
+					<button 
+						class="oit-save-btn ${isDirty ? "dirty" : "clean"}"
+						@click=${() => saveActiveProtocol()}
+						title="${isDirty ? "Save changes to Vault" : "Saved"}"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-cloud-check" viewBox="0 0 16 16">
+							<path d="M10.354 6.146a.5.5 0 1 0-.708-.708L7 8.086 5.854 6.94a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+							<path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+						</svg>
+						${isDirty ? "Save" : "Saved"}
+					</button>
+					<button 
+						class="oit-save-btn clean"
+						@click=${() => saveActiveProtocol(true)}
+						title="Save as a new Protocol"
+					>
+						Save As...
+					</button>
+				`
+						: nothing
+				}
+				<button class="oit-library-btn" @click=${showLibraryModal}>
+					My Library
+				</button>
+			</div>
+		`
+			: nothing;
+
+		render(
+			coreToolbarTemplate({
+				...props,
+				extraContent: oitExtra as TemplateResult,
+				showFeedback: true,
+				onFeedback: () =>
+					showFeedbackModal({
+						headerMessage:
+							"Questions or concerns about the OIT calculator? Let us know!",
+					}),
+			}),
+			mount,
+		);
 
 		// Hide skeleton on first successful render
 		const skeleton = document.getElementById("oit-toolbar-skeleton");
@@ -276,13 +341,11 @@ export function renderDosingStrategy(protocol: Protocol | null): void {
  *
  * @param protocol - The current protocol state.
  * @param customNote - The text content of the custom note.
- * @param isLoggedIn - Current authentication status.
  * @param warnings - Pre-calculated warnings array.
  */
 export function renderProtocolTable(
 	protocol: Protocol | null,
 	customNote: string,
-	isLoggedIn: boolean,
 	warnings: Warning[],
 ): void {
 	const emptyStateContainer = document.getElementById("empty-state-container");
@@ -305,30 +368,21 @@ export function renderProtocolTable(
 	if (emptyStateContainer) emptyStateContainer.style.display = "none";
 	if (protocolTableMount) protocolTableMount.style.display = "table";
 
-	// Check for severe warnings for button disabling
-	const hasSevereWarnings = warnings.some((w) => w.severity === "red");
-
 	// Mount/Update the Lit-html component
 	if (protocolTableMount) {
 		render(ProtocolTable(protocol, warnings), protocolTableMount);
 	}
 
 	// Update Notes and Exports (Bottom Section)
-	updateBottomSection(customNote, isLoggedIn, hasSevereWarnings);
+	updateBottomSection(customNote);
 }
 
 /**
  * Updates the visibility and content of the bottom section (Notes and Exports).
  *
  * @param customNote - Current note text.
- * @param isLoggedIn - Whether restricted controls should be visible.
- * @param hasSevereWarnings - Whether export functionality should be restricted.
  */
-export function updateBottomSection(
-	customNote: string,
-	isLoggedIn: boolean,
-	hasSevereWarnings: boolean,
-) {
+export function updateBottomSection(customNote: string) {
 	const bottomSection = document.querySelector(".bottom-section");
 	if (!bottomSection) return;
 
@@ -342,7 +396,6 @@ export function updateBottomSection(
 
 	// Delegate to specific renderers
 	updatePublicExports(customNote, isBatch);
-	updateRestrictedControls(isLoggedIn, hasSevereWarnings);
 }
 
 /**
@@ -370,43 +423,6 @@ function updatePublicExports(customNote: string, isBatch: boolean) {
 	}
 	if (pdfBtn && pdfBtn.textContent !== "Generating...") {
 		pdfBtn.textContent = isBatch ? "Export All (PDF)" : "Export PDF";
-	}
-}
-
-/**
- * Updates the restricted "Request to Save Protocol" button based on auth and safety checks.
- *
- * @param isLoggedIn - Determines visibility of the wrapper.
- * @param hasSevereWarnings - Determines disabled state of the button.
- */
-function updateRestrictedControls(
-	isLoggedIn: boolean,
-	hasSevereWarnings: boolean,
-) {
-	const wrapper = document.getElementById("save-request-wrapper");
-	const btn = document.getElementById(
-		"btn-trigger-save-request",
-	) as HTMLButtonElement;
-
-	if (!wrapper || !btn) return;
-
-	if (!isLoggedIn) {
-		wrapper.style.display = "none";
-		return;
-	}
-
-	wrapper.style.display = "block";
-
-	if (hasSevereWarnings) {
-		btn.disabled = true;
-		btn.textContent = "Fix Critical Warnings First";
-		btn.title = "Protocol has red warnings";
-		btn.classList.add("disabled-state");
-	} else {
-		btn.disabled = false;
-		btn.textContent = "Request to Save Protocol";
-		btn.title = "";
-		btn.classList.remove("disabled-state");
 	}
 }
 

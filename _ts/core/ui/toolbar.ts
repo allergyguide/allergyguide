@@ -1,4 +1,4 @@
-import { html, type TemplateResult } from "lit-html";
+import { html, nothing, type TemplateResult } from "lit-html";
 
 export interface CoreToolbarProps {
 	isLoggedIn: boolean;
@@ -7,6 +7,9 @@ export interface CoreToolbarProps {
 	changelogUrl: string;
 	onLogin: () => void;
 	onLogout: () => void;
+	extraContent?: TemplateResult;
+	showFeedback?: boolean;
+	onFeedback?: () => void;
 }
 
 /**
@@ -19,10 +22,25 @@ export const coreToolbarTemplate = (
 	props: CoreToolbarProps,
 ): TemplateResult => html`
     <div class="core-toolbar">
+        <div class="core-toolbar-extra">
+            ${props.extraContent || nothing}
+        </div>
         <div class="core-version-auth">
             ${
 							props.isLoggedIn
 								? html`
+                ${
+									props.showFeedback
+										? html`
+                    <button class="login-link-btn" title="Help / Feedback" aria-label="Feedback" @click=${props.onFeedback}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-dots feedback-svg" viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.586l-2.707 2.707A1 1 0 0 1 8 13.414V11H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .707.293L7.586 14.586A2 2 0 0 0 11 13.172V12h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                            <path d="M5 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                        </svg>
+                    </button>
+                `
+										: nothing
+								}
                 <span class="core-user-badge">${props.userEmail}</span>
                 <button class="login-link-btn" title="Logout" aria-label="Logout" @click=${props.onLogout}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">

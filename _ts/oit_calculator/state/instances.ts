@@ -2,6 +2,7 @@
  * @module
  * Singleton instances of state managers.
  */
+import type { FoodData, ProtocolData } from "../types";
 import { AppState } from "./appState";
 import { WorkspaceManager } from "./workspaceManager";
 
@@ -15,8 +16,8 @@ export let appState: AppState;
  */
 export function initializeAppState(
 	publicData: {
-		foods: import("../types").FoodData[];
-		protocols: import("../types").ProtocolData[];
+		foods: FoodData[];
+		protocols: ProtocolData[];
 	},
 	warningsUrl: string,
 ) {
