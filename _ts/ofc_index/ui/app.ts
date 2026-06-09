@@ -2,6 +2,7 @@
  * Core UI orchestration and main template
  */
 import { html, nothing, render, type TemplateResult } from "lit-html";
+import { showFeedbackModal } from "../../core/ui/feedback-modal";
 import { coreToolbarTemplate } from "../../core/ui/toolbar";
 import { appState } from "../state/state";
 import type { Food, OfcState } from "../types";
@@ -78,6 +79,12 @@ const appTemplate = (
 					changelogUrl: options.changelogUrl,
 					onLogin: options.onLogin,
 					onLogout: options.onLogout,
+					showFeedback: true,
+					onFeedback: () =>
+						showFeedbackModal({
+							headerMessage:
+								"Questions or concerns about the OFC Index? Let us know!",
+						}),
 				})}
 
         <!-- Search Header -->
