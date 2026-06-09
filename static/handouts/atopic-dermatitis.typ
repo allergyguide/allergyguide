@@ -1,10 +1,30 @@
-= Atopic dermatitis (Eczema)
+= Atopic dermatitis
 
-== What is eczema?
+== What is atopic dermatitis?
+
+Atopic dermatitis is a common chronic, itchy, and inflammatory skin condition often diagnosed in childhood that sometimes persists until adulthood. Atopic dermatitis is specific type of _eczema_ (a broad/nonspecific term for an itchy red rash).
+
+// add in some epidetmology here?
+
+
+
 == What causes eczema
+
 == What triggers eczema
+
+- some people notice specific triggers for their ecezma; others do not
+- triggers can change over time as well
+
+Triggers to trial avoiding:
+- fabric softeners
+- fragranced detergents, soaps, shampoos
+
+
 == What is mild, moderate, or severe eczema? Why does that matter?
 // dx complications here too
+
+
+
 == How is eczema treated?
 
 // discuss principles: maintain skin barrier, calm down inflammation, avoid triggers / irritants
