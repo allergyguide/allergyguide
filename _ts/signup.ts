@@ -140,7 +140,7 @@ const loadingTemplate = () => html`
 const errorTemplate = () => html`
   <div class="signup-container">
     <div class="signup-card center-text">
-      <div class="status-icon error-icon" style="color: var(--core-color-red);">✕</div>
+      <div class="status-icon error-icon">✕</div>
       <h3>Invalid Link</h3>
       <p>${errorMessage || "This invite link is invalid or has expired."}</p>
       <div class="signup-actions">

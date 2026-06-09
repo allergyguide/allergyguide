@@ -13,13 +13,19 @@
 
 import Decimal from "decimal.js";
 import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
+import { fetchSupaDocuments } from "../core/data/db";
 import { runCrudTest } from "../core/data/test-crud";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import { VALIDATION_DEBOUNCE_MS } from "./constants";
 import { validateProtocol } from "./core/validator";
 import { loadPublicDatabases, loadUserConfiguration } from "./data/loader";
 import { appState, initializeAppState, workspace } from "./state/instances";
-import { HttpError, type Warning } from "./types";
+import {
+	type FoodData,
+	HttpError,
+	type ProtocolData,
+	type Warning,
+} from "./types";
 import {
 	renderFoodASettings,
 	renderFoodBSettings,
@@ -30,10 +36,7 @@ import {
 	prefetchPdfLibraries,
 	triggerPdfGeneration,
 } from "./ui/exports";
-import {
-	attachClickwrapEventListeners,
-	attachSaveRequestListeners,
-} from "./ui/modals";
+import { attachClickwrapEventListeners } from "./ui/modals";
 // UI
 import {
 	renderDosingStrategy,
@@ -68,6 +71,21 @@ const handleSuccessfulAuth = async () => {
 			userData.provisioned_protocols,
 			userData.handouts,
 		);
+
+		// Attempt to fetch custom data from Supabase
+		try {
+			const [customFoods, customProtocols] = await Promise.all([
+				fetchSupaDocuments<FoodData>("custom_food"),
+				fetchSupaDocuments<ProtocolData>("custom_protocol"),
+			]);
+			appState.setUserData(
+				customFoods.map((doc) => doc.data),
+				customProtocols.map((doc) => doc.data),
+			);
+		} catch (dbErr) {
+			console.error("Failed to fetch custom user data:", dbErr);
+		}
+
 		appState.setAuthState(true, userData.email);
 
 		// Everything worked! Close the modal
@@ -162,7 +180,6 @@ async function initializeCalculator(): Promise<void> {
 			renderProtocolTable(
 				p,
 				workspace.getActive().getCustomNote(),
-				isLoggedIn,
 				cachedWarnings,
 			);
 			updateWarnings(p, appState.warningsPageURL, cachedWarnings); // for sidebar
@@ -191,6 +208,21 @@ async function initializeCalculator(): Promise<void> {
 				userData.provisioned_protocols,
 				userData.handouts,
 			);
+
+			// Fetch custom user data
+			try {
+				const [customFoods, customProtocols] = await Promise.all([
+					fetchSupaDocuments<FoodData>("custom_food"),
+					fetchSupaDocuments<ProtocolData>("custom_protocol"),
+				]);
+				appState.setUserData(
+					customFoods.map((doc) => doc.data),
+					customProtocols.map((doc) => doc.data),
+				);
+			} catch (dbErr) {
+				console.error("Failed to fetch custom user data:", dbErr);
+			}
+
 			appState.setAuthState(true, userData.email);
 			// renderToolbar is called by subscribeToAuth
 		} catch {
@@ -220,6 +252,9 @@ async function initializeCalculator(): Promise<void> {
 		if (aMount) renderFoodASettings(workspace, aMount);
 		if (bMount) renderFoodBSettings(workspace, bMount);
 
+		// Always update toolbar to reflect current protocol dirty state
+		renderToolbar(getToolbarProps());
+
 		if (protocol) {
 			showProtocolUI();
 			renderDosingStrategy(protocol);
@@ -235,33 +270,20 @@ async function initializeCalculator(): Promise<void> {
 
 			if (context === "input") {
 				// DEBOUNCED PATH; if the user is editing a numerical field, ideally the validation engine doesn't run immediately but after a slight debounce after they stop typing. ,
-				renderProtocolTable(
-					protocol,
-					note,
-					appState.isLoggedIn,
-					cachedWarnings,
-				); // first tho, render immediately with cached warnings to keep math snappy but colors stable
+				renderProtocolTable(protocol, note, cachedWarnings);
+				// first tho, render immediately with cached warnings to keep math snappy but colors stable
 
 				validationTimer = window.setTimeout(() => {
 					cachedWarnings = validateProtocol(protocol);
-					renderProtocolTable(
-						protocol,
-						note,
-						appState.isLoggedIn,
-						cachedWarnings,
-					);
+					renderProtocolTable(protocol, note, cachedWarnings);
+
 					updateWarnings(protocol, appState.warningsPageURL, cachedWarnings);
 					validationTimer = null;
 				}, VALIDATION_DEBOUNCE_MS);
 			} else {
 				// INSTANT PATH (Structural, History, Load), no debounce needed
 				cachedWarnings = validateProtocol(protocol);
-				renderProtocolTable(
-					protocol,
-					note,
-					appState.isLoggedIn,
-					cachedWarnings,
-				);
+				renderProtocolTable(protocol, note, cachedWarnings);
 				updateWarnings(protocol, appState.warningsPageURL, cachedWarnings);
 			}
 		} else {
@@ -271,7 +293,7 @@ async function initializeCalculator(): Promise<void> {
 				validationTimer = null;
 			}
 			cachedWarnings = [];
-			renderProtocolTable(null, "", appState.isLoggedIn, []);
+			renderProtocolTable(null, "", []);
 			updateFoodBDisabledState(null);
 			updateUndoRedoButtons(false, false);
 			updateWarnings(null, appState.warningsPageURL, []);
@@ -287,9 +309,6 @@ async function initializeCalculator(): Promise<void> {
 
 	// Set up clickwrap modal
 	attachClickwrapEventListeners(triggerPdfGeneration);
-
-	// wire up protocol save request modal
-	attachSaveRequestListeners();
 
 	// Check for debug mode
 	const urlParams = new URLSearchParams(window.location.search);

@@ -14,6 +14,8 @@ export class AppState {
 	private publicProtocols: ProtocolData[] = [];
 	private provisionedFoods: FoodData[] = [];
 	private provisionedProtocols: ProtocolData[] = [];
+	private userFoods: FoodData[] = [];
+	private userProtocols: ProtocolData[] = [];
 
 	// Derived indices used by UI
 	public foodsIndex: PreparedItem<FoodData>[] = [];
@@ -91,16 +93,71 @@ export class AppState {
 		this.rebuildIndices();
 	}
 
+	/**
+	 * Sets the user's custom data and rebuilds search indices
+	 * @param foods - Array of user-created foods
+	 * @param protocols - Array of user-created protocols
+	 */
+	public setUserData(foods: FoodData[], protocols: ProtocolData[]) {
+		this.userFoods = foods;
+		this.userProtocols = protocols;
+		this.rebuildIndices();
+		this.notifyAuthListeners();
+	}
+
+	// --- Library CRUD (Memory Only) ---
+
+	public getUserProtocols(): ProtocolData[] {
+		return [...this.userProtocols];
+	}
+
+	public getUserFoods(): FoodData[] {
+		return [...this.userFoods];
+	}
+
+	public upsertUserFood(food: FoodData) {
+		const index = this.userFoods.findIndex(
+			(f) => (f as { id?: string }).id === (food as { id?: string }).id,
+		);
+		if (index > -1) this.userFoods[index] = food;
+		else this.userFoods.push(food);
+		this.rebuildIndices();
+	}
+
+	public deleteUserFood(id: string) {
+		this.userFoods = this.userFoods.filter(
+			(f) => (f as { id?: string }).id !== id,
+		);
+		this.rebuildIndices();
+	}
+
+	public upsertUserProtocol(proto: ProtocolData) {
+		const index = this.userProtocols.findIndex((p) => p.id === proto.id);
+		if (index > -1) this.userProtocols[index] = proto;
+		else this.userProtocols.push(proto);
+		this.rebuildIndices();
+	}
+
+	public deleteUserProtocol(id: string) {
+		this.userProtocols = this.userProtocols.filter((p) => p.id !== id);
+		this.rebuildIndices();
+	}
+
 	/*
 	 * Rebuilds the search indices for foods and protocols.
 	 * Creates a prepared search index for each food and protocol, using their name and keywords.
 	 * Foods available for the UI are those that are active (ie not disabled).
 	 */
 	private rebuildIndices() {
-		const allFoods = [...this.publicFoods, ...this.provisionedFoods];
+		const allFoods = [
+			...this.publicFoods,
+			...this.provisionedFoods,
+			...this.userFoods,
+		];
 		const allProtocols = [
 			...this.publicProtocols,
 			...this.provisionedProtocols,
+			...this.userProtocols,
 		];
 
 		this.foodsIndex = allFoods

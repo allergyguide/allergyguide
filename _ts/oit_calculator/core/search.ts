@@ -46,6 +46,7 @@ export function performSearch(
 	searchType: "food" | "protocol",
 	preparedFoods: FoodData[],
 	preparedProtocols: ProtocolData[],
+	options: { excludeCapsules?: boolean } = { excludeCapsules: true },
 ): StructuredSearchResults {
 	if (!query.trim()) return { protocols: [], foods: [] };
 
@@ -72,10 +73,10 @@ export function performSearch(
 		threshold: -10000,
 	});
 
-	// Filter out CAPSULE types and map to SearchResult
+	// Filter out CAPSULE types only if requested and map to SearchResult
 	// Plus implement tie-breaker logic
 	const mappedFoods = foodResults
-		.filter((r) => r.obj.type !== FoodType.CAPSULE)
+		.filter((r) => !options.excludeCapsules || r.obj.type !== FoodType.CAPSULE)
 		.map((r) => ({
 			type: "food" as const,
 			data: r.obj as FoodData,

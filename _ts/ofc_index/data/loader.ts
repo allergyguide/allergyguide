@@ -1,8 +1,10 @@
 /**
  * Handles fetching and parsing of food data from both public assets and secure API endpoints
  */
+import { fetchSupaDocuments } from "../../core/data/db";
 import {
 	type Food,
+	type FoodData,
 	FoodDataSchema,
 	FoodType,
 	SourceType,
@@ -94,4 +96,37 @@ export async function handleUserLoad(): Promise<UserLoadResult> {
 		email: null,
 		isLoggedIn: false,
 	};
+}
+
+/**
+ * Loads custom user foods from the database
+ */
+export async function loadCustomFoods(): Promise<Food[]> {
+	try {
+		const customDocs = await fetchSupaDocuments<FoodData[]>("custom_food");
+		return customDocs
+			.map((doc) => {
+				try {
+					const parsed = FoodDataSchema.parse(doc.data);
+					const is_active = parsed.is_active ?? true;
+					const is_capsule = parsed.type === FoodType.CAPSULE;
+
+					if (is_active && !is_capsule) {
+						return {
+							...parsed,
+							group: parsed.group || "Unknown",
+							source: SourceType.USER,
+						} as Food;
+					}
+					return null;
+				} catch (e) {
+					console.error("Invalid custom food data:", doc.data, e);
+					return null;
+				}
+			})
+			.filter((f): f is Food => f !== null);
+	} catch (e) {
+		console.error("Failed to load custom user foods:", e);
+		return [];
+	}
 }

@@ -8,7 +8,7 @@ import { calculateSteps, type DosingStep } from "../core/calculations";
 import { appState } from "../state/state";
 import { type Food, type OfcState, SourceType } from "../types";
 import { getMeasuringUnit } from "../utils";
-import { BRAND_ICON } from "./results-table";
+import { BRAND_ICON, USER_ICON } from "./results-table";
 
 /**
  * Main template for the protocol generation modal
@@ -53,6 +53,7 @@ export const protocolModalTemplate = (
                 <div class="ofc-modal-header">
                     <h3 class="ofc-editable-name">
                         ${food.source === SourceType.BRAND ? BRAND_ICON : ""}
+                        ${food.source === SourceType.USER ? USER_ICON : ""}
                         <input 
                             type="text" 
                             .value=${live(food.name)}

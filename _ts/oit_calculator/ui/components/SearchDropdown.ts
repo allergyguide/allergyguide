@@ -1,6 +1,6 @@
 import { html, nothing } from "lit-html";
 import { SEARCH_DISPLAY_LIMIT } from "../../constants";
-import { type SearchResult, SourceType } from "../../types";
+import { FoodType, type SearchResult, SourceType } from "../../types";
 import { getMeasuringUnit } from "../../utils";
 import type { SearchCallbacks } from "../searchUI";
 
@@ -80,7 +80,11 @@ export const SearchDropdown = (
 								    ${renderSourceIcon(result.data.source)}
 								    <span class="food-name">${result.data.name}</span>
 								    <div class="food-info">
-								      ${result.data.gramsInServing.toFixed(1)} g/${result.data.servingSize} ${getMeasuringUnit(result.data)}
+								      ${
+												result.data.type !== FoodType.CAPSULE
+													? `${result.data.gramsInServing.toFixed(1)} g/${result.data.servingSize} ${getMeasuringUnit(result.data)}`
+													: "capsule"
+											}
 								    </div>
 								  </div>
 								`

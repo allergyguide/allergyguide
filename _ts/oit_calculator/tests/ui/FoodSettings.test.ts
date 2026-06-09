@@ -6,6 +6,17 @@ import {
 	renderFoodBSettings,
 } from "../../ui/components/FoodSettings";
 
+// Mock appState
+vi.mock("../../state/instances", async () => {
+	const actual = (await vi.importActual("../../state/instances")) as any;
+	return {
+		...actual,
+		appState: {
+			getUserFoods: () => [],
+		},
+	};
+});
+
 describe("FoodSettings Component", () => {
 	let mockWorkspace: any;
 	let mockProtocol: any;

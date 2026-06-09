@@ -1,6 +1,8 @@
 {% set tools = load_data(path="/js/tools_versioning.json") %}
 {% set tool_info = tools.oit_calculator %}
 <div id="auth-modal-mount"></div>
+<div id="oit-library-modal-mount"></div>
+<div id="core-feedback-mount"></div>
 <div class="oit_calculator">
   <div id="oit-toolbar-skeleton" class="core-toolbar">
     <div class="core-version-auth">
@@ -129,11 +131,6 @@
           <button class="btn-export" id="export-ascii">Copy to Clipboard</button>
           <button class="btn-export" id="export-pdf">Export PDF</button>
         </div>
-        <div id="save-request-wrapper" style="display: none; margin-top: 1rem;">
-          <button id="btn-trigger-save-request" class="btn-save-protocol-action" style="width: 100%;">
-            Request Save Protocol
-          </button>
-        </div>
         <div class="custom-note-container">
           <label for="custom-note">Notes:</label>
           <textarea
@@ -149,7 +146,6 @@
   </div>
 </div>
 {% include "shortcodes/oit_calculator_components/clickwrap_modal.html" %}
-{% include "shortcodes/oit_calculator_components/save_protocol_request_modal.html" %}
 {% include "shortcodes/oit_calculator_components/debug_panel.html" %}
 <!-- Hidden div to get URL for warnings to pass into JS using zola -->
 <div

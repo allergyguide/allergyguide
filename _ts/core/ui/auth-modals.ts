@@ -200,6 +200,10 @@ export function renderAuthUI(
 	if (state === "LOGIN" && onSuccess) {
 		render(loginTemplate(onSuccess, errorMsg), mountNode);
 		setTimeout(renderTurnstile, 0);
+		setTimeout(() => {
+			const emailInput = document.getElementById("login-email");
+			if (emailInput) emailInput.focus();
+		}, 0);
 	}
 
 	if (state === "UNLOCK" && onSuccess) {
