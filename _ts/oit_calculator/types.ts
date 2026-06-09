@@ -5,6 +5,7 @@
  */
 import type Decimal from "decimal.js";
 import { z } from "zod";
+import type { ProtocolState } from "./state/protocolState";
 
 // ============================================
 // ENUMS
@@ -165,6 +166,10 @@ export interface ProtocolConfig {
  * May include a Food B transition and its threshold.
  */
 export interface Protocol {
+	id?: string;
+	source?: SourceType;
+	name?: string;
+	last_updated?: string;
 	dosingStrategy: DosingStrategy;
 	foodA: Food;
 	foodAStrategy: FoodAStrategy;
@@ -289,7 +294,10 @@ export type RowData = z.infer<typeof RowDataSchema>;
  * Unified schema that optionally includes metadata.
  */
 export const ProtocolDataSchema = z.strictObject({
+	id: z.uuid().optional(),
+	source: z.enum(SourceType).optional().default(SourceType.USER),
 	name: z.string(),
+	last_updated: z.iso.datetime().optional(),
 	dosing_strategy: z.enum(DosingStrategy),
 	food_a: FoodDataSchema,
 	food_a_strategy: z.enum(FoodAStrategy),
@@ -465,7 +473,7 @@ export interface Tab {
 	/** Unique identifier for the tab workspace. */
 	id: string;
 	/** State container for the protocol and notes in this tab. */
-	state: import("./state/protocolState").ProtocolState;
+	state: ProtocolState;
 	/** Human-readable title, usually derived from the primary food. */
 	title: string;
 }
@@ -505,21 +513,6 @@ export interface OITBootstrapResponse {
 	provisioned_foods: FoodData[];
 	provisioned_protocols: ProtocolData[];
 	handouts: string[];
-}
-
-export interface SaveRequestPayload {
-	/** The full serialized protocol object including food settings and steps. */
-	protocolData: ProtocolData;
-	/** User-defined name for this protocol (e.g., "John Doe - Peanut Standard"). */
-	protocolName: string;
-	/** The email address where the user wants to receive the request receipt. */
-	userEmail: string;
-	/** Optional additional instructions or clinical context for the request. */
-	context: string;
-	/** A formatted ASCII representation of the protocol for administrative review. */
-	ascii: string;
-	/** A formatted representation of the warnings of the protocol. */
-	warnings: string;
 }
 
 // ============================================

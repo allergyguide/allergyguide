@@ -115,7 +115,7 @@ describe("Renderer: renderProtocolTable", () => {
 		) as HTMLElement;
 
 		// Call with null protocol (simulating tab switch to empty)
-		renderProtocolTable(null, "", false, []);
+		renderProtocolTable(null, "", []);
 
 		// Regression check: Ensure render(nothing, container) was called instead of warningsContainer.innerHTML = ""
 		expect(litHtml.render).toHaveBeenCalledWith(

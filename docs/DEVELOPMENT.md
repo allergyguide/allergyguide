@@ -181,6 +181,44 @@ This application uses an invite-only onboarding process managed through Supabase
 
 ---
 
+## Infrastructure and Deployment Safeguards (Production)
+
+Deploying to production requires coordination between Netlify (hosting), Cloudflare (CDN/Cache), and the browser's Service Worker. **Failure to follow these steps can result in "cache poisoning" where users are served stale CSP headers or broken Auth logic.**
+
+### 1. The Cloudflare "Query String" Trap
+
+Cloudflare sits in front of Netlify and aggressively caches static assets (JS, CSS, SW).
+
+- **The Problem:** By default, Cloudflare ignores query strings on static files. If the browser requests `sw.min.js?v=3.12.5`, Cloudflare may serve the cached `sw.min.js` from its edge nodes, ignoring the version bump.
+- **The Danger:** Cloudflare caches the **HTTP Headers** (including the Content Security Policy) along with the file. If you update the CSP in `netlify.toml`, Cloudflare will continue serving the _old_ CSP until the cache is purged manually.
+
+### 2. Standard Operating Procedures (SOP)
+
+#### Scenario A: Updating the Content Security Policy (CSP)
+
+If you add a new external service (Analytics, CDNs) or a new Netlify function:
+
+1. Deploy the code to Netlify.
+2. **Log into Cloudflare Dashboard** -> **Caching** -> **Configuration** -> **Purge Everything**.
+3. Verify in a fresh Incognito window.
+
+#### Scenario B: Updating Service Worker / Patch Logic
+
+If you edit `build-patch-sw.js` or the theme's PWA logic:
+
+1. Open `config.toml` and increment the `pwa_VER` variable (e.g., `3.12.5` -> `3.12.6`).
+2. Deploy to Netlify. (This forces Zola to update the HTML references, prompting the browser to download the new SW).
+3. **Purge Everything** in Cloudflare to ensure the new SW file isn't blocked by edge caching.
+
+#### Scenario C: Debugging "Mysterious" Auth/Network Failures
+
+If Supabase or Netlify functions fail only in production:
+
+1. **Test in Incognito:** If it works in Incognito but fails in a normal window, the user's **local Service Worker** is stale. Solution: Bump `pwa_VER` in `config.toml`.
+2. **Check Headers:** If it fails in Incognito, the issue is at the **CDN/Hosting level**. Solution: Check `netlify.toml` for CSP errors or Purge Cloudflare.
+
+---
+
 ## Contributing
 
 Most contributions are expected to be focused on medical content in the `content/` directory.

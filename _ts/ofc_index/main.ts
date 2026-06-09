@@ -1,6 +1,10 @@
 import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
 import { renderAuthUI } from "../core/ui/auth-modals";
-import { handleUserLoad, loadPublicFoods } from "./data/loader";
+import {
+	handleUserLoad,
+	loadCustomFoods,
+	loadPublicFoods,
+} from "./data/loader";
 import { appState } from "./state/state";
 import { HttpError } from "./types";
 import { initApp } from "./ui/app";
@@ -14,11 +18,18 @@ declare const __VERSION_OFC_INDEX__: string;
  */
 async function handleSuccessfulAuth() {
 	try {
-		const userResult = await handleUserLoad();
+		const [userResult, customFoods] = await Promise.all([
+			handleUserLoad(),
+			loadCustomFoods(),
+		]);
+
 		const currentPublicFoods = appState.getState().publicFoods;
 
 		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(currentPublicFoods, userResult.foods);
+		appState.setFoods(currentPublicFoods, [
+			...userResult.foods,
+			...customFoods,
+		]);
 
 		// Hide the modal on success
 		renderAuthUI("HIDDEN");
@@ -105,9 +116,12 @@ async function initializeOFC() {
 		renderAuthUI("UNLOCK", handleSuccessfulAuth);
 	} else if (vaultState === "UNLOCKED") {
 		// Fully Authenticated and Decrypted! Load user data
-		const userResult = await handleUserLoad();
+		const [userResult, customFoods] = await Promise.all([
+			handleUserLoad(),
+			loadCustomFoods(),
+		]);
 		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(publicFoods, userResult.foods);
+		appState.setFoods(publicFoods, [...userResult.foods, ...customFoods]);
 	}
 
 	const changelogLink =

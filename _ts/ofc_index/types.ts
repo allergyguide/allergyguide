@@ -20,6 +20,8 @@ export enum SourceType {
 	GENERIC = "GENERIC",
 	/** Branded food product from private repo */
 	BRAND = "BRAND",
+	/** User's own custom food from Supabase */
+	USER = "USER",
 	/** Other provisioned data for authenticated users */
 	PROVISIONED = "PROVISIONED",
 }
@@ -28,6 +30,7 @@ export enum SourceType {
  * Zod schema for food data as it arrives from external sources
  */
 export const FoodDataSchema = z.object({
+	id: z.string().optional(),
 	name: z.string(),
 	type: z.enum(FoodType),
 	/** Protein content in grams per serving size */
@@ -40,6 +43,7 @@ export const FoodDataSchema = z.object({
 	source_url: z.url().optional(),
 	keywords: z.array(z.string()).optional(),
 	is_active: z.boolean().optional(),
+	last_updated: z.string().optional(),
 });
 
 /**

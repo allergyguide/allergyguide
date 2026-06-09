@@ -39,9 +39,13 @@ export function selectFoodA(foodData: FoodData): void {
 	const food: Food = hydrateFoodData(foodData);
 
 	const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
-	workspace
-		.getActive()
-		.setProtocol(newProtocol, `Selected Food A: ${food.name}`);
+	newProtocol.name = ``;
+
+	const activeTab = workspace.getActive();
+	activeTab.setProtocol(newProtocol, `Selected Food A: ${food.name}`, {
+		isLoad: true,
+	});
+	activeTab.setAllBaselines();
 
 	// clear search bar input after
 	const input = document.getElementById("food-a-search") as HTMLInputElement;
@@ -74,7 +78,9 @@ export function selectFoodB(foodData: FoodData): void {
 	};
 
 	const updated = addFoodBToProtocol(current, food, threshold);
-	workspace.getActive().setProtocol(updated, `Selected Food B: ${food.name}`);
+	const activeTab = workspace.getActive();
+	activeTab.setProtocol(updated, `Selected Food B: ${food.name}`);
+	activeTab.setFoodBaseline("B");
 
 	// clear food B searchbar input after
 	const input = document.getElementById("food-b-search") as HTMLInputElement;
@@ -105,9 +111,13 @@ export function selectCustomFood(name: string, inputId: string): void {
 	};
 	if (inputId === "food-a-search") {
 		const newProtocol = generateDefaultProtocol(food, DEFAULT_CONFIG);
-		workspace
-			.getActive()
-			.setProtocol(newProtocol, `Selected Custom Food A: ${food.name}`);
+		newProtocol.name = ``;
+
+		const activeTab = workspace.getActive();
+		activeTab.setProtocol(newProtocol, `Selected Custom Food A: ${food.name}`, {
+			isLoad: true,
+		});
+		activeTab.setAllBaselines();
 	} else {
 		const current = workspace.getActive().getProtocol();
 		if (!current) return;
@@ -116,9 +126,9 @@ export function selectCustomFood(name: string, inputId: string): void {
 			amount: DEFAULT_CONFIG.DEFAULT_FOOD_B_THRESHOLD,
 		};
 		const updated = addFoodBToProtocol(current, food, threshold);
-		workspace
-			.getActive()
-			.setProtocol(updated, `Selected Custom Food B: ${food.name}`);
+		const activeTab = workspace.getActive();
+		activeTab.setProtocol(updated, `Selected Custom Food B: ${food.name}`);
+		activeTab.setFoodBaseline("B");
 	}
 
 	// clear input bar, whatever one it was
@@ -140,6 +150,10 @@ export function selectProtocol(protocolData: ProtocolData): void {
 	const foodA: Food = hydrateFoodData(protocolData.food_a);
 
 	const protocol: Protocol = {
+		id: protocolData.id,
+		source: protocolData.source,
+		name: protocolData.name,
+		last_updated: protocolData.last_updated,
 		dosingStrategy:
 			DosingStrategy[
 				protocolData.dosing_strategy as keyof typeof DosingStrategy
@@ -151,8 +165,10 @@ export function selectProtocol(protocolData: ProtocolData): void {
 		steps: [],
 		config: DEFAULT_CONFIG,
 	};
+	const activeTab = workspace.getActive();
+
 	if (protocolData.custom_note) {
-		workspace.getActive().setCustomNote(protocolData.custom_note);
+		activeTab.setCustomNote(protocolData.custom_note);
 	}
 
 	// load steps
@@ -233,11 +249,13 @@ export function selectProtocol(protocolData: ProtocolData): void {
 			};
 		}
 	}
-	workspace
-		.getActive()
-		.setProtocol(protocol, `Loaded protocol: ${protocolData.name}`);
 
-	// clear search
+	activeTab.setProtocol(protocol, `Loaded protocol: ${protocolData.name}`, {
+		isLoad: true,
+	});
+	activeTab.setAllBaselines();
+
+	// clear search bar input after
 	const input = document.getElementById("food-a-search") as HTMLInputElement;
 	if (input) input.value = "";
 }

@@ -11,6 +11,7 @@ vi.mock("../../state/instances", async () => {
 		appState: {
 			foodsDatabase: [],
 			foodsById: new Map(),
+			getUserFoods: () => [],
 		},
 	};
 });

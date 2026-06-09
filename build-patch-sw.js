@@ -6,11 +6,15 @@ const path = require("node:path");
 const guardCode = `
 /* PATCHED BY BUILD SCRIPT */
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/.netlify/') || event.request.method === 'POST') {
-    event.respondWith(fetch(event.request));
-    if (event.stopImmediatePropagation) {
-      event.stopImmediatePropagation();
-    }
+  if (
+    event.request.url.includes('/.netlify/') || 
+    event.request.url.includes('supabase.co') || 
+    event.request.method !== 'GET'
+  ) {
+    // Stop the SW from touching Supabase/Netlify/POST requests
+    event.stopImmediatePropagation();
+    // Return immediately to force the browser to handle it natively
+    return;
   }
 });
 /* END PATCH */

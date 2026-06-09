@@ -78,6 +78,7 @@ export function initSearchEvents(appState: AppState): void {
 				type,
 				appState.foodsIndex,
 				appState.protocolsIndex,
+				{ excludeCapsules: inputId === "food-b-search" },
 			);
 			showSearchDropdown(inputId, results, query, GLOBAL_CALLBACKS);
 		};

@@ -218,11 +218,11 @@ export const ProtocolTable = (
                   @input=${(e: Event) => handleInput(e, step.stepIndex, "mixFoodAmount")}
                   @keydown=${(e: KeyboardEvent) => handleKeydown(e)}
                 />
-                <span> ${mixUnit}</span>
+                <span class="oit-table-unit"> ${mixUnit}</span>
               </td>
               <td class="non-editable col-mix-water">
                 ${formatAmount(step.mixWaterAmount, "ml")} ml
-                <span style="color: var(--oit-text-secondary); font-size: 0.85rem;">
+                <span class="oit-table-unit">
                   (${formatNumber(step.servings, 1)} servings)
                 </span>
               </td>
@@ -249,7 +249,7 @@ export const ProtocolTable = (
                   @input=${(e: Event) => handleInput(e, step.stepIndex, "dailyAmount")}
                   @keydown=${(e: KeyboardEvent) => handleKeydown(e)}
                 />
-                <span> ${step.dailyAmountUnit}</span>
+                <span class="oit-table-unit"> ${step.dailyAmountUnit}</span>
               `
 							}
             </td>

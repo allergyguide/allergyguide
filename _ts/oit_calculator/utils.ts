@@ -76,6 +76,15 @@ export function formatNumber(
 	return Number.isNaN(num) ? "" : num.toFixed(decimals);
 }
 
+export function formatDate(iso?: string) {
+	if (!iso) return "Unknown";
+	return new Date(iso).toLocaleDateString(undefined, {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	});
+}
+
 /**
  * Format a patient-measured amount based on its unit.
  *
@@ -200,7 +209,10 @@ export function serializeProtocol(
 
 	// Construct ProtocolData
 	const data: ProtocolData = {
-		name: "Custom Protocol Request", // Default name for the request
+		id: protocol.id,
+		source: protocol.source || SourceType.USER,
+		name: protocol.name || "Custom Protocol Request",
+		last_updated: protocol.last_updated,
 		dosing_strategy: protocol.dosingStrategy,
 		food_a: {
 			type: protocol.foodA.type,
@@ -364,7 +376,9 @@ export function hydrateFoodData(foodData: FoodData): Food {
 }
 
 export const SAMPLE_PROTOCOL: ProtocolData = {
+	id: "94555eb0-9172-48d2-b3fd-0d1e1fbb0886",
 	name: "Almond milk to whole almonds",
+	source: SourceType.GENERIC,
 	dosing_strategy: DosingStrategy.STANDARD,
 	food_a: {
 		type: FoodType.LIQUID,

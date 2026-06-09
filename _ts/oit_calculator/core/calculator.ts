@@ -13,15 +13,19 @@ import {
 	DOSING_STRATEGIES,
 } from "../constants";
 
-import type {
-	Candidate,
-	Food,
-	Protocol,
-	ProtocolConfig,
-	Step,
-	Unit,
+import {
+	type Candidate,
+	DosingStrategy,
+	type Food,
+	FoodAStrategy,
+	FoodType,
+	Method,
+	type Protocol,
+	type ProtocolConfig,
+	SourceType,
+	type Step,
+	type Unit,
 } from "../types";
-import { DosingStrategy, FoodAStrategy, FoodType, Method } from "../types";
 import {
 	findPercentDifference,
 	formatAmount,
@@ -439,6 +443,7 @@ export function generateDefaultProtocol(
 	}
 
 	return {
+		source: SourceType.USER,
 		dosingStrategy: dosingStrategy,
 		foodA: food,
 		foodAStrategy: foodAStrategy,

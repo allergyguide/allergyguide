@@ -61,12 +61,14 @@ export class WorkspaceManager {
 		// Update the title of the active tab based on the protocol
 		const activeTab = this.tabs.find((t) => t.id === this.activeTabId);
 		if (activeTab) {
-			if (protocol?.foodA) {
-				// Truncate if too long
+			if (protocol) {
+				// if it's a saved/loaded protocol (has ID), use protocol name; otherwise use the Food A name (scratchpad mode)
+				const rawTitle = protocol.id
+					? protocol.name || protocol.foodA.name
+					: protocol.foodA.name;
+
 				activeTab.title =
-					protocol.foodA.name.length > 20
-						? `${protocol.foodA.name.substring(0, 20)}...`
-						: protocol.foodA.name;
+					rawTitle.length > 20 ? `${rawTitle.substring(0, 20)}...` : rawTitle;
 			} else {
 				activeTab.title = `Untitled ${this.tabs.indexOf(activeTab) + 1}`;
 			}
