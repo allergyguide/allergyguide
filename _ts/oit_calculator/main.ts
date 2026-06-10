@@ -32,6 +32,7 @@ import {
 } from "./ui/components/FoodSettings";
 import { initGlobalEvents } from "./ui/events";
 import {
+	copyActiveProtocolAsProvisioned,
 	initExportEvents,
 	prefetchPdfLibraries,
 	triggerPdfGeneration,
@@ -158,7 +159,9 @@ async function initializeCalculator(): Promise<void> {
 		"#";
 
 	// Wire up restricted mode login button
-	document.getElementById("btn-restricted-login")?.addEventListener("click", onLogin);
+	document
+		.getElementById("btn-restricted-login")
+		?.addEventListener("click", onLogin);
 
 	const getToolbarProps = () => ({
 		isLoggedIn: appState.isLoggedIn,
@@ -339,6 +342,15 @@ async function initializeCalculator(): Promise<void> {
 
 					crudBtn.innerText = "Run Database Test";
 					crudBtn.disabled = false;
+				});
+			}
+
+			const exportBtn = document.getElementById(
+				"btn-export-provisioned",
+			) as HTMLButtonElement;
+			if (exportBtn) {
+				exportBtn.addEventListener("click", () => {
+					copyActiveProtocolAsProvisioned();
 				});
 			}
 		}

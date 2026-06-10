@@ -6,7 +6,8 @@
 
 import { exportASCII, generatePdf } from "../export/exports";
 import { workspace } from "../state/instances";
-import type { ProtocolExportData } from "../types";
+import { type ProtocolExportData, SourceType } from "../types";
+import { serializeProtocol } from "../utils";
 import { isClickwrapAccepted, showClickwrapModal } from "./modals";
 
 /**
@@ -118,5 +119,39 @@ export async function triggerPdfGeneration(): Promise<void> {
 		if (modalPdfBtn) {
 			modalPdfBtn.textContent = "Generate PDF";
 		}
+	}
+}
+
+/**
+ * Serializes the active protocol and copies it to the clipboard
+ * Useful for generation of provisioned protocol JSONS for the private backend
+ */
+export async function copyActiveProtocolAsProvisioned(): Promise<void> {
+	const activeTab = workspace.getActive();
+	const p = activeTab.getProtocol();
+	if (!p) {
+		alert("No active protocol to export.");
+		return;
+	}
+
+	// Serialize using standard utility
+	const data = serializeProtocol(p, activeTab.getCustomNote());
+
+	// Force identity to PROVISIONED for repo migration
+	// would always like a new id
+	data.id = crypto.randomUUID();
+	data.source = SourceType.PROVISIONED;
+	data.last_updated = new Date().toISOString();
+
+	// Stringify and copy
+	const json = JSON.stringify(data, null, 2);
+
+	try {
+		await navigator.clipboard.writeText(json);
+		console.log("Protocol exported as PROVISIONED JSON:", data);
+		alert("Copied PROVISIONED JSON to clipboard!");
+	} catch (err) {
+		console.error("Failed to copy JSON to clipboard:", err);
+		alert("Failed to copy JSON to clipboard. See console.");
 	}
 }

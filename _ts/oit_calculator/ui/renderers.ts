@@ -19,7 +19,7 @@ import type {
 	Tab,
 	Warning,
 } from "../types";
-import { DosingStrategy } from "../types";
+import { DosingStrategy, SourceType } from "../types";
 import { escapeHtml } from "../utils";
 import {
 	renameActiveProtocol,
@@ -56,7 +56,7 @@ export function renderToolbar(props: CoreToolbarProps): void {
 					p
 						? html`
 					${
-						p.id && p.name
+						p.id && p.name && p.source === SourceType.USER
 							? html`
 						<span class="oit-protocol-name" title="Rename Protocol" @click=${() => renameActiveProtocol()}>
 							${p.name}
