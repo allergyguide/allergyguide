@@ -1,5 +1,5 @@
 +++
-title = "Test invite"
+title = "Sign up"
 description = "Sign up"
 path = "signup"
 template = "pages.html"
