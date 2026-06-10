@@ -1,6 +1,6 @@
 +++
-title = "CHANGELOG"
-date = 2026-05-28
+title = "OIT Calculator Changelog"
+date = 2026-06-09
 draft = false
 
 [extra]
@@ -23,6 +23,21 @@ authors = ["Joshua Yu"]
 ### Security
 
 ---
+
+## [0.17.0] - 2026-06-09
+
+### Added
+
+- Personal Library ("My Library"): A new dashboard for managing your saved protocols and custom foods. Includes live search, sorting by date, and easy deletion
+- Zero-Knowledge Vault: custom foods/protocols are encrypted locally in your browser before being saved to the database
+- Protocol Saving: "Save" and "Save As" buttons to the toolbar
+- Food Saving: You can now save individual custom foods to your library or update existing ones directly from the settings panel
+- Drift Detection: the calculator now alerts you if a food used in a protocol has been updated in your library, or is out-of-date
+- Support and Feedback: Added a new centralized "Help & Feedback" button (speech bubble icon) to the toolbar for authenticated users
+
+### Removed
+
+- Legacy Save Requests: Removed the "Request Save Protocol" email workflow as users can now save directly to their own private library
 
 ## [0.16.0] - 2026-06-04
 

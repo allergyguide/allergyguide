@@ -22,25 +22,6 @@
         </button>
         <span class="separator">|</span>
         <a href="{{ get_url(path='@/tools/resources/ofc_index_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span class="core-version">v{{ tool_info.version }}</span></a>
-        <script>
-          (() => {
-                      try {
-                          var s = localStorage.getItem('allergyguide_auth_token');
-                          if (s) {
-                              var btnLogin = document.getElementById('static-btn-login-trigger');
-                              if (btnLogin) btnLogin.style.display = 'none';
-                              var btnLogout = document.getElementById('static-btn-logout-trigger');
-                              if (btnLogout) btnLogout.style.display = 'inline-block';
-                              var b = document.getElementById('static-user-badge');
-                              if (b){
-                                  b.textContent = '...';
-                                  b.style.display = 'inline';
-                                  b.classList.add('oit-data-syncing');
-                              }
-                          }
-                      } catch(e) {}
-                  })();
-        </script>
       </div>
     </div>
     <div class="ofc-skeleton">
