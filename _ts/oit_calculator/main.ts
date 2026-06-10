@@ -157,6 +157,9 @@ async function initializeCalculator(): Promise<void> {
 		(document.querySelector(".changelog-link") as HTMLAnchorElement)?.href ||
 		"#";
 
+	// Wire up restricted mode login button
+	document.getElementById("btn-restricted-login")?.addEventListener("click", onLogin);
+
 	const getToolbarProps = () => ({
 		isLoggedIn: appState.isLoggedIn,
 		userEmail: appState.email,
@@ -169,6 +172,13 @@ async function initializeCalculator(): Promise<void> {
 	appState.subscribeToAuth((isLoggedIn) => {
 		// Update workspace auth
 		workspace.setAuth(isLoggedIn);
+
+		// Handle restricted mode CSS toggle
+		const container = document.querySelector(".oit_calculator");
+		if (container) {
+			if (isLoggedIn) container.classList.add("is-logged-in");
+			else container.classList.remove("is-logged-in");
+		}
 
 		// Render interactive toolbar
 		renderToolbar(getToolbarProps());
