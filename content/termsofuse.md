@@ -53,7 +53,15 @@ You agree to indemnify, defend, and hold harmless the website content creators, 
 
 You agree these Terms are governed by the laws of the **Province of British Columbia** and the federal laws of **Canada**. You agree that any claims or disputes must be resolved exclusively by a court located in Vancouver, British Columbia.
 
-## 6. Intellectual Property and Licensing
+## 6. User Accounts and Data
+
+For some clinical tools, having an authenticated account allows users to save custom configurations or assets to a database (for example, custom foods and OIT protocols).
+
+- **Zero-Knowledge Encryption**: Custom user-generated data that is saved to the database is encrypted locally in your browser using your password before it is transmitted to our servers. Because we do not store your password, **we cannot recover your password or decrypt your data if you lose your password: Loss of your password means permanent loss of access to your saved encrypted data**.
+- For some tools, authorized users have the ability to submit email feedback. In these cases, your message and email address will be
+  transmitted to our backend and email service provider (Resend) to notify our team. You must not include PHI in these messages.
+
+## 7. Intellectual Property and Licensing
 
 ### Software & Source Code (GNU GPLv3)
 
@@ -70,6 +78,6 @@ Unless otherwise noted, the educational text, documentation, and design assets h
 - **Authorized Use:** These materials are licensed for use solely by the authorized user for their direct clinical practice(s).
 - **No Redistribution:** You may NOT redistribute, resell, republish, or post these files on any public-facing website or repository.
 
-## 7. Severability
+## 8. Severability
 
 If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will remain in full force and effect.
