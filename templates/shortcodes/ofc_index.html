@@ -1,54 +1,81 @@
 {% set tools = load_data(path="/js/tools_versioning.json") %}
 {% set tool_info = tools.ofc_index %}
 <div class="ofc_index ofc-loading">
-  <!-- Interactive App Mount Point -->
-  <div id="ofc-app-mount"></div>
-  <!-- Static Skeleton (visible during initial load) -->
-  <div class="ofc-skeleton-container">
-    <div class="core-toolbar">
-      <div class="core-version-auth">
-        <button id="static-btn-login-trigger" class="login-link-btn" title="Login" aria-label="Login">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-          </svg>
-        </button>
-        <span id="static-user-badge" class="core-user-badge" style="display: none;"></span>
-        <button id="static-btn-logout-trigger" class="login-link-btn" style="display: none;" title="Logout" aria-label="Logout">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
-            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-          </svg>
-        </button>
-        <span class="separator">|</span>
-        <a href="{{ get_url(path='@/tools/resources/ofc_index_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span class="core-version">v{{ tool_info.version }}</span></a>
-      </div>
-    </div>
-    <div class="ofc-skeleton">
-      <div class="ofc-header">
-        <div class="search-box">
-          <input type="text" placeholder="Search for foods..." class="ofc-search-input" readonly>
-        </div>
-      </div>
-      <div class="ofc-instructions">
-        <p>Start typing to look through the database!</p>
-        <p>Search through
-          <strong id="static-ofc-food-count">5496</strong>
-          foods to find their protein content and generate a
-          <a href="https://pubmed.ncbi.nlm.nih.gov/39560049/" target="_blank" rel="noopener noreferrer" class="changelog-link">PRACTALL</a>
-          challenge protocol.</p>
-        <p>
-          If needed, edit the food name, protein content per serving size, and protein content per step.
-        </p>
-      </div>
-    </div>
-  </div>
+	<!-- Interactive App Mount Point -->
+	<div id="ofc-app-mount"></div>
+	<!-- Static Skeleton (visible during initial load) -->
+	<div class="ofc-skeleton-container">
+		<div class="core-toolbar">
+			<div class="core-version-auth">
+				<button id="static-btn-login-trigger" class="login-link-btn" title="Login" aria-label="Login">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+						<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+						<path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+					</svg>
+				</button>
+				<span id="static-user-badge" class="core-user-badge" style="display: none;"></span>
+				<button id="static-btn-logout-trigger" class="login-link-btn" style="display: none;" title="Logout" aria-label="Logout">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+						<path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+						<path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+					</svg>
+				</button>
+				<span class="separator">|</span>
+				<a href="{{ get_url(path='@/tools/resources/ofc_index_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span class="core-version">v{{ tool_info.version }}</span></a>
+			</div>
+		</div>
+		<div class="ofc-skeleton">
+			<div class="ofc-header">
+				<div class="search-box">
+					<input type="text" placeholder="Search for foods..." class="ofc-search-input" readonly>
+				</div>
+			</div>
+			<div class="ofc-instructions">
+				<p>Start typing to look through the database!</p>
+				<p>Search through
+					<strong id="static-ofc-food-count">5496</strong>
+					foods to find their protein content and generate a
+					<a href="https://pubmed.ncbi.nlm.nih.gov/39560049/" target="_blank" rel="noopener noreferrer" class="changelog-link">PRACTALL</a>
+					challenge protocol.</p>
+				<p>
+					If needed, edit the food name, protein content per serving size, and protein content per step.
+				</p>
+			</div>
+		</div>
+	</div>
 </div>
 <div id="auth-modal-mount"></div>
 <div id="core-feedback-mount"></div>
+<script>
+	(function() {
+		try {
+			const tokenStr = localStorage.getItem('allergyguide_auth_token');
+			if (tokenStr) {
+				const tokenData = JSON.parse(tokenStr);
+				const email = tokenData.user?.email || tokenData.email || "";
+				if (email) {
+					const instructions = document.querySelector('.ofc-instructions');
+					if (instructions) {
+						instructions.innerHTML = `
+						<div style="text-align: center; padding: 2rem;">
+						<svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill: var(--core-primary, #007bff); margin-bottom: 1rem; animation: ofc-spin 1.5s linear infinite;">
+						<style>
+						@keyframes ofc-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+						</style>
+						<path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+						</svg>
+						<h3 style="margin-bottom: 0.5rem;">Loading Workspace...</h3>
+						<p>Loading <strong>${email}</strong>...</p>
+						</div>
+						`;
+					}
+				}
+			}
+			} catch (e) {}
+			})();
+</script>
 <!-- Load main script -->
-<script
-  src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-  defer
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        defer
 ></script>
 <script type="module" src="/js/{{ tool_info.file }}"></script>
