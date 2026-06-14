@@ -433,6 +433,14 @@
     padding: 1rem;
     border-radius: 8px;
     border: 1px solid var(--oit-border);
+    overflow: visible;
+    position: relative; // Ensure stacking context for tooltips
+    transition: z-index 0s; // Instant z-index change
+
+    &:hover,
+    &:focus-within {
+      z-index: 100; // Lift container above siblings when active
+    }
 
     h3 {
       margin: 0 0 0.5rem 0;
@@ -443,8 +451,6 @@
   }
 
   .food-b-container {
-    position: relative;
-
     &.disabled {
       opacity: 0.5;
       pointer-events: none;
@@ -650,6 +656,7 @@
       align-items: center;
       gap: 0.35rem;
       z-index: 5;
+      overflow: visible;
 
       background-color: var(--oit-bg);
       border: 1px solid var(--oit-border);
@@ -706,6 +713,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    overflow: visible;
   }
 
   .oit-advanced-settings {
@@ -713,7 +721,7 @@
     border: 1px solid var(--oit-border);
     border-radius: 6px;
     background-color: var(--oit-bg);
-    overflow: hidden;
+    overflow: visible;
 
     summary {
       cursor: pointer;
@@ -727,6 +735,7 @@
       font-size: 0.9rem;
       padding: 0.75rem;
       transition: background-color 0.2s;
+      border-radius: 6px 6px 0 0; // Top corners rounding since parent no longer clips
 
       &::-webkit-details-marker {
         display: none;
@@ -1560,15 +1569,16 @@
       // Spacing and Typography
       padding: 0.5rem 0.75rem;
       border-radius: 0.25rem;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
       line-height: 1.4;
       white-space: pre-wrap;
+
       width: max-content;
       max-width: 16rem;
       box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.15); // Soft shadow
-      z-index: 1000;
+      z-index: 4000;
       pointer-events: none;
-
       // Animation State
       opacity: 0;
       visibility: hidden;
@@ -1587,8 +1597,7 @@
       border-style: solid;
       // The top color matches the tooltip background to blend in
       border-color: var(--oit-bg-secondary) transparent transparent transparent;
-      z-index: 1000; // Keeps it above other elements
-
+      z-index: 4000; // Keeps it above other elements
       // Animation State
       opacity: 0;
       visibility: hidden;
