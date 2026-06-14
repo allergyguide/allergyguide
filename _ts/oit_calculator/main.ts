@@ -32,6 +32,7 @@ import {
 } from "./ui/components/FoodSettings";
 import { initGlobalEvents } from "./ui/events";
 import {
+	copyActiveProtocolAsProvisioned,
 	initExportEvents,
 	prefetchPdfLibraries,
 	triggerPdfGeneration,
@@ -63,8 +64,22 @@ Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 // 1. Create the hydration callback
 const handleSuccessfulAuth = async () => {
 	try {
-		// Attempt to fetch the secure Netlify config
-		const userData = await loadUserConfiguration();
+		// Attempt to fetch both secure configuration and custom data in parallel
+		const [userData, customData] = await Promise.all([
+			loadUserConfiguration(),
+			(async () => {
+				try {
+					const [customFoods, customProtocols] = await Promise.all([
+						fetchSupaDocuments<FoodData>("custom_food"),
+						fetchSupaDocuments<ProtocolData>("custom_protocol"),
+					]);
+					return { customFoods, customProtocols };
+				} catch (dbErr) {
+					console.error("Failed to fetch custom user data:", dbErr);
+					return { customFoods: [], customProtocols: [] };
+				}
+			})(),
+		]);
 
 		appState.addProvisionedData(
 			userData.provisioned_foods,
@@ -72,19 +87,10 @@ const handleSuccessfulAuth = async () => {
 			userData.handouts,
 		);
 
-		// Attempt to fetch custom data from Supabase
-		try {
-			const [customFoods, customProtocols] = await Promise.all([
-				fetchSupaDocuments<FoodData>("custom_food"),
-				fetchSupaDocuments<ProtocolData>("custom_protocol"),
-			]);
-			appState.setUserData(
-				customFoods.map((doc) => doc.data),
-				customProtocols.map((doc) => doc.data),
-			);
-		} catch (dbErr) {
-			console.error("Failed to fetch custom user data:", dbErr);
-		}
+		appState.setUserData(
+			customData.customFoods.map((doc) => doc.data),
+			customData.customProtocols.map((doc) => doc.data),
+		);
 
 		appState.setAuthState(true, userData.email);
 
@@ -134,10 +140,11 @@ async function initializeCalculator(): Promise<void> {
 	if (!rulesUrl)
 		throw new Error("Missing url-container dataset: rulesUrl is required");
 
-	// Start loads
-	const publicDataPromise = loadPublicDatabases(); // for CNF foods basically
-	// Await Public Data (Required for AppState init)
-	const publicData = await publicDataPromise;
+	// Start loads in parallel
+	const [publicData, vaultState] = await Promise.all([
+		loadPublicDatabases(),
+		determineVaultState(),
+	]);
 
 	// Init AppState and Subscribers
 	initializeAppState(publicData, rulesUrl);
@@ -157,6 +164,11 @@ async function initializeCalculator(): Promise<void> {
 		(document.querySelector(".changelog-link") as HTMLAnchorElement)?.href ||
 		"#";
 
+	// Wire up restricted mode login button
+	document
+		.getElementById("btn-restricted-login")
+		?.addEventListener("click", onLogin);
+
 	const getToolbarProps = () => ({
 		isLoggedIn: appState.isLoggedIn,
 		userEmail: appState.email,
@@ -169,6 +181,13 @@ async function initializeCalculator(): Promise<void> {
 	appState.subscribeToAuth((isLoggedIn) => {
 		// Update workspace auth
 		workspace.setAuth(isLoggedIn);
+
+		// Handle restricted mode CSS toggle
+		const container = document.querySelector(".oit_calculator");
+		if (container) {
+			if (isLoggedIn) container.classList.add("is-logged-in");
+			else container.classList.remove("is-logged-in");
+		}
 
 		// Render interactive toolbar
 		renderToolbar(getToolbarProps());
@@ -188,7 +207,6 @@ async function initializeCalculator(): Promise<void> {
 
 	// SETUP AUTH
 	// Determine identity and vault state
-	const vaultState = await determineVaultState();
 	if (vaultState === "UNAUTHENTICATED") {
 		// Public mode. Application is usable with publicFoods.
 		appState.setAuthState(false, null);
@@ -202,26 +220,33 @@ async function initializeCalculator(): Promise<void> {
 		renderAuthUI("HIDDEN");
 
 		try {
-			const userData = await loadUserConfiguration(); // This now uses Bearer token securely!
+			// Fetch provisioned and custom data in parallel
+			const [userData, customData] = await Promise.all([
+				loadUserConfiguration(),
+				(async () => {
+					try {
+						const [customFoods, customProtocols] = await Promise.all([
+							fetchSupaDocuments<FoodData>("custom_food"),
+							fetchSupaDocuments<ProtocolData>("custom_protocol"),
+						]);
+						return { customFoods, customProtocols };
+					} catch (dbErr) {
+						console.error("Failed to fetch custom user data:", dbErr);
+						return { customFoods: [], customProtocols: [] };
+					}
+				})(),
+			]);
+
 			appState.addProvisionedData(
 				userData.provisioned_foods,
 				userData.provisioned_protocols,
 				userData.handouts,
 			);
 
-			// Fetch custom user data
-			try {
-				const [customFoods, customProtocols] = await Promise.all([
-					fetchSupaDocuments<FoodData>("custom_food"),
-					fetchSupaDocuments<ProtocolData>("custom_protocol"),
-				]);
-				appState.setUserData(
-					customFoods.map((doc) => doc.data),
-					customProtocols.map((doc) => doc.data),
-				);
-			} catch (dbErr) {
-				console.error("Failed to fetch custom user data:", dbErr);
-			}
+			appState.setUserData(
+				customData.customFoods.map((doc) => doc.data),
+				customData.customProtocols.map((doc) => doc.data),
+			);
 
 			appState.setAuthState(true, userData.email);
 			// renderToolbar is called by subscribeToAuth
@@ -329,6 +354,15 @@ async function initializeCalculator(): Promise<void> {
 
 					crudBtn.innerText = "Run Database Test";
 					crudBtn.disabled = false;
+				});
+			}
+
+			const exportBtn = document.getElementById(
+				"btn-export-provisioned",
+			) as HTMLButtonElement;
+			if (exportBtn) {
+				exportBtn.addEventListener("click", () => {
+					copyActiveProtocolAsProvisioned();
 				});
 			}
 		}

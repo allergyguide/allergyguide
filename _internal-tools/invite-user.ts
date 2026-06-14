@@ -14,7 +14,8 @@ const SUPABASE_SECRET_KEY = ENV_VARS.SUPABASE_SECRET_KEY;
  * URL the signup invitation link should direct to
  * On prod this should be "http://allergyguide.ca/signup"
  */
-export const REDIRECT_URL = "http://localhost:8888/signup";
+// export const REDIRECT_URL = "http://localhost:8888/signup";
+export const REDIRECT_URL = "https://allergyguide.ca/signup";
 
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
 	auth: {

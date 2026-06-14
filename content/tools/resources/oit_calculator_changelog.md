@@ -1,6 +1,6 @@
 +++
-title = "CHANGELOG"
-date = 2026-05-28
+title = "OIT Calculator Changelog"
+date = 2026-06-14
 draft = false
 
 [extra]
@@ -23,6 +23,38 @@ authors = ["Joshua Yu"]
 ### Security
 
 ---
+
+## [0.17.1] - 2026-06-14
+
+### Added
+
+- More options for water volumes: When customizing a protocol, the calculator now suggests a wider range of possible water volumes for dilutions
+
+### Changed
+
+- Performance: improve page load speed by loading profile information and data in parallel
+- PDF Format: Exported handouts and protocols now use A4 page sizing for better international printing support
+- Security: Access to the full calculator is restricted to authorized users for now to allow for testing
+
+### Fixed
+
+- Fixed a bug where the protocol name change button was visible for protocols that couldn't be renamed
+- Fixed a bug where tooltips were sometimes cut off at the edge of the screen
+
+## [0.17.0] - 2026-06-09
+
+### Added
+
+- Personal Library ("My Library"): A new dashboard for managing your saved protocols and custom foods. Includes live search, sorting by date, and easy deletion
+- Zero-Knowledge Vault: custom foods/protocols are encrypted locally in your browser before being saved to the database
+- Protocol Saving: "Save" and "Save As" buttons to the toolbar
+- Food Saving: You can now save individual custom foods to your library or update existing ones directly from the settings panel
+- Drift Detection: the calculator now alerts you if a food used in a protocol has been updated in your library, or is out-of-date
+- Support and Feedback: Added a new centralized "Help & Feedback" button (speech bubble icon) to the toolbar for authenticated users
+
+### Removed
+
+- Legacy Save Requests: Removed the "Request Save Protocol" email workflow as users can now save directly to their own private library
 
 ## [0.16.0] - 2026-06-04
 

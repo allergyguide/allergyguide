@@ -6,7 +6,7 @@
  * Used for deriving the KEK and auth hash
  * Changing this value is a breaking change requiring credential rotation and DEK re-wrapping
  */
-export const PBKDF2_ITERATIONS = 300000;
+export const PBKDF2_ITERATIONS = 150000;
 
 /**
  * Key used to store the encrypted DEK in sessionStorage

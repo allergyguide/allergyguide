@@ -3,6 +3,18 @@
 @use "mixins" as *;
 @use "typography" as *;
 
+@keyframes authEntrySlide {
+  0% {
+    opacity: 0;
+    transform: translateX(0.5rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .core-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -19,11 +31,22 @@
     flex: 0 0 auto;
   }
 
+  .core-toolbar-extra {
+    animation: authEntrySlide 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
   .core-version-auth {
     justify-content: flex-end;
     gap: 0.5rem;
     color: $core-color-ink-muted;
     font-size: $core-font-size-sm;
+
+    .auth-elements-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: authEntrySlide 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+    }
 
     .separator {
       opacity: 0.4;

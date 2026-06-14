@@ -29,14 +29,12 @@ To ensure compliance with data privacy standards, the **clinical calculations an
 
 This tool is **_explicitly_** not intended to process any Patient Health Information (PHI) such as patient names, dates of birth, or medical record numbers. **Any PHI entered by the user into the tool is done so in violation of our Terms of Use and is at the user's own risk.**
 
-- **Local Processing**: All calculations, including the "Undo/Redo" history stack, are processed and stored temporarily in your browser's memory. This data is cleared when you refresh the page.
-- **No Server Transmission of Protocol Data (Standard Use)**: During standard calculation and PDF generation, data entered into tool input fields, custom notes, and your interaction history are never transmitted to our servers, analytics providers, or stored in external databases.
-- **Voluntary Data Transmission (Save Requests)**: If you are an authorized user and choose to use the "Request to Save Protocol" feature, the specific protocol data, context notes, and your email address will be transmitted to our backend and email service provider (Resend) to notify our team of your request and provide a send receipt to your email.
-  - **No PHI**: You explicitly agree NOT to include any PHI such as patient names, dates of birth, or medical record numbers in any fields of the save request.
-- **User Authentication**: User authentication credentials (username/password) are transmitted securely to our backend solely for the purpose of verifying access permissions and retrieving authorized user-custom assets. These credentials are not used for any other purpose.
-- **PDF Exports & QR Codes**: When generating a PDF, the file is created locally on your device. The PDF includes a QR code designed for technical debugging and verification. This QR code encodes the specific protocol parameters (e.g., food choices, target doses), the version of the tool used to make it, and a log of settings changes.
+- **Local Processing**: All calculations, including the "Undo/Redo" history stack, are processed and stored temporarily in your browser's memory (client-side).
+- **Encrypted custom user assets**: For authorized users, custom foods and protocols can be saved to our database. This data is **encrypted locally in your browser** using your password before it is transmitted to our database.
+  - **No Password Recovery**: We do not store your password. **If you lose your password, your custom data is permanently unrecoverable: we have no way of decrypting it.**
+- **PDF Exports and QR Codes**: When generating a PDF, the file is created locally on your device. The PDF includes a QR code designed for technical debugging and verification. This QR code encodes the specific protocol parameters (e.g., food choices, target doses), the version of the tool used to make it, and a log of settings changes.
   - The QR code information explicitly excludes the "Custom Notes" field to minimize data exposure.
-  - **User Responsibility**: You agree not to enter Patient Identifiers (names, DOBs) into any input field. **The tool is not intended to process ANY PHI.** You acknowledge that by downloading a PDF, you become the custodian of any data visible within it.
+  - **User Responsibility**: You acknowledge that by downloading a PDF, you become the custodian of any data visible within it.
 
 ## User Accounts and Security
 
@@ -48,7 +46,7 @@ This tool is **_explicitly_** not intended to process any Patient Health Informa
 While the source code for this tool is Open Source (GPLv3), some clinical assets are subject to specific licensing restrictions:
 
 - **Source Code**: The underlying logic and code are open-source and licensed under **GPLv3**.
-- **Select Generated PDFs and Handouts**: Some tool assets (e.g. PDF handouts) downloaded through this tool contain "**Copyright © 2025 allergyguide**". These are **strictly proprietary**.
+- **Select Generated PDFs and Handouts**: Some tool assets (e.g. PDF handouts) downloaded through this tool contain "**Copyright © 2026 allergyguide**". These are **strictly proprietary**.
   - **Authorized Use**: These materials are licensed for use solely by you (the medical professional) for your direct clinical practice.
   - **No Redistribution**: You may NOT redistribute, resell, republish, or post these files on any public-facing website or repository.
 

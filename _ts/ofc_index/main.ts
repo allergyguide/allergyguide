@@ -101,12 +101,12 @@ async function initializeOFC() {
 
 	// --- AUTHENTICATION AND DATA LOAD ---
 
-	// Load public data immediately (always available)
-	const publicFoods = await loadPublicFoods();
+	// Load public data and check auth in parallel
+	const [publicFoods, vaultState] = await Promise.all([
+		loadPublicFoods(),
+		determineVaultState(),
+	]);
 	appState.setFoods(publicFoods, []);
-
-	// Determine Identity and Vault State
-	const vaultState = await determineVaultState();
 
 	if (vaultState === "UNAUTHENTICATED") {
 		// Public mode => publicFoods

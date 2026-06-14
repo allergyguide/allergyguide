@@ -2,7 +2,7 @@
 title = "OIT Calculator"
 description = "Generate EMR and patient ready protocols for oral immunotherapy to any food."
 date = 2025-11-08
-draft = true
+draft = false
 
 [taxonomies]
 tags = ["tools"]
