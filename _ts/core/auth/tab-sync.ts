@@ -31,9 +31,9 @@ vaultChannel.addEventListener("message", (event) => {
  * @param timeoutMs - Milliseconds to wait before timing out
  * @returns {Promise<boolean>} Promise resolving to true if a DEK was received
  */
-export async function requestDekFromTabs(timeoutMs = 500): Promise<boolean> {
+export async function requestDekFromTabs(timeoutMs = 200): Promise<boolean> {
 	return new Promise((resolve) => {
-		// If no other tab answers in 500ms, assume we are the only tab open
+		// If no other tab answers in timeoutMs, assume we are the only tab open
 		const timeout = setTimeout(() => {
 			window.removeEventListener("dek-synced", syncHandler);
 			resolve(false);
