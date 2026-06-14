@@ -1,6 +1,6 @@
 +++
 title = "OFC Index Changelog"
-date = 2026-06-09
+date = 2026-06-14
 draft = false
 
 [extra]
@@ -25,6 +25,12 @@ authors = ["Joshua Yu"]
 ### Security
 
 ---
+
+## [0.11.1] - 2026-06-14
+
+### Changed
+
+- Performance: improve page load speed by fetching food data and checking login status at the same time
 
 ## [0.11.0] - 2026-06-09
 

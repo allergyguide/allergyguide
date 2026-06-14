@@ -1,6 +1,6 @@
 +++
 title = "OIT Calculator Changelog"
-date = 2026-06-09
+date = 2026-06-14
 draft = false
 
 [extra]
@@ -23,6 +23,23 @@ authors = ["Joshua Yu"]
 ### Security
 
 ---
+
+## [0.17.1] - 2026-06-14
+
+### Added
+
+- More options for water volumes: When customizing a protocol, the calculator now suggests a wider range of possible water volumes for dilutions
+
+### Changed
+
+- Performance: improve page load speed by loading profile information and data in parallel
+- PDF Format: Exported handouts and protocols now use A4 page sizing for better international printing support
+- Security: Access to the full calculator is restricted to authorized users for now to allow for testing
+
+### Fixed
+
+- Fixed a bug where the protocol name change button was visible for protocols that couldn't be renamed
+- Fixed a bug where tooltips were sometimes cut off at the edge of the screen
 
 ## [0.17.0] - 2026-06-09
 
