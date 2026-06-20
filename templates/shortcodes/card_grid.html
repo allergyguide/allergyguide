@@ -1,5 +1,16 @@
-<!-- This shortcode will pull from the homepage_grid.toml file to show a grid of contact cards. -->
-
+{% set data = load_data(path="static/toml/homepage_grid.toml") %}
+{% set card_keys = keys | default(value=["title1", "title3", "title6"]) %}
 <div class="card_grid">
+    {% for key in card_keys %}
+        {% set card = data[key] %}
+        <a href="{{ card.url }}" class="contact-card-link">
+            <div>
+                <img src="{{ card.src }}" alt="{{ card.title }}" class="contact-card-image {% if card.dark_invert %}dark-invert{% endif %}">
+            </div>
+            <div class="contact-card-content">
+                <h3 class="contact-card-title">{{ card.title }}</h3>
+                <p class="contact-card-body">{{ card.text }}</p>
+            </div>
+        </a>
+    {% endfor %}
 </div>
-<script src="/js/card_grid.js"></script>
