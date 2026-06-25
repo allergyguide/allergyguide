@@ -478,23 +478,12 @@ Here is a custom macro copy paste section
 
 {{ load_macro(topic_name = "chronic_rhinosinusitis") }}
 
-## medications_toml_load
-
-param: meds (list of str)
-if not provided default will show all medications from the toml
-
-```md
-{{/* medications_toml_load(meds=["bilastine"]) */}}
-```
-
-{{ medications_toml_load(meds=["bilastine"])}}
-
 ## popup
 
 ```md
 ExRx: Blexten 10mg OD to QID {%/* popup(icon="rx") */%}
 
-{{ medications_toml_load(meds=["bilastine"])}}
+{{ med_card(id="bilastine") }}
 
 {%/* end */%}
 ```
@@ -524,7 +513,7 @@ To be interactive/work, this shortcode requires one script tag to be placed at t
 
 ExRx: Blexten 10mg OD to QID {% popup(icon="rx") %}
 
-{{ medications_toml_load(meds=["bilastine"])}}
+{{ med_card(id="bilastine") }}
 
 {% end %}
 
