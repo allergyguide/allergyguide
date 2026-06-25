@@ -12,7 +12,7 @@ Unidirectional data flow and stateless components where possible.
 
 The application fetches its data at runtime from the compiled static TOML file:
 
-- **Live Data**: `static/toml/medications.toml`
+- **Live Data**: `static/toml/medications.json` (compiled from `static/toml/medications/*.toml`)
 - **Schema Template**: `static/toml/medications_schema.toml` (Use this as a blueprint for adding new medications).
 
 ## Key UI Features

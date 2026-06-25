@@ -1,12 +1,11 @@
 import { readFileSync } from "node:fs";
-import toml from "fast-toml";
 import { MedicationSchema } from "../_ts/medications/schema";
 
 export function validateMedications() {
-	console.log("Validating medications.toml against Zod schema...");
+	console.log("Validating medications.json against Zod schema...");
 	try {
-		const tomlData = readFileSync("./static/toml/medications.toml", "utf-8");
-		const parsed = toml.parse(tomlData);
+		const jsonData = readFileSync("./static/toml/medications.json", "utf-8");
+		const parsed = JSON.parse(jsonData);
 		let hasError = false;
 
 		if (typeof parsed !== "object" || parsed === null) {
@@ -28,12 +27,12 @@ export function validateMedications() {
 		}
 
 		if (hasError) {
-			console.error("\nBuild failed due to invalid medication TOML data.\n");
+			console.error("\nBuild failed due to invalid medication JSON data.\n");
 			process.exit(1);
 		}
 		console.log("All medications passed Zod validation!");
 	} catch (e) {
-		console.error("Failed to parse TOML file", e);
+		console.error("Failed to parse JSON file", e);
 		process.exit(1);
 	}
 }

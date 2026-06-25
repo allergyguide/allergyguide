@@ -1,5 +1,6 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { buildMedications } from "./build-medications.mts";
 import { buildTS } from "./build-ts.mjs";
 import { compileTypst, loadTypstBinary } from "./build-typ.mjs";
 import { copyLegacyJS, verifyUsersData } from "./build-utils.mjs";
@@ -37,7 +38,11 @@ console.log("-----VERIFY USER SECURITY CONFIGURATION-----");
 await verifyUsersData();
 console.log("---------------------------\n");
 
-console.log("-----VALIDATE MEDICATIONS TOML-----");
+console.log("-----BUILD MEDICATIONS JSON-----");
+buildMedications();
+console.log("---------------------------\n");
+
+console.log("-----VALIDATE MEDICATIONS JSON-----");
 validateMedications();
 console.log("---------------------------\n");
 
