@@ -3,7 +3,6 @@
 {# Load .bib file with same name as the file #}
 {% set data = load_data(path=path, format="bibtex") %}
 {% set references = data.bibliographies %}
-{#data | json_encode(pretty=true) | linebreaksbr | safe #}
 {% set unique_ids = [] %}
 {% for ref in references %}
 {% if ref.citation_key in unique_ids %}
@@ -12,30 +11,29 @@
 {% set_global unique_ids = unique_ids | concat(with=[ref.citation_key]) %}
 {% endfor %}
 
-{# This hidden popup will later be toggled on/off #}
-<div id="ref-popup" class="ref-popup">
-  <div class="ref-popup-content">
-    <span id="ref-close" class="ref-close">&times;</span>
-    <div id="ref-popup-inner"></div>
-  </div>
-</div>
-{# For biblography #}
 {% set showBib = showBib | default(value=false) %}
+
 {% if showBib %}
 <div class="ref-bib">
   {% for ref in references %}
   <div class="item">
-    {{loop.index}}. {{ macros::bib_ref(bibliography=ref) }}
+    {{loop.index}}. 
+    <span id="cite-data-{{ ref.citation_key }}">{{ macros::bib_ref(bibliography=ref) }}</span>
+    {% if ref.tags.abstract %}
+      <div id="cite-abstract-{{ ref.citation_key }}" style="display: none;">{{ ref.tags.abstract }}</div>
+    {% endif %}
   </div>
   {% endfor %}
 </div>
+{% else %}
+<div style="display: none;">
+  {% for ref in references %}
+  <div id="cite-data-{{ ref.citation_key }}">{{ macros::bib_ref(bibliography=ref) }}</div>
+  {% if ref.tags.abstract %}
+    <div id="cite-abstract-{{ ref.citation_key }}">{{ ref.tags.abstract }}</div>
+  {% endif %}
+  {% endfor %}
+</div>
 {% endif %}
-<!-- Pass the JSON data into a container that can be loaded from JS -->
-<!-- NOTE: cannot use | safe | for injection as it invalidates the generated JS -->
-<div
-  id="references-data-container"
-  data-references='{{ references | json_encode() }}'
-  style="display: none;"
-></div>
-<!-- OF NOTE: this script will likely only work if you only use the shortcode ONCE per page. -->
+
 <script src="/js/references.js"></script>
