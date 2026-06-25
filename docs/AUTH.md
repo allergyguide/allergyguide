@@ -51,3 +51,14 @@ const uuid = data.sub; // User's unique ID
 - **Onboarding:** Users set their password at `/signup/`, which initializes their salts and encrypted DEK.
 - **Tab Sync:** The active DEK is stored in `sessionStorage` and synced across tabs using `BroadcastChannel`.
 - **Wiping:** `lockAndSignOut()` clears all local session data and terminates the Supabase session.
+
+---
+
+## 5. Performance & Network Orchestration
+
+To prevent a "waterfall" latency delay during tool initialization, **network fetching is decoupled from vault decryption**:
+
+1. **Pre-fetching:** As soon as `supabase.auth.getSession()` confirms a valid identity, background network requests for encrypted Supabase rows (`fetchAllEncryptedDocuments`) and Netlify configurations are fired immediately. This happens _in parallel_ with DEK retrieval (`determineVaultState()`).
+2. **Caching:** The resulting Promise is cached at the module level (`networkDataPromise`) and given a dummy catch handler to suppress unhandled promise rejection warnings in the browser.
+3. **Decryption:** Once the vault transitions to `UNLOCKED` (either immediately via `sessionStorage` or after user password entry), the cached background promise is awaited and the resulting rows are passed to `decryptDocuments`.
+4. **Cleanup:** `networkDataPromise` is cleared in a `finally` block to ensure subsequent auth changes (like switching users or retrying after a network failure) always trigger a fresh network fetch and prevent soft-locks.
