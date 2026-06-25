@@ -1,0 +1,152 @@
+[rupatadine]
+
+# =====================================================================
+# METADATA & HEADER
+# =====================================================================
+
+display_name = "Rupatadine"
+otc = "no"
+draft = true
+categories = ["antihistamine"]
+abbreviations = ""
+brand_names = ["Rupall", "Rupafin", "Rupita"]
+
+authors.primary = "JY"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+# =====================================================================
+# CORE CLINICAL INFO
+# =====================================================================
+
+moa = "2nd generation H1 receptor antagonist and platelet-activating factor antagonist"
+pregnancy = "Avoid (not enough data)."
+side_effects_summary = "Well tolerated overall. Small risk of drowsiness; very rare instances of QT-prolongation."
+ix_before = ""
+ix_ongoing = ""
+contraindications = "QT prolongation, history of Torsades de Pointes, on CYP3A4 inhibitors."
+severe_side_effects = "All **very** rare (<1%): Torsades de Pointes (only 1 event post-market per monograph), liver enzyme elevation."
+side_effects_source = ""
+half_life = "~6 hours, but some metabolites (i.e., desloratadine) remain longer; effects last ~24 hours."
+
+available_forms = ["10mg tab", "1mg/ml liquid"]
+interactions_summary = "CYP3A4 inhibitors (i.e. ketoconazole, azithromycin, fluconazole, diltiazem)"
+severe_interactions = """
+```
+RUPALL (rupatadine) is contraindicated in patients with:
+- hypersensitivity to rupatadine or to any ingredient in the formulation or component of the container. For a complete listing, see the DOSAGE FORMS, COMPOSITION AND PACKAGING.
+- history of QT prolongation and/or torsade de pointes, including congenital long QT syndromes, history of cardiac arrhythmias (see WARNINGS AND PRECAUTIONS).
+- use of CYP3A4 inhibitors or use of other QTc-prolonging drugs (see DRUG INTERACTIONS).
+```
+Source: 2023 monograph
+"""
+pearls = [
+  "Take with or without food (avoid grapefruit).",
+  "Going more than OD is technically off-label.",
+  "No data exists for dosing in hepatic or renal insufficiency.",
+]
+
+monograph_links = ["/monographs/rupatadine_2023_1.pdf"]
+
+# =====================================================================
+# DOSES
+# =====================================================================
+
+[[rupatadine.doses]]
+indication = "Chronic Spontaneous Urticaria, Allergic Rhinitis"
+patient_age = "≥12 yrs"
+dose = "10mg tab OD to QID"
+off_label = true
+patient_weight = ""
+notes = ""
+sample_rx = ""
+
+[[rupatadine.doses]]
+indication = "Chronic Spontaneous Urticaria, Allergic Rhinitis"
+patient_age = "2-11 yrs"
+patient_weight = "10-25 kg"
+dose = "2.5mg liquid OD to QID"
+off_label = true
+notes = ""
+sample_rx = ""
+
+[[rupatadine.doses]]
+indication = "Chronic Spontaneous Urticaria, Allergic Rhinitis"
+patient_age = "2-11 yrs"
+patient_weight = ">25 kg"
+dose = "5mg liquid OD to QID"
+off_label = true
+notes = ""
+sample_rx = ""
+
+
+# =====================================================================
+# ADVERSE EVENTS (TRIAL DATA)
+# =====================================================================
+
+[[rupatadine.side_effects]]
+symptom = "Drowsiness"
+comparator_name = "Placebo"
+notes = ""
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "3-9%"
+comparator = "2-5%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Headache"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1-6%"
+comparator = "2-5%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Tiredness"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1%"
+comparator = "1%"
+
+
+[[rupatadine.side_effects]]
+symptom = "QT-prolongation"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1%"
+comparator = "<1%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Dizziness"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1%"
+comparator = "1%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Nausea"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "0-2%"
+comparator = "1-2%"
+
+
+# =====================================================================
+# COVERAGE & COST
+# =====================================================================
+
+estimated_cost = "~$0.99 CAD / 10mg tab"
+
+[[rupatadine.coverage]]
+province = "ON"
+status = "Covered"
+details = "ODB (Ontario Drug Benefit)"
