@@ -24,6 +24,10 @@ import { HttpError } from "./_lib/utils.mts";
  */
 export const handler: Handler = async (event): Promise<HandlerResponse> => {
 	try {
+		if (event.headers["x-keep-warm"] === "true") {
+			return { statusCode: 200, body: "Warm" } as HandlerResponse;
+		}
+
 		const decoded = await authenticateUser(event);
 		const uuid = decoded.uuid;
 
