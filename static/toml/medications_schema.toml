@@ -62,11 +62,11 @@ monograph_links = ["/monographs/example_2025_1.pdf"]
 
 [[template_med.doses]]
 indication = "Atopic Dermatitis" # [REQUIRED]
-patient_age = "Adult [18, inf)"  # [REQUIRED] 
+patient_age = "≥12 yrs"          # [REQUIRED] 
 dose = "0.1% ointment, BID"      # [REQUIRED] dose, form/route, frequency
 
 # [OPTIONAL] Dose Modifiers
-patient_weight = "[0, 30) kg"                                           # Renders a Weight column if present
+patient_weight = "30 to <60 kg"                                         # Renders a Weight column if present
 off_label = false                                                       # Flags dose as off-label
 notes = "Moderately potent; avoid face"                                 # Supports Markdown. Appears in 'Notes' column or under dose.
 sample_rx = "Betamethasone valerate 0.1% ointment BID, 100g, refills 2" # Auto-generates [Rx] superscript
