@@ -1,0 +1,121 @@
+[template_med]
+
+# =====================================================================
+# METADATA & HEADER
+# =====================================================================
+
+# [medname] must be formatted as {generic (hyphenate if combination)} with {_route} if dramatically different from oral.
+# for example: [budesonide_inhaler] because the oral form is used for EoE.
+# similarly, [fluticasone-furoate_inhaler] - note the hyphenation used between the drug combos.
+
+display_name = "What you want the reader to see" # [REQUIRED] ie. Mometasone (Topical)
+otc = "yes"                                      # [REQUIRED] only 'yes', 'no', or 'both' allowed
+draft = true                                     # [OPTIONAL] if true, the medication card will be rendered with a WIP sign (default: false)
+categories = ["inhaler"]                         # [OPTIONAL] used for filter button functionality
+abbreviations = ""                               # [OPTIONAL] ie: "AR-allergic rhinitis; CRS-chronic rhinosinusitis" (renders in tooltip)
+brand_names = ["BrandNameA", "BrandNameB"]       # [OPTIONAL]
+
+# [OPTIONAL] Author credits
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+# =====================================================================
+# CORE CLINICAL INFO
+# =====================================================================
+
+moa = "Insert MoA"                       # [REQUIRED] Mechanism of Action. Should be BRIEF.
+pregnancy = "Insert information"         # [REQUIRED] Pregnancy/Lactation safety. Supports markdown.
+side_effects_summary = "Well tolerated." # [REQUIRED] 1-2 sentence summary. Supports markdown.
+
+# [OPTIONAL] All fields below support Markdown (*italics*, **bold**, [links](url))
+ix_before = "LFTs, CBC, CXR, TBST, HBV, HCV"   # Monitoring required before starting
+ix_ongoing = "LFT, CBC repeat at 1 month"      # Ongoing monitoring requirements
+contraindications = "Insert absolute/relative" # Highlights at top right of card. Should be brief.
+severe_side_effects = "Black Box: Malignancy"  # Highlights at top of Adverse Events accordion
+side_effects_source = "2024 Cochrane Review"   # Citation for adverse event rates
+half_life = "~X hours"                         # Pharmacokinetics
+
+# [OPTIONAL] Arrays
+available_forms = ["0.1% Cream", "10/20mg tab; 2.5mg/ml liq"]
+severe_interactions = ["CYP3A4 Inhibitors (e.g., ketoconazole)", "Grapefruit"]
+pearls = [
+  "**Important:** Insert clinical pearl here",
+  "Each element in the array is a bullet point",
+]
+
+# [OPTIONAL] Monograph PDFs
+# Filenames parsed automatically: genericname_monograph.pdf -> Genericname (monograph)
+monograph_links = ["/monographs/example_2025_1.pdf"]
+
+
+# =====================================================================
+# DOSES
+# =====================================================================
+# Multiple [[doses]] are allowed. If >3 indications, a filter menu appears automatically.
+
+[[template_med.doses]]
+indication = "Atopic Dermatitis" # [REQUIRED]
+patient_age = "Adult [18, inf)"  # [REQUIRED] 
+dose = "0.1% ointment, BID"      # [REQUIRED] dose, form/route, frequency
+
+# [OPTIONAL] Dose Modifiers
+patient_weight = "[0, 30) kg"                                           # Renders a Weight column if present
+off_label = false                                                       # Flags dose as off-label
+notes = "Moderately potent; avoid face"                                 # Supports Markdown. Appears in 'Notes' column or under dose.
+sample_rx = "Betamethasone valerate 0.1% ointment BID, 100g, refills 2" # Auto-generates [Rx] superscript
+
+# [OPTIONAL] Dose Adjustments (Auto-aggregates if identical across indications)
+[[template_med.doses.adjustments]]
+condition = "CrCl < 30"
+dose = "Apply OD instead of BID"
+
+[[template_med.doses.adjustments]]
+condition = "Hepatic (Child-Pugh C)"
+dose = "Avoid use"
+
+
+# =====================================================================
+# ADVERSE EVENTS (TRIAL DATA)
+# =====================================================================
+# [OPTIONAL] Use for specific trial/meta-analysis breakdown
+
+[[template_med.side_effects]]
+symptom = "Conjunctivitis"                # [REQUIRED]
+comparator_name = "Vehicle"               # [OPTIONAL] Overrides 'Placebo' column header
+notes = "More frequent in AD than Asthma" # [OPTIONAL] Supports markdown
+
+# Multiple rates allowed per symptom
+[[template_med.side_effects.rates]]
+indication = "Atopic Dermatitis" # [REQUIRED] Can use 'All' or specific indication
+drug = "10%"                     # [REQUIRED] Rate/HR/RR in drug group
+comparator = "2%"                # [OPTIONAL] Rate/HR/RR in comparator group
+
+[[template_med.side_effects.rates]]
+indication = "Asthma"
+drug = "<1%"
+comparator = "<1%"
+
+
+# =====================================================================
+# COVERAGE & COST
+# =====================================================================
+
+estimated_cost = "~$100 / month" # [OPTIONAL] Quick estimate
+
+[[template_med.coverage]]
+province = "BC"                          # [REQUIRED]
+status = "Special Authority"             # [REQUIRED] e.g., 'Covered', 'Special Authority', 'Not Covered', 'Mixed'
+details = "Requires baseline endoscopy." # [REQUIRED] Supports markdown for forms/links.
+
+[[template_med.coverage]]
+province = "ON"
+status = "Mixed"
+details = """
+**Requirements:**
+
+- **General Benefit:** Ages < 18
+- **Limited Use (LU 634):** Adults ≥ 18 for severe EoE
+
+[EAP Form](https://...)
+"""

@@ -1,0 +1,634 @@
+# All sections accept HTML aside from the pearl, which accepts markdown format
+[template_med]
+# [medname] must be formatted as {generic (hyphenate if combination)} with {_route} if dramatically different from oral.
+# for example: [budesonide_inhaler] because the oral form is used for EoE.
+# similarly, [fluticasone-furoate_inhaler] - note the hyphenation used between the drug combos.
+draft = false # if false, the medication card will be rendered with a WIP sign
+categories = ["inhaler"] # check with the editors for the proper category
+brand_names = ["brandnameA", "brandnameB"]
+cost = [
+  { province = "ON", price = "~$X CAD / Ymg tab" },
+  { province = "BC", price = "~$X CAD / Ymg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" }, # ie. ODB
+  { province = "BC", details = "enter details" },
+]
+otc = "yes" # only 'yes' or 'no' or 'both' allowed
+moa = "Insert MoA" # should be BRIEF
+half_life = "~X hours"
+peak_action = "Optional" # how long it takes for the medication to have its intended or maximal effect
+routes = "Xmg tab; Xmg/ml liq" # include doses available for each route ie. "10/20mg tab; 2.5mg/ml liq"
+doses = [
+  { indication = "diseaseA", dose = "Zmg form OD", notes = "ages 3-11" },           # ages should be listed as "ages X-Y", or "ages ≥X"
+  { indication = "diseaseA", dose = "Zmg form OD", notes = "ages ≥12; CrCl < 30" }, # separate different notes with semi-colon
+  { indication = "diseaseB", dose = "Zmg form BID", notes = "ages ≥18; >25kg" },    # just list weights out
+]
+age_group = "insert age group" # just list the ages it has been used in; this is a broad overview. you'll go into the specific ages for separate indications in the doses section
+pregnancy = "insert information, can link to data/links if need be"
+contraindications = "insert"
+side_effects.common = "insert" # common is ≥1%; if severe list below instead; if possible list out drug vs placebo rates from the monograph, ie. "Drowsiness 3-9%[D], 2-5%[P];"
+side_effects.severe = "insert" # list the probability for these
+monograph_links = [
+  "/monographs/example_2025_1.pdf",
+] # Filenames should be formatted as: genericname_2016_1, where the year is of the last revision and the last number is if there are multiple monographs that year for that drug
+abbreviations = "" # ie: "AR-allergic rhinitis; CRS-chronic rhinosinusitis; AI-adrenal insufficiency"
+pearls = [
+  "Insert pearl here",
+] # each separate element in the array is a bullet point
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+###############################
+# ANTIHISTAMINES
+###############################
+
+[rupatadine]
+draft = false
+categories = ["2G antihistamine"]
+brand_names = ["Rupall", "Rupafin", "Rupita"]
+cost = [{ province = "ON", price = "~$0.99 CAD / 10mg tab" }]
+coverage = [{ province = "ON", details = "ODB" }]
+otc = "no"
+moa = "2nd gen H1 receptor antagonist, platelet activating factor antagonist"
+half_life = "~6 hours, but some metabolites (ie. desloratadine) remain longer; effects last ~24h"
+peak_action = "Rapid absorption; max blood concentration in 1 hr"
+routes = "10mg tab, 1mg/ml liq"
+doses = [
+  { indication = "CSU, AR", dose = "10mg tab OD to QID", notes = "ages ≥12" },
+  { indication = "CSU, AR", dose = "2.5mg liq OD to QID, ", notes = "10-25kg, ages 2-11" },
+  { indication = "CSU, AR", dose = "5mg liq OD to QID, ", notes = ">25kg, ages 2-11" },
+]
+age_group = "ages ≥2"
+pregnancy = "Avoid (not enough data)"
+contraindications = "Hypersensitivity, QT prolongation or history of Torsades"
+side_effects.common = "Drowsiness 3-9%[D], 2-5%[P]; headache 1-6%[D], 2-5%[P]; tiredness 1%[D], 1%[P]; QT-prolongation 1%[D], <1%[P]; dizziness 1%[D], 1%[P]; nausea 0-2%[D], 1-2%[P]"
+side_effects.severe = "All very rare (<1%): Torsades (only 1 event), liver enzyme elevation"
+monograph_links = ["/monographs/rupatadine_2023_1.pdf"]
+abbreviations = ""
+pearls = [
+  "No data for hepatic or renal insufficiency",
+  "Take with or without food (avoid grapefruit)",
+  "Going more than OD is technically off-label",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[bilastine]
+draft = false
+categories = ["2G antihistamine"]
+brand_names = ["Blexten"]
+cost = [{ province = "ON", price = "~$1.1 CAD / 20mg tab" }]
+coverage = [{ province = "ON", details = "ODB" }]
+otc = "no"
+moa = "2nd gen H1 receptor antagonist"
+half_life = "~15 hours"
+peak_action = "~1h, rapid absorption"
+routes = "10 or 20mg tab, 2.5mg/ml liq (uncommon)"
+doses = [
+  { indication = "CSU, AR", dose = "20mg PO OD to QID", notes = "ages ≥12" },
+  { indication = "CSU, AR", dose = "10mg PO OD to QID", notes = "ages 4-11" },
+]
+age_group = "ages ≥4"
+pregnancy = "Avoid (not enough data)"
+contraindications = "Hypersensitivity, QT prolongation or history of torsades"
+side_effects.common = "QT prolongation (at 100mg ODx4, max mean increase 6ms); drowsiness/headache ~4%[D], ~3%[P]; abdo pain 3%[D], 3%[P]"
+side_effects.severe = "Torsades (extremely rare; only 1 case reported in monograph post-market reactions)"
+monograph_links = ["/monographs/bilastine_2021_1.pdf"]
+abbreviations = "CSU-chronic spontaneous urticaria; AR-allergic rhinitis"
+pearls = [
+  "Theoretically does not cross BBB; less sedating than other AHs",
+  "No renal adjustments needed; minimal data with hepatic impairment but not expected to cause issues",
+  "Going beyond OD is technically off-label",
+  "Take without food or juice otherwise absorption impaired",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[loratadine]
+draft = false
+categories = ["2G antihistamine"]
+brand_names = ["Claritin", "Alavert"]
+cost = [{ province = "ON", price = "~$0.6 CAD / 10mg tab" }]
+coverage = [{ province = "ON", details = "ODB" }]
+otc = "yes"
+moa = "2nd gen H1 receptor antagonist"
+half_life = "7.8-11 hours (half life of active metabolite descarboethoxyloratadine is 17-24h)"
+peak_action = "Rapid onset, ~1-2h"
+routes = "10mg tab (generic), 5mg tab, 1mg/ml liq"
+doses = [
+  { indication = "CSU, AR", dose = "10mg OD to QID", notes = "ages ≥6" },
+  { indication = "CSU, AR", dose = "5mg OD to QID", notes = "ages 2-6" },
+  { indication = "CSU, AR", dose = "5mg OD or 10mg q48h", notes = ">30kg; if severe liver impairment" },
+  { indication = "CSU, AR", dose = "5mg q48h", notes = "≤30kg; if severe liver impairment" },
+]
+age_group = "ages ≥2"
+pregnancy = "Safe as per <a target='blank' href='https://www.acog.org/womens-health/experts-and-stories/ask-acog/what-medicine-can-i-take-for-allergies-while-im-pregnant'>ACOG</a> and <a target='blank' href='https://firstexposure.ca/seasonal-allergies-and-allergic-rhinitis-in-pregnancy-and-lactation/'>firstexposure</a>"
+contraindications = "Hypersensitivity"
+side_effects.common = "Fatigue 4%[D], 4%[P]; headache 8%[D], 6%[D]; drowsiness 8%[D], 6%[P]"
+side_effects.severe = "<b>Extremely</b> rare and all post-market: anaphylaxis, hepatic dysfunction, palpitations"
+monograph_links = [
+  "/monographs/loratadine_2017_1.pdf",
+  "/monographs/claritin_2020_1.pdf",
+]
+abbreviations = "CSU-chronic spontaneous urticaria; AR-allergic rhinitis"
+pearls = [
+  "**No QTc prolongation in humans noted in monographs or UpToDate**. _'Prolongation of QRS-interval was observed **in monkeys at a dose 200 times** the proposed clinical dose'_",
+  "Mostly hepatically cleared. No renal adjustment required",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[cetirizine]
+draft = false
+categories = ["2G antihistamine"]
+brand_names = ["Reactine", "Allacan"]
+cost = [{ province = "ON", price = "~$0.40 CAD / 10mg tab" }]
+coverage = [{ province = "ON", details = "ODB" }]
+otc = "both"
+moa = "2nd gen H1 receptor antagonist"
+half_life = "~8 hours"
+peak_action = "~1 hour"
+routes = "20mg tab (Rx), 5 or 10mg tab (OTC)"
+doses = [
+  { indication = "CSU, AR", dose = "10mg OD to QID", notes = "ages ≥12" },
+  { indication = "CSU, AR", dose = "5mg OD", notes = "ages ≥12; 'moderate hepatic or renal impairment'" },
+]
+age_group = "ages ≥12"
+pregnancy = "Generally considered safe in pregnancy"
+contraindications = "CrCl <10ml/min, "
+side_effects.common = "For the 20mg OD: Drowsiness 24%[D], 8%[P]; fatigue 7%[D], 2.5%[P]; dry mouth 8%[D], 1.5%[P]"
+side_effects.severe = "<1% and rare: see monograph"
+monograph_links = [
+  "/monographs/cetirizine_2025_1.pdf",
+  "/monographs/cetirizine_2018_1.pdf",
+]
+abbreviations = "CSU-chronic spontaneous urticaria; AR-allergic rhinitis"
+pearls = [
+  "Use with or without food, though food delays onset of effect",
+  "No significant effect on QTc seen with 60mg OD",
+  "Comparatively to other 2nd-gen antihistamines, it has the highest drowsiness rates",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[fexofenadine]
+draft = false
+categories = ["2G antihistamine"]
+brand_names = ["Allegra"]
+cost = [
+  { province = "ON", price = "~$0.80 CAD / 120mg tab at Shoppers (2025)" },
+]
+coverage = [{ province = "ON", details = "None" }]
+otc = "yes"
+moa = "2nd gen H1 receptor antagonist"
+half_life = "~11-16 hours"
+peak_action = "Rapid absorption, max serum conc at ~2.5h"
+routes = "60 or 120mg tab"
+doses = [
+  { indication = "CSU, AR", dose = "60mg BID", notes = "" },
+  { indication = "CSU, AR", dose = "120mg OD to QID", notes = "up to QID for CSU" },
+  { indication = "CSU, AR", dose = "60mg OD", notes = "CrCl<40" },
+]
+age_group = "ages ≥12"
+pregnancy = "Not recommended, due to lack of data"
+contraindications = "Hypersensitivity to drug or components"
+side_effects.common = "Drowsiness, nausea, fatigue 1%[D], 1%[P]; headache 3%[D], 3%[P]"
+side_effects.severe = "One case of CHF and atrial fibrillation, post-market"
+monograph_links = ["/monographs/fexofenadine_2021_1.pdf"]
+abbreviations = "CSU-chronic spontaneous urticaria; AR-allergic rhinitis"
+pearls = [
+  "Avoid taking with fruit juice or food",
+  "No QT-prolongation seen at 11x recommended dose",
+  "Hard to OD; single doses up to 690mg BID x1mo did not show worse side effects than placebo in drug studies",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[desloratadine]
+draft = false
+categories = ["2G antihistamine"]
+brand_names = ["Aerius", "Clarinex"]
+# cost = [{ province = "ON", price = "~$0.50 CAD / 10mg tab" }]
+coverage = [{ province = "ON", details = "None on ODB" }]
+otc = "yes"
+moa = "2nd gen H1 receptor antagonist"
+half_life = "~27 hours"
+peak_action = "Max serum conc in 3 hours"
+routes = "5mg tab, 0.5mg/ml liq"
+doses = [
+  { indication = "CSU, AR", dose = "5mg OD to QID", notes = "ages ≥12" },
+  { indication = "CSU, AR", dose = "2.5mg liq OD to QID", notes = "ages 6-11" },
+  { indication = "CSU, AR", dose = "1.25mg liq OD to QID", notes = "ages 2-5" },
+]
+age_group = "≥12 tablet, ≥2 liq"
+pregnancy = "Avoid (limited data) for pregnancy and breast-feeding"
+contraindications = "Hypersensitivity"
+side_effects.common = "Tab: Fatigue 1.8%[D], 0.6%[P]; headache 4.5%[D], 4%[P], drowsiness 2%[D], 2%[P]. Liq: only 2/115 S/E reported (headache/rash)."
+side_effects.severe = "Extremely rarely: anaphylaxis, seizure, liver enzyme elevation"
+monograph_links = [
+  "/monographs/aerius_2019_1.pdf",
+  "/monographs/desloratadine_2018_1.pdf",
+  "/monographs/desloratadine_2023_1.pdf",
+]
+abbreviations = "CSU-chronic spontaneous urticaria; AR-allergic rhinitis"
+pearls = [
+  "**No significant QT-prolongation**: 45mg ODx10 did not show a significant increase in QTc",
+  "Technically going beyond OD is off-label",
+  "Theoretically does not enter the CNS",
+  "No dosage adjustment for hepatic or renal dysfunction. Take with or without food; no obvious drug interactions",
+  "Not an absolute contraindication, but use with caution if seizure history",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[diphenhydramine]
+draft = true
+categories = ["1G antihistamine"]
+brand_names = ["Benadryl", "Nytol"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "yes"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = [
+  "<a target='blank' href='https://aacijournal.biomedcentral.com/articles/10.1186/s13223-019-0375-9'>CSACI position statement</a>: newer generation H1-antihistamines are safer than first-generation H1-antihistamines",
+  "One of the few more common antihistamines that can be used IV",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+###############################
+# PUFFERS
+###############################
+
+[salbutamol]
+draft = true
+categories = ["inhaler", "SABA"]
+brand_names = ["Ventolin", "Albuterol (not a brand name)"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "no"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = ["[inhalerguide.ca](https://www.inhalerguide.ca/)"]
+
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+[budesonide_inhaler]
+draft = true
+categories = ["inhaler", "steroid"]
+brand_names = ["Pulmicort Turbuhaler"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "no"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = ["[inhalerguide.ca](https://www.inhalerguide.ca/)"]
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[fluticasone-furoate_inhaler]
+draft = true
+categories = ["inhaler", "steroid"]
+brand_names = ["Arnuity Ellipta"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "no"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = ["[inhalerguide.ca](https://www.inhalerguide.ca/)"]
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[fluticasone-propionate_inhaler]
+draft = true
+categories = ["inhaler", "steroid"]
+brand_names = ["brandnameA", "brandnameB"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "no"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = ["[inhalerguide.ca](https://www.inhalerguide.ca/)"]
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[mometasone-furoate_inhaler]
+draft = true
+categories = ["inhaler", "steroid"]
+brand_names = ["brandnameA", "brandnameB"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "no"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = ["[inhalerguide.ca](https://www.inhalerguide.ca/)"]
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+[beclomethasone-dipropionate_inhaler]
+draft = true
+categories = ["inhaler", "steroid"]
+brand_names = ["brandnameA", "brandnameB"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "no"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = ["[inhalerguide.ca](https://www.inhalerguide.ca/)"]
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+[ciclesonide_inhaler]
+draft = true
+categories = ["inhaler", "steroid"]
+brand_names = ["brandnameA", "brandnameB"]
+cost = [
+  { province = "ON", price = "~$0.50 CAD / 10mg tab" },
+  { province = "BC", price = "~$1000 CAD / 10mg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" },
+  { province = "BC", details = "enter details" },
+]
+otc = "no"
+moa = "Insert MoA"
+half_life = "~X hours"
+peak_action = ""
+routes = "oral tab, liquid, ODT"
+doses = [
+  { indication = "diseaseA", dose = "180mg OD", notes = "adult" },
+  { indication = "diseaseB", dose = "30mg BID", notes = "pediatric (ages 2-11)" },
+]
+age_group = "insert age group"
+pregnancy = "insert information, can link to data"
+contraindications = "insert"
+side_effects.common = "insert"
+side_effects.severe = "insert"
+monograph_links = ["/monographs/example_2025_1.pdf"]
+abbreviations = ""
+pearls = ["[inhalerguide.ca](https://www.inhalerguide.ca/)"]
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+###############################
+# INCS
+###############################
+[mometasone-furoate_INCS]
+draft = false
+categories = ["steroid", "INCS"]
+brand_names = ["Nasonex", "Sinuva"]
+cost = []
+coverage = [{ province = "ON", details = "ODB" }]
+otc = "no" # only 'yes' or 'no' allowed
+moa = "Steroid, topical"
+half_life = "~5.8 hours"
+peak_action = "While monograph says ~12 hours, <b>maximal effect requires 2-4 weeks of use</b>"
+routes = "nasal spray (50mcg)"
+doses = [
+  { indication = "AR", dose = "1-4 sprays (50mcg per spray) EN OD", notes = "ages ≥12" },
+  { indication = "AR", dose = "1 spray (50mcg per spray) EN OD", notes = "ages 3-11" },
+  { indication = "CRS", dose = "1-2 sprays (50mcg per spray) EN BID", notes = "ages ≥12" },
+]
+age_group = "ages ≥3"
+pregnancy = "Maybe OK, but no adequate or well-controlled studies in pregnant or nursing women"
+contraindications = "Hypersensitivity, acute bacterial sinus infection without antibiotics"
+side_effects.common = "For adults: headache 8%[D], 6%[P]; epistaxis 8%[D], 5%[P], pharyngitis 4%[D], 3%[P]. For 3-11, all comparable to placebo"
+side_effects.severe = "All very rare (<1%): liver enzyme elevation"
+monograph_links = ["/monographs/mometasone-furoate_2021_1.pdf"]
+abbreviations = "AR-allergic rhinitis; CRS-chronic rhinosinusitis; AI-adrenal insufficiency"
+pearls = [
+  "2nd-gen INCS, **minimal systemic absorption (0.5%)**, no evidence of AI in PII and PIII studies",
+  "For AR, classically useful for 'wet' nasal congestion",
+  "**High** operator error; [see here for how to use](/handouts/incs/)",
+  "OTC in the US; Rx in Canada",
+]
+authors.primary = "Resident lead"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+[ciclesonide_INCS]
+draft = true # if false, the medication card will be rendered with a WIP sign
+categories = [
+  "INCS",
+  "steroid",
+] # check with the editors for the proper category
+brand_names = ["brandnameA", "brandnameB"]
+cost = [
+  { province = "ON", price = "~$X CAD / Ymg tab" },
+  { province = "BC", price = "~$X CAD / Ymg tab" },
+]
+coverage = [
+  { province = "ON", details = "enter details" }, # ie. ODB
+  { province = "BC", details = "enter details" },
+]
+otc = "yes" # only 'yes' or 'no' or 'both' allowed
+moa = "Insert MoA" # should be BRIEF
+half_life = "~X hours"
+peak_action = "Optional" # how long it takes for the medication to have its intended or maximal effect
+routes = "Xmg tab; Xmg/ml liq" # include doses available for each route ie. "10/20mg tab; 2.5mg/ml liq"
+doses = [
+  { indication = "diseaseA", dose = "Zmg OD", notes = "ages 3-11" },           # ages should be listed as "ages X-Y", or "ages ≥X"
+  { indication = "diseaseA", dose = "Zmg OD", notes = "ages ≥12; CrCl < 30" }, # separate different notes with semi-colon
+  { indication = "diseaseB", dose = "Zmg BID", notes = "ages ≥18; >25kg" },    # just list weights out
+]
+age_group = "insert age group" # just list the ages it has been used in; this is a broad overview. you'll go into the specific ages for separate indications in the doses section
+pregnancy = "insert information, can link to data/links if need be"
+contraindications = "insert"
+side_effects.common = "insert" # common is ≥1%; if severe list below instead; if possible list out drug vs placebo rates from the monograph, ie. "Drowsiness 3-9%[D], 2-5%[P];"
+side_effects.severe = "insert" # list the probability for these
+monograph_links = [
+  "/monographs/example_2025_1.pdf",
+] # Filenames should be formatted as: genericname_2016_1, where the year is of the last revision and the last number is if there are multiple monographs that year for that drug
+abbreviations = "" # ie: "AR-allergic rhinitis; CRS-chronic rhinosinusitis; AI-adrenal insufficiency"
+pearls = ["Insert pearl here"]
+authors.primary = "TBD"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+
+###############################
+# TOPICAL STEROIDS
+###############################
+
+###############################
+# EYE DROPS
+###############################
+
+###############################
+# LTRAs
+###############################
+
+###############################
+# EPINEPHRINE
+###############################
+
+###############################
+# ANGIOEDEMA MEDS
+###############################
+
+###############################
+# BIOLOGICS
+###############################

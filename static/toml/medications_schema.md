@@ -1,31 +1,6 @@
-+++
-title = "Medication Card contribution guide"
-date = 2025-06-24
-draft = false
+# Medication Monograph Contribution Form
 
-[extra]
-toc = true
-authors = ["Allergyguide"]
-+++
-
-Medications can be found in this [page here](/medications/) and are also accessible through popups {% popup() %}
-
-{{ med_card(id="dupilumab") }}
-
-{% end %}
-
-- The goal is cards that are succinct and relevant, not a deep dive – the user can look at the monograph if needed for more detail.
-  - What do you think would be useful to see as a quick reference? What's helpful for counseling patients?
-- As such, there's a relatively standardized structure/format for medications.
-  - Monographs will be statically hosted and linked. Include a link for the Health Canada monograph in your draft file.
-
-## How to Submit
-
-If you are a contributor, **you do not need to know how to code!**
-
-Copy the form below into a Word document, Google Doc, etc., fill it out with the relevant clinical information, and send it to the editorial team. We will handle converting it into the website's database format. You can leave `[Optional]` fields blank at your discretion. Feel free to use bolding, italics, or bulleted lists. Include any links for sources you feel are relevant that you want in-line within the medication card.
-
----
+Please fill out the fields below. You can leave `[Optional]` fields blank. Feel free to use bolding, italics, or bulleted lists.
 
 ## 1. Core Information
 
@@ -38,6 +13,7 @@ Copy the form below into a Word document, Google Doc, etc., fill it out with the
   - `[e.g., 300mg/2mL syringe]`
   - `[e.g., 200mg/1.14mL pen]`
 - **Author Credits (Primary / Editor):** `[Optional]`
+- **Reference Monograph**: [Optional - Provide a link to the source monograph]
 
 ## 2. Clinical Pharmacology
 
@@ -73,7 +49,7 @@ _Please copy and paste the block below for each different indication/dose._
 
 **Indication:** `[e.g., Asthma]`
 
-- **Age Group:** `[e.g., Adult 18+, >=2 years]`
+- **Age Group:** `[e.g., Adult (≥18 yrs), Pediatric (6-11 yrs), Any]`
 - **Weight Range (if applicable):** `[Optional]`
 - **Dose:** `[e.g., 200mg SC q2w]`
 - **Is this Off-Label?** `[Yes / No]`
@@ -102,5 +78,3 @@ _Please list provincial coverage details below. (Copy and paste for multiple pro
 - **Coverage Details & Requirements:**
   `[Provide criteria, EAP requirements, or links to forms here]`
   `[Provide specific criteria here, for example: lab requirements, need for failed therapies (e.g., 'failed 3 months of topical steroids'), LU codes, or links to SA/EAP forms.]`
-
-<script src="/js/popup.js"></script>

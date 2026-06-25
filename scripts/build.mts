@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { buildTS } from "./build-ts.mjs";
 import { compileTypst, loadTypstBinary } from "./build-typ.mjs";
 import { copyLegacyJS, verifyUsersData } from "./build-utils.mjs";
+import { validateMedications } from "./build-validate-medications.mts";
 
 // ==========================================
 // CONFIGURATION & SETUP
@@ -34,6 +35,10 @@ const toolVersioning = JSON.parse(
 // By this time the secure_assets/ folder should already be built
 console.log("-----VERIFY USER SECURITY CONFIGURATION-----");
 await verifyUsersData();
+console.log("---------------------------\n");
+
+console.log("-----VALIDATE MEDICATIONS TOML-----");
+validateMedications();
 console.log("---------------------------\n");
 
 // TYPST

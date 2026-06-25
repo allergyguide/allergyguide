@@ -1,0 +1,8 @@
+{% if not med_script_loaded %}
+  {% set_global med_script_loaded = true %}
+  {% set data = load_data(path="static/toml/medications.toml") %}
+  <script type="application/json" id="med-database-json">{{ data | json_encode() | safe }}</script>
+  {% set tools = load_data(path="static/js/tools_versioning.json") %}
+  <script type="module" src="/js/{{ tools.medications.file }}"></script>
+{% endif %}
+<div class="med-card-mount" data-drug-id="{{ id }}"></div>
