@@ -30,6 +30,7 @@ side_effects_source = ""
 half_life = "~6 hours, but some metabolites (i.e., desloratadine) remain longer; effects last ~24 hours."
 
 available_forms = ["10mg tab", "1mg/ml liquid"]
+estimated_cost = "~$0.99 CAD / 10mg tab"
 interactions_summary = "CYP3A4 inhibitors (i.e. ketoconazole, azithromycin, fluconazole, diltiazem)"
 severe_interactions = """
 ```
@@ -144,9 +145,118 @@ comparator = "1-2%"
 # COVERAGE & COST
 # =====================================================================
 
-estimated_cost = "~$0.99 CAD / 10mg tab"
-
 [[rupatadine.coverage]]
 province = "ON"
 status = "Covered"
 details = "ODB (Ontario Drug Benefit)"
+
+[cetirizine]
+
+# =====================================================================
+# METADATA & HEADER
+# =====================================================================
+
+display_name = "Cetirizine"
+otc = "both"
+draft = true
+categories = ["antihistamine"]
+abbreviations = ""
+brand_names = ["Reactine", "Allacan"]
+
+authors.primary = "JY"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+# =====================================================================
+# CORE CLINICAL INFO
+# =====================================================================
+
+moa = "2nd gen H1 receptor antagonist"
+pregnancy = "Safe in pregnancy"
+side_effects_summary = "Well tolerated, but higher rates of drowsiness (~25% at 20mg OD)."
+
+ix_before = ""
+ix_ongoing = ""
+contraindications = "CrCl <10ml/min"
+severe_side_effects = "<1% and rare: see monograph"
+side_effects_source = "For 20mg OD, per monograph."
+half_life = "~8 hours"
+
+available_forms = [
+  "20mg tab (Rx)",
+  "5 or 10mg tab (OTC)",
+  "5mg/5mL liquid (OTC)",
+]
+estimated_cost = "~$0.40 CAD / 10mg tab"
+interactions_summary = ""
+severe_interactions = ""
+pearls = [
+  "Use with or without food, though food delays onset of effect",
+  "Safe in pregnancy!",
+  "No significant effect on QTc seen with 60mg OD",
+  "Comparatively to other 2nd-gen antihistamines, it has the highest drowsiness rates",
+]
+
+monograph_links = [
+  "/monographs/cetirizine_2025_1.pdf",
+  "/monographs/cetirizine_2025_2.pdf",
+  "/monographs/cetirizine_2018_1.pdf",
+]
+
+# =====================================================================
+# DOSES
+# =====================================================================
+
+[[cetirizine.doses]]
+indication = "CSU, AR"
+patient_age = "≥12 yrs"
+dose = "10mg OD to QID"
+notes = "Tablet form approved 12 and up"
+[[cetirizine.doses.adjustments]]
+condition = "Moderate hepatic or renal impairment"
+dose = "Start with 5 mg OD"
+
+[[cetirizine.doses]]
+indication = "CSU, AR"
+patient_age = "6-12 yrs"
+dose = "10mg liq OD to QID"
+[[cetirizine.doses.adjustments]]
+condition = "Moderate hepatic or renal impairment"
+dose = "Start with 5 mg OD"
+
+[[cetirizine.doses]]
+indication = "CSU, AR"
+patient_age = "2-6 yrs"
+dose = "5mg liq OD to QID"
+
+# =====================================================================
+# ADVERSE EVENTS (TRIAL DATA)
+# =====================================================================
+
+[[cetirizine.side_effects]]
+symptom = "Drowsiness"
+[[cetirizine.side_effects.rates]]
+indication = "All"
+drug = "24%"
+comparator = "8%"
+[[cetirizine.side_effects]]
+symptom = "Fatigue"
+[[cetirizine.side_effects.rates]]
+indication = "All"
+drug = "7%"
+comparator = "2.5%"
+[[cetirizine.side_effects]]
+symptom = "Dry mouth"
+[[cetirizine.side_effects.rates]]
+indication = "All"
+drug = "8%"
+comparator = "1.5%"
+
+# =====================================================================
+# COVERAGE & COST
+# =====================================================================
+
+[[cetirizine.coverage]]
+province = "ON"
+status = "Mixed"
+details = "ODB"
