@@ -38,7 +38,13 @@ half_life = "~X hours"                         # Pharmacokinetics
 
 # [OPTIONAL] Arrays
 available_forms = ["0.1% Cream", "10/20mg tab; 2.5mg/ml liq"]
-severe_interactions = ["CYP3A4 Inhibitors (e.g., ketoconazole)", "Grapefruit"]
+interactions_summary = "None of clinical significance."
+severe_interactions = """
+```text
+CYP3A4 Inhibitors (e.g., ketoconazole)
+Grapefruit
+```
+"""
 pearls = [
   "**Important:** Insert clinical pearl here",
   "Each element in the array is a bullet point",

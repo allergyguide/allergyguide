@@ -230,16 +230,26 @@ export function medCardTemplate(med: Medication): TemplateResult {
 				}
 
 				${
-					med.severe_interactions.length > 0
+					med.severe_interactions
 						? Accordion(
-								"Severe Interactions",
+								med.interactions_summary
+									? html`Severe Interactions <span class="ae-inline-summary">— ${med.interactions_summary}</span>`
+									: "Severe Interactions",
 								html`
-					<ul>
-						${med.severe_interactions.map((ix) => html`<li>${ix}</li>`)}
-					</ul>
+					<div class="markdown-body">
+						${renderMarkdownBlock(med.severe_interactions)}
+					</div>
 				`,
 							)
-						: nothing
+						: med.interactions_summary
+							? html`
+					<div class="med-accordion no-content">
+						<div class="summary-static">
+							<span class="title">Severe Interactions <span class="ae-inline-summary">— ${med.interactions_summary}</span></span>
+						</div>
+					</div>
+				`
+							: nothing
 				}
 
 

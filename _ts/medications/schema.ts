@@ -57,7 +57,8 @@ export const MedicationSchema = z.object({
 	ix_ongoing: z.string().optional(),
 	available_forms: z.array(z.string()).optional().default([]),
 	contraindications: z.string().optional(),
-	severe_interactions: z.array(z.string()).optional().default([]),
+	interactions_summary: z.string().optional(),
+	severe_interactions: z.string().optional(),
 	pearls: z.array(z.string()).optional().default([]),
 
 	pregnancy: z.string(),

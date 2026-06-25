@@ -506,6 +506,26 @@
           }
         }
 
+        .markdown-body {
+          pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: v.$core-space-sm v.$core-space-md;
+            background-color: color-mix(in oklab, v.$core-color-surface, v.$core-color-ink 4%);
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+          }
+          
+          p {
+            margin-top: 0;
+            margin-bottom: v.$core-space-sm;
+            font-size: 0.9rem;
+            color: inherit;
+          }
+        }
+
         ul.pearls-list {
           columns: 15.625rem 2;
           column-gap: v.$core-space-xl;
