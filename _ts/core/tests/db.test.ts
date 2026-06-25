@@ -20,6 +20,7 @@ vi.mock("../api/supabase", () => ({
 				eq: vi.fn(() => ({
 					single: vi.fn(),
 				})),
+				in: vi.fn(),
 			})),
 			delete: vi.fn(() => ({
 				eq: vi.fn(),
@@ -92,8 +93,8 @@ describe("Data Module: Database", () => {
 				},
 			];
 
-			const mockEq = vi.fn().mockResolvedValue({ data: mockRows, error: null });
-			const mockSelect = vi.fn(() => ({ eq: mockEq }));
+			const mockIn = vi.fn().mockResolvedValue({ data: mockRows, error: null });
+			const mockSelect = vi.fn(() => ({ in: mockIn }));
 			(supabase.from as any).mockReturnValue({ select: mockSelect });
 
 			(decryptData as any).mockResolvedValue(
@@ -113,8 +114,8 @@ describe("Data Module: Database", () => {
 				{ id: "bad", encrypted_blob: "fail", iv: "iv2" },
 			];
 
-			const mockEq = vi.fn().mockResolvedValue({ data: mockRows, error: null });
-			const mockSelect = vi.fn(() => ({ eq: mockEq }));
+			const mockIn = vi.fn().mockResolvedValue({ data: mockRows, error: null });
+			const mockSelect = vi.fn(() => ({ in: mockIn }));
 			(supabase.from as any).mockReturnValue({ select: mockSelect });
 
 			(decryptData as any).mockImplementation(async (blob: string) => {
@@ -130,12 +131,12 @@ describe("Data Module: Database", () => {
 
 		it("should throw if database fetch fails", async () => {
 			const mockSelect = vi.fn(() => ({
-				eq: vi.fn().mockResolvedValue({ error: { message: "DB error" } }),
+				in: vi.fn().mockResolvedValue({ error: { message: "DB error" } }),
 			}));
 			(supabase.from as any).mockReturnValue({ select: mockSelect });
 
 			await expect(fetchSupaDocuments("type")).rejects.toThrow(
-				"Failed to fetch type records.",
+				"Failed to fetch user documents",
 			);
 		});
 	});

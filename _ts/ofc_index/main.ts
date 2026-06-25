@@ -1,4 +1,14 @@
-import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
+import { supabase } from "../core/api/supabase";
+import {
+	determineVaultState,
+	getActiveDEK,
+	lockAndSignOut,
+} from "../core/auth/login-client";
+import {
+	decryptDocuments,
+	type EncryptedDocument,
+	fetchAllEncryptedDocuments,
+} from "../core/data/db";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import {
 	handleUserLoad,
@@ -6,11 +16,15 @@ import {
 	loadPublicFoods,
 } from "./data/loader";
 import { appState } from "./state/state";
-import { HttpError } from "./types";
+import { type FoodData, HttpError, type UserLoadResult } from "./types";
 import { initApp } from "./ui/app";
 
 /** Build-time injected version string */
 declare const __VERSION_OFC_INDEX__: string;
+
+// Module-level promise to cache background network fetches
+let networkDataPromise: Promise<[UserLoadResult, EncryptedDocument[]]> | null =
+	null;
 
 /**
  * Shared callback for successful authentication and vault unlock
@@ -18,10 +32,25 @@ declare const __VERSION_OFC_INDEX__: string;
  */
 async function handleSuccessfulAuth() {
 	try {
-		const [userResult, customFoods] = await Promise.all([
-			handleUserLoad(),
-			loadCustomFoods(),
-		]);
+		if (!networkDataPromise) {
+			networkDataPromise = Promise.all([
+				handleUserLoad(),
+				fetchAllEncryptedDocuments(["custom_food"]).catch((err) => {
+					console.error("Failed to fetch encrypted custom user data:", err);
+					return [];
+				}),
+			]);
+		}
+
+		const [userResult, encryptedRows] = await networkDataPromise;
+
+		const dek = getActiveDEK();
+		const customFoodDocs = await decryptDocuments<FoodData>(
+			encryptedRows,
+			dek,
+			"custom_food",
+		);
+		const customFoods = await loadCustomFoods(customFoodDocs);
 
 		const currentPublicFoods = appState.getState().publicFoods;
 
@@ -63,6 +92,8 @@ async function handleSuccessfulAuth() {
 		}
 
 		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+	} finally {
+		networkDataPromise = null; // ensure clear after use or error
 	}
 }
 
@@ -101,10 +132,33 @@ async function initializeOFC() {
 
 	// --- AUTHENTICATION AND DATA LOAD ---
 
+	// public data and session check in parallel
+	const publicFoodsPromise = loadPublicFoods();
+	const sessionPromise = supabase.auth.getSession();
+
+	// Start vault state resolution
+	const vaultStatePromise = determineVaultState();
+
+	const {
+		data: { session },
+	} = await sessionPromise;
+	if (session) {
+		// start network fetch without waiting for DEK
+		networkDataPromise = Promise.all([
+			handleUserLoad(),
+			fetchAllEncryptedDocuments(["custom_food"]).catch((err) => {
+				console.error("Failed to fetch encrypted custom user data:", err);
+				return [];
+			}),
+		]);
+
+		networkDataPromise.catch(() => {});
+	}
+
 	// Load public data and check auth in parallel
 	const [publicFoods, vaultState] = await Promise.all([
-		loadPublicFoods(),
-		determineVaultState(),
+		publicFoodsPromise,
+		vaultStatePromise,
 	]);
 	appState.setFoods(publicFoods, []);
 
@@ -115,13 +169,32 @@ async function initializeOFC() {
 		// Logged in to Supabase, but DEK missing: force unlock
 		renderAuthUI("UNLOCK", handleSuccessfulAuth);
 	} else if (vaultState === "UNLOCKED") {
-		// Fully Authenticated and Decrypted! Load user data
-		const [userResult, customFoods] = await Promise.all([
-			handleUserLoad(),
-			loadCustomFoods(),
-		]);
-		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(publicFoods, [...userResult.foods, ...customFoods]);
+		try {
+			// Fully Authenticated and Decrypted! Load user data
+			if (!networkDataPromise) {
+				networkDataPromise = Promise.all([
+					handleUserLoad(),
+					fetchAllEncryptedDocuments(["custom_food"]).catch((err) => {
+						console.error("Failed to fetch encrypted custom user data:", err);
+						return [];
+					}),
+				]);
+			}
+
+			const [userResult, encryptedRows] = await networkDataPromise;
+			const dek = getActiveDEK();
+			const customFoodDocs = await decryptDocuments<FoodData>(
+				encryptedRows,
+				dek,
+				"custom_food",
+			);
+			const customFoods = await loadCustomFoods(customFoodDocs);
+
+			appState.setAuthState(userResult.isLoggedIn, userResult.email);
+			appState.setFoods(publicFoods, [...userResult.foods, ...customFoods]);
+		} finally {
+			networkDataPromise = null;
+		}
 	}
 
 	const changelogLink =

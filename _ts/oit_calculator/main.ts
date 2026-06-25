@@ -12,8 +12,17 @@
 // ============================================
 
 import Decimal from "decimal.js";
-import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
-import { fetchSupaDocuments } from "../core/data/db";
+import { supabase } from "../core/api/supabase";
+import {
+	determineVaultState,
+	getActiveDEK,
+	lockAndSignOut,
+} from "../core/auth/login-client";
+import {
+	decryptDocuments,
+	type EncryptedDocument,
+	fetchAllEncryptedDocuments,
+} from "../core/data/db";
 import { runCrudTest } from "../core/data/test-crud";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import { VALIDATION_DEBOUNCE_MS } from "./constants";
@@ -23,6 +32,7 @@ import { appState, initializeAppState, workspace } from "./state/instances";
 import {
 	type FoodData,
 	HttpError,
+	type OITBootstrapResponse,
 	type ProtocolData,
 	type Warning,
 } from "./types";
@@ -61,24 +71,33 @@ Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 // INITIALIZATION
 // ============================================
 
+// Module-level promise to cache background network fetches
+let networkDataPromise: Promise<
+	[OITBootstrapResponse, EncryptedDocument[]]
+> | null = null;
+
 // 1. Create the hydration callback
 const handleSuccessfulAuth = async () => {
 	try {
-		// Attempt to fetch both secure configuration and custom data in parallel
-		const [userData, customData] = await Promise.all([
-			loadUserConfiguration(),
-			(async () => {
-				try {
-					const [customFoods, customProtocols] = await Promise.all([
-						fetchSupaDocuments<FoodData>("custom_food"),
-						fetchSupaDocuments<ProtocolData>("custom_protocol"),
-					]);
-					return { customFoods, customProtocols };
-				} catch (dbErr) {
-					console.error("Failed to fetch custom user data:", dbErr);
-					return { customFoods: [], customProtocols: [] };
-				}
-			})(),
+		// Use the pre-fetched background promise if available, otherwise fetch
+		if (!networkDataPromise) {
+			networkDataPromise = Promise.all([
+				loadUserConfiguration(),
+				fetchAllEncryptedDocuments(["custom_food", "custom_protocol"]).catch(
+					(dbErr) => {
+						console.error("Failed to fetch encrypted custom user data:", dbErr);
+						return [];
+					},
+				),
+			]);
+		}
+
+		const [userData, encryptedRows] = await networkDataPromise;
+
+		const dek = getActiveDEK();
+		const [customFoods, customProtocols] = await Promise.all([
+			decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
+			decryptDocuments<ProtocolData>(encryptedRows, dek, "custom_protocol"),
 		]);
 
 		appState.addProvisionedData(
@@ -88,8 +107,8 @@ const handleSuccessfulAuth = async () => {
 		);
 
 		appState.setUserData(
-			customData.customFoods.map((doc) => doc.data),
-			customData.customProtocols.map((doc) => doc.data),
+			customFoods.map((doc) => doc.data),
+			customProtocols.map((doc) => doc.data),
 		);
 
 		appState.setAuthState(true, userData.email);
@@ -127,6 +146,10 @@ const handleSuccessfulAuth = async () => {
 
 		// Keep the modal open and show the error!
 		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+	} finally {
+		// Ensure the promise is cleared regardless of success or failure
+		// so subsequent auth changes (e.g. logout then login or retries) get fresh data
+		networkDataPromise = null;
 	}
 };
 
@@ -140,10 +163,34 @@ async function initializeCalculator(): Promise<void> {
 	if (!rulesUrl)
 		throw new Error("Missing url-container dataset: rulesUrl is required");
 
-	// Start loads in parallel
+	// start public data and session check in parallel
+	const publicDataPromise = loadPublicDatabases();
+	const sessionPromise = supabase.auth.getSession();
+
+	// Start vault state resolution
+	const vaultStatePromise = determineVaultState();
+
+	const {
+		data: { session },
+	} = await sessionPromise;
+	if (session) {
+		// start network fetch without waiting for DEK
+		networkDataPromise = Promise.all([
+			loadUserConfiguration(),
+			fetchAllEncryptedDocuments(["custom_food", "custom_protocol"]).catch(
+				(err) => {
+					console.error("Failed to fetch encrypted custom user data:", err);
+					return [];
+				},
+			),
+		]);
+
+		networkDataPromise.catch(() => {});
+	}
+
 	const [publicData, vaultState] = await Promise.all([
-		loadPublicDatabases(),
-		determineVaultState(),
+		publicDataPromise,
+		vaultStatePromise,
 	]);
 
 	// Init AppState and Subscribers
@@ -220,21 +267,25 @@ async function initializeCalculator(): Promise<void> {
 		renderAuthUI("HIDDEN");
 
 		try {
-			// Fetch provisioned and custom data in parallel
-			const [userData, customData] = await Promise.all([
-				loadUserConfiguration(),
-				(async () => {
-					try {
-						const [customFoods, customProtocols] = await Promise.all([
-							fetchSupaDocuments<FoodData>("custom_food"),
-							fetchSupaDocuments<ProtocolData>("custom_protocol"),
-						]);
-						return { customFoods, customProtocols };
-					} catch (dbErr) {
-						console.error("Failed to fetch custom user data:", dbErr);
-						return { customFoods: [], customProtocols: [] };
-					}
-				})(),
+			if (!networkDataPromise) {
+				// Fallback just in case (e.g. session was briefly false but vault unlocked, edge case)
+				networkDataPromise = Promise.all([
+					loadUserConfiguration(),
+					fetchAllEncryptedDocuments(["custom_food", "custom_protocol"]).catch(
+						(err) => {
+							console.error("Failed to fetch encrypted custom user data:", err);
+							return [];
+						},
+					),
+				]);
+			}
+
+			const [userData, encryptedRows] = await networkDataPromise;
+
+			const dek = getActiveDEK();
+			const [customFoods, customProtocols] = await Promise.all([
+				decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
+				decryptDocuments<ProtocolData>(encryptedRows, dek, "custom_protocol"),
 			]);
 
 			appState.addProvisionedData(
@@ -244,8 +295,8 @@ async function initializeCalculator(): Promise<void> {
 			);
 
 			appState.setUserData(
-				customData.customFoods.map((doc) => doc.data),
-				customData.customProtocols.map((doc) => doc.data),
+				customFoods.map((doc) => doc.data),
+				customProtocols.map((doc) => doc.data),
 			);
 
 			appState.setAuthState(true, userData.email);
@@ -255,6 +306,8 @@ async function initializeCalculator(): Promise<void> {
 				"Failed to load provisioned assets. User may not have access.",
 			);
 			// Optionally handle 403s here
+		} finally {
+			networkDataPromise = null; // Clear it for subsequent re-auths
 		}
 	}
 
