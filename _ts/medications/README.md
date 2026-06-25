@@ -18,12 +18,13 @@ The application fetches its data at runtime from the compiled static TOML file:
 ## Key UI Features
 
 - **Dynamic Dose Filtering**: If a medication has 4 or more indications, a filter menu of pills automatically appears above the doses section, allowing users to toggle specific indications.
-- **Markdown Parsing**: `marked` and `DOMPurify` to safely render markdown inside key clinical fields (e.g., Pregnancy, Clinical Pearls, Coverage Details).
-  - _Note:_ The `coverage` details block specifically supports block-level markdown (like bulleted lists).
+- **Markdown Parsing**: `marked` and `DOMPurify` to safely render markdown inside key clinical fields (e.g., Pregnancy, Clinical Pearls, Coverage Tips).
+  - _Note:_ The `coverage` `tips` block specifically supports block-level markdown (like bulleted lists).
 - **Auto-Formatting**:
   - `sample_rx` strings automatically generate `[Rx]` superscripts.
   - PDF monograph URLs are automatically parsed into human-readable titles (e.g., `drug_name_monograph.pdf` -> `Drug Name (monograph)`).
-- **Status Tags**: Coverage status strings are automatically mapped to CSS classes for vibrant color-coding (`Covered`, `Special Authority`, `Not Covered`, `Mixed`).
+- **Status Tags**: Coverage status strings are automatically mapped to CSS classes for vibrant color-coding (`Open`, `Restricted`, `Age-Restricted`, `Not Covered`).
+- **Global Province Sync**: Selecting a province filter on any medication card or index automatically syncs the selection across all active islands on the page using a custom `med-province-changed` event and `localStorage`.
 
 ## Development
 

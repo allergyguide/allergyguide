@@ -110,18 +110,26 @@ comparator = "<1%"
 estimated_cost = "~$100 / month" # [OPTIONAL] Quick estimate
 
 [[template_med.coverage]]
-province = "BC"                          # [REQUIRED]
-status = "Special Authority"             # [REQUIRED] e.g., 'Covered', 'Special Authority', 'Not Covered', 'Mixed'
-details = "Requires baseline endoscopy." # [REQUIRED] Supports markdown for forms/links.
+indication = [
+  "Atopic Dermatitis",
+  "Asthma",
+] # [OPTIONAL] Omit if it applies to all indications
+province = [
+  "BC",
+  "AB",
+  "SK",
+] # [OPTIONAL] No province or indication specified = applies universally
+status = "Restricted" # [REQUIRED] Must be: 'Open', 'Restricted', 'Age-Restricted', or 'Not Covered'
+tips = "Requires baseline endoscopy." # [OPTIONAL] Supports markdown for forms/links.
 
 [[template_med.coverage]]
 province = "ON"
-status = "Mixed"
-details = """
+status = "Age-Restricted"
+tips = """
 **Requirements:**
 
-- **General Benefit:** Ages < 18
-- **Limited Use (LU 634):** Adults ≥ 18 for severe EoE
+- **Open:** Ages < 18
+- **Restricted (LU 634):** Adults ≥ 18 for severe EoE
 
 [EAP Form](https://...)
 """

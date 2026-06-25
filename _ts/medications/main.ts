@@ -53,7 +53,32 @@ function initMedications() {
 		const drugId = mount.getAttribute("data-drug-id");
 		if (drugId && db[drugId]) {
 			console.log(`Mounting Med Card for ${drugId}`);
-			render(medCardTemplate(db[drugId]), mount as HTMLElement);
+			let currentProv = localStorage.getItem("med-province") || "All";
+
+			const renderIsland = () => {
+				render(
+					medCardTemplate(
+						db[drugId],
+						currentProv,
+						(newProv) => {
+							currentProv = newProv;
+							localStorage.setItem("med-province", newProv);
+							document.dispatchEvent(
+								new CustomEvent("med-province-changed", { detail: newProv }),
+							);
+						},
+						true,
+					),
+					mount as HTMLElement,
+				);
+			};
+
+			document.addEventListener("med-province-changed", (e: Event) => {
+				currentProv = (e as CustomEvent).detail;
+				renderIsland();
+			});
+
+			renderIsland();
 		} else if (drugId) {
 			console.warn(`Drug ID ${drugId} not found in database.`);
 		}

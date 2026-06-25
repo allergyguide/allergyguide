@@ -8,7 +8,7 @@ display_name = "Rupatadine"
 otc = "no"
 draft = true
 categories = ["antihistamine"]
-abbreviations = ""
+abbreviations = "CSU - Chronic Spontaneous Urticaria; AR - Allergic Rhinitis"
 brand_names = ["Rupall", "Rupafin", "Rupita"]
 
 authors.primary = "JY"
@@ -30,7 +30,7 @@ side_effects_source = ""
 half_life = "~6 hours, but some metabolites (i.e., desloratadine) remain longer; effects last ~24 hours."
 
 available_forms = ["10mg tab", "1mg/ml liquid"]
-estimated_cost = "~$0.99 CAD / 10mg tab"
+estimated_cost = "~$1.6 CAD / 10mg tab"
 interactions_summary = "CYP3A4 inhibitors (i.e. ketoconazole, azithromycin, fluconazole, diltiazem)"
 severe_interactions = """
 ```
@@ -146,9 +146,18 @@ comparator = "1-2%"
 # =====================================================================
 
 [[rupatadine.coverage]]
-province = "ON"
-status = "Covered"
-details = "ODB (Ontario Drug Benefit)"
+province = ["BC"]
+status = "Not Covered"
+tips = """
+- **Private:** most extended benefits should cover.
+"""
+[[rupatadine.coverage]]
+province = ["ON"]
+status = "Not Covered"
+tips = """
+- Not covered through ODB or OHIP+
+- **Private:** most insurance companies should cover
+"""
 
 [cetirizine]
 
@@ -257,9 +266,16 @@ comparator = "1.5%"
 # =====================================================================
 
 [[cetirizine.coverage]]
+province = "BC"
+status = "Restricted"
+tips = "Only Pharmacare Plan W (First Nations) will cover the 10mg tablet"
+[[cetirizine.coverage]]
 province = "ON"
-status = "Mixed"
-details = "ODB"
+status = "Not Covered"
+tips = """
+- Not covered through ODB or OHIP+
+- **Private:** most insurance companies should cover
+"""
 
 [bilastine]
 draft = true
@@ -340,6 +356,8 @@ dose = "10mg PO OD to QID"
 off_label = true
 
 [[bilastine.coverage]]
-province = "ON"
-status = "Covered"
-details = "ODB"
+province = ["ON", "BC"]
+status = "Not Covered"
+tips = """
+- **Private:** most insurance companies should cover
+"""

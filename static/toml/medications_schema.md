@@ -71,10 +71,11 @@ May consider things like: need to eat with food, no need for hepatic/renal adjus
 
 - **Estimated Cost:** `[Optional - e.g., ~$100 / month, >$1000 / month, ~$15 / dose, etc. the point is give a ballpark]`
 
-_Please list provincial coverage details below. (Copy and paste for multiple provinces, or insurers)_ You don't have to be exhaustive here - what's clinically going to be relevant for you? Medical coverage is complicated, and may also involve things like Private Insurance / Patient Support Programs.
+_Please list provincial coverage details below. (Copy and paste for multiple coverage rules)_ You don't have to be exhaustive here - focus on what's clinically relevant.
 
-- **Province/Insurer:** `[e.g., BC, ON, Non-Insured Health Benefits (NIHB)]`
-- **Status:** `[Choose one: Covered / Special Authority / Not Covered / Mixed]`
-- **Coverage Details & Requirements:**
+- **Province/Insurer:** `[e.g., BC, ON, Non-Insured Health Benefits (NIHB)]. You can group multiple provinces (e.g. BC, ON, QC).`
+- **Indication:** `[Optional - e.g. CSU, Asthma. Group if a coverage rule applies to multiple indications, leave blank if it applies to all.]`
+- **Status:** `[Choose one: Open / Restricted / Age-Restricted / Not Covered]`
+- **Tips:**
   `[Provide criteria, EAP requirements, or links to forms here]`
-  `[Provide specific criteria here, for example: lab requirements, need for failed therapies (e.g., 'failed 3 months of topical steroids'), LU codes, or links to SA/EAP forms.]`
+  `[Provide specific criteria here, for example: lab requirements, need for failed therapies, LU codes, or links to SA/EAP forms.]`

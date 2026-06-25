@@ -4,11 +4,14 @@ import { html, nothing, type TemplateResult } from "lit-html";
 import { repeat } from "lit-html/directives/repeat.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { marked } from "marked";
-import type {
-	Dose,
-	DoseAdjustment,
-	Medication,
-	MedicationDatabase,
+import {
+	type Dose,
+	type DoseAdjustment,
+	type Medication,
+	type MedicationCoverage,
+	type MedicationDatabase,
+	ProvinceEnum,
+	STATUS_CSS_MAP,
 } from "./schema";
 
 /**
@@ -90,7 +93,12 @@ function formatMonographName(url: string): string {
  * @param med - The Medication data object
  * @returns {TemplateResult} The complete medication card template
  */
-export function medCardTemplate(med: Medication): TemplateResult {
+export function medCardTemplate(
+	med: Medication,
+	selectedProvince: string = "All",
+	onProvinceChange?: (p: string) => void,
+	isStandalone: boolean = false,
+): TemplateResult {
 	return html`
 		<div class="med-card">
 			<div class="med-header">
@@ -187,7 +195,7 @@ export function medCardTemplate(med: Medication): TemplateResult {
 						med.side_effects && med.side_effects.length > 0
 							? html`
 						<div class="table-responsive-wrapper">
-						<table class="ae-table">
+						<table class="med-dose-table ae-table">
 							<thead>
 								<tr>
 									<th>Symptom</th>
@@ -201,7 +209,7 @@ export function medCardTemplate(med: Medication): TemplateResult {
 									se.rates.map(
 										(rate, idx) => html`
 										<tr>
-											${idx === 0 ? html`<td rowspan="${se.rates.length}"><strong>${se.symptom}</strong>${se.notes ? html`<br><span class="text-muted" style="font-size: 0.8em; font-weight: normal">${renderMarkdown(se.notes)}</span>` : nothing}</td>` : nothing}
+											${idx === 0 ? html`<td rowspan="${se.rates.length}"><strong>${se.symptom}</strong>${se.notes ? html`<br><span class="text-muted ae-notes">${renderMarkdown(se.notes)}</span>` : nothing}</td>` : nothing}
 											<td>${rate.indication}</td>
 											<td>${rate.drug}</td>
 											<td>${rate.comparator || "-"}</td>
@@ -212,7 +220,7 @@ export function medCardTemplate(med: Medication): TemplateResult {
 							</tbody>
 						</table>
 						</div>
-						${med.side_effects_source ? html`<div class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem; font-style: italic;">Source: ${renderMarkdown(med.side_effects_source)}</div>` : nothing}
+						${med.side_effects_source ? html`<div class="text-muted ae-source">Source: ${renderMarkdown(med.side_effects_source)}</div>` : nothing}
 					`
 							: nothing
 					}
@@ -260,21 +268,12 @@ export function medCardTemplate(med: Medication): TemplateResult {
 								med.estimated_cost
 									? html`Coverage/Pricing <span class="ae-inline-summary">— ${med.estimated_cost}</span>`
 									: "Coverage/Pricing",
-								html`
-						<div class="coverage-grid">
-							${med.coverage.map(
-								(cov) => html`
-								<div class="coverage-item">
-									<div class="cov-header">
-										<strong>${cov.province}</strong>
-										<span class="tag ${cov.status.toLowerCase().replace(/[^a-z0-9]/g, "-")}">${cov.status}</span>
-									</div>
-									<div class="cov-details">${renderMarkdownBlock(cov.details)}</div>
-								</div>
-							`,
-							)}
-						</div>
-					`,
+								renderCoverageTable(
+									med.coverage,
+									selectedProvince,
+									onProvinceChange,
+									isStandalone,
+								),
 							)
 						: med.estimated_cost
 							? html`
@@ -319,6 +318,124 @@ export function medCardTemplate(med: Medication): TemplateResult {
 					</div>`
 					: nothing
 			}
+		</div>
+	`;
+}
+
+function renderCoverageTable(
+	coverage: MedicationCoverage[],
+	selectedProvince: string,
+	onProvinceChange?: (p: string) => void,
+	isStandalone: boolean = false,
+): TemplateResult {
+	const filtered =
+		selectedProvince === "All"
+			? coverage
+			: coverage.filter(
+					(c: MedicationCoverage) =>
+						!c.province || (c.province as string[]).includes(selectedProvince),
+				);
+
+	const provOptions = ["All", ...ProvinceEnum.options];
+
+	const handleProvChange = (e: Event) => {
+		const val = (e.target as HTMLSelectElement).value;
+		if (onProvinceChange) onProvinceChange(val);
+	};
+
+	const hasSpecificIndications = filtered.some(
+		(c: MedicationCoverage) => c.indication && c.indication.length > 0,
+	);
+
+	return html`
+		${
+			isStandalone
+				? html`
+		<div class="coverage-controls">
+			<label><strong>Province:</strong>
+				<select @change=${handleProvChange} .value=${selectedProvince}>
+					${provOptions.map((p) => html`<option value="${p}" ?selected=${p === selectedProvince}>${p === "All" ? "All Provinces" : p}</option>`)}
+				</select>
+			</label>
+		</div>`
+				: nothing
+		}
+		<div class="coverage-tables">
+			<div class="table-responsive-wrapper">
+			<table class="med-dose-table">
+				<thead>
+					<tr>
+						<th>Province</th>
+						${hasSpecificIndications ? html`<th>Indication</th>` : nothing}
+						<th class="status-col">
+							Status 
+							<span class="status-help-trigger" 
+								@mouseenter=${(e: Event) => {
+									const trigger = e.target as HTMLElement;
+									const container = trigger.closest(".coverage-tables");
+									if (container) {
+										const tooltip = container.querySelector(
+											".fast-tooltip",
+										) as HTMLElement;
+										if (tooltip) {
+											const tRect = trigger.getBoundingClientRect();
+											const cRect = container.getBoundingClientRect();
+											tooltip.style.left = `${tRect.left - cRect.left + tRect.width / 2}px`;
+										}
+									}
+								}}
+							>ⓘ</span>
+						</th>
+						<th>Notes</th>
+					</tr>
+				</thead>
+				<tbody>
+					${filtered.map((cov: MedicationCoverage) => {
+						let provsToDisplay = "All";
+						if (cov.province && cov.province.length > 0) {
+							if (selectedProvince !== "All") {
+								// If they filtered for a specific province, just show that one.
+								provsToDisplay = selectedProvince;
+							} else {
+								// Otherwise, show all the provinces this rule applies to.
+								provsToDisplay = cov.province.join(", ");
+							}
+						}
+
+						const indsToDisplay =
+							cov.indication && cov.indication.length > 0
+								? cov.indication.join(", ")
+								: "All";
+
+						return html`
+						<tr>
+							<td><strong>${provsToDisplay}</strong></td>
+							${
+								hasSpecificIndications
+									? html`<td>${indsToDisplay}</td>`
+									: nothing
+							}
+							<td>
+								<span class="tag ${STATUS_CSS_MAP[cov.status]}">
+									${cov.status}
+								</span>
+							</td>
+							<td>${renderMarkdownBlock(cov.tips)}</td>
+						</tr>
+						`;
+					})}
+				</tbody>
+			</table>
+			</div>
+			
+			<div class="fast-tooltip">
+				<strong>Open:</strong> General benefit<br>
+				<strong>Restricted:</strong> Specific criteria (e.g. Special Auth)<br>
+				<strong>Age-Restricted:</strong> Limited by age<br>
+				<strong>Not Covered:</strong> Not on formulary
+			</div>
+
+			${filtered.length === 0 ? html`<p class="text-muted coverage-empty">No coverage data available for ${selectedProvince}.</p>` : nothing}
 		</div>
 	`;
 }
@@ -545,6 +662,7 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
 	let state = {
 		query: "",
 		category: "All",
+		province: localStorage.getItem("med-province") || "All",
 	};
 
 	const categories = new Set<string>();
@@ -590,6 +708,14 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
 		update();
 	};
 
+	// Listen for province changes broadcast by standalone med-card islands (main.ts) or by individual med cards inside this index (medIndexTemplate callback below). The guard prevents a double re-render
+	document.addEventListener("med-province-changed", (e: Event) => {
+		const p = (e as CustomEvent).detail;
+		if (state.province !== p) {
+			updateState({ province: p });
+		}
+	});
+
 	update();
 }
 
@@ -605,14 +731,16 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
  */
 export function medIndexTemplate(
 	_db: MedicationDatabase,
-	state: { query: string; category: string },
+	state: { query: string; category: string; province: string },
 	categories: string[],
 	preparedSearchTargets: {
 		id: string;
 		med: Medication;
 		preparedText: Fuzzysort.Prepared | undefined;
 	}[],
-	updateState: (s: Partial<{ query: string; category: string }>) => void,
+	updateState: (
+		s: Partial<{ query: string; category: string; province: string }>,
+	) => void,
 ): TemplateResult {
 	const handleInput = (e: Event) => {
 		updateState({ query: (e.target as HTMLInputElement).value });
@@ -651,6 +779,17 @@ export function medIndexTemplate(
 					.value=${state.query} 
 					@input=${handleInput}
 				/>
+				<select class="med-province-select" @change=${(e: Event) => {
+					const p = (e.target as HTMLSelectElement).value;
+					localStorage.setItem("med-province", p);
+					// Dispatch event for islands
+					document.dispatchEvent(
+						new CustomEvent("med-province-changed", { detail: p }),
+					);
+					updateState({ province: p });
+				}} .value=${state.province}>
+					${["All", ...ProvinceEnum.options].map((p) => html`<option value="${p}" ?selected=${p === state.province}>${p === "All" ? "All Provinces" : p}</option>`)}
+				</select>
 			</div>
 			<div class="med-categories">
 				${categories.map(
@@ -672,7 +811,20 @@ export function medIndexTemplate(
 								meds,
 								(m) => m.id,
 								(m) =>
-									html`<div class="med-card-wrapper">${medCardTemplate(m.med)}</div>`,
+									html`<div class="med-card-wrapper">${medCardTemplate(
+										m.med,
+										state.province,
+										(p) => {
+											// Update index state directly (avoids a re-render via the event listener, which guards against state.province === p)
+											// Event is still dispatched to sync any standalone islands on the page
+											localStorage.setItem("med-province", p);
+											document.dispatchEvent(
+												new CustomEvent("med-province-changed", { detail: p }),
+											);
+											updateState({ province: p });
+										},
+										false,
+									)}</div>`,
 							)
 						: html`<div class="med-empty-state">No medications found matching your criteria.</div>`
 				}

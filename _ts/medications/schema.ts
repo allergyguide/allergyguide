@@ -31,11 +31,67 @@ const SideEffectSchema = z.object({
 	rates: z.array(SideEffectRateSchema).optional().default([]),
 });
 
-const CoverageSchema = z.object({
-	province: z.string(),
-	status: z.string(),
-	details: z.string(),
+export const CoverageStatusEnum = z.enum([
+	"Open",
+	"Restricted",
+	"Age-Restricted",
+	"Not Covered",
+]);
+
+export const ProvinceEnum = z.enum([
+	"BC",
+	"AB",
+	"SK",
+	"MB",
+	"ON",
+	"QC",
+	"NB",
+	"NS",
+	"PE",
+	"NL",
+	"YT",
+	"NT",
+	"NU",
+	"NIHB",
+]);
+
+const stringOrArray = z
+	.union([z.string(), z.array(z.string())])
+	.transform((val) => (Array.isArray(val) ? val : [val]));
+
+const provinceOrArray = z
+	.union([ProvinceEnum, z.array(ProvinceEnum)])
+	.transform((val) => (Array.isArray(val) ? val : [val]));
+
+/**
+ * Coverage rules for a medication
+ *
+ * - If `province` is omitted, the rule applies to all provinces
+ * - If `indication` is omitted, the rule applies to all indications
+ * - Omitting *both* is intentional and means the rule applies universally
+ *   (e.g. a medication that is not covered anywhere, regardless of indication)
+ *
+ * Multiple provinces or indications can be grouped into one rule by providing
+ * an array — e.g. `province = ["BC", "AB"]`.
+ */
+export const CoverageSchema = z.object({
+	indication: stringOrArray.optional(),
+	province: provinceOrArray.optional(),
+	status: CoverageStatusEnum,
+	tips: z.string().optional(),
 });
+export type MedicationCoverage = z.infer<typeof CoverageSchema>;
+export type CoverageStatus = z.infer<typeof CoverageStatusEnum>;
+
+/**
+ * Maps each canonical {@link CoverageStatus} value to its corresponding CSS * class name used on `.tag` elements
+ */
+export const STATUS_CSS_MAP: Record<CoverageStatus, string> = {
+	Open: "open",
+	Restricted: "restricted",
+	"Age-Restricted": "age-restricted",
+	"Not Covered": "not-covered",
+};
 
 export const MedicationSchema = z.object({
 	draft: z.boolean().default(false),
