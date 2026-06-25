@@ -255,14 +255,12 @@ export function medCardTemplate(med: Medication): TemplateResult {
 
 
 				${
-					med.estimated_cost || (med.coverage && med.coverage.length > 0)
+					med.coverage && med.coverage.length > 0
 						? Accordion(
-								"Coverage & Pricing (CAD)",
+								med.estimated_cost
+									? html`Coverage/Pricing <span class="ae-inline-summary">— ${med.estimated_cost}</span>`
+									: "Coverage/Pricing",
 								html`
-					${med.estimated_cost ? html`<p class="coverage-cost"><strong>Estimated Cost:</strong> ${med.estimated_cost}</p>` : nothing}
-					${
-						med.coverage && med.coverage.length > 0
-							? html`
 						<div class="coverage-grid">
 							${med.coverage.map(
 								(cov) => html`
@@ -276,12 +274,17 @@ export function medCardTemplate(med: Medication): TemplateResult {
 							`,
 							)}
 						</div>
-					`
-							: nothing
-					}
-				`,
+					`,
 							)
-						: nothing
+						: med.estimated_cost
+							? html`
+					<div class="med-accordion no-content">
+						<div class="summary-static">
+							<span class="title">Coverage/Pricing <span class="ae-inline-summary">— ${med.estimated_cost}</span></span>
+						</div>
+					</div>
+				`
+							: nothing
 				}
 
 				${
