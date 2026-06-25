@@ -138,8 +138,8 @@
           }
 
           &.draft {
-            background-color: color-mix(in oklab, v.$core-color-border, v.$core-color-ink 20%);
-            color: v.$core-color-ink;
+            background-color: v.$core-color-yellow;
+            color: v.$core-color-bg;
           }
         }
       }
