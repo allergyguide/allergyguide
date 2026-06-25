@@ -188,7 +188,7 @@ available_forms = [
   "5mg/5mL liquid (OTC)",
 ]
 estimated_cost = "~$0.40 CAD / 10mg tab"
-interactions_summary = ""
+interactions_summary = "No clinically significant drug interactions have been found."
 severe_interactions = ""
 pearls = [
   "Use with or without food, though food delays onset of effect",
@@ -280,6 +280,21 @@ side_effects_summary = "Generally well tolerated. QT prolongation (at 100mg ODx4
 contraindications = "QT prolongation or history of torsades"
 severe_side_effects = "Torsades (extremely rare; only 1 case reported in monograph post-market reactions)"
 half_life = "~15 hours. Peak action: ~1h, rapid absorption."
+
+interactions_summary = "Ketoconazole, erythromycin, diltiazem, P-Glycoprotein inhibitors."
+severe_interactions = """
+```text
+Ketoconazole and erythromycin
+Concomitant administration of bilastine and ketoconazole or erythromycin increased bilastine AUC 2-fold and Cmax 2-3 fold. These changes can be explained by interaction with intestinal efflux transporters, since bilastine is a substrate for P-gp and not metabolized. In a randomised, double-blind, placebo- and positive-controlled, 5-way crossover ECG assessment study in 30 healthy adult subjects, bilastine 20 mg/day administered alone for four days was associated with statistically significant positive mean differences from placebo in the QTcF interval at 1 and 3 h post-dosing on day 4, with a maximum mean difference from placebo of 4.0 ms (90% CI 1.20, 6.73) at 1 h, whereas bilastine 20 mg/day and ketoconazole 400 mg administered concomitantly for four days produced statistically significant QTcF prolongation at all time points from 0.5-12 h, inclusive, on day 4 with a maximum mean difference from placebo of 10.0 ms (90% CI 6.49, 13.43) at 1 h. Other medicinal products that are substrates or inhibitors of P-gp, such as cyclosporine, may likewise have the potential to increase plasma concentrations of bilastine. 
+
+Diltiazem
+Concomitant administration of BLEXTEN and diltiazem 60 mg increased Cmax of bilastine by 50%. This effect can be explained by interaction with intestinal efflux transporters, and does not appear to affect the safety profile of bilastine. 
+
+Inhibitors of P-Glycoprotein:
+Plasma levels of bilastine can be increased by inhibitors of P-glycoprotein; the concomitant use of these drugs with bilastine is not recommended. Drugs that inhibit P-glycoprotein include, but are not limited to certain azole antifungal, macrolide antibiotics, and HIV protease inhibitors (see WARNINGS AND PRECAUTIONS).
+```
+Source: 2021 monograph.
+"""
 
 available_forms = [
   "10mg orodispersible tab",
