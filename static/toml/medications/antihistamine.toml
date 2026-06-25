@@ -260,3 +260,71 @@ comparator = "1.5%"
 province = "ON"
 status = "Mixed"
 details = "ODB"
+
+[bilastine]
+draft = true
+display_name = "Bilastine"
+otc = "no"
+categories = ["antihistamine"]
+abbreviations = "CSU-chronic spontaneous urticaria; AR-allergic rhinitis"
+brand_names = ["Blexten"]
+
+authors.primary = "JY"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+moa = "2nd gen H1 receptor antagonist"
+pregnancy = "Avoid (not enough data)"
+side_effects_summary = "Generally well tolerated. QT prolongation (at 100mg ODx4, max mean increase 6ms)."
+
+contraindications = "QT prolongation or history of torsades"
+severe_side_effects = "Torsades (extremely rare; only 1 case reported in monograph post-market reactions)"
+half_life = "~15 hours. Peak action: ~1h, rapid absorption."
+
+available_forms = [
+  "10mg orodispersible tab",
+  "20mg tab",
+  "2.5mg/ml liq (uncommon)",
+]
+
+pearls = [
+  "Theoretically does not cross BBB; less sedating than other AHs",
+  "No renal adjustments needed; minimal data with hepatic impairment but not expected to cause issues",
+  "Going beyond OD is technically off-label",
+  "Take without food or juice otherwise absorption impaired",
+]
+
+monograph_links = ["/monographs/bilastine_2021_1.pdf"]
+
+estimated_cost = "~$1.1 CAD / 20mg tab"
+
+[[bilastine.side_effects]]
+symptom = "Drowsiness / Headache"
+[[bilastine.side_effects.rates]]
+indication = "All Indications"
+drug = "~4%"
+comparator = "~3%"
+
+[[bilastine.side_effects]]
+symptom = "Abdominal Pain"
+[[bilastine.side_effects.rates]]
+indication = "All Indications"
+drug = "3%"
+comparator = "3%"
+
+[[bilastine.doses]]
+indication = "CSU, AR"
+patient_age = "ages ≥12"
+dose = "20mg PO OD to QID"
+off_label = true
+
+[[bilastine.doses]]
+indication = "CSU, AR"
+patient_age = "ages 4-11"
+dose = "10mg PO OD to QID"
+off_label = true
+
+[[bilastine.coverage]]
+province = "ON"
+status = "Covered"
+details = "ODB"
