@@ -18,6 +18,15 @@ Medications can be found in this [page here](/medications/) and are also accessi
   - What do you think would be useful to see as a quick reference? What's helpful for counseling patients?
 - As such, there's a relatively standardized structure/format for medications.
   - Monographs will be statically hosted and linked. Include a link for the Health Canada monograph in your draft file.
+- Medication coverage is a tricky topic: some helpful links include:
+  - BC:
+    - https://pharmacareformularysearch.gov.bc.ca/
+    - https://www.drugsearch.ca/
+    - https://www2.gov.bc.ca/gov/content/health/health-drug-coverage/pharmacare-for-bc-residents/who-we-cover
+  - ON:
+    - https://lucodes.ca/
+    - https://lucodes.ca/ODB
+    - https://www.ontario.ca/page/get-coverage-prescription-drugs
 
 ## How to Submit
 
