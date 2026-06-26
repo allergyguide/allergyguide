@@ -24,17 +24,17 @@ authors.staff = "TBD"
 # CORE CLINICAL INFO
 # =====================================================================
 
-moa = "Insert MoA"                       # [REQUIRED] Mechanism of Action. Should be BRIEF.
-pregnancy = "Insert information"         # [REQUIRED] Pregnancy/Lactation safety. Supports markdown.
-side_effects_summary = "Well tolerated." # [REQUIRED] 1-2 sentence summary. Supports markdown.
+moa = "Insert MoA"                            # [REQUIRED] Mechanism of Action. Should be BRIEF.
+pregnancy = "Insert information"              # [REQUIRED] Pregnancy/Lactation safety. Supports markdown.
+side_effects_summary = "Well tolerated."      # [REQUIRED] 1-2 sentence summary. Supports markdown.
+severe_side_effects = "Black Box: Malignancy" # Highlights at top of Adverse Events accordion 
+side_effects_source = "2024 Cochrane Review"  # Citation for adverse event rates [OPTIONAL]
+half_life = "~X hours"                        # Pharmacokinetics
 
 # [OPTIONAL] All fields below support Markdown (*italics*, **bold**, [links](url))
 ix_before = "LFTs, CBC, CXR, TBST, HBV, HCV"   # Monitoring required before starting
 ix_ongoing = "LFT, CBC repeat at 1 month"      # Ongoing monitoring requirements
 contraindications = "Insert absolute/relative" # Highlights at top right of card. Should be brief.
-severe_side_effects = "Black Box: Malignancy"  # Highlights at top of Adverse Events accordion
-side_effects_source = "2024 Cochrane Review"   # Citation for adverse event rates
-half_life = "~X hours"                         # Pharmacokinetics
 
 # [OPTIONAL] Arrays
 available_forms = ["0.1% Cream", "10/20mg tab; 2.5mg/ml liq"]
@@ -49,6 +49,8 @@ pearls = [
   "**Important:** Insert clinical pearl here",
   "Each element in the array is a bullet point",
 ]
+estimated_cost = "~$100 / month" # [OPTIONAL] Quick estimate
+
 
 # [OPTIONAL] Monograph PDFs
 # Filenames parsed automatically: genericname_monograph.pdf -> Genericname (monograph)
@@ -104,10 +106,8 @@ comparator = "<1%"
 
 
 # =====================================================================
-# COVERAGE & COST
+# COVERAGE 
 # =====================================================================
-
-estimated_cost = "~$100 / month" # [OPTIONAL] Quick estimate
 
 [[template_med.coverage]]
 indication = [
