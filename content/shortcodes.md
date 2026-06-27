@@ -143,7 +143,6 @@ warning box only content
 
 ## admonition
 
-Credit to [tabi](https://welpo.github.io/tabi/blog/shortcodes/#admonitions) for the styling. It's more pleasant colour scheme wise and it changes with the light/dark mode.
 Options for type/icon: note, tip, info, warning, danger, pearl, question (only the icon)
 
 These can be mixed and matched.
@@ -156,7 +155,7 @@ This is a danger admonition with a danger icon.
 {%/* end */%}
 ```
 
-{% admonition(type="danger", icon="danger", title="DANGER") %}
+{% admonition(type="danger", icon="danger", title="DANGER", bordered=true) %}
 This is a danger admonition with a danger icon.
 
 **Markdown can be used here :)**
