@@ -1,0 +1,479 @@
+[dupilumab]
+
+# =====================================================================
+# METADATA & HEADER
+# =====================================================================
+
+display_name = "Dupilumab"
+otc = "no"
+draft = true
+categories = ["biologic"]
+abbreviations = ""
+brand_names = ["Dupixent"]
+
+authors.primary = "JY"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+# =====================================================================
+# CORE CLINICAL INFO
+# =====================================================================
+
+moa = "IL-4Rα antagonist; blocks both IL-4 and IL-13 signalling."
+pregnancy = "Minimal data. IgG crosses the placenta. No information on breastfeeding."
+side_effects_summary = "Generally well tolerated. Common AE is transient injection site erythema; ocular events (conjunctivitis, blepharitis) are notable in AD. Other AEs vary by indication."
+severe_side_effects = """
+**Post-market (frequency unknown):** arthralgia, facial rash, angioedema.
+
+Onset of arthralgia was variable, ranging from days to months after the first dose. Some patients' symptoms resolved while continuing treatment; others recovered following discontinuation.
+"""
+side_effects_source = ""
+half_life = "Median washout time ~9–13 weeks in adults/adolescents; ~1.5× longer in children 6–11 yrs; ~2.5× longer in children <6 yrs."
+
+ix_before = "no baseline investgiations required (could consider baseline CBC)."
+ix_ongoing = ""
+contraindications = ""                                                           # hypersensitivity but that's literally every drug...
+
+available_forms = [
+  "200 mg/1.14 mL pre-filled syringe or pen",
+  "300 mg/2 mL pre-filled syringe or pen",
+]
+interactions_summary = "No severe interactions. CYP2D6 substrate metoprolol AUC increased ~29%; monitor if clinically relevant. Not studied with live vaccines; non-live vaccines acceptable."
+severe_interactions = """
+```text
+In a clinical trial with 12-13 evaluable subjects with atopic dermatitis, the effects of dupilumab injection on the pharmacokinetics of caffeine (CYP1A2), warfarin (CYP2C9), omeprazole (CYP2C19), metoprolol (CYP2D6), and midazolam (CYP3A4) were evaluated. The AUC of metoprolol increased by 29% after dupilumab injection administration (SC loading dose of 600 mg followed by 300 mg SC weekly for 6 weeks). The AUC of other CYP substrates were comparable before and after dupilumab injection administration.
+
+DUPIXENT has not been studied with live vaccines.
+```
+"""
+pearls = [
+  "Does not significantly increase the risk of serious bacterial or opportunistic infections.",
+  "The pre-filled **pen** is approved for adults and children ≥2 years; it does hurt more than the syringe.",
+  "The pre-filled **syringe** with needle shield can be used from 6 months of age.",
+  "If a **weekly** dose is missed, administer as soon as possible and start a new weekly schedule from that date.",
+]
+estimated_cost = ">$20,000 / year CAD"
+
+monograph_links = ["/monographs/dupilumab_2025_1.pdf"]
+
+
+# =====================================================================
+# DOSES
+# =====================================================================
+
+[[dupilumab.doses]]
+indication = "Atopic Dermatitis"
+patient_age = "≥18 yrs"
+dose = "600 mg SC loading (two 300 mg injections), then 300 mg SC Q2W"
+
+[[dupilumab.doses]]
+indication = "Atopic Dermatitis"
+patient_age = "6–17 yrs"
+patient_weight = "≥60 kg"
+dose = "600 mg SC loading (two 300 mg injections), then 300 mg SC Q2W"
+
+[[dupilumab.doses]]
+indication = "Atopic Dermatitis"
+patient_age = "6–17 yrs"
+patient_weight = "30 to <60 kg"
+dose = "400 mg SC loading (two 200 mg injections), then 200 mg SC Q2W"
+
+[[dupilumab.doses]]
+indication = "Atopic Dermatitis"
+patient_age = "6–17 yrs"
+patient_weight = "15 to <30 kg"
+dose = "300 mg SC loading, then 300 mg SC Q4W"
+
+[[dupilumab.doses]]
+indication = "Atopic Dermatitis"
+patient_age = "6 mo–5 yrs"
+patient_weight = "15 to <30 kg"
+dose = "300 mg SC loading, then 300 mg SC Q4W"
+
+[[dupilumab.doses]]
+indication = "Atopic Dermatitis"
+patient_age = "6 mo–5 yrs"
+patient_weight = "5 to <15 kg"
+dose = "200 mg SC loading, then 200 mg SC Q4W"
+
+[[dupilumab.doses]]
+indication = "Asthma"
+patient_age = "≥12 yrs"
+dose = "TH2/eosinophilic phenotype: 400 mg SC loading (two 200 mg), then 200 mg Q2W. May increase to 300 mg Q2W based on clinical judgement."
+notes = "OCS-dependent: 600 mg SC loading (two 300 mg), then 300 mg Q2W."
+
+
+[[dupilumab.doses]]
+indication = "Asthma"
+patient_age = "6–11 yrs"
+patient_weight = "≥60 kg"
+dose = "200 mg SC Q2W (no loading dose)"
+
+[[dupilumab.doses]]
+indication = "Asthma"
+patient_age = "6–11 yrs"
+patient_weight = "30 to <60 kg"
+dose = "200 mg SC Q2W or 300 mg SC Q4W (no loading dose)"
+
+[[dupilumab.doses]]
+indication = "Asthma"
+patient_age = "6–11 yrs"
+patient_weight = "15 to <30 kg"
+dose = "300 mg SC Q4W (no loading dose)"
+
+[[dupilumab.doses]]
+indication = "CRSwNP"
+patient_age = "≥18 yrs"
+dose = "300 mg SC Q2W (no loading dose)"
+notes = "Only studied in adults"
+
+[[dupilumab.doses]]
+indication = "EoE"
+patient_age = "≥1 yr"
+patient_weight = "≥40 kg"
+dose = "300 mg SC Q1W"
+
+[[dupilumab.doses]]
+indication = "EoE"
+patient_age = "≥1 yr"
+patient_weight = "30 to <40 kg"
+dose = "300 mg SC Q2W"
+
+[[dupilumab.doses]]
+indication = "EoE"
+patient_age = "≥1 yr"
+patient_weight = "15 to <30 kg"
+dose = "200 mg SC Q2W"
+
+[[dupilumab.doses]]
+indication = "Prurigo Nodularis"
+patient_age = "≥18 yrs"
+dose = "600 mg SC loading (two 300 mg injections), then 300 mg SC Q2W"
+
+[[dupilumab.doses]]
+indication = "Chronic Spontaneous Urticaria (CSU)"
+patient_age = "≥18 yrs"
+dose = "600 mg SC loading (two 300 mg injections), then 300 mg SC Q2W"
+notes = "Most of the patients in the CUPID LIBERTY trials were likely Type I CSU."
+
+[[dupilumab.doses]]
+indication = "Chronic Spontaneous Urticaria (CSU)"
+patient_age = "12–17 yrs"
+patient_weight = "≥60 kg"
+dose = "600 mg SC loading (two 300 mg injections), then 300 mg SC Q2W"
+notes = "Most of the patients in the CUPID LIBERTY trials were likely Type I CSU."
+
+[[dupilumab.doses]]
+indication = "Chronic Spontaneous Urticaria (CSU)"
+patient_age = "12–17 yrs"
+patient_weight = "30 to <60 kg"
+dose = "400 mg SC loading (two 200 mg injections), then 200 mg SC Q2W"
+notes = "Most of the patients in the CUPID LIBERTY trials were likely Type I CSU."
+
+
+# =====================================================================
+# ADVERSE EVENTS (TRIAL DATA)
+# =====================================================================
+
+[[dupilumab.side_effects]]
+symptom = "Eosinophilia"
+notes = "Transient; rarely clinically significant."
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "1.7%"
+comparator = "0.4%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "0.9%"
+comparator = "0%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Asthma (200 mg)"
+drug = "2%"
+comparator = "<1%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Asthma (300 mg)"
+drug = "2%"
+comparator = "<1%"
+
+[[dupilumab.side_effects.rates]]
+indication = "CRSwNP"
+drug = "1.1%"
+comparator = "0.4%"
+
+[[dupilumab.side_effects]]
+symptom = "Conjunctivitis"
+notes = "More frequent in AD than other indications."
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "9.6%"
+comparator = "2.3%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "9.1%"
+comparator = "4.8%"
+
+[[dupilumab.side_effects.rates]]
+indication = "CRSwNP"
+drug = "1.6%"
+comparator = "0.7%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Prurigo Nodularis"
+drug = "4%"
+comparator = "1%"
+
+[[dupilumab.side_effects]]
+symptom = "Blepharitis"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "0.4%"
+comparator = "0.2%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "4.5%"
+comparator = "0.6%"
+
+[[dupilumab.side_effects]]
+symptom = "Eye pruritus"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "0.6%"
+comparator = "0.2%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "1.8%"
+comparator = "0.6%"
+
+[[dupilumab.side_effects]]
+symptom = "Dry eye"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "0.2%"
+comparator = "0%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "1.8%"
+comparator = "0.3%"
+
+[[dupilumab.side_effects]]
+symptom = "Keratitis"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "0.2%"
+comparator = "0%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "3.6%"
+comparator = "0%"
+
+[[dupilumab.side_effects]]
+symptom = "Injection site reaction"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "9.6%"
+comparator = "5.4%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "10.0%"
+comparator = "5.7%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Asthma (200 mg)"
+drug = "14%"
+comparator = "6%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Asthma (300 mg)"
+drug = "18%"
+comparator = "6%"
+
+[[dupilumab.side_effects.rates]]
+indication = "CRSwNP"
+drug = "6.4%"
+comparator = "4.3%"
+
+[[dupilumab.side_effects.rates]]
+indication = "EoE"
+drug = "38%"
+comparator = "33%"
+
+[[dupilumab.side_effects.rates]]
+indication = "CSU (200 or 300 mg Q2W)"
+drug = "10.3%"
+comparator = "8.1%"
+
+[[dupilumab.side_effects]]
+symptom = "Oral herpes"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "3.8%"
+comparator = "1.5%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "2.7%"
+comparator = "1.6%"
+
+[[dupilumab.side_effects]]
+symptom = "Herpes simplex"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (Monotherapy)"
+drug = "1.7%"
+comparator = "0.8%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Atopic Dermatitis (+TCS)"
+drug = "0.9%"
+comparator = "0.3%"
+
+[[dupilumab.side_effects]]
+symptom = "Herpes viral infections"
+
+[[dupilumab.side_effects.rates]]
+indication = "EoE"
+drug = "2%"
+comparator = "1%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Prurigo Nodularis"
+drug = "3%"
+comparator = "0%"
+
+[[dupilumab.side_effects]]
+symptom = "Oropharyngeal pain"
+
+[[dupilumab.side_effects.rates]]
+indication = "Asthma (200 mg)"
+drug = "2%"
+comparator = "1%"
+
+[[dupilumab.side_effects.rates]]
+indication = "Asthma (300 mg)"
+drug = "2%"
+comparator = "1%"
+
+[[dupilumab.side_effects]]
+symptom = "Gastritis"
+
+[[dupilumab.side_effects.rates]]
+indication = "CRSwNP"
+drug = "1.6%"
+comparator = "0.7%"
+
+[[dupilumab.side_effects]]
+symptom = "Arthralgia"
+
+[[dupilumab.side_effects.rates]]
+indication = "CRSwNP"
+drug = "3.2%"
+comparator = "1.8%"
+
+[[dupilumab.side_effects.rates]]
+indication = "EoE"
+drug = "2%"
+comparator = "1%"
+
+[[dupilumab.side_effects]]
+symptom = "Insomnia"
+
+[[dupilumab.side_effects.rates]]
+indication = "CRSwNP"
+drug = "1.4%"
+comparator = "0%"
+
+[[dupilumab.side_effects]]
+symptom = "Respiratory tract infections"
+
+[[dupilumab.side_effects.rates]]
+indication = "EoE"
+drug = "18%"
+comparator = "10%"
+
+[[dupilumab.side_effects]]
+symptom = "Diarrhea"
+
+[[dupilumab.side_effects.rates]]
+indication = "Prurigo Nodularis"
+drug = "3%"
+comparator = "1%"
+
+[[dupilumab.side_effects]]
+symptom = "Nasopharyngitis"
+
+[[dupilumab.side_effects.rates]]
+indication = "Prurigo Nodularis"
+drug = "5%"
+comparator = "2%"
+
+[[dupilumab.side_effects]]
+symptom = "Myalgia"
+
+[[dupilumab.side_effects.rates]]
+indication = "Prurigo Nodularis"
+drug = "3%"
+comparator = "1%"
+
+[[dupilumab.side_effects]]
+symptom = "Dizziness"
+
+[[dupilumab.side_effects.rates]]
+indication = "Prurigo Nodularis"
+drug = "3%"
+comparator = "1%"
+
+
+# =====================================================================
+# COVERAGE
+# =====================================================================
+
+[[dupilumab.coverage]]
+indication = ["Asthma"]
+province = ["BC"]
+status = "Restricted"
+tips = """
+[PSP Enrolment Form (Asthma/CRSwNP)](https://oscargalaxy.org/download/dupixent-dupilumab-psp-enrolment-form-asthma-crswnp-en/)
+
+**Adults & adolescents ≥12 yrs** — [Special Authority required](https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/programs/limited-coverage-drug-program/limited-coverage-drugs-dupilumab) | [Form 5489](https://www2.gov.bc.ca/assets/gov/health/forms/5489fil.pdf)
+
+Criteria (one of):
+- Blood eosinophils ≥300 cells/µL **AND** ≥2 asthma exacerbations in past 12 months, **OR**
+- Blood eosinophils ≥150 cells/µL on maintenance oral corticosteroids.
+
+**Children 6–11 yrs** — [Special authority required](https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/programs/limited-coverage-drug-program/limited-coverage-drugs-dupilumab-6-11) | [Form 5459](https://www2.gov.bc.ca/assets/gov/health/forms/5459fil.pdf)
+
+Criteria (all required):
+- Symptoms inadequately controlled on high-dose ICS + ≥1 additional controller
+- Baseline ACQ-5 completed
+- Blood eosinophils ≥150 cells/µL
+- Uncontrolled asthma in past 12 months: ≥1 hospitalization/ER visit **OR** ≥2 systemic corticosteroid courses
+"""
+
+[[dupilumab.coverage]]
+indication = [
+  "Atopic Dermatitis",
+  "Chronic Rhinosinusitis with Nasal Polyps (CRSwNP)",
+  "Eosinophilic Esophagitis (EoE)",
+  "Prurigo Nodularis",
+  "Chronic Spontaneous Urticaria (CSU)",
+]
+province = ["BC"]
+status = "Not Covered"
+tips = "Private insurance coverage varies (Blue Cross notably poor). Options: out-of-pocket ($$$) or compassionate access request."
