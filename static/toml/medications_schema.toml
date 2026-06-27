@@ -60,7 +60,16 @@ monograph_links = ["/monographs/example_2025_1.pdf"]
 # =====================================================================
 # DOSES
 # =====================================================================
-# Multiple [[doses]] are allowed. If >3 indications, a filter menu appears automatically.
+# Multiple [[doses]] are allowed. If >=4 indications, a filter menu appears automatically.
+#
+# CANONICAL INDICATION STRINGS
+# ─────────────────────────────
+# The `indication` string used in [[doses]] is the canonical label for that indication.
+# It MUST be used verbatim in:
+#   - coverage `indication` arrays (so the coverage table maps correctly)
+#   - side_effects.rates `indication` fields (so the AE filter can match via .includes())
+#
+# AE rate labels may be more specific (e.g. "Asthma (200mg q2w)") but MUST contain the canonical indication string as a substring.
 
 [[template_med.doses]]
 indication = "Atopic Dermatitis" # [REQUIRED]

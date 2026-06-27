@@ -54,6 +54,7 @@ function initMedications() {
 		if (drugId && db[drugId]) {
 			console.log(`Mounting Med Card for ${drugId}`);
 			let currentProv = localStorage.getItem("med-province") || "All";
+			let currentIndication = "All";
 
 			const renderIsland = () => {
 				render(
@@ -66,6 +67,11 @@ function initMedications() {
 							document.dispatchEvent(
 								new CustomEvent("med-province-changed", { detail: newProv }),
 							);
+						},
+						currentIndication,
+						(newInd) => {
+							currentIndication = newInd;
+							// This callback exists solely to keep currentIndication in sync
 						},
 						true,
 					),

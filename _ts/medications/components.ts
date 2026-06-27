@@ -36,6 +36,17 @@ const Accordion = (
 	</details>
 `;
 
+// Configure marked to render all links with target="_blank" and rel="noopener noreferrer"
+marked.use({
+	renderer: {
+		link({ href, title, text }) {
+			const cleanHref = href || "";
+			const titleAttr = title ? ` title="${title}"` : "";
+			return `<a href="${cleanHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`;
+		},
+	},
+});
+
 /**
  * Render sanitized inline Markdown
  *
@@ -47,7 +58,7 @@ function renderMarkdown(
 ): TemplateResult | typeof nothing {
 	if (!text) return nothing;
 	const rawHtml = marked.parseInline(text) as string;
-	const cleanHtml = DOMPurify.sanitize(rawHtml);
+	const cleanHtml = DOMPurify.sanitize(rawHtml, { ADD_ATTR: ["target"] });
 	return html`${unsafeHTML(cleanHtml)}`;
 }
 
@@ -62,7 +73,7 @@ function renderMarkdownBlock(
 ): TemplateResult | typeof nothing {
 	if (!text) return nothing;
 	const rawHtml = marked.parse(text) as string;
-	const cleanHtml = DOMPurify.sanitize(rawHtml);
+	const cleanHtml = DOMPurify.sanitize(rawHtml, { ADD_ATTR: ["target"] });
 	return html`${unsafeHTML(cleanHtml)}`;
 }
 
@@ -91,14 +102,23 @@ function formatMonographName(url: string): string {
  * Render the full medication card
  *
  * @param med - The Medication data object
+ * @param selectedProvince - The currently selected province filter
+ * @param onProvinceChange - Callback fired when province selection changes
+ * @param selectedIndication - The currently selected indication filter ('All' or a canonical indication string)
+ * @param onIndicationChange - Callback fired when indication selection changes
+ * @param isStandalone - Whether the card is rendered as a standalone island
  * @returns {TemplateResult} The complete medication card template
  */
 export function medCardTemplate(
 	med: Medication,
 	selectedProvince: string = "All",
 	onProvinceChange?: (p: string) => void,
+	selectedIndication: string = "All",
+	onIndicationChange?: (ind: string) => void,
 	isStandalone: boolean = false,
 ): TemplateResult {
+	const indications = Array.from(new Set(med.doses.map((d) => d.indication)));
+	const showPills = indications.length >= 4;
 	return html`
 		<div class="med-card">
 			<div class="med-header">
@@ -148,8 +168,18 @@ export function medCardTemplate(
 				</div>
 			</div>
 
+			${
+				showPills
+					? renderIndicationPills(
+							indications,
+							selectedIndication,
+							onIndicationChange,
+						)
+					: nothing
+			}
+
 			<div class="med-doses">
-				${renderDoses(med)}
+				${renderDoses(med, showPills ? selectedIndication : "All")}
 			</div>
 
 			${
@@ -189,42 +219,7 @@ export function medCardTemplate(
 					(med.side_effects && med.side_effects.length > 0)
 						? Accordion(
 								html`Adverse Events <span class="ae-inline-summary">— ${renderMarkdown(med.side_effects_summary) || "See details"}</span>`,
-								html`
-					${med.severe_side_effects ? html`<div class="ae-severe"><strong>Severe:</strong> ${renderMarkdown(med.severe_side_effects)}</div>` : nothing}
-					${
-						med.side_effects && med.side_effects.length > 0
-							? html`
-						<div class="table-responsive-wrapper">
-						<table class="med-dose-table ae-table">
-							<thead>
-								<tr>
-									<th>Symptom</th>
-									<th>Indication</th>
-									<th>Drug</th>
-									<th>${med.side_effects[0]?.comparator_name || "Placebo"}</th>
-								</tr>
-							</thead>
-							<tbody>
-								${med.side_effects.map((se) =>
-									se.rates.map(
-										(rate, idx) => html`
-										<tr>
-											${idx === 0 ? html`<td rowspan="${se.rates.length}"><strong>${se.symptom}</strong>${se.notes ? html`<br><span class="text-muted ae-notes">${renderMarkdown(se.notes)}</span>` : nothing}</td>` : nothing}
-											<td>${rate.indication}</td>
-											<td>${rate.drug}</td>
-											<td>${rate.comparator || "-"}</td>
-										</tr>
-									`,
-									),
-								)}
-							</tbody>
-						</table>
-						</div>
-						${med.side_effects_source ? html`<div class="text-muted ae-source">Source: ${renderMarkdown(med.side_effects_source)}</div>` : nothing}
-					`
-							: nothing
-					}
-				`,
+								renderAEContent(med),
 							)
 						: med.side_effects_summary
 							? html`
@@ -441,45 +436,229 @@ function renderCoverageTable(
 }
 
 /**
- * Handle clicking a dose indication filter pill (All or specific indication)
- * Note: Directly manipulates DOM styles. State loss may occur if parent re-renders.
+ * Derive the subset of canonical indication strings (from doses) that have at least one matching adverse-event rate entry. Used to build AE filter pills
  *
- * @param e - The click event
- * @param selectedIndication - The indication string to filter by
+ * Matching is done via String.includes() — AE rate labels are freeform sub-labels
+ * (e.g. "Asthma (200mg q2w)") that must contain the canonical string.
+ *
+ * @param med - The Medication data object
+ * @returns Ordered array of canonical indication strings that have AE data
  */
-function handleDoseFilterClick(e: Event, selectedIndication: string) {
-	e.preventDefault();
-	const btn = e.currentTarget as HTMLElement;
-	const container = btn.closest(".med-doses") as HTMLElement;
-
-	const pills = container.querySelectorAll(".pill");
-	pills.forEach((p) => {
-		p.classList.remove("active");
-	});
-	btn.classList.add("active");
-
-	const groups = container.querySelectorAll(".med-indication-group");
-	groups.forEach((g) => {
-		if (selectedIndication === "All") {
-			(g as HTMLElement).style.display = "";
-		} else {
-			const groupInd = g.getAttribute("data-indication");
-			(g as HTMLElement).style.display =
-				groupInd === selectedIndication ? "" : "none";
-		}
-	});
+function getAEIndications(med: Medication): string[] {
+	const canonical = Array.from(new Set(med.doses.map((d) => d.indication)));
+	return canonical.filter((ind) =>
+		(med.side_effects ?? []).some((se) =>
+			se.rates.some((rate) => rate.indication.includes(ind)),
+		),
+	);
 }
 
 /**
- * Render the doses section including indication tabs and dose tables
+ * Render the full Adverse Events accordion content, including optional indication filter pills when the drug has ≥4 canonical indications with AE data
  *
  * @param med - The Medication data object
+ * @returns {TemplateResult} The AE accordion body
+ */
+function renderAEContent(med: Medication): TemplateResult {
+	const aeIndications = getAEIndications(med);
+	const showAEPills = aeIndications.length >= 4;
+
+	const handleAEFilter = (e: Event, ind: string) => {
+		const btn = e.currentTarget as HTMLElement;
+		const content = btn.closest(".accordion-content") as HTMLElement;
+		if (!content) return;
+
+		// Update active pill styling within this accordion only
+		content.querySelectorAll(".ae-filter-pills .pill").forEach((p) => {
+			p.classList.remove("active");
+		});
+		btn.classList.add("active");
+
+		// Filter AE rows using includes() matching per symptom group
+		content
+			.querySelectorAll(".ae-table tbody.ae-symptom-group")
+			.forEach((tbody) => {
+				const rows = Array.from(
+					tbody.querySelectorAll("tr[data-indication]"),
+				) as HTMLElement[];
+
+				// Show/hide rows based on filter
+				rows.forEach((row) => {
+					const rowInd = row.getAttribute("data-indication") ?? "";
+					row.style.display =
+						ind === "All" || rowInd.includes(ind) ? "" : "none";
+				});
+
+				// Identify visible rows in this symptom group
+				const visibleRows = rows.filter((row) => row.style.display !== "none");
+
+				// Update symptom cell content and borders for visible rows
+				visibleRows.forEach((row, idx) => {
+					const symCell = row.querySelector(".ae-sym-cell") as HTMLElement;
+					if (!symCell) return;
+
+					if (idx === 0) {
+						symCell.classList.remove("ae-hide-symptom");
+					} else {
+						symCell.classList.add("ae-hide-symptom");
+					}
+
+					if (idx === visibleRows.length - 1) {
+						symCell.classList.remove("ae-no-border");
+					} else {
+						symCell.classList.add("ae-no-border");
+					}
+				});
+			});
+	};
+
+	return html`
+		${
+			med.severe_side_effects
+				? html`<div class="ae-severe"><strong>Severe:</strong> ${renderMarkdown(med.severe_side_effects)}</div>`
+				: nothing
+		}
+
+		${
+			showAEPills
+				? html`
+				<div class="ae-filter-pills">
+					<button class="pill active" @click=${(e: Event) => handleAEFilter(e, "All")}>All</button>
+					${aeIndications.map(
+						(ind) =>
+							html`<button class="pill" @click=${(e: Event) => handleAEFilter(e, ind)}>${ind}</button>`,
+					)}
+				</div>
+			`
+				: nothing
+		}
+
+		${
+			med.side_effects && med.side_effects.length > 0
+				? html`
+				<div class="table-responsive-wrapper">
+				<table class="med-dose-table ae-table">
+					<thead>
+						<tr>
+							<th>Symptom</th>
+							<th>Indication</th>
+							<th>Drug</th>
+							<th>${med.side_effects[0]?.comparator_name || "Placebo"}</th>
+						</tr>
+					</thead>
+					${med.side_effects.map(
+						(se) => html`
+						<tbody class="ae-symptom-group">
+							${se.rates.map((rate, idx) => {
+								const isLast = idx === se.rates.length - 1;
+								const trClass = idx === 0 ? "ae-row-first" : "ae-row-cont";
+								const cellClasses = [
+									"ae-sym-cell",
+									idx > 0 ? "ae-hide-symptom" : "",
+									!isLast ? "ae-no-border" : "",
+								]
+									.filter(Boolean)
+									.join(" ");
+
+								return html`
+									<tr data-indication="${rate.indication}" class="${trClass}">
+										<td class="${cellClasses}">
+											<div class="ae-symptom-content">
+												<strong>${se.symptom}</strong>
+												${se.notes ? html`<br><span class="text-muted ae-notes">${renderMarkdown(se.notes)}</span>` : nothing}
+											</div>
+										</td>
+										<td>${rate.indication}</td>
+										<td>${rate.drug}</td>
+										<td>${rate.comparator || "-"}</td>
+									</tr>
+								`;
+							})}
+						</tbody>
+					`,
+					)}
+				</table>
+				</div>
+				${
+					med.side_effects_source
+						? html`<div class="text-muted ae-source">Source: ${renderMarkdown(med.side_effects_source)}</div>`
+						: nothing
+				}
+			`
+				: nothing
+		}
+	`;
+}
+
+/**
+ * Render the indication filter pills at card level.
+ * Pills are only rendered (and made sticky) when a drug has ≥4 indications.
+ *
+ * @param indications - The ordered list of canonical indication strings for this drug
+ * @param selectedIndication - The currently active indication ('All' or a canonical string)
+ * @param onIndicationChange - Callback fired when a pill is clicked
+ * @returns {TemplateResult} The pill bar template
+ */
+function renderIndicationPills(
+	indications: string[],
+	selectedIndication: string,
+	onIndicationChange?: (ind: string) => void,
+): TemplateResult {
+	const handleClick = (e: Event, ind: string) => {
+		e.preventDefault();
+		const btn = e.currentTarget as HTMLElement;
+		const card = btn.closest(".med-card") as HTMLElement;
+		if (!card) return;
+
+		// Update active pill styling
+		card.querySelectorAll(".med-sticky-pills .pill").forEach((p) => {
+			p.classList.remove("active");
+		});
+		btn.classList.add("active");
+
+		// Filter dose indication groups only.
+		// AE filtering is handled independently by the pills inside the AE accordion.
+		card.querySelectorAll(".med-indication-group").forEach((g) => {
+			const groupInd = g.getAttribute("data-indication");
+			(g as HTMLElement).style.display =
+				ind === "All" || groupInd === ind ? "" : "none";
+		});
+
+		if (onIndicationChange) onIndicationChange(ind);
+	};
+
+	return html`
+		<div class="med-sticky-pills">
+			<button
+				class="pill ${selectedIndication === "All" ? "active" : ""}"
+				@click=${(e: Event) => handleClick(e, "All")}
+			>All</button>
+			${indications.map(
+				(ind) => html`
+					<button
+						class="pill ${selectedIndication === ind ? "active" : ""}"
+						@click=${(e: Event) => handleClick(e, ind)}
+					>${ind}</button>
+				`,
+			)}
+		</div>
+	`;
+}
+
+/**
+ * Render the doses section (indication groups and tables).
+ * Pills are now rendered at card level; this function only handles the dose content.
+ *
+ * @param med - The Medication data object
+ * @param selectedIndication - The active indication filter ('All' or a canonical string).
+ *   Used to set initial visibility when the card first renders.
  * @returns {TemplateResult} The rendered doses template
  */
-function renderDoses(med: Medication): TemplateResult {
-	const indications = new Set(med.doses.map((d) => d.indication));
-	const indicationTabs = Array.from(indications);
-	const showPills = indicationTabs.length >= 4;
+function renderDoses(
+	med: Medication,
+	selectedIndication: string = "All",
+): TemplateResult {
+	const indications = Array.from(new Set(med.doses.map((d) => d.indication)));
 
 	return html`
 		${
@@ -487,21 +666,18 @@ function renderDoses(med: Medication): TemplateResult {
 				? html`<div class="med-forms"><strong>Available Forms:</strong> ${med.available_forms.join(", ")}</div>`
 				: nothing
 		}
-		${
-			showPills
-				? html`
-			<div class="med-dosing-pills">
-				<button class="pill active" @click=${(e: Event) => handleDoseFilterClick(e, "All")}>View All</button>
-				${indicationTabs.map((ind) => html`<button class="pill" @click=${(e: Event) => handleDoseFilterClick(e, ind)}>${ind}</button>`)}
-			</div>
-		`
-				: nothing
-		}
 
-		${indicationTabs.map((ind) => {
+		${indications.map((ind) => {
 			const dosesForInd = med.doses.filter((d) => d.indication === ind);
+			const isHidden =
+				selectedIndication !== "All" && selectedIndication !== ind;
 			return html`
-				<div class="med-indication-group" data-indication="${ind}" id="dose-${ind.replace(/\s+/g, "-")}">
+				<div
+					class="med-indication-group"
+					data-indication="${ind}"
+					id="dose-${ind.replace(/\s+/g, "-")}"
+					style=${isHidden ? "display:none" : ""}
+				>
 					<h4>${ind}</h4>
 					${dosesForInd.length === 1 ? renderSingleDose(dosesForInd[0]) : renderDoseTable(dosesForInd)}
 				</div>
@@ -550,6 +726,14 @@ function renderDoseTable(doses: Dose[]): TemplateResult {
 	const hasWeight = doses.some((d) => !!d.patient_weight);
 	const hasNotes = doses.some((d) => !!d.notes);
 
+	// De-duplicate notes: if every dose in this indication group has the identical non-empty notes string, render it once below the table instead of per-row.
+	const firstNote = doses[0]?.notes;
+	const allNotesIdentical =
+		hasNotes && !!firstNote && doses.every((d) => d.notes === firstNote);
+	const groupNote = allNotesIdentical ? firstNote : undefined;
+	// Only show a Notes column when notes differ across rows
+	const showNotesColumn = hasNotes && !allNotesIdentical;
+
 	const uniqueRxs = Array.from(
 		new Set(doses.map((d) => d.sample_rx).filter(Boolean)),
 	) as string[];
@@ -589,7 +773,7 @@ function renderDoseTable(doses: Dose[]): TemplateResult {
 					<th>Age</th>
 					${hasWeight ? html`<th>Weight</th>` : nothing}
 					<th>Dose</th>
-					${hasNotes ? html`<th>Notes</th>` : nothing}
+					${showNotesColumn ? html`<th>Notes</th>` : nothing}
 				</tr>
 			</thead>
 			<tbody>
@@ -611,11 +795,11 @@ function renderDoseTable(doses: Dose[]): TemplateResult {
 							<td>${dose.patient_age}</td>
 							${hasWeight ? html`<td>${dose.patient_weight || "-"}</td>` : nothing}
 							<td>
-								${dose.dose} ${superscripts} ${rxSuperscript}
-								${dose.off_label ? html`<span class="tag off-label">(Off-Label)</span>` : nothing}
-							</td>
-							${hasNotes ? html`<td>${renderMarkdown(dose.notes)}</td>` : nothing}
-						</tr>
+						${dose.dose} ${superscripts} ${rxSuperscript}
+						${dose.off_label ? html`<span class="tag off-label">(Off-Label)</span>` : nothing}
+					</td>
+					${showNotesColumn ? html`<td>${renderMarkdown(dose.notes)}</td>` : nothing}
+				</tr>
 					`;
 				})}
 			</tbody>
@@ -647,6 +831,11 @@ function renderDoseTable(doses: Dose[]): TemplateResult {
 				)}
 			</div>
 		`
+				: nothing
+		}
+		${
+			groupNote
+				? html`<div class="indication-group-note">${renderMarkdown(groupNote)}</div>`
 				: nothing
 		}
 	`;
@@ -775,7 +964,7 @@ export function medIndexTemplate(
 				<input 
 					type="text" 
 					class="med-search-input" 
-					placeholder="Search medications (e.g. Dpl, Dupixent)..." 
+					placeholder="Search medications by generic or brand (i.e. cetirizine, dupilumab)..." 
 					.value=${state.query} 
 					@input=${handleInput}
 				/>
@@ -823,6 +1012,8 @@ export function medIndexTemplate(
 											);
 											updateState({ province: p });
 										},
+										"All",
+										undefined,
 										false,
 									)}</div>`,
 							)

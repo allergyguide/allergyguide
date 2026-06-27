@@ -101,12 +101,15 @@
     td {
       vertical-align: top;
 
-      p, ul, li {
+      p,
+      ul,
+      li {
         font-size: 0.9rem;
         line-height: 1.4;
       }
 
-      p, ul {
+      p,
+      ul {
         margin-top: 0;
       }
 
@@ -117,16 +120,16 @@
           margin-bottom: 0;
         }
       }
-      
+
       ul {
         margin: 0 !important;
         padding: 0 0 0 1.25rem !important;
-        
+
         li {
           margin-top: 0;
           margin-bottom: v.$core-space-3xs;
           padding-top: 0;
-          
+
           &:last-child {
             margin-bottom: 0;
           }
@@ -261,6 +264,45 @@
     }
   }
 
+  // Indication filter pill bar — only rendered for drugs with ≥4 indications.
+  .med-sticky-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: v.$core-space-xs;
+    padding: v.$core-space-sm v.$core-space-md;
+    border-bottom: 0.0625rem solid color-mix(in oklab, v.$core-color-border, v.$core-color-ink 10%);
+    background-color: color-mix(in oklab, v.$core-color-surface, v.$core-color-ink 2%);
+
+    .pill {
+      background-color: v.$core-color-border;
+      color: v.$core-color-ink;
+      padding: v.$core-space-2xs v.$core-space-md;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+
+      &:hover {
+        background-color: color-mix(in oklab, v.$core-color-border, v.$core-color-ink 10%);
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 0.125rem color-mix(in oklab, v.$core-color-primary, transparent 60%);
+      }
+
+      &.active {
+        background-color: v.$core-color-primary;
+        color: v.$core-color-bg;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
   .med-doses {
     padding: v.$core-space-md;
     border-top: 0.0625rem solid v.$core-color-border;
@@ -281,42 +323,6 @@
       background: color-mix(in oklab, v.$core-color-surface, v.$core-color-ink 3%);
       padding: v.$core-space-xs v.$core-space-sm;
       border-radius: 0.25rem;
-    }
-
-    .med-dosing-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: v.$core-space-xs;
-      margin-bottom: v.$core-space-lg;
-
-      .pill {
-        background-color: v.$core-color-border;
-        color: v.$core-color-ink;
-        padding: v.$core-space-2xs v.$core-space-md;
-        border-radius: 9999px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
-        border: none;
-        cursor: pointer;
-        font-family: inherit;
-
-        &:hover {
-          background-color: color-mix(in oklab, v.$core-color-border, v.$core-color-ink 10%);
-        }
-
-        &:focus-visible {
-          outline: none;
-          box-shadow: 0 0 0 0.125rem color-mix(in oklab, v.$core-color-primary, transparent 60%);
-        }
-
-        &.active {
-          background-color: v.$core-color-primary;
-          color: v.$core-color-bg;
-          box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
-        }
-      }
     }
 
     .med-indication-group {
@@ -404,6 +410,15 @@
             margin-bottom: 0;
           }
         }
+      }
+
+      // Shared note rendered once below the dose table when all doses share the same note
+      .indication-group-note {
+        margin-top: v.$core-space-xs;
+        font-size: 0.85rem;
+        color: v.$core-color-ink-muted;
+        font-style: italic;
+        line-height: 1.4;
       }
     }
   }
@@ -553,7 +568,7 @@
             border-radius: 0.25rem;
             font-size: 0.85rem;
           }
-          
+
           p {
             margin-top: 0;
             margin-bottom: v.$core-space-sm;
@@ -581,7 +596,44 @@
           }
         }
 
+        // Indication filter pills rendered inside the AE accordion
+        .ae-filter-pills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: v.$core-space-xs;
+          margin: v.$core-space-sm 0 v.$core-space-xs;
+
+          .pill {
+            background-color: v.$core-color-border;
+            color: v.$core-color-ink;
+            padding: v.$core-space-2xs v.$core-space-sm;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+
+            &:hover {
+              background-color: color-mix(in oklab, v.$core-color-border, v.$core-color-ink 10%);
+            }
+
+            &:focus-visible {
+              outline: none;
+              box-shadow: 0 0 0 0.125rem color-mix(in oklab, v.$core-color-primary, transparent 60%);
+            }
+
+            &.active {
+              background-color: v.$core-color-primary;
+              color: v.$core-color-bg;
+              box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+            }
+          }
+        }
+
         .ae-table {
+
           width: 100%;
           border-collapse: collapse;
           font-size: 0.9rem;
@@ -594,10 +646,31 @@
             border-bottom: 0.0625rem solid color-mix(in oklab, v.$core-color-border, v.$core-color-ink 5%);
           }
 
-          td[rowspan] {
+          td.ae-sym-cell {
             border-right: 0.0625rem solid color-mix(in oklab, v.$core-color-border, v.$core-color-ink 5%);
             vertical-align: top;
-            padding-top: v.$core-space-sm;
+            padding-top: v.$core-space-2xs;
+
+            .ae-symptom-content {
+              transition: opacity 0.15s ease-in-out;
+            }
+
+            &.ae-hide-symptom {
+              padding-top: 0;
+              padding-bottom: 0;
+              .ae-symptom-content {
+                opacity: 0;
+                visibility: hidden;
+                height: 0;
+                overflow: hidden;
+                padding: 0;
+                margin: 0;
+              }
+            }
+
+            &.ae-no-border {
+              border-bottom-color: transparent;
+            }
           }
 
           th {
@@ -833,6 +906,7 @@
       color: v.$core-color-primary;
     }
   }
+
   .tag {
     display: inline-block;
     white-space: nowrap;
