@@ -407,4 +407,9 @@ Criteria (all required):
 indication = ["Atopic Dermatitis", "CRSwNP", "EoE", "Prurigo Nodularis", "CSU"]
 province = ["BC"]
 status = "Not Covered"
-tips = "Private insurance coverage varies (Blue Cross awful - does NOT cover). Options: out-of-pocket (**$$$**) or compassionate access request."
+tips = """
+[PSP Enrolment Form (Atopic dermatitis)](https://www.bidermato.com/wp-content/uploads/2023/05/Dupixent-Enrollment-Form-2023-EN.pdf)
+
+Private insurance coverage varies (Blue Cross awful - does NOT cover).
+Options: out-of-pocket (**$$$**) or compassionate access request.
+"""
