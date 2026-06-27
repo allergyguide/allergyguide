@@ -26,6 +26,22 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.11.3] - 2026-06-26
+
+### Added
+
+- Improved search results so that custom foods and branded foods appear first.
+
+### Changed
+
+- Changed the food protocol popup from closing when tapping or clicking outside of it.
+
+### Fixed
+
+- Fixed an issue where the top of the protocol popup was inaccessible or squished on mobile screens.
+
+---
+
 ## [0.11.1] - 2026-06-14
 
 ### Changed
