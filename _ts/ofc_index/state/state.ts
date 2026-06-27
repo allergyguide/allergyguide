@@ -10,8 +10,19 @@ import {
 	SEARCH_DEBOUNCE_MS,
 	SEARCH_RESULTS_LIMIT,
 } from "../constants";
-import type { Food, OfcState } from "../types";
+import { type Food, type OfcState, SourceType } from "../types";
 import { debounce } from "../utils";
+
+/**
+ * Maps each source type to a weight used in search scoring.
+ * In general, user-provided content (USER and PROVISIONED) should be scored higher than generic or brand content.
+ */
+const SourceWeight: Record<SourceType, number> = {
+	[SourceType.USER]: 4,
+	[SourceType.PROVISIONED]: 3,
+	[SourceType.BRAND]: 2,
+	[SourceType.GENERIC]: 1,
+};
 
 /**
  * Global application state store
@@ -215,7 +226,23 @@ export class AppState {
 			threshold: -10000,
 		});
 
-		this.cachedResults = results.map((r) => r.obj as Food);
+		// Sort results with SourceType tie-breaker (similar to OIT search logic)
+		const mappedResults = results.map((r) => ({
+			score: r.score,
+			obj: r.obj as Food,
+		}));
+
+		mappedResults.sort((a, b) => {
+			const scoreDiff = b.score - a.score;
+			if (Math.abs(scoreDiff) <= 10) {
+				const weightA = SourceWeight[a.obj.source] || 0;
+				const weightB = SourceWeight[b.obj.source] || 0;
+				if (weightA !== weightB) return weightB - weightA;
+			}
+			return scoreDiff;
+		});
+
+		this.cachedResults = mappedResults.map((r) => r.obj);
 		this.lastSearchQuery = debouncedSearchQuery;
 		this.lastSearchableFoods = searchableFoods;
 
