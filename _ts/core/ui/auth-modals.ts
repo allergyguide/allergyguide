@@ -197,7 +197,7 @@ export function renderAuthUI(
 	} else {
 		document.body.style.overflow = "hidden"; // Lock background scroll
 
-		// Fire warmup ping to edge function to establish TLS connections ahead of time
+		// Fire a single warmup ping to establish TLS connections ahead of time; this will also work for other tools
 		fetch("/.netlify/functions/oit-bootstrap", {
 			headers: { "x-warmup": "true" },
 		}).catch(() => {});

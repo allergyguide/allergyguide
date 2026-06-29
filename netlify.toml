@@ -23,6 +23,10 @@ function = "oit-bootstrap"
 path = "/.netlify/functions/oit-bootstrap"
 
 [[edge_functions]]
+function = "ofc-bootstrap"
+path = "/.netlify/functions/ofc-bootstrap"
+
+[[edge_functions]]
 function = "get-secure-asset"
 path = "/.netlify/functions/get-secure-asset"
 [edge_functions.header]
