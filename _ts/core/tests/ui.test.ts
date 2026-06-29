@@ -13,6 +13,7 @@ vi.mock("../api/supabase", () => ({
 		auth: {
 			getSession: vi.fn(),
 		},
+		rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
 	},
 }));
 

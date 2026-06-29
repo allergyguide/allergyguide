@@ -8,8 +8,6 @@ import {
 	unlockVault,
 } from "../auth/login-client";
 
-declare const __SUPABASE_URL__: string;
-
 // Turnstile helper
 // Official Cloudflare Testing Key (Always Passes)
 // https://developers.cloudflare.com/turnstile/troubleshooting/testing/
@@ -204,8 +202,10 @@ export function renderAuthUI(
 			headers: { "x-warmup": "true" },
 		}).catch(() => {});
 
-		// Warm up the Browser -> Supabase TLS connection to speed up login RPCs
-		fetch(`${__SUPABASE_URL__}/rest/v1/`, { method: "HEAD" }).catch(() => {});
+		// Warm up the Browser -> Supabase connection by invoking the RPC directly and letting it fail
+		Promise.resolve(supabase.rpc("get_user_salts", { user_email: "" })).catch(
+			() => {},
+		);
 	}
 
 	if (state === "LOGIN" && onSuccess) {
