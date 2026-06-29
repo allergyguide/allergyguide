@@ -33,7 +33,7 @@ The user's password is branched into two distinct keys via PBKDF2 using salts fe
 
 ## 3. Server-Side Verification (Netlify Edge Functions)
 
-All protected Netlify functions must verify the Supabase token:
+All protected backend routes must verify the Supabase token:
 
 ```ts
 // _lib/auth.ts
@@ -42,6 +42,19 @@ const uuid = data.sub; // User's unique ID
 ```
 
 **Asset Mapping:** Use the `uuid` to locate user-specific configuration `user_configs/${uuid}_config.json`.
+
+### Building New Auth-Gated Tools
+
+When building backends for new tools or migrating old ones:
+
+1. **Use Edge Functions for Latency:** Use Netlify Edge Functions (`netlify/edge-functions/`) instead of standard serverless functions for tasks that block UI rendering (like bootstrapping tool data on login).
+2. **Use Netlify Blobs for Storage:** Private assets (JSON configs, PDFs) are pushed to Netlify Blobs at build-time. Retrieve them using the shared store client:
+   ```ts
+   import { getBlobStore } from "./_lib/store.ts";
+   const store = getBlobStore();
+   const file = await store.get("path/to/asset.json", { type: "json" });
+   ```
+3. **Register Edge Routes:** Edge functions must be explicitly mapped in `netlify.toml` under the `[[edge_functions]]` directive (unlike standard functions which are auto-discovered).
 
 ---
 
@@ -58,7 +71,7 @@ const uuid = data.sub; // User's unique ID
 
 To prevent a "waterfall" latency delay during tool initialization, **network fetching is decoupled from vault decryption**:
 
-1. **Pre-fetching:** To mask RPC latency, salts are speculatively prefetched (`prefetchSalts()`) as soon as the user types a valid email. Then, as soon as `supabase.auth.getSession()` confirms a valid identity, background network requests for encrypted Supabase rows (`fetchAllEncryptedDocuments`) and Netlify configurations are fired immediately. This happens _in parallel_ with DEK retrieval (`determineVaultState()`).
+1. **Pre-fetching:** To mask RPC latency, salts are speculatively prefetched (`prefetchSalts()`) as soon as the user types a valid email or when the auth modal is opened for the first time. Then, as soon as `supabase.auth.getSession()` confirms a valid identity, background network requests for encrypted Supabase rows (`fetchAllEncryptedDocuments`) and Netlify configurations are fired immediately. This happens _in parallel_ with DEK retrieval (`determineVaultState()`).
 2. **Caching:** The resulting Promise is cached at the module level (`networkDataPromise`) and given a dummy catch handler to suppress unhandled promise rejection warnings in the browser.
 3. **Decryption:** Once the vault transitions to `UNLOCKED` (either immediately via `sessionStorage` or after user password entry), the cached background promise is awaited and the resulting rows are passed to `decryptDocuments`.
 4. **Cleanup:** `networkDataPromise` is cleared in a `finally` block to ensure subsequent auth changes (like switching users or retrying after a network failure) always trigger a fresh network fetch and prevent soft-locks.

@@ -2,7 +2,7 @@ import { supabase } from "../../core/api/supabase";
 import { HttpError, type OfcBootstrapResponse } from "../types";
 
 /**
- * Fetches consolidated bootstrap data from the serverless function
+ * Fetches consolidated bootstrap data from the edge function
  * Provides provisioned food lists and authentication confirmation
  *
  * @returns {Promise<OfcBootstrapResponse | null>} Bootstrap data if authenticated, or null if unauthorized

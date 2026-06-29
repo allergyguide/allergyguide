@@ -27,4 +27,4 @@ The tool is mounted via a Zola shortcode (`templates/shortcodes/ofc_index.html`)
 
 ### Authentication
 
-Authentication is handled via Supabase Auth. User sessions are managed through Supabase access tokens passed as Bearer tokens to Netlify serverless functions (`/.netlify/functions/ofc-bootstrap`). Local encryption state (DEK) is managed by the shared `core/auth/login-client.ts`.
+Authentication is handled via Supabase Auth. User sessions are managed through Supabase access tokens passed as Bearer tokens to Netlify Edge Functions (`/.netlify/functions/ofc-bootstrap`). Local encryption state (DEK) is managed by the shared `core/auth/login-client.ts`.

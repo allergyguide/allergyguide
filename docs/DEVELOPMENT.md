@@ -93,7 +93,8 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │   ├── topics/
 │   └── etc.
 │
-├── netlify/functions/         # Serverless functions (Auth, Asset Proxy)
+├── netlify/edge-functions/    # Edge routers for low latency data fetching
+├── netlify/functions/         # Standard Serverless functions (Auth, API)
 │
 ├── _legacy_js/                 # Source for raw JS files (copied to static/js at build)
 ├── secure_assets/             # (GitIgnored) Downloaded private assets
@@ -150,7 +151,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 ## Netlify Functions & Auth
 
-Some tools rely on Serverless Functions for authentication and data access.
+Some tools rely on Edge and Serverless Functions for authentication and data access.
 
 ### 1. Authentication Flow
 
