@@ -17,17 +17,16 @@ targetPort = 1111
 [build.environment]
 ZOLA_VERSION = "0.21.0"
 
+# see https://docs.netlify.com/build/edge-functions/declarations/
 [[edge_functions]]
-  function = "oit-bootstrap"
-  path = "/.netlify/functions/oit-bootstrap"
-  [edge_functions.header]
-    Authorization = true
+function = "oit-bootstrap"
+path = "/.netlify/functions/oit-bootstrap"
 
 [[edge_functions]]
-  function = "get-secure-asset"
-  path = "/.netlify/functions/get-secure-asset"
-  [edge_functions.header]
-    Authorization = true
+function = "get-secure-asset"
+path = "/.netlify/functions/get-secure-asset"
+[edge_functions.header]
+Authorization = true
 
 [functions]
 node_bundler = "esbuild"

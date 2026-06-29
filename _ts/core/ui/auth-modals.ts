@@ -196,6 +196,11 @@ export function renderAuthUI(
 		return;
 	} else {
 		document.body.style.overflow = "hidden"; // Lock background scroll
+
+		// Fire warmup ping to edge function to establish TLS connections ahead of time
+		fetch("/.netlify/functions/oit-bootstrap", {
+			headers: { "x-warmup": "true" },
+		}).catch(() => {});
 	}
 
 	if (state === "LOGIN" && onSuccess) {

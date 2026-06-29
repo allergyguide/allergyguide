@@ -3,6 +3,26 @@ import { getBlobStore } from "./_lib/store.ts";
 import { HttpError, normalizeBlobKey } from "./_lib/utils.ts";
 
 export default async (req: Request) => {
+	// Catch any warmup ping early
+	if (req.headers.get("x-warmup") === "true") {
+		// Do a dummy call to Supabase just to open the TLS connection
+		// fetch a public endpoint on Supabase instead to open connection
+		try {
+			const supabaseUrl = Netlify.env.get("SUPABASE_URL");
+			if (supabaseUrl) {
+				fetch(`${supabaseUrl}/rest/v1/`, { method: "HEAD" }).catch(() => {});
+			}
+
+			// Do a dummy blob read to open the Blob Storage TLS connection
+			const store = getBlobStore();
+			store.get("dummy-key").catch(() => {});
+
+			return new Response("warmed", { status: 200 });
+		} catch (e) {
+			console.error("warmup oit-bootstrap ping failed: ", e);
+		}
+	}
+
 	try {
 		const decoded = await authenticateUser(req);
 		const uuid = decoded.uuid;
