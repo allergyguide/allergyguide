@@ -8,10 +8,5 @@ import { getStore } from "@netlify/blobs";
 export function getBlobStore() {
 	return getStore({
 		name: "allergyguide-secure-assets",
-		siteID: Netlify.env.get("NETLIFY_SITE_ID") || "",
-		token:
-			Netlify.env.get("NETLIFY_AUTH_TOKEN") ||
-			Netlify.env.get("NETLIFY_API_TOKEN") ||
-			"",
 	});
 }
