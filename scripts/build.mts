@@ -1,5 +1,6 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { pruneBlobs } from "./build-clean-blobs.mjs";
 import { buildMedications } from "./build-medications.mts";
 import { buildTS } from "./build-ts.mjs";
 import { compileTypst, loadTypstBinary } from "./build-typ.mjs";
@@ -50,7 +51,7 @@ console.log("---------------------------\n");
 // Download binary if required, compile .typ to .pdf
 console.log("-----TYPST LOAD AND COMPILE-----");
 loadTypstBinary();
-compileTypst(commit_hash);
+await compileTypst(commit_hash);
 console.log("---------------------------\n");
 
 // MOVE LEGACY JS INTO static/js
@@ -61,4 +62,9 @@ console.log("---------------------------\n");
 // TS COMPILE AND BUILD
 console.log("-----TS COMPILE AND BUILD-----");
 await buildTS(toolVersioning, commit_hash);
+console.log("---------------------------\n");
+
+// PRUNE ORPHANED BLOBS
+console.log("-----PRUNE ORPHANED BLOBS-----");
+await pruneBlobs();
 console.log("---------------------------\n");

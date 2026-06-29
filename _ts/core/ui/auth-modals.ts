@@ -4,6 +4,7 @@ import { supabase } from "../api/supabase";
 import {
 	lockAndSignOut,
 	loginAndUnlock,
+	prefetchSalts,
 	unlockVault,
 } from "../auth/login-client";
 
@@ -201,8 +202,29 @@ export function renderAuthUI(
 		render(loginTemplate(onSuccess, errorMsg), mountNode);
 		setTimeout(renderTurnstile, 0);
 		setTimeout(() => {
-			const emailInput = document.getElementById("login-email");
-			if (emailInput) emailInput.focus();
+			const emailInput = document.getElementById(
+				"login-email",
+			) as HTMLInputElement | null;
+			if (emailInput) {
+				emailInput.focus();
+
+				// Prefetch salts as early as possible to hide the ~1s cold RPC latency: fire on both debounced input and blur
+				const isValidEmail = (v: string) =>
+					/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+				let debounceTimer: ReturnType<typeof setTimeout>;
+				emailInput.addEventListener("input", () => {
+					clearTimeout(debounceTimer);
+					debounceTimer = setTimeout(() => {
+						if (isValidEmail(emailInput.value)) prefetchSalts(emailInput.value);
+					}, 400);
+				});
+
+				emailInput.addEventListener("blur", () => {
+					clearTimeout(debounceTimer);
+					if (isValidEmail(emailInput.value)) prefetchSalts(emailInput.value);
+				});
+			}
 		}, 0);
 	}
 
@@ -210,6 +232,8 @@ export function renderAuthUI(
 		supabase.auth.getSession().then(({ data }) => {
 			const email = data.session?.user.email || "User";
 			render(unlockTemplate(email, onSuccess, errorMsg), mountNode);
+			// We already know the email from the session
+			if (data.session?.user.email) prefetchSalts(data.session.user.email);
 		});
 	}
 }

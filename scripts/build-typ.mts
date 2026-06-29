@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { getBlobStore } from "./build-config.mjs";
 
 // Typst version mgment
 const TYPST_VERSION = "0.14.2";
@@ -65,21 +66,22 @@ export function loadTypstBinary() {
  * Injects the current git commit hash into the Typst document via CLI arguments.
  * @param commit_hash - The short hash of the current git commit (for version stamping in PDFs).
  */
-export function compileTypst(commit_hash: string) {
+export async function compileTypst(commit_hash: string) {
 	try {
 		// Determine which command to run: local binary or global command
 		const typstCommand = existsSync(typstBin) ? typstBin : "typst";
+		const store = getBlobStore();
 
 		// Find and Compile .typ files
 		let filesFound = false;
-		typstSrcDirs.forEach((srcDir) => {
+		for (const srcDir of typstSrcDirs) {
 			if (existsSync(srcDir)) {
 				const files = readdirSync(srcDir).filter((f) => f.endsWith(".typ"));
 
 				if (files.length > 0) {
 					filesFound = true;
 					console.log(`Found ${files.length} Typst files in ${srcDir}.`);
-					files.forEach((file) => {
+					for (const file of files) {
 						const inputPath = path.join(srcDir, file);
 						const outputFilename = file.replace(".typ", ".pdf");
 						const outputPath = path.join(srcDir, outputFilename);
@@ -93,16 +95,27 @@ export function compileTypst(commit_hash: string) {
             --input commit_hash="${commit_hash}" \
             "${inputPath}" "${outputPath}"`;
 							execSync(cmd);
+
+							// If this is a secure asset, upload the generated PDF to Netlify Blobs
+							if (srcDir.startsWith("secure_assets")) {
+								// Need to replace the secure_assets prefix to get the blob key
+								const blobKey = path.join(
+									srcDir.replace(/^secure_assets\/?/, ""),
+									outputFilename,
+								);
+								const pdfBuffer = readFileSync(outputPath);
+								await store.set(blobKey, new Blob([pdfBuffer]));
+							}
 						} catch (e) {
 							console.warn(`Failed to compile ${file}.`, e);
 							throw e;
 						}
-					});
+					}
 				}
 			} else {
 				console.log("No 'typst-src' directory found, skipping PDF generation.");
 			}
-		});
+		}
 
 		if (!filesFound) {
 			console.log("No Typst files found in any source directories.");

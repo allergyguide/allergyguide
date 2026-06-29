@@ -1,3 +1,4 @@
+import { getStore } from "@netlify/blobs";
 import dotenv from "dotenv";
 
 dotenv.config({ override: true });
@@ -65,4 +66,22 @@ export const ENV_VARS = {
 	SUPABASE_SECRET_KEY,
 	SUPABASE_JWT_SECRET,
 	ADMIN_USERS,
+};
+
+if (!process.env.NETLIFY_SITE_ID) {
+	console.error("Missing NETLIFY_SITE_ID - cannot connect to Netlify Blobs");
+	process.exit(1);
+}
+
+if (!process.env.NETLIFY_AUTH_TOKEN) {
+	console.error("Missing NETLIFY_AUTH_TOKEN");
+	process.exit(1);
+}
+
+export const getBlobStore = () => {
+	return getStore({
+		name: "allergyguide-secure-assets",
+		siteID: String(process.env.NETLIFY_SITE_ID),
+		token: String(process.env.NETLIFY_AUTH_TOKEN),
+	});
 };

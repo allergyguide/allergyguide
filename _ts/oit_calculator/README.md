@@ -40,11 +40,11 @@ oit_calculator/
     ├── modals.ts           # clickwrap, login, and save request modal logic
     └── exports.ts          # export ui triggers
 
-Serverless Functions (Netlify)
-├── get-secure-asset.mts    # Serves permission-gated assets (JSON/PDF) using Supabase UUID
-├── oit-bootstrap.mts       # Aggregates provisioned protocols and foods for authenticated users
-├── request-save-oit-protocol.mts # Processes protocol save requests via Resend API
-└── _lib/auth.mts           # Verifies Supabase tokens and extracts user claims
+Edge + Serverless Functions (Netlify)
+├── get-secure-asset.ts     # (Edge) Serves permission-gated assets (JSON/PDF) using Supabase UUID via Netlify Blobs
+├── oit-bootstrap.ts        # (Edge) Aggregates provisioned protocols and foods for authenticated users
+├── request-save-oit-protocol.mts # (Serverless) Processes protocol save requests via Resend API
+└── _lib/auth.ts            # (Edge) Verifies Supabase tokens and extracts user claims
 ```
 
 ## Patterns

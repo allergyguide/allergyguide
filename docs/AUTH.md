@@ -31,12 +31,12 @@ The user's password is branched into two distinct keys via PBKDF2 using salts fe
 
 ---
 
-## 3. Server-Side Verification (Netlify Functions)
+## 3. Server-Side Verification (Netlify Edge Functions)
 
 All protected Netlify functions must verify the Supabase token:
 
 ```ts
-// _lib/auth.mts
+// _lib/auth.ts
 const { data, error } = await supabase.auth.getClaims(token);
 const uuid = data.sub; // User's unique ID
 ```
@@ -58,7 +58,7 @@ const uuid = data.sub; // User's unique ID
 
 To prevent a "waterfall" latency delay during tool initialization, **network fetching is decoupled from vault decryption**:
 
-1. **Pre-fetching:** As soon as `supabase.auth.getSession()` confirms a valid identity, background network requests for encrypted Supabase rows (`fetchAllEncryptedDocuments`) and Netlify configurations are fired immediately. This happens _in parallel_ with DEK retrieval (`determineVaultState()`).
+1. **Pre-fetching:** To mask RPC latency, salts are speculatively prefetched (`prefetchSalts()`) as soon as the user types a valid email. Then, as soon as `supabase.auth.getSession()` confirms a valid identity, background network requests for encrypted Supabase rows (`fetchAllEncryptedDocuments`) and Netlify configurations are fired immediately. This happens _in parallel_ with DEK retrieval (`determineVaultState()`).
 2. **Caching:** The resulting Promise is cached at the module level (`networkDataPromise`) and given a dummy catch handler to suppress unhandled promise rejection warnings in the browser.
 3. **Decryption:** Once the vault transitions to `UNLOCKED` (either immediately via `sessionStorage` or after user password entry), the cached background promise is awaited and the resulting rows are passed to `decryptDocuments`.
 4. **Cleanup:** `networkDataPromise` is cleared in a `finally` block to ensure subsequent auth changes (like switching users or retrying after a network failure) always trigger a fresh network fetch and prevent soft-locks.

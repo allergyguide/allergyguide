@@ -17,12 +17,21 @@ targetPort = 1111
 [build.environment]
 ZOLA_VERSION = "0.21.0"
 
-# [context.deploy-preview]
-# command = "npm run abridge -- '--drafts --base-url https://abridge.netlify.app'"
+[[edge_functions]]
+  function = "oit-bootstrap"
+  path = "/.netlify/functions/oit-bootstrap"
+  [edge_functions.header]
+    Authorization = true
+
+[[edge_functions]]
+  function = "get-secure-asset"
+  path = "/.netlify/functions/get-secure-asset"
+  [edge_functions.header]
+    Authorization = true
 
 [functions]
 node_bundler = "esbuild"
-included_files = ["secure_assets/**"]
+# included_files = ["secure_assets/**"]  # Assets now served from Netlify Blobs — no longer needs to be bundled
 
 [[redirects]]
 from = "https://allergyguidenetlify.netlify.app/*"

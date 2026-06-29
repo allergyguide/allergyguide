@@ -10,6 +10,35 @@ let activeDEK: CryptoKey | null = null;
 // prevents race condition and double reload
 let isNavigatingAway = false;
 
+/**
+ * Module level Promise to resolve to salts for given email
+ * Is populated by prefetchSalts() before the user submits form
+ * => loginAndUnlock() / unlockVault() can skip the RPC round-trip entirely
+ *
+ */
+let saltCacheEmail: string | null = null;
+// Use a native Promise instead of the query builder to prevent re-execution on await
+let saltCachePromise: Promise<Awaited<ReturnType<typeof supabase.rpc>>> | null =
+	null;
+
+/**
+ * Fires the `get_user_salts` RPC in the background and caches the result
+ * Safe to call speculatively - discards the cache if the email changes
+ *
+ * Should be called early Call to hide the ~1s cold-connection latency
+ *
+ * @param email - The user's email address to prefetch salts for.
+ */
+export function prefetchSalts(email: string): void {
+	if (!email || email === saltCacheEmail) return; // already in-flight or cached
+	saltCacheEmail = email;
+	// Wrap in a native Promise to memoize the network result
+	saltCachePromise = Promise.resolve(
+		supabase.rpc("get_user_salts", { user_email: email }),
+	);
+	void saltCachePromise.catch(() => {});
+}
+
 export type VaultState = "UNAUTHENTICATED" | "LOCKED" | "UNLOCKED";
 
 // Listen for global auth state changes (this fires across all tabs natively via Supabase)
@@ -74,13 +103,17 @@ export async function unlockVault(password: string): Promise<boolean> {
 		} = await supabase.auth.getSession();
 		if (!session) throw new Error("No active user session.");
 
-		// Fetch Salts via RPC
-		const { data: salts, error: rpcErr } = await supabase.rpc(
-			"get_user_salts",
-			{
-				user_email: session.user.email,
-			},
-		);
+		// Consume the prefetch cache if it matches; otherwise fall back to a live fetch
+		const email = session.user.email ?? "";
+		const cachedPromise = saltCacheEmail === email ? saltCachePromise : null;
+		saltCacheEmail = null;
+		saltCachePromise = null;
+
+		const saltResult = cachedPromise
+			? await cachedPromise
+			: await supabase.rpc("get_user_salts", { user_email: email });
+
+		const { data: salts, error: rpcErr } = saltResult;
 		if (rpcErr || !salts)
 			throw new Error("Could not retrieve encryption parameters.");
 
@@ -122,13 +155,16 @@ export async function loginAndUnlock(
 	captchaToken: string,
 ): Promise<void> {
 	try {
-		// Fetch Salts via anonymous RPC BEFORE logging in
-		const { data: salts, error: rpcErr } = await supabase.rpc(
-			"get_user_salts",
-			{
-				user_email: email,
-			},
-		);
+		// Consume the prefetch cache if it matches; otherwise fall back to a live fetch
+		const cachedPromise = saltCacheEmail === email ? saltCachePromise : null;
+		saltCacheEmail = null;
+		saltCachePromise = null;
+
+		const saltResult = cachedPromise
+			? await cachedPromise
+			: await supabase.rpc("get_user_salts", { user_email: email });
+
+		const { data: salts, error: rpcErr } = saltResult;
 		if (rpcErr || !salts)
 			throw new Error("Could not retrieve encryption parameters.");
 

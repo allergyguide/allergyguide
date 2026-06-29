@@ -19,5 +19,7 @@ export default defineConfig({
 		],
 
 		mockReset: true,
+		reporters: "dot",
+		silent: true,
 	},
 });

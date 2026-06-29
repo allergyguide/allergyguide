@@ -4,7 +4,7 @@
 
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { ENV_VARS } from "./build-config.mjs";
+import { ENV_VARS, getBlobStore } from "./build-config.mjs";
 import { fetchFromGithubBinary, getPathsUsingGitTree } from "./build-utils.mjs";
 
 const SECURE_ASSETS_DIR = "secure_assets";
@@ -37,6 +37,7 @@ async function syncSecureFolder(
 		}
 	}
 
+	const store = getBlobStore();
 	try {
 		// Enforce directory matching by ensuring a trailing slash
 		// This prevents "private-tools/oit" from matching "private-tools/oit_calculator" and prevents treating a file as a directory
@@ -89,6 +90,10 @@ async function syncSecureFolder(
 					: path.join(SECURE_ASSETS_DIR, flatFilename);
 
 				writeFileSync(localOutputPath, content);
+
+				// Upload to Netlify Blobs
+				const blobKey = subdir ? `${subdir}/${flatFilename}` : flatFilename;
+				await store.set(blobKey, new Blob([content]));
 			}),
 		);
 		console.log(`Secure assets (${subdir || "root"}) downloaded.`);
@@ -130,6 +135,7 @@ async function fetchSecureFile(
 		}
 	}
 
+	const store = getBlobStore();
 	try {
 		const fullRemotePath = `private-tools/${remotePath}`;
 		console.log(`Fetching remote file: ${fullRemotePath}...`);
@@ -163,6 +169,10 @@ async function fetchSecureFile(
 			: path.join(SECURE_ASSETS_DIR, filename);
 
 		writeFileSync(localOutputPath, content);
+
+		// Upload to Netlify Blobs
+		const blobKey = localSubdir ? `${localSubdir}/${filename}` : filename;
+		await store.set(blobKey, new Blob([content]));
 		console.log(
 			`Successfully fetched ${filename} to ${localSubdir || "root"}.`,
 		);
