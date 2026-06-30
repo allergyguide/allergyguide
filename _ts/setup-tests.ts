@@ -25,6 +25,13 @@ Object.defineProperty(globalThis, "__SUPABASE_PUBLISHABLE_KEY__", {
 if (typeof globalThis.localStorage === "undefined") {
 	const mockStorage = {
 		store: {} as Record<string, string>,
+		get length() {
+			return Object.keys(this.store).length;
+		},
+		key(index: number) {
+			const keys = Object.keys(this.store);
+			return keys[index] || null;
+		},
 		getItem(key: string) {
 			return this.store[key] || null;
 		},

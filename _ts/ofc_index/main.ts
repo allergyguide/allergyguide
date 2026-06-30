@@ -32,7 +32,7 @@ async function handleSuccessfulAuth() {
 		if (!bootstrapPromise) {
 			bootstrapPromise = handleUserLoad();
 		}
-		
+
 		if (!encryptedDocsPromise) {
 			encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
 		}

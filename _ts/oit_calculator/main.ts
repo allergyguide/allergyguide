@@ -78,7 +78,7 @@ const handleSuccessfulAuth = async () => {
 		if (!bootstrapPromise) {
 			bootstrapPromise = loadUserConfiguration();
 		}
-		
+
 		if (!encryptedDocsPromise) {
 			encryptedDocsPromise = fetchAllEncryptedDocuments([
 				"custom_food",

@@ -24,9 +24,9 @@ export const VAULT_SYNC_CHANNEL = "vault_sync";
 export const AUTH_STORAGE_KEY = "allergyguide_auth_token";
 
 /**
- * Default Time-To-Live (TTL) for cached assets via localStorage (24 hours in milliseconds)
+ * Default Time-To-Live (TTL) for cached assets via localStorage (30 days in milliseconds)
  */
-export const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+export const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
  * Prefix for all SWR cache keys in localStorage. Used to easily clear them on logout.

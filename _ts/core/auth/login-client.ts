@@ -49,16 +49,7 @@ supabase.auth.onAuthStateChange((event) => {
 		activeDEK = null;
 		sessionStorage.removeItem("active_dek");
 
-		const keysToRemove = [];
-		for (let i = 0; i < localStorage.length; i++) {
-			const key = localStorage.key(i);
-			if (key?.startsWith(SWR_CACHE_PREFIX)) {
-				keysToRemove.push(key);
-			}
-		}
-		for (const k of keysToRemove) {
-			localStorage.removeItem(k);
-		}
+		clearSWRCache();
 
 		// Force a page reload to clear any decrypted UI state from the DOM
 		// This also includes assets not from Supabase too
@@ -232,16 +223,7 @@ export async function lockAndSignOut(
 	activeDEK = null;
 	sessionStorage.removeItem("active_dek");
 
-	const keysToRemove = [];
-	for (let i = 0; i < localStorage.length; i++) {
-		const key = localStorage.key(i);
-		if (key?.startsWith(SWR_CACHE_PREFIX)) {
-			keysToRemove.push(key);
-		}
-	}
-	for (const k of keysToRemove) {
-		localStorage.removeItem(k);
-	}
+	clearSWRCache();
 
 	const { error } = await supabase.auth.signOut();
 	if (error) {
@@ -280,4 +262,21 @@ async function hydrateDek(base64Str: string): Promise<CryptoKey> {
 		true, // Must remain extractable if we need to sync it to another tab later
 		["encrypt", "decrypt"],
 	);
+}
+
+function clearSWRCache() {
+	try {
+		const keysToRemove = [];
+		for (let i = 0; i < localStorage.length; i++) {
+			const key = localStorage.key(i);
+			if (key?.startsWith(SWR_CACHE_PREFIX)) {
+				keysToRemove.push(key);
+			}
+		}
+		for (const k of keysToRemove) {
+			localStorage.removeItem(k);
+		}
+	} catch (e) {
+		console.warn("Failed to clear SWR cache (storage may be blocked):", e);
+	}
 }
