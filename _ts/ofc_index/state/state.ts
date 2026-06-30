@@ -87,6 +87,14 @@ export class AppState {
 	}
 
 	/**
+	 * Updates the background sync status for custom assets
+	 */
+	setSyncStatus(status: "loading" | "success" | "error") {
+		this.state.customAssetsSyncStatus = status;
+		this.notify();
+	}
+
+	/**
 	 * Updates the food collections and pre-computes search keys for performance
 	 *
 	 * @param publicFoods - Array of foods from the CNF database

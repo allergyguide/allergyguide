@@ -10,6 +10,7 @@ export interface CoreToolbarProps {
 	extraContent?: TemplateResult;
 	showFeedback?: boolean;
 	onFeedback?: () => void;
+	customAssetsSyncStatus?: "loading" | "success" | "error";
 }
 
 /**
@@ -23,6 +24,29 @@ export const coreToolbarTemplate = (
 ): TemplateResult => html`
     <div class="core-toolbar">
         <div class="core-toolbar-extra">
+            ${
+							props.customAssetsSyncStatus
+								? html`
+                <div class="sync-status sync-status-${props.customAssetsSyncStatus}">
+                    ${
+											props.customAssetsSyncStatus === "loading"
+												? html`<span class="sync-spinner"></span> Loading custom assets...`
+												: nothing
+										}
+                    ${
+											props.customAssetsSyncStatus === "success"
+												? html`<span class="sync-icon">✓</span> Custom assets loaded!`
+												: nothing
+										}
+                    ${
+											props.customAssetsSyncStatus === "error"
+												? html`<span class="sync-icon">!</span> Failed to load custom assets. Refresh!`
+												: nothing
+										}
+                </div>
+            `
+								: nothing
+						}
             ${props.extraContent || nothing}
         </div>
         <div class="core-version-auth">

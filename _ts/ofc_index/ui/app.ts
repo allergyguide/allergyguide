@@ -85,6 +85,7 @@ const appTemplate = (
 							headerMessage:
 								"Questions or concerns about the OFC Index? Let us know!",
 						}),
+					customAssetsSyncStatus: state.customAssetsSyncStatus,
 				})}
 
         <!-- Search Header -->

@@ -18,11 +18,7 @@ import {
 	getActiveDEK,
 	lockAndSignOut,
 } from "../core/auth/login-client";
-import {
-	decryptDocuments,
-	type EncryptedDocument,
-	fetchAllEncryptedDocuments,
-} from "../core/data/db";
+import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { runCrudTest } from "../core/data/test-crud";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import { VALIDATION_DEBOUNCE_MS } from "./constants";
@@ -72,33 +68,25 @@ Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 // ============================================
 
 // Module-level promise to cache background network fetches
-let networkDataPromise: Promise<
-	[OITBootstrapResponse, EncryptedDocument[]]
-> | null = null;
+let bootstrapPromise: Promise<OITBootstrapResponse> | null = null;
+let encryptedDocsPromise: ReturnType<typeof fetchAllEncryptedDocuments> | null =
+	null;
 
 // 1. Create the hydration callback
 const handleSuccessfulAuth = async () => {
 	try {
-		// Use the pre-fetched background promise if available, otherwise fetch
-		if (!networkDataPromise) {
-			networkDataPromise = Promise.all([
-				loadUserConfiguration(),
-				fetchAllEncryptedDocuments(["custom_food", "custom_protocol"]).catch(
-					(dbErr) => {
-						console.error("Failed to fetch encrypted custom user data:", dbErr);
-						return [];
-					},
-				),
+		if (!bootstrapPromise) {
+			bootstrapPromise = loadUserConfiguration();
+		}
+		
+		if (!encryptedDocsPromise) {
+			encryptedDocsPromise = fetchAllEncryptedDocuments([
+				"custom_food",
+				"custom_protocol",
 			]);
 		}
 
-		const [userData, encryptedRows] = await networkDataPromise;
-
-		const dek = getActiveDEK();
-		const [customFoods, customProtocols] = await Promise.all([
-			decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
-			decryptDocuments<ProtocolData>(encryptedRows, dek, "custom_protocol"),
-		]);
+		const userData = await bootstrapPromise;
 
 		appState.addProvisionedData(
 			userData.provisioned_foods,
@@ -106,15 +94,32 @@ const handleSuccessfulAuth = async () => {
 			userData.handouts,
 		);
 
-		appState.setUserData(
-			customFoods.map((doc) => doc.data),
-			customProtocols.map((doc) => doc.data),
-		);
-
 		appState.setAuthState(true, userData.email);
 
 		// Everything worked! Close the modal
 		renderAuthUI("HIDDEN");
+
+		// Fetch and decrypt custom assets in the background
+		appState.setSyncStatus("loading");
+		const dek = getActiveDEK();
+
+		encryptedDocsPromise
+			.then(async (encryptedRows) => {
+				const [customFoods, customProtocols] = await Promise.all([
+					decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
+					decryptDocuments<ProtocolData>(encryptedRows, dek, "custom_protocol"),
+				]);
+
+				appState.setUserData(
+					customFoods.map((doc) => doc.data),
+					customProtocols.map((doc) => doc.data),
+				);
+				appState.setSyncStatus("success");
+			})
+			.catch((err) => {
+				console.error("Failed to load custom assets:", err);
+				appState.setSyncStatus("error");
+			});
 	} catch (e) {
 		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
 		await lockAndSignOut(null);
@@ -149,7 +154,8 @@ const handleSuccessfulAuth = async () => {
 	} finally {
 		// Ensure the promise is cleared regardless of success or failure
 		// so subsequent auth changes (e.g. logout then login or retries) get fresh data
-		networkDataPromise = null;
+		bootstrapPromise = null;
+		encryptedDocsPromise = null;
 	}
 };
 
@@ -175,17 +181,14 @@ async function initializeCalculator(): Promise<void> {
 	} = await sessionPromise;
 	if (session) {
 		// start network fetch without waiting for DEK
-		networkDataPromise = Promise.all([
-			loadUserConfiguration(),
-			fetchAllEncryptedDocuments(["custom_food", "custom_protocol"]).catch(
-				(err) => {
-					console.error("Failed to fetch encrypted custom user data:", err);
-					return [];
-				},
-			),
-		]);
+		bootstrapPromise = loadUserConfiguration();
+		bootstrapPromise.catch(() => {});
 
-		networkDataPromise.catch(() => {});
+		encryptedDocsPromise = fetchAllEncryptedDocuments([
+			"custom_food",
+			"custom_protocol",
+		]);
+		encryptedDocsPromise.catch(() => {});
 	}
 
 	const [publicData, vaultState] = await Promise.all([
@@ -223,6 +226,7 @@ async function initializeCalculator(): Promise<void> {
 		changelogUrl: changelogLink,
 		onLogin,
 		onLogout,
+		customAssetsSyncStatus: appState.customAssetsSyncStatus,
 	});
 
 	appState.subscribeToAuth((isLoggedIn) => {
@@ -267,26 +271,12 @@ async function initializeCalculator(): Promise<void> {
 		renderAuthUI("HIDDEN");
 
 		try {
-			if (!networkDataPromise) {
+			if (!bootstrapPromise) {
 				// Fallback just in case (e.g. session was briefly false but vault unlocked, edge case)
-				networkDataPromise = Promise.all([
-					loadUserConfiguration(),
-					fetchAllEncryptedDocuments(["custom_food", "custom_protocol"]).catch(
-						(err) => {
-							console.error("Failed to fetch encrypted custom user data:", err);
-							return [];
-						},
-					),
-				]);
+				bootstrapPromise = loadUserConfiguration();
 			}
 
-			const [userData, encryptedRows] = await networkDataPromise;
-
-			const dek = getActiveDEK();
-			const [customFoods, customProtocols] = await Promise.all([
-				decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
-				decryptDocuments<ProtocolData>(encryptedRows, dek, "custom_protocol"),
-			]);
+			const userData = await bootstrapPromise;
 
 			appState.addProvisionedData(
 				userData.provisioned_foods,
@@ -294,20 +284,47 @@ async function initializeCalculator(): Promise<void> {
 				userData.handouts,
 			);
 
-			appState.setUserData(
-				customFoods.map((doc) => doc.data),
-				customProtocols.map((doc) => doc.data),
-			);
-
 			appState.setAuthState(true, userData.email);
-			// renderToolbar is called by subscribeToAuth
+
+			// Start background processing of custom assets
+			appState.setSyncStatus("loading");
+			const dek = getActiveDEK();
+
+			if (!encryptedDocsPromise) {
+				encryptedDocsPromise = fetchAllEncryptedDocuments([
+					"custom_food",
+					"custom_protocol",
+				]);
+			}
+
+			encryptedDocsPromise
+				.then(async (encryptedRows) => {
+					const [customFoods, customProtocols] = await Promise.all([
+						decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
+						decryptDocuments<ProtocolData>(
+							encryptedRows,
+							dek,
+							"custom_protocol",
+						),
+					]);
+					appState.setUserData(
+						customFoods.map((doc) => doc.data),
+						customProtocols.map((doc) => doc.data),
+					);
+					appState.setSyncStatus("success");
+				})
+				.catch((err) => {
+					console.error("Failed to load custom assets:", err);
+					appState.setSyncStatus("error");
+				});
 		} catch {
 			console.error(
 				"Failed to load provisioned assets. User may not have access.",
 			);
 			// Optionally handle 403s here
 		} finally {
-			networkDataPromise = null; // Clear it for subsequent re-auths
+			bootstrapPromise = null; // Clear it for subsequent re-auths
+			encryptedDocsPromise = null;
 		}
 	}
 
