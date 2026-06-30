@@ -1,4 +1,5 @@
 import { supabase } from "../api/supabase";
+import { SWR_CACHE_PREFIX } from "../constants";
 import { deriveAuthHash, deriveKEK } from "../crypto/derivation";
 import { base64ToBuffer, bufferToBase64 } from "../crypto/encoding";
 import { unwrapDEK } from "../crypto/encryption";
@@ -47,6 +48,17 @@ supabase.auth.onAuthStateChange((event) => {
 	if (event === "SIGNED_OUT" && !isNavigatingAway) {
 		activeDEK = null;
 		sessionStorage.removeItem("active_dek");
+
+		const keysToRemove = [];
+		for (let i = 0; i < localStorage.length; i++) {
+			const key = localStorage.key(i);
+			if (key?.startsWith(SWR_CACHE_PREFIX)) {
+				keysToRemove.push(key);
+			}
+		}
+		for (const k of keysToRemove) {
+			localStorage.removeItem(k);
+		}
 
 		// Force a page reload to clear any decrypted UI state from the DOM
 		// This also includes assets not from Supabase too
@@ -219,6 +231,17 @@ export async function lockAndSignOut(
 	isNavigatingAway = true;
 	activeDEK = null;
 	sessionStorage.removeItem("active_dek");
+
+	const keysToRemove = [];
+	for (let i = 0; i < localStorage.length; i++) {
+		const key = localStorage.key(i);
+		if (key?.startsWith(SWR_CACHE_PREFIX)) {
+			keysToRemove.push(key);
+		}
+	}
+	for (const k of keysToRemove) {
+		localStorage.removeItem(k);
+	}
 
 	const { error } = await supabase.auth.signOut();
 	if (error) {

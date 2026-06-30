@@ -21,6 +21,28 @@ Object.defineProperty(globalThis, "__SUPABASE_PUBLISHABLE_KEY__", {
 	writable: true,
 });
 
+// Polyfill localStorage (not available by default in vitest node env)
+if (typeof globalThis.localStorage === "undefined") {
+	const mockStorage = {
+		store: {} as Record<string, string>,
+		getItem(key: string) {
+			return this.store[key] || null;
+		},
+		setItem(key: string, value: string) {
+			this.store[key] = String(value);
+		},
+		removeItem(key: string) {
+			delete this.store[key];
+		},
+		clear() {
+			this.store = {};
+		},
+	};
+	Object.defineProperty(globalThis, "localStorage", {
+		value: mockStorage,
+	});
+}
+
 // Polyfill BroadcastChannel (not in JSDOM) immediately
 const instances = new Set<any>();
 const MockBroadcastChannel = class {
