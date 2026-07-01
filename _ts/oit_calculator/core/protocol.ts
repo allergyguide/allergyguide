@@ -200,14 +200,20 @@ export function addFoodBToProtocol(
 		} else {
 			// Fallback DIRECT if dilution generation fails
 			const P = existingStep.targetMg;
-			const neatMass = P.dividedBy(newProtocol.foodA.getMgPerUnit());
+			const preciseMass = P.dividedBy(newProtocol.foodA.getMgPerUnit());
+			const snappedMass = findRoundedDirectAmount(
+				P,
+				newProtocol.foodA,
+				preciseMass,
+				newProtocol.config,
+			);
 			const unit: Unit = newProtocol.foodA.type === FoodType.SOLID ? "g" : "ml";
 			normalizedSteps.push({
 				id: generateUniqueId(),
 				stepIndex: existingStep.stepIndex,
 				targetMg: P,
 				method: Method.DIRECT,
-				dailyAmount: neatMass,
+				dailyAmount: snappedMass,
 				dailyAmountUnit: unit,
 				food: "A",
 			});
@@ -253,26 +259,38 @@ export function addFoodBToProtocol(
 
 	// First Food B step uses same target as last Food A step
 	const firstBTargetMg = transitionTargetMg;
-	const firstBNeatMass = firstBTargetMg.dividedBy(foodB.getMgPerUnit());
+	const firstBPreciseMass = firstBTargetMg.dividedBy(foodB.getMgPerUnit());
+	const firstBSnappedMass = findRoundedDirectAmount(
+		firstBTargetMg,
+		foodB,
+		firstBPreciseMass,
+		newProtocol.config,
+	);
 	foodBSteps.push({
 		id: generateUniqueId(),
 		stepIndex: transitionIndex + 2, // Will be reindexed later
 		targetMg: firstBTargetMg,
 		method: Method.DIRECT,
-		dailyAmount: firstBNeatMass,
+		dailyAmount: firstBSnappedMass,
 		dailyAmountUnit: foodBUnit,
 		food: "B",
 	});
 
 	// Remaining Food B steps
 	for (const targetMg of originalTargets) {
-		const neatMass = targetMg.dividedBy(foodB.getMgPerUnit());
+		const preciseMass = targetMg.dividedBy(foodB.getMgPerUnit());
+		const snappedMass = findRoundedDirectAmount(
+			targetMg,
+			foodB,
+			preciseMass,
+			newProtocol.config,
+		);
 		foodBSteps.push({
 			id: generateUniqueId(),
 			stepIndex: 0, // Will be reindexed
 			targetMg,
 			method: Method.DIRECT,
-			dailyAmount: neatMass,
+			dailyAmount: snappedMass,
 			dailyAmountUnit: foodBUnit,
 			food: "B",
 		});

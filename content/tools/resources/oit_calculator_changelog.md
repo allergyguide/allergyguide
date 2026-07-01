@@ -14,11 +14,15 @@ authors = ["Joshua Yu"]
 
 ### Changed
 
+- Performance: improved loading speeds for authorized users
+
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+- Calculation: Fixed an issue where the initial doses generated for a transition food (Food B) were not applying the "smart snapping" to clean, measurable increments (like 0.05g or 0.5ml) until they were manually edited
 
 ### Security
 
