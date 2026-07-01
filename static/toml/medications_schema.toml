@@ -53,8 +53,8 @@ estimated_cost = "~$100 / month" # [OPTIONAL] Quick estimate
 
 
 # [OPTIONAL] Monograph PDFs
-# Filenames parsed automatically: genericname_monograph.pdf -> Genericname (monograph)
-monograph_links = ["/monographs/example_2025_1.pdf"]
+# Filenames parsed automatically: genericname-YYYY-MM.pdf -> YYYY-MM
+monograph_links = ["/monographs/example-2025-01.pdf"]
 
 
 # =====================================================================

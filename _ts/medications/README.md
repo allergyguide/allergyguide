@@ -22,7 +22,7 @@ The application fetches its data at runtime from the compiled static TOML file:
   - _Note:_ The `coverage` `tips` block specifically supports block-level markdown (like bulleted lists).
 - **Auto-Formatting**:
   - `sample_rx` strings automatically generate `[Rx]` superscripts.
-  - PDF monograph URLs are automatically parsed into human-readable titles (e.g., `drug_name_monograph.pdf` -> `Drug Name (monograph)`).
+  - PDF monograph URLs are automatically parsed into human-readable dates (e.g., `drugname-2025-01.pdf` -> `2025-01`).
 - **Status Tags**: Coverage status strings are automatically mapped to CSS classes for vibrant color-coding (`Open`, `Restricted`, `Age-Restricted`, `Not Covered`).
 - **Global Province Sync**: Selecting a province filter on any medication card or index automatically syncs the selection across all active islands on the page using a custom `med-province-changed` event and `localStorage`.
 

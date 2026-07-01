@@ -78,21 +78,32 @@ function renderMarkdownBlock(
 }
 
 /**
- * Format a raw monograph URL into a clean, human-readable title
+ * Format a raw monograph URL into a clean, human-readable date string
+ * Expected format: [drugname]-[YYYY]-[MM].pdf or [drugname]-[YYYY]-[MM]-[suffix].pdf
  *
  * @param url - The path to the monograph PDF
- * @returns {string} Formatted monograph name
+ * @returns {string} Formatted date (e.g. "2025-01" or "2025-01 (v2)")
  */
 function formatMonographName(url: string): string {
 	try {
 		const filename = url.substring(url.lastIndexOf("/") + 1);
 		const basename = filename.split(".")[0] || filename;
-		const parts = basename.split("_");
-		if (parts.length === 1) return parts[0];
 
-		const title = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-		const rest = parts.slice(1).join(" - ");
-		return `${title} (${rest})`;
+		const parts = basename.split("-");
+
+		// If it matches our expected [drug]-[YYYY]-[MM] format
+		if (parts.length >= 3) {
+			const year = parts[1];
+			const month = parts[2];
+
+			// Handle the rare case of a suffix (e.g., v2)
+			const suffix = parts.length > 3 ? ` (${parts.slice(3).join("-")})` : "";
+
+			return `${year}-${month}${suffix}`;
+		}
+
+		// Fallback if the name doesn't match the standard
+		return basename;
 	} catch (_e) {
 		return "Monograph Link";
 	}
