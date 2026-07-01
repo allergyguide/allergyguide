@@ -47,7 +47,9 @@ pearls = [
   "No data exists for dosing in hepatic or renal insufficiency.",
 ]
 
-monograph_links = ["/monographs/rupatadine_2023_1.pdf"]
+monograph_links = [
+  "https://assets.allergyguide.ca/monographs/rupatadine-2023-01.pdf",
+]
 
 # =====================================================================
 # DOSES
@@ -207,9 +209,9 @@ pearls = [
 ]
 
 monograph_links = [
-  "/monographs/cetirizine_2025_1.pdf",
-  "/monographs/cetirizine_2025_2.pdf",
-  "/monographs/cetirizine_2018_1.pdf",
+  "https://assets.allergyguide.ca/monographs/cetirizine-2018-08.pdf",
+  "https://assets.allergyguide.ca/monographs/cetirizine-2025-03.pdf",
+  "https://assets.allergyguide.ca/monographs/cetirizine-2025-12.pdf",
 ]
 
 # =====================================================================
@@ -325,7 +327,9 @@ pearls = [
   "Take without food or juice otherwise absorption impaired",
 ]
 
-monograph_links = ["/monographs/bilastine_2021_1.pdf"]
+monograph_links = [
+  "https://assets.allergyguide.ca/monographs/bilastine-2021-08.pdf",
+]
 
 estimated_cost = "~$1.1 CAD / 20mg tab"
 

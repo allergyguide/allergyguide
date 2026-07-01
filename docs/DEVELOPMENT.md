@@ -186,6 +186,10 @@ This application uses an invite-only onboarding process managed through Supabase
 
 Deploying to production requires coordination between Netlify (hosting), Cloudflare (CDN/Cache), and the browser's Service Worker. **Failure to follow these steps can result in "cache poisoning" where users are served stale CSP headers or broken Auth logic.**
 
+### Cloudflare R2 Bucket (assets.allergyguide.ca)
+
+Large public binary assets (e.g., PDFs, high-resolution images, slide decks; things that don't need strict version control) are manually managed and hosted on a external bucket, via the `assets.allergyguide.ca` subdomain.
+
 ### 1. The Cloudflare "Query String" Trap
 
 Cloudflare sits in front of Netlify and aggressively caches static assets (JS, CSS, SW).

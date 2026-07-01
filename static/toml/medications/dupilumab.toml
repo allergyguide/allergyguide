@@ -51,7 +51,9 @@ pearls = [
 ]
 estimated_cost = ">$20,000 / year CAD"
 
-monograph_links = ["/monographs/dupilumab_2025_1.pdf"]
+monograph_links = [
+  "https://assets.allergyguide.ca/monographs/dupilumab-2025-10.pdf",
+]
 
 
 # =====================================================================
@@ -386,7 +388,7 @@ indication = ["Asthma"]
 province = ["BC"]
 status = "Restricted"
 tips = """
-[PSP Enrolment Form (Asthma/CRSwNP)](https://oscargalaxy.org/download/dupixent-dupilumab-psp-enrolment-form-asthma-crswnp-en/)
+[PSP Enrolment (Asthma/CRSwNP - 2025/05)](https://assets.allergyguide.ca/psp/dupilumab-asthma_crswnp-2025-05.pdf)
 
 **Adults & adolescents ≥12 yrs** — [Special Authority required](https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/pharmacare/programs/limited-coverage-drug-program/limited-coverage-drugs-dupilumab) | [Form 5489](https://www2.gov.bc.ca/assets/gov/health/forms/5489fil.pdf)
 
@@ -408,7 +410,7 @@ indication = ["Atopic Dermatitis", "CRSwNP", "EoE", "Prurigo Nodularis", "CSU"]
 province = ["BC"]
 status = "Not Covered"
 tips = """
-[PSP Enrolment Form (Atopic dermatitis)](https://www.bidermato.com/wp-content/uploads/2023/05/Dupixent-Enrollment-Form-2023-EN.pdf)
+[PSP Enrolment Form (Atopic dermatitis - 2025/05)](https://assets.allergyguide.ca/psp/dupilumab-atopic_dermatitis-2025-05.pdf)
 
 Private insurance coverage varies (Blue Cross awful - does NOT cover).
 Options: out-of-pocket (**$$$**) or compassionate access request.
