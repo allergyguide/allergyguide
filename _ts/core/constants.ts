@@ -19,9 +19,12 @@ export const DEK_STORAGE_KEY = "active_dek";
 export const VAULT_SYNC_CHANNEL = "vault_sync";
 
 /**
- * Key used by Supabase client to persist the authentication session
+ * Cookie name prefix used by the Supabase SSR browser client and server-side edge function auth client to identify session cookies
+ * Changing this is a breaking change: will log out all existing users.
  */
 export const AUTH_STORAGE_KEY = "allergyguide_auth_token";
+
+export const SUPABASE_COOKIE_EXPIRY = 31536000; // 1 year
 
 /**
  * Default Time-To-Live (TTL) for cached assets via localStorage (30 days in milliseconds)

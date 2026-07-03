@@ -16,8 +16,9 @@ Uses **Supabase Auth** for identity and a **Zero-Knowledge** vault for custom us
 - **Logic:**
   1. Check for a session via `supabase.auth.getSession()`.
   2. If `data.session` exists, the user is authenticated. You can ignore the `LOCKED` vault state.
-  3. Include the token in requests: `Authorization: Bearer ${session.access_token}`.
-  4. If no session, trigger `renderAuthUI("LOGIN", ...)` but do not proceed to `UNLOCK`.
+  3. **For Netlify Edge Functions (Reads):** execute a `fetch()`. Browser natively attaches the Supabase HTTP cookies.
+  4. **For Standard Functions (Mutations):** Manually include the token in requests: `Authorization: Bearer ${session.access_token}` for CSRF protection.
+  5. If no session, trigger `renderAuthUI("LOGIN", ...)` but do not proceed to `UNLOCK`.
 
 ---
 
@@ -31,14 +32,33 @@ The user's password is branched into two distinct keys via PBKDF2 using salts fe
 
 ---
 
-## 3. Server-Side Verification (Netlify Edge Functions)
+## 3. Server-Side Verification
 
 All protected backend routes must verify the Supabase token:
 
+### Edge Functions
+
+Edge functions (`netlify/edge-functions/`) reconstruct the session natively from the browser's chunked HTTP cookies using `@supabase/ssr`:
+
 ```ts
-// _lib/auth.ts
+import { createServerClient } from "@supabase/ssr";
+
+// Initialize SSR client parsing req.headers.get("Cookie")
+const ssrClient = createServerClient(...)
+// Edge verification with getClaims()
+const { data, error } = await ssrClient.auth.getClaims();
+const uuid = data.claims?.sub; // User's unique ID
+```
+
+### Standard Functions (Bearer Headers)
+
+Standard serverless functions (`netlify/functions/`) parse the manually injected JWT header:
+
+```ts
+const authHeader = event.headers.authorization || "";
+const token = authHeader.replace("Bearer ", "");
 const { data, error } = await supabase.auth.getClaims(token);
-const uuid = data.sub; // User's unique ID
+const uuid = data.claims.sub;
 ```
 
 **Asset Mapping:** Use the `uuid` to locate user-specific configuration `user_configs/${uuid}_config.json`.

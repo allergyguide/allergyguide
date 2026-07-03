@@ -49,12 +49,9 @@
 <script>
 	(function() {
 		try {
-			const tokenStr = localStorage.getItem('allergyguide_auth_token');
-			if (tokenStr) {
-				const tokenData = JSON.parse(tokenStr);
-				const email = tokenData.user?.email || tokenData.email || "";
-				if (email) {
-					const instructions = document.querySelector('.ofc-instructions');
+			const email = localStorage.getItem('allergyguide_user_email');
+			if (email) {
+				const instructions = document.querySelector('.ofc-instructions');
 					if (instructions) {
 						instructions.innerHTML = `
 						<div style="text-align: center; padding: 2rem;">

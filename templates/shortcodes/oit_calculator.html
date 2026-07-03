@@ -145,12 +145,9 @@
 <script>
 	(function() {
 		try {
-			const tokenStr = localStorage.getItem('allergyguide_auth_token');
-			if (tokenStr) {
-				const tokenData = JSON.parse(tokenStr);
-				const email = tokenData.user?.email || tokenData.email || "";
-				if (email) {
-					const restrictedCard = document.querySelector('.restricted-card');
+			const email = localStorage.getItem('allergyguide_user_email');
+			if (email) {
+				const restrictedCard = document.querySelector('.restricted-card');
 					if (restrictedCard) {
 						restrictedCard.innerHTML = `
 						<div style="text-align: center; padding: 2rem;">

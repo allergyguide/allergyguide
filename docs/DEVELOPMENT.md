@@ -157,8 +157,10 @@ Some tools rely on Edge and Serverless Functions for authentication and data acc
 
 - **Identity:** Handled natively by Supabase Auth (`auth.users`).
 - **Zero-Knowledge Encryption:** The user's password never leaves the client. It is used to create an Auth Hash (sent to Supabase for login) and a Key Encryption Key (KEK) used to unwrap the local Data Encryption Key (DEK).
-- **Session:** Supabase issues an access token which is passed as a `Bearer` token to Netlify Functions.
-- **Logout:** Supabase handles session termination via `supabase.auth.signOut()`. Local encryption keys in memory and session storage are wiped.
+- **Session (Hybrid Architecture):**
+  - **Edge Functions (Reads):** Supabase injects HTTP cookies into the browser; Edge Functions can now verify JWTs natively at the edge with less latency.
+  - **Standard Functions (Mutations):** For POST requests (e.g., `submit-email`), the client manually extracts the JWT and passes it as an `Authorization: Bearer` header. Hopefully protects against CSRF vulnerabilities.
+- **Logout:** Supabase handles session termination via `supabase.auth.signOut()`. Local encryption keys in memory and session cookies are wiped.
 
 ### 2. Fetching Secure Assets
 

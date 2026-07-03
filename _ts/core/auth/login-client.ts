@@ -199,6 +199,8 @@ export async function loginAndUnlock(
 		activeDEK = await unwrapDEK(userData.encrypted_dek, userData.dek_iv, kek);
 		const rawDekBuffer = await window.crypto.subtle.exportKey("raw", activeDEK);
 		sessionStorage.setItem("active_dek", bufferToBase64(rawDekBuffer));
+		// Set a non-sensitive localStorage item just for the UI skeleton to instantly read the email on cold loads
+		localStorage.setItem("allergyguide_user_email", email);
 	} catch (err) {
 		console.error("Login and unlock failed:", err);
 		// In failure clean up session
@@ -222,6 +224,9 @@ export async function lockAndSignOut(
 	isNavigatingAway = true;
 	activeDEK = null;
 	sessionStorage.removeItem("active_dek");
+
+	// Wipe the UI skeleton localStorage item
+	localStorage.removeItem("allergyguide_user_email");
 
 	clearSWRCache();
 

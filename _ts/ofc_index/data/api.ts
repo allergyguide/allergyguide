@@ -28,11 +28,7 @@ async function fetchOFCBootstrapLive(): Promise<OfcBootstrapResponse | null> {
 		return null;
 	}
 
-	const response = await fetch("/.netlify/functions/ofc-bootstrap", {
-		headers: {
-			Authorization: `Bearer ${session.access_token}`,
-		},
-	});
+	const response = await fetch("/.netlify/functions/ofc-bootstrap");
 
 	if (response.status === 401 || response.status === 403) {
 		return null;

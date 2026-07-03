@@ -1,12 +1,13 @@
+import type { Context } from "@netlify/edge-functions";
 import { authenticateUser } from "./_lib/auth.ts";
 import { getBlobStore } from "./_lib/store.ts";
 import { getAllFilePaths, HttpError } from "./_lib/utils.ts";
 
-export default async (req: Request) => {
+export default async (req: Request, context: Context) => {
 	let uuid = "";
 
 	try {
-		const decoded = await authenticateUser(req);
+		const decoded = await authenticateUser(req, context);
 		uuid = decoded.uuid;
 	} catch (err) {
 		if (err instanceof HttpError) {

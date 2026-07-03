@@ -9,10 +9,7 @@ import {
 } from "../auth/login-client";
 
 // Turnstile helper
-// Official Cloudflare Testing Key (Always Passes)
-// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
-
-const TURNSTILE_TEST_SITE_KEY = "1x00000000000000000000AA";
+// NOTE: The Cloudflare test site key (Always Passes) is intentionally not used because it doesn't play well with Supabase's cookie-based auth flow
 let turnstileWidgetId: string | null | undefined = null;
 
 function renderTurnstile() {
@@ -25,9 +22,7 @@ function renderTurnstile() {
 		}
 		turnstileWidgetId = null; // Clear the ID!
 	}
-	const sitekey = window.location.hostname.includes("netlify.app")
-		? TURNSTILE_TEST_SITE_KEY
-		: "0x4AAAAAACK7_weh_BsWxOhN";
+	const sitekey = "0x4AAAAAACK7_weh_BsWxOhN";
 
 	try {
 		turnstileWidgetId = turnstile.render("#turnstile-widget", { sitekey });

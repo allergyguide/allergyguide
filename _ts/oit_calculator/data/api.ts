@@ -68,8 +68,8 @@ export async function ensureResponseOk(response: Response) {
 	);
 }
 
-/** Helper to grab the active token */
-async function getAuthHeaders(): Promise<Record<string, string>> {
+/** Helper to verify the active token exists before firing requests */
+async function ensureAuthenticated(): Promise<void> {
 	const {
 		data: { session },
 		error,
@@ -77,10 +77,6 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 	if (error || !session) {
 		throw new HttpError("Unauthorized: No active session", 401);
 	}
-	return {
-		"Content-Type": "application/json",
-		Authorization: `Bearer ${session.access_token}`,
-	};
 }
 
 /**
@@ -99,10 +95,8 @@ export async function fetchOITBootstrap(): Promise<OITBootstrapResponse> {
 }
 
 async function fetchOITBootstrapLive(): Promise<OITBootstrapResponse> {
-	const headers = await getAuthHeaders();
-	const response = await fetch("/.netlify/functions/oit-bootstrap", {
-		headers,
-	});
+	await ensureAuthenticated();
+	const response = await fetch("/.netlify/functions/oit-bootstrap");
 	await ensureResponseOk(response);
 
 	const contentType = response.headers.get("content-type");
@@ -127,12 +121,9 @@ export async function loadSecureAsset(
 	filepath: string,
 	format: "auto" | "buffer" | "blob" | "json",
 ) {
-	const headers = await getAuthHeaders();
+	await ensureAuthenticated();
 	const response = await fetch(
 		`/.netlify/functions/get-secure-asset?file=${filepath}`,
-		{
-			headers: { Authorization: headers.Authorization },
-		},
 	);
 
 	await ensureResponseOk(response);

@@ -1,8 +1,9 @@
+import type { Context } from "@netlify/edge-functions";
 import { authenticateUser } from "./_lib/auth.ts";
 import { getBlobStore } from "./_lib/store.ts";
 import { HttpError, normalizeBlobKey } from "./_lib/utils.ts";
 
-export default async (req: Request) => {
+export default async (req: Request, context: Context) => {
 	// Catch the warmup ping early
 	if (req.headers.get("x-warmup") === "true") {
 		try {
@@ -19,7 +20,7 @@ export default async (req: Request) => {
 	}
 
 	try {
-		const decoded = await authenticateUser(req);
+		const decoded = await authenticateUser(req, context);
 		const uuid = decoded.uuid;
 
 		const store = getBlobStore();
