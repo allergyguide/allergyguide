@@ -29,8 +29,6 @@ path = "/.netlify/functions/ofc-bootstrap"
 [[edge_functions]]
 function = "get-secure-asset"
 path = "/.netlify/functions/get-secure-asset"
-[edge_functions.header]
-Authorization = true
 
 [functions]
 node_bundler = "esbuild"
