@@ -19,7 +19,6 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
-const ADMIN_USERS = process.env.ADMIN_USERS;
 
 if (!REPO_NAME || !GITHUB_OWNER || !GITHUB_TOKEN) {
 	console.error("No GitHub repo or token found. Check netlify settings");
@@ -49,11 +48,6 @@ if (
 	process.exit(1);
 }
 
-if (!ADMIN_USERS) {
-	console.error("No admin users defined");
-	process.exit(1);
-}
-
 export const ENV_VARS = {
 	GITHUB_TOKEN,
 	GITHUB_REPO,
@@ -65,7 +59,6 @@ export const ENV_VARS = {
 	SUPABASE_PUBLISHABLE_KEY,
 	SUPABASE_SECRET_KEY,
 	SUPABASE_JWT_SECRET,
-	ADMIN_USERS,
 };
 
 if (!process.env.NETLIFY_SITE_ID) {
