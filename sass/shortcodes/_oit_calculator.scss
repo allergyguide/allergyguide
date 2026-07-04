@@ -1,3 +1,5 @@
+@use "oit_calculator/modals";
+
 :root {
   /* Dark mode colors - Integrated with core tokens */
   --oit-bg: var(--core-bg);
@@ -93,6 +95,7 @@
 /* Public Kill-Switch Logic */
 .oit_calculator[data-public-restricted="true"] {
   &:not(.is-logged-in) {
+
     .oit-workspace-header,
     .settings-container,
     .dosing-strategy-container,

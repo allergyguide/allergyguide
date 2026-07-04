@@ -5,9 +5,12 @@
  */
 
 import { exportASCII, generatePdf } from "../export/exports";
+import { generatePatientHandout } from "../export/handout";
 import { workspace } from "../state/instances";
 import { type ProtocolExportData, SourceType } from "../types";
 import { serializeProtocol } from "../utils";
+import type { HandoutSelection } from "./components/HandoutModal";
+import { showHandoutModal } from "./components/HandoutModal";
 import { isClickwrapAccepted, showClickwrapModal } from "./modals";
 
 /**
@@ -70,6 +73,8 @@ export function initExportEvents(): void {
 			} else {
 				showClickwrapModal();
 			}
+		} else if (target.id === "export-handout") {
+			showHandoutModal();
 		}
 	});
 }
@@ -153,5 +158,39 @@ export async function copyActiveProtocolAsProvisioned(): Promise<void> {
 	} catch (err) {
 		console.error("Failed to copy JSON to clipboard:", err);
 		alert("Failed to copy JSON to clipboard. See console.");
+	}
+}
+
+/**
+ * Orchestrates the patient handout generation workflow
+ */
+export async function triggerPatientHandoutGeneration(
+	selections: HandoutSelection[],
+	startDate: string,
+): Promise<void> {
+	const handoutBtn = document.getElementById("export-handout");
+
+	if (handoutBtn) {
+		handoutBtn.textContent = "Generating...";
+		handoutBtn.setAttribute("disabled", "true");
+	}
+
+	try {
+		const { jsPDF } = await import("jspdf");
+		const { PDFDocument } = await import("pdf-lib");
+		const { applyPlugin } = await import("jspdf-autotable");
+		applyPlugin(jsPDF);
+
+		await generatePatientHandout(selections, startDate, jsPDF, PDFDocument);
+	} catch (error) {
+		console.error("Failed to generate Handout PDF: ", error);
+		alert(
+			"Error generating Handout PDF. Please check the console for details.",
+		);
+	} finally {
+		if (handoutBtn) {
+			handoutBtn.textContent = "Patient Handout PDF";
+			handoutBtn.removeAttribute("disabled");
+		}
 	}
 }
