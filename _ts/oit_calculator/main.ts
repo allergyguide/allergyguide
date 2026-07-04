@@ -73,7 +73,7 @@ let encryptedDocsPromise: ReturnType<typeof fetchAllEncryptedDocuments> | null =
 	null;
 
 // 1. Create the hydration callback
-const handleSuccessfulAuth = async () => {
+export const handleSuccessfulAuth = async () => {
 	try {
 		if (!bootstrapPromise) {
 			bootstrapPromise = loadUserConfiguration();
@@ -459,9 +459,11 @@ const init = async () => {
 	}
 };
 
-// Initialize when DOM is ready
-if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", init);
-} else {
-	init();
+// Initialize when DOM is ready (but not during tests)
+if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", init);
+	} else {
+		init();
+	}
 }

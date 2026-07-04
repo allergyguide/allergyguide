@@ -12,6 +12,8 @@ authors = ["Joshua Yu"]
 
 ### Added
 
+- Single-Step Patient Handouts: Authorized users can now generate a targeted PDF patient handout for single protocol steps. The handout includes detailed preparation instructions, a pre-updose review checklist, and a reaction log.
+
 ### Changed
 
 - Performance: improved loading speeds for authorized users

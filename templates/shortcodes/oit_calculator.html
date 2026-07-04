@@ -5,178 +5,173 @@
 <div id="core-feedback-mount"></div>
 <div id="oit-handout-modal-mount"></div>
 <div class="oit_calculator" data-public-restricted="true">
-  <div id="oit-toolbar-skeleton" class="core-toolbar">
-    <div class="core-version-auth">
-      <button id="static-btn-login-trigger" class="login-link-btn" title="Login" aria-label="Login">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-        </svg>
-      </button>
-      <span id="static-user-badge" class="core-user-badge" style="display: none;"></span>
-      <button id="static-btn-logout-trigger" class="login-link-btn" style="display: none;" title="Logout" aria-label="Logout">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
-          <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-        </svg>
-      </button>
-      <span class="separator">|</span>
-      <a href="{{ get_url(path='@/tools/resources/oit_calculator_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span class="core-version">v{{ tool_info.version }}</span></a>
-    </div>
-  </div>
-  <div id="core-toolbar-mount"></div>
-  <!-- Workspace Header (Tabs + Actions) -->
-  <div class="oit-workspace-header">
-    <div id="oit-tabs-list" class="oit-tabs-list">
-      <!-- Pre-rendered default state to prevent layout shift (replaced by JS on load) -->
-      <div class="oit-tab active">
-        <span class="status-dot"></span>
-        <span class="tab-title">Untitled 1</span>
-        <span class="oit-tab-close" title="Close Tab">×</span>
-      </div>
-      <div class="oit-tab-add" title="Add New Tab">+</div>
-    </div>
-    <div class="oit-header-actions">
-      <button id="btn-undo" class="btn-secondary" disabled title="Undo (Ctrl+z)">
-        ↶ Undo
-      </button>
-      <button id="btn-redo" class="btn-secondary" disabled title="Redo (Ctrl+y)">
-        ↷ Redo
-      </button>
-    </div>
-  </div>
-  <!-- Food Selection and Settings -->
-  <div class="settings-container">
-    <!-- Food A Container -->
-    <div class="food-a-container">
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <input
-          type="text"
-          id="food-a-search"
-          placeholder="Search for foods, protocols, or make custom food..."
-          class="search-input"
-          autocomplete="off"
-        >
-          <div id="food-a-search-dropdown-mount"></div>
-        </div>
-      </div>
-      <!-- Food A settings will be dynamically inserted here -->
-      <div id="food-a-settings-mount"></div>
-    </div>
-    <!-- Food B Container -->
-    <div class="food-b-container disabled">
-      <h3>Optional Transition Food</h3>
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <input
-          type="text"
-          id="food-b-search"
-          placeholder="Search for food or create one to transition to..."
-          class="search-input"
-          autocomplete="off"
-          disabled
-        >
-          <div id="food-b-search-dropdown-mount"></div>
-        </div>
-        <button id="clear-food-b" class="clear-food-b" disabled>
-          Clear
-        </button>
-      </div>
-      <!-- Food B settings will be dynamically inserted here -->
-      <div id="food-b-settings-mount"></div>
-    </div>
-  </div>
-  <!-- Dosing Strategy Selection -->
-  <div class="dosing-strategy-container oit-hidden-on-init">
-    <!-- Dosing strategy buttons will be dynamically inserted here -->
-  </div>
-  <div class="step-controls-footer oit-hidden-on-init">
-    <span class="subtle-text">Use
-      <span class="mini-btn-add">+</span>
-      <span class="mini-btn-remove">−</span>
-      buttons to add/remove steps</span>
-  </div>
-  <!-- Protocol Output -->
-  <div class="output-container">
-    <div id="empty-state-container">
-      <div class="restricted-mode-message">
-        <div class="restricted-card">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
-            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
-          </svg>
-          <h3>Testing Phase</h3>
-          <p>The OIT Calculator is currently in a QI phase and is restricted to authorized users.</p>
-          <p>Please
-            <strong>Login</strong>
-            to access the tool.</p>
-          <button id="btn-restricted-login" class="core-btn core-btn-primary">Sign In</button>
-        </div>
-      </div>
-      <table class="oit-instructions-table">
-        {% include "shortcodes/oit_calculator_components/table_instructions.html" %}
-      </table>
-    </div>
-    <table id="protocol-table-mount" style="display: none;">
-      <!-- Lit-html will mount here -->
-    </table>
-    <div class="bottom-section oit-hidden-on-init">
-      <div class="export-container">
-        <div class="export-buttons">
-          <button class="btn-export" id="export-ascii">Copy to Clipboard</button>
-          <button class="btn-export" id="export-pdf">Export PDF</button>
-          <button class="btn-export" id="export-handout" style="background-color: var(--core-secondary, #6c757d);">Patient Handout PDF</button>
-        </div>
-        <div class="custom-note-container">
-          <label for="custom-note">Notes:</label>
-          <textarea
-            id="custom-note"
-            class="custom-note-textarea"
-            placeholder="Add any custom notes or instructions ..."
-            rows="8"
-          ></textarea>
-        </div>
-      </div>
-      <div class="warnings-container"></div>
-    </div>
-  </div>
+	<div id="oit-toolbar-skeleton" class="core-toolbar">
+		<div class="core-version-auth">
+			<button id="static-btn-login-trigger" class="login-link-btn" title="Login" aria-label="Login">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+					<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+					<path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+				</svg>
+			</button>
+			<span id="static-user-badge" class="core-user-badge" style="display: none;"></span>
+			<button id="static-btn-logout-trigger" class="login-link-btn" style="display: none;" title="Logout" aria-label="Logout">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+					<path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+					<path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+				</svg>
+			</button>
+			<span class="separator">|</span>
+			<a href="{{ get_url(path='@/tools/resources/oit_calculator_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span class="core-version">v{{ tool_info.version }}</span></a>
+		</div>
+	</div>
+	<div id="core-toolbar-mount"></div>
+	<!-- Workspace Header (Tabs + Actions) -->
+	<div class="oit-workspace-header">
+		<div id="oit-tabs-list" class="oit-tabs-list">
+			<!-- Pre-rendered default state to prevent layout shift (replaced by JS on load) -->
+			<div class="oit-tab active">
+				<span class="status-dot"></span>
+				<span class="tab-title">Untitled 1</span>
+				<span class="oit-tab-close" title="Close Tab">×</span>
+			</div>
+			<div class="oit-tab-add" title="Add New Tab">+</div>
+		</div>
+		<div class="oit-header-actions">
+			<button id="btn-undo" class="btn-secondary" disabled title="Undo (Ctrl+z)">
+				↶ Undo
+			</button>
+			<button id="btn-redo" class="btn-secondary" disabled title="Redo (Ctrl+y)">
+				↷ Redo
+			</button>
+		</div>
+	</div>
+	<!-- Food Selection and Settings -->
+	<div class="settings-container">
+		<!-- Food A Container -->
+		<div class="food-a-container">
+			<div class="search-container">
+				<div class="search-input-wrapper">
+					<input type="text"
+					       id="food-a-search"
+					       placeholder="Search for foods, protocols, or make custom food..."
+					       class="search-input"
+					       autocomplete="off"
+					>
+					<div id="food-a-search-dropdown-mount"></div>
+				</div>
+			</div>
+			<!-- Food A settings will be dynamically inserted here -->
+			<div id="food-a-settings-mount"></div>
+		</div>
+		<!-- Food B Container -->
+		<div class="food-b-container disabled">
+			<h3>Optional Transition Food</h3>
+			<div class="search-container">
+				<div class="search-input-wrapper">
+					<input type="text"
+					       id="food-b-search"
+					       placeholder="Search for food or create one to transition to..."
+					       class="search-input"
+					       autocomplete="off"
+					       disabled
+					>
+					<div id="food-b-search-dropdown-mount"></div>
+				</div>
+				<button id="clear-food-b" class="clear-food-b" disabled>
+					Clear
+				</button>
+			</div>
+			<!-- Food B settings will be dynamically inserted here -->
+			<div id="food-b-settings-mount"></div>
+		</div>
+	</div>
+	<!-- Dosing Strategy Selection -->
+	<div class="dosing-strategy-container oit-hidden-on-init">
+		<!-- Dosing strategy buttons will be dynamically inserted here -->
+	</div>
+	<div class="step-controls-footer oit-hidden-on-init">
+		<span class="subtle-text">Use
+			<span class="mini-btn-add">+</span>
+			<span class="mini-btn-remove">−</span>
+			buttons to add/remove steps</span>
+	</div>
+	<!-- Protocol Output -->
+	<div class="output-container">
+		<div id="empty-state-container">
+			<div class="restricted-mode-message">
+				<div class="restricted-card">
+					<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+						<path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+					</svg>
+					<h3>Testing Phase</h3>
+					<p>The OIT Calculator is currently in a QI phase and is restricted to authorized users.</p>
+					<p>Please
+						<strong>Login</strong>
+						to access the tool.</p>
+					<button id="btn-restricted-login" class="core-btn core-btn-primary">Sign In</button>
+				</div>
+			</div>
+			<table class="oit-instructions-table">
+				{% include "shortcodes/oit_calculator_components/table_instructions.html" %}
+			</table>
+		</div>
+		<table id="protocol-table-mount" style="display: none;">
+			<!-- Lit-html will mount here -->
+		</table>
+		<div class="bottom-section oit-hidden-on-init">
+			<div class="export-container">
+				<div class="export-buttons">
+					<button class="btn-export" id="export-handout">Single-Step Handout</button>
+					<button class="btn-export" id="export-ascii">Copy to Clipboard</button>
+					<button class="btn-export" id="export-pdf">Export PDF</button>
+				</div>
+				<div class="custom-note-container">
+					<label for="custom-note">Notes:</label>
+					<textarea id="custom-note"
+					          class="custom-note-textarea"
+					          placeholder="Add any custom notes or instructions ..."
+					          rows="8"
+					></textarea>
+				</div>
+			</div>
+			<div class="warnings-container"></div>
+		</div>
+	</div>
 </div>
 {% include "shortcodes/oit_calculator_components/clickwrap_modal.html" %}
 {% include "shortcodes/oit_calculator_components/debug_panel.html" %}
 <!-- Hidden div to get URL for warnings to pass into JS using zola -->
-<div
-  id="url-container"
-  data-target-url="{{ get_url(path='@/tools/resources/oit_calculator_validation.md') }}"
-  style="display: none;"
+<div id="url-container"
+     data-target-url="{{ get_url(path='@/tools/resources/oit_calculator_validation.md') }}"
+     style="display: none;"
 ></div>
 <script>
-  (function() {
+	(function() {
 		try {
 			const email = localStorage.getItem('allergyguide_user_email');
 			if (email) {
 				const restrictedCard = document.querySelector('.restricted-card');
-					if (restrictedCard) {
-						restrictedCard.innerHTML = `
-						<div style="text-align: center; padding: 2rem;">
-						<svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill: var(--core-primary, #007bff); margin-bottom: 1rem; animation: oit-spin 1.5s linear infinite;">
-						<style>
-						@keyframes oit-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-						</style>
-						<path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
-						</svg>
-						<h3 style="margin-bottom: 0.5rem;">Loading Workspace...</h3>
-						<p><strong>${email}</strong>...</p>
-						</div>
-						`;
-					}
+				if (restrictedCard) {
+					restrictedCard.innerHTML = `
+					<div style="text-align: center; padding: 2rem;">
+					<svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill: var(--core-primary, #007bff); margin-bottom: 1rem; animation: oit-spin 1.5s linear infinite;">
+					<style>
+					@keyframes oit-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+					</style>
+					<path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+					</svg>
+					<h3 style="margin-bottom: 0.5rem;">Loading Workspace...</h3>
+					<p><strong>${email}</strong>...</p>
+					</div>
+					`;
 				}
 			}
-			catch (e) {}
-	  })();
+		}
+		catch (e) {}
+		})();
 </script>
 <!-- Load main script -->
-<script
-  src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-  defer
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        defer
 ></script>
 <script type="module" src="/js/{{ tool_info.file }}"></script>

@@ -968,10 +968,14 @@
 
   // Export Buttons
   .export-buttons {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    flex-wrap: wrap;
-    align-items: flex-start;
+
+    #export-handout {
+      grid-column: 1 / -1;
+      background-color: var(--core-secondary, #6c757d);
+    }
   }
 
   .btn-export,

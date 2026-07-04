@@ -1,9 +1,17 @@
 import type { jsPDF } from "jspdf";
 import type { PDFDocument } from "pdf-lib";
-import type { Food, Step } from "../types";
+import type { Food, HandoutSelection, Step } from "../types";
 import { FoodType, Method } from "../types";
-import type { HandoutSelection } from "../ui/components/HandoutModal";
-import { formatAmount, formatNumber } from "../utils";
+import { formatAmount, formatNumber, getMeasuringUnit } from "../utils";
+
+const MARGIN_X = 60;
+const PAGE_WIDTH = 612; // letter size is 8.5 x 11 inches, 72 points per inch
+const MAX_X = PAGE_WIDTH - MARGIN_X;
+const CONTENT_WIDTH = MAX_X - MARGIN_X;
+
+// Layout constants for the name/date fields on page 1
+const DATE_FIELD_WIDTH = 150; // width of the AcroForm date input
+const DATE_LABEL_WIDTH = 65; // approximate rendered width of "Start Date:" at 12pt
 
 export async function generatePatientHandout(
 	selections: HandoutSelection[],
@@ -14,25 +22,19 @@ export async function generatePatientHandout(
 	const doc = new JsPdfClass({ unit: "pt", format: "letter" });
 
 	// --- PAGE 1: Front Side ---
-	let y = 40;
+	let y = 60;
 	doc.setFont("helvetica", "bold");
 	doc.setFontSize(16);
-	doc.text("DAILY OIT DOSING INSTRUCTIONS", 40, y);
+	doc.text("DAILY OIT DOSING INSTRUCTIONS", MARGIN_X, y);
 	y += 30;
 
 	doc.setFontSize(12);
 	doc.setFont("helvetica", "normal");
-	doc.text("Name:", 40, y);
+	doc.text("Name:", MARGIN_X, y);
 	// Field space for name (approx 150pt wide)
-	doc.text("Start Date:", 350, y);
+	doc.text("Start Date:", MAX_X - DATE_FIELD_WIDTH - DATE_LABEL_WIDTH, y);
 	// Field space for start date (approx 150pt wide)
 	y += 40;
-
-	doc.setFont("helvetica", "bold");
-	doc.text("DOSING AND PREPARATION BY FOOD", 40, y);
-	doc.setLineWidth(1);
-	doc.line(40, y + 5, 570, y + 5);
-	y += 30;
 
 	for (const selection of selections) {
 		const step = selection.protocol.steps.find(
@@ -46,89 +48,96 @@ export async function generatePatientHandout(
 
 		if (y > 600) {
 			doc.addPage();
-			y = 40;
+			y = 60;
 		}
 
 		doc.setFont("helvetica", "bold");
 		doc.setFontSize(12);
-		doc.text(`${food.name.toUpperCase()} (Step ${step.stepIndex})`, 40, y);
-		y += 15;
+		let titleText = `${food.name.toUpperCase()}`;
+		if (food.type !== FoodType.CAPSULE) {
+			const unit = getMeasuringUnit(food);
+			titleText += ` (${formatNumber(food.gramsInServing, 2)}g protein / ${food.servingSize}${unit})`;
+		}
+		titleText += ` - Step ${step.stepIndex}`;
+
+		doc.text(titleText, MARGIN_X, y);
+		y += 18;
 
 		doc.setFont("helvetica", "normal");
-		doc.setFontSize(10);
+		doc.setFontSize(12);
 		const targetStr = `${formatNumber(step.targetMg, 1)} mg`;
 		const doseStr =
 			step.method === Method.CAPSULE
 				? "Capsule"
 				: `${formatAmount(step.dailyAmount, step.dailyAmountUnit)} ${step.dailyAmountUnit}`;
-		doc.text(`Target Daily Protein: ${targetStr}`, 40, y);
-		doc.text(`Daily Dose: ${doseStr}`, 250, y);
-		y += 10;
+		doc.text(`Target Daily Protein: ${targetStr}`, MARGIN_X, y);
+		doc.text(`Daily Dose: ${doseStr}`, MARGIN_X + 210, y);
+		y += 12;
 		doc.setLineWidth(0.5);
-		doc.line(40, y, 570, y);
-		y += 15;
+		doc.line(MARGIN_X, y, MAX_X, y);
+		y += 18;
 
 		y = renderInstructions(doc, y, step, food);
-		y += 20;
+		y += 24;
 	}
 
-	// Checklist
-	if (y > 610) {
-		doc.addPage();
-	}
-	y = 650;
+	// --- PAGE 2: Back Side ---
+	doc.addPage();
+	y = 60;
 
-	doc.setLineWidth(1);
-	doc.line(40, y - 15, 570, y - 15);
+	// Checklist on Back Side
 	doc.setFont("helvetica", "bold");
 	doc.setFontSize(12);
 	doc.text(
 		"PRE-UPDOSE REVIEW CHECKLIST (fill out to review at your next appointment)",
-		40,
+		MARGIN_X,
 		y,
 	);
-	y += 20;
+	y += 25;
 
 	doc.setFont("helvetica", "normal");
 	doc.setFontSize(10);
-	doc.text("1. Total missed doses: ________ days", 40, y);
+	doc.text("1. Total missed doses: ________ days", MARGIN_X, y);
+	y += 25;
+	doc.text("2. Any mild side effects?", MARGIN_X, y);
+	doc.text("[   ] No    [   ] Yes", MARGIN_X + 310, y);
+	y += 25;
+	doc.text("3. Any severe reactions?", MARGIN_X, y);
+	doc.text("[   ] No    [   ] Yes (Record below)", MARGIN_X + 310, y);
+	y += 25;
+	doc.text("4. Epinephrine check:", MARGIN_X, y);
 	y += 20;
-	doc.text("2. Any mild side effects?", 40, y);
-	doc.text("[   ] No    [   ] Yes", 350, y);
+	doc.text("   - Is your epinephrine auto-injector up-to-date?", MARGIN_X, y);
+	doc.text("[   ] Yes   [   ] No", MARGIN_X + 310, y);
 	y += 20;
-	doc.text("3. Any severe reactions?", 40, y);
-	doc.text("[   ] No    [   ] Yes (Record on back)", 350, y);
-	y += 20;
-	doc.text("4. Epinephrine check:", 40, y);
-	y += 15;
-	doc.text("   - Is your epinephrine auto-injector up-to-date?", 40, y);
-	doc.text("[   ] Yes   [   ] No", 350, y);
-	y += 15;
-	doc.text("   - Do you need a refill prescription today?", 40, y);
-	doc.text("[   ] Yes   [   ] No", 350, y);
+	doc.text("   - Do you need a refill prescription today?", MARGIN_X, y);
+	doc.text("[   ] Yes   [   ] No", MARGIN_X + 310, y);
 
-	// --- PAGE 2: Back Side ---
-	doc.addPage();
-	y = 40;
+	y += 40;
+	doc.setLineWidth(1);
+	doc.line(MARGIN_X, y, MAX_X, y);
+	y += 25;
 
+	// Reaction Log
 	doc.setFont("helvetica", "bold");
 	doc.setFontSize(16);
-	doc.text("REACTION LOG", 40, y);
+	doc.text("REACTION LOG", MARGIN_X, y);
 	y += 20;
 
 	doc.setFont("helvetica", "normal");
 	doc.setFontSize(10);
 	const instructions = doc.splitTextToSize(
 		"Use this table to write down any missed doses, mild side effects, or severe reactions. Bring this sheet to your next appointment.",
-		530,
+		CONTENT_WIDTH,
 	);
-	doc.text(instructions, 40, y);
+	doc.text(instructions, MARGIN_X, y);
 	y += 30;
 
-	// Draw Table (6 empty rows)
+	// Draw Table (8 empty rows fits nicely with the added checklist)
 	// biome-ignore lint/suspicious/noExplicitAny: jsPDF autotable is not fully typed
 	(doc as any).autoTable({
 		startY: y,
+		margin: { left: MARGIN_X, right: MARGIN_X },
 		head: [
 			[
 				"Date",
@@ -137,7 +146,7 @@ export async function generatePatientHandout(
 				"Action Taken",
 			],
 		],
-		body: Array(9).fill(["", "", "", ""]),
+		body: Array(8).fill(["", "", "", ""]),
 		theme: "grid",
 		styles: { minCellHeight: 45, fontSize: 10 },
 		headStyles: { fillColor: [220, 220, 220], textColor: 0, fontStyle: "bold" },
@@ -148,24 +157,6 @@ export async function generatePatientHandout(
 			3: { cellWidth: 120 },
 		},
 	});
-
-	// biome-ignore lint/suspicious/noExplicitAny: jsPDF autotable is not fully typed
-	y = (doc as any).lastAutoTable.finalY + 30;
-
-	doc.setFont("helvetica", "bold");
-	doc.setFontSize(12);
-	doc.text("ADDITIONAL NOTES", 40, y);
-	doc.setLineWidth(1);
-	doc.line(40, y + 5, 570, y + 5);
-	y += 25;
-
-	// Notes space (blank lines)
-	doc.setLineWidth(0.5);
-	for (let i = 0; i < 4; i++) {
-		if (y > 750) break;
-		doc.line(40, y + 15, 570, y + 15);
-		y += 25;
-	}
 
 	const pdfBytes = doc.output("arraybuffer");
 
@@ -178,36 +169,33 @@ export async function generatePatientHandout(
 	// Name field
 	const nameField = form.createTextField("handout.name");
 	nameField.addToPage(firstPage, {
-		x: 80,
-		y: firstPage.getHeight() - 72,
-		width: 250,
+		x: MARGIN_X + 45,
+		y: firstPage.getHeight() - 92, // PDF-lib uses bottom-left origin (8.5x11 inches = 612x792 pt)
+		width: 180,
 		height: 18,
+		borderWidth: 0,
 	});
 
 	// Start Date field
 	const dateField = form.createTextField("handout.startDate");
 	dateField.setText(startDate);
 	dateField.addToPage(firstPage, {
-		x: 410,
-		y: firstPage.getHeight() - 72,
+		x: MAX_X - 150,
+		y: firstPage.getHeight() - 92,
 		width: 150,
 		height: 18,
+		borderWidth: 0,
 	});
 
-	// Form fields on page 1 only
-	// (Additional Notes on page 2 is intended for physical writing only)
-
 	const finalBytes = await pdfDoc.save();
-	const blob = new Blob([finalBytes as unknown as BlobPart], {
+	// pdf-lib's save() returns Uint8Array<ArrayBufferLike>; copying it gives
+	// Uint8Array<ArrayBuffer> (never SharedArrayBuffer), which BlobPart accepts
+	const blob = new Blob([new Uint8Array(finalBytes)], {
 		type: "application/pdf",
 	});
 	const blobUrl = URL.createObjectURL(blob);
 
-	// Download logic
-	const isMobile =
-		/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-		(navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
-	if (isMobile) {
+	const forceDownload = () => {
 		const downloadLink = document.createElement("a");
 		downloadLink.href = blobUrl;
 		downloadLink.download = "Patient_Handout.pdf";
@@ -215,19 +203,24 @@ export async function generatePatientHandout(
 		document.body.appendChild(downloadLink);
 		downloadLink.click();
 		document.body.removeChild(downloadLink);
-		setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+	};
+
+	// Download logic
+	const isMobile =
+		/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+		(navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
+
+	if (isMobile) {
+		forceDownload();
+		// 60s gives the OS download manager time to start reading the blob
+		setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
 	} else {
 		const w = window.open(blobUrl, "_blank");
 		if (!w) {
-			const downloadLink = document.createElement("a");
-			downloadLink.href = blobUrl;
-			downloadLink.download = "Patient_Handout.pdf";
-			downloadLink.style.display = "none";
-			document.body.appendChild(downloadLink);
-			downloadLink.click();
-			document.body.removeChild(downloadLink);
+			forceDownload();
 		}
-		setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+		// Keep the URL alive long enough for the browser tab to finish rendering the PDF
+		setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
 	}
 }
 
@@ -281,10 +274,10 @@ function renderInstructions(
 	}
 
 	for (const line of lines) {
-		const wrapped = doc.splitTextToSize(line, 530);
+		const wrapped = doc.splitTextToSize(line, CONTENT_WIDTH);
 		for (const w of wrapped) {
-			doc.text(w, 40, y);
-			y += 14;
+			doc.text(w, MARGIN_X, y);
+			y += 16;
 		}
 	}
 

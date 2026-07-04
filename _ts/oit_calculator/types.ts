@@ -528,6 +528,16 @@ export interface ProtocolExportData {
 	history: HistoryItem[];
 }
 
+/**
+ * Represents a user's selection for a single-protocol handout:
+ * which tab, which protocol snapshot, and which step to feature.
+ */
+export interface HandoutSelection {
+	tabId: string;
+	protocol: Protocol;
+	stepIndex: number;
+}
+
 // ============================================
 // STATE LISTENERS
 // ============================================

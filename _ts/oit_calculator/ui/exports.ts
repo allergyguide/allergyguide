@@ -4,12 +4,15 @@
  * Handle Export buttons (PDF, ASCII) and call actual export module from exports
  */
 
+import { html } from "lit-html";
+import { renderAuthUI } from "../../core/ui/auth-modals";
 import { exportASCII, generatePdf } from "../export/exports";
 import { generatePatientHandout } from "../export/handout";
-import { workspace } from "../state/instances";
+import { handleSuccessfulAuth } from "../main";
+import { appState, workspace } from "../state/instances";
+import type { HandoutSelection } from "../types";
 import { type ProtocolExportData, SourceType } from "../types";
 import { serializeProtocol } from "../utils";
-import type { HandoutSelection } from "./components/HandoutModal";
 import { showHandoutModal } from "./components/HandoutModal";
 import { isClickwrapAccepted, showClickwrapModal } from "./modals";
 
@@ -74,7 +77,26 @@ export function initExportEvents(): void {
 				showClickwrapModal();
 			}
 		} else if (target.id === "export-handout") {
-			showHandoutModal();
+			if (appState.isLoggedIn) {
+				showHandoutModal();
+			} else {
+				const authTeaserTemplate = html`
+					<div class="auth-feature-teaser">
+						<p>Per-step handouts are restricted to authorized users.</p>
+						<a href="/pdfs/oit_handout_sample.pdf" target="_blank" rel="noopener noreferrer" class="auth-feature-thumbnail-container">
+							<img src="/images/oit_handout_thumbnail.png" alt="Sample Patient Handout" class="auth-feature-thumbnail" />
+						</a>
+					</div>
+				`;
+				renderAuthUI(
+					"LOGIN",
+					handleSuccessfulAuth,
+					"",
+					"Sign in to access more features",
+					authTeaserTemplate,
+					"core-modal-md",
+				);
+			}
 		}
 	});
 }
@@ -168,13 +190,6 @@ export async function triggerPatientHandoutGeneration(
 	selections: HandoutSelection[],
 	startDate: string,
 ): Promise<void> {
-	const handoutBtn = document.getElementById("export-handout");
-
-	if (handoutBtn) {
-		handoutBtn.textContent = "Generating...";
-		handoutBtn.setAttribute("disabled", "true");
-	}
-
 	try {
 		const { jsPDF } = await import("jspdf");
 		const { PDFDocument } = await import("pdf-lib");
@@ -187,10 +202,5 @@ export async function triggerPatientHandoutGeneration(
 		alert(
 			"Error generating Handout PDF. Please check the console for details.",
 		);
-	} finally {
-		if (handoutBtn) {
-			handoutBtn.textContent = "Patient Handout PDF";
-			handoutBtn.removeAttribute("disabled");
-		}
 	}
 }

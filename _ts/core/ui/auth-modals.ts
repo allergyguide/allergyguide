@@ -1,5 +1,5 @@
 // _ts/core/ui/auth-modals.ts
-import { html, nothing, render } from "lit-html";
+import { html, nothing, render, type TemplateResult } from "lit-html";
 import { supabase } from "../api/supabase";
 import {
 	lockAndSignOut,
@@ -37,11 +37,14 @@ function renderTurnstile() {
 export const loginTemplate = (
 	onSuccess: () => Promise<void>,
 	errorMsg = "",
+	customTitle?: string,
+	customBody?: TemplateResult,
+	modalSizeClass = "core-modal-sm",
 ) => html`
 	<div class="core-modal-overlay core-auth-modal-overlay">
-		<div class="core-modal-content core-modal-sm core-auth-login-content">
-			<h2>Custom Access</h2>
-			<p class="login-instruction">Sign in to access provisioned & custom resources.</p>
+		<div class="core-modal-content ${modalSizeClass} core-auth-login-content">
+			<h2>${customTitle ? customTitle : "Custom Access"}</h2>
+			${customBody ? customBody : html`<p class="login-instruction">Access common brand foods, save custom foods and protocols, and perform multi-OIT.</p>`}
 			
 			<form @submit=${async (e: Event) => {
 				e.preventDefault();
@@ -66,6 +69,9 @@ export const loginTemplate = (
 						"LOGIN",
 						onSuccess,
 						"Please complete the Cloudflare Turnstile.",
+						customTitle,
+						customBody,
+						modalSizeClass,
 					);
 
 				// disable button on click to avoid doubling
@@ -84,6 +90,9 @@ export const loginTemplate = (
 						"LOGIN",
 						onSuccess,
 						err instanceof Error ? err.message : "Authentication failed.",
+						customTitle,
+						customBody,
+						modalSizeClass,
 					);
 				}
 			}}>
@@ -178,6 +187,9 @@ export function renderAuthUI(
 	state: "LOGIN" | "UNLOCK" | "HIDDEN",
 	onSuccess?: () => Promise<void>,
 	errorMsg = "",
+	customTitle?: string,
+	customBody?: TemplateResult,
+	modalSizeClass = "core-modal-sm",
 ) {
 	const mountNode = document.getElementById("auth-modal-mount");
 	if (!mountNode) return;
@@ -204,7 +216,16 @@ export function renderAuthUI(
 	}
 
 	if (state === "LOGIN" && onSuccess) {
-		render(loginTemplate(onSuccess, errorMsg), mountNode);
+		render(
+			loginTemplate(
+				onSuccess,
+				errorMsg,
+				customTitle,
+				customBody,
+				modalSizeClass,
+			),
+			mountNode,
+		);
 		setTimeout(renderTurnstile, 0);
 		setTimeout(() => {
 			const emailInput = document.getElementById(

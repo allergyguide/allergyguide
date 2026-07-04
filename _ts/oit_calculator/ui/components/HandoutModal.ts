@@ -1,18 +1,22 @@
 import { html, render } from "lit-html";
 import { workspace } from "../../state/instances";
-import type { Protocol, Tab } from "../../types";
+import type { HandoutSelection, Tab } from "../../types";
 import { triggerPatientHandoutGeneration } from "../exports";
 
-export interface HandoutSelection {
-	tabId: string;
-	protocol: Protocol;
-	stepIndex: number;
-}
+export type { HandoutSelection };
+
+const getLocalToday = () => {
+	const now = new Date();
+	return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+		.toISOString()
+		.split("T")[0];
+};
 
 let isOpen = false;
+let isGenerating = false;
 let selections: Record<string, boolean> = {}; // tabId -> isSelected
 let stepSelections: Record<string, number> = {}; // tabId -> stepIndex
-let startDate = new Date().toISOString().split("T")[0]; // default today
+let startDate = getLocalToday(); // default today
 
 export function renderHandoutModal() {
 	const mount = document.getElementById("oit-handout-modal-mount");
@@ -34,6 +38,7 @@ export function renderHandoutModal() {
 
 export function showHandoutModal() {
 	isOpen = true;
+	isGenerating = false; // always reset so the button is enabled on re-open
 	document.body.style.overflow = "hidden";
 
 	// Initialize defaults
@@ -42,7 +47,7 @@ export function showHandoutModal() {
 
 	selections = {};
 	stepSelections = {};
-	startDate = new Date().toISOString().split("T")[0];
+	startDate = getLocalToday();
 
 	for (const tab of activeTabs) {
 		selections[tab.id] = true; // all active foods checked by default
@@ -73,7 +78,7 @@ function hideHandoutModal() {
 	renderHandoutModal();
 }
 
-function handleGenerate() {
+async function handleGenerate() {
 	const tabs = workspace.getTabs();
 	const selectedData: HandoutSelection[] = [];
 
@@ -84,7 +89,10 @@ function handleGenerate() {
 				selectedData.push({
 					tabId: tab.id,
 					protocol,
-					stepIndex: stepSelections[tab.id] || 1,
+					// Use ?? (not ||) so a genuine step index of 0 is preserved
+					// fall back to the first step of the protocol, then 1 as a last resort
+					stepIndex:
+						stepSelections[tab.id] ?? protocol.steps[0]?.stepIndex ?? 1,
 				});
 			}
 		}
@@ -95,7 +103,15 @@ function handleGenerate() {
 		return;
 	}
 
-	triggerPatientHandoutGeneration(selectedData, startDate);
+	isGenerating = true;
+	renderHandoutModal();
+
+	try {
+		await triggerPatientHandoutGeneration(selectedData, startDate);
+	} finally {
+		isGenerating = false;
+		renderHandoutModal();
+	}
 }
 
 const handoutTemplate = (activeTabs: Tab[]) => html`
@@ -158,7 +174,7 @@ const handoutTemplate = (activeTabs: Tab[]) => html`
 								isSelected
 									? html`
 							<div class="step-selector">
-								<label for="handout-step-${tab.id}">Active Step for ${tab.title}</label>
+								<label for="handout-step-${tab.id}">${activeTabs.length > 1 ? `Active Step for ${tab.title}` : "Active Step"}</label>
 								<select 
 									id="handout-step-${tab.id}"
 									class="core-input" 
@@ -194,8 +210,10 @@ const handoutTemplate = (activeTabs: Tab[]) => html`
 			</div>
 
 			<div class="oit-modal-buttons">
-				<button class="btn-secondary" @click=${hideHandoutModal}>Cancel</button>
-				<button class="btn-export" @click=${handleGenerate} ?disabled=${!Object.values(selections).some((v) => v)}>Generate PDF</button>
+				<button class="btn-secondary" @click=${hideHandoutModal} ?disabled=${isGenerating}>Cancel</button>
+				<button class="btn-export" @click=${handleGenerate} ?disabled=${isGenerating || !Object.values(selections).some((v) => v)}>
+					${isGenerating ? "Generating..." : "Generate PDF"}
+				</button>
 			</div>
 		</div>
 	</div>
