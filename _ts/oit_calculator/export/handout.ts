@@ -270,7 +270,6 @@ function renderInstructions(
 		lines.push(
 			`2. Give ${drawAmount} ${unit} directly or mix with soft food (e.g., applesauce or yogurt).`,
 		);
-		lines.push(`* Direct Dose: No mixing required. Measure fresh daily.`);
 	}
 
 	for (const line of lines) {
