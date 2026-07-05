@@ -543,6 +543,170 @@
     }
   }
 
+  /* --- Tab Bar --- */
+
+  .ofc-tab-bar {
+    display: flex;
+    border-bottom: 2px solid var(--ofc-border);
+    background: var(--ofc-bg-primary);
+    padding: 0 0.5rem;
+    gap: 0;
+  }
+
+  .ofc-tab {
+    position: relative;
+    padding: 0.75rem 1.25rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    color: var(--ofc-text-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--ofc-text-primary);
+    }
+
+    &.ofc-tab--active {
+      color: var(--ofc-accent);
+    }
+  }
+
+  /* --- Portion Reference Section --- */
+
+  .ofc-portion-section {
+    /* Normal block formatting to avoid flex-child overflow issues */
+    position: relative;
+    width: 100%;
+  }
+
+  .ofc-portion-header {
+    padding: 1rem 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    background: var(--ofc-bg-primary);
+  }
+
+  .ofc-portion-intro {
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--ofc-text-muted);
+      line-height: 1.6;
+    }
+  }
+
+  .ofc-portion-citation-link {
+    color: var(--ofc-accent);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .ofc-portion-filter {
+    /* Reuses .search-box layout */
+    width: 100%;
+  }
+
+  .ofc-portion-table-wrapper {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 70vh;
+    border-top: 0;
+    width: 100%;
+  }
+
+  .ofc-portion-table {
+    width: 100%;
+    min-width: 52rem; // ensure all age columns always visible
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--ofc-bg-surface);
+
+      th {
+        padding: 0.625rem 0.75rem;
+        font-weight: 600;
+        color: var(--ofc-accent);
+        border-bottom: 2px solid var(--ofc-border);
+        white-space: nowrap;
+      }
+    }
+
+    .col-allergen {
+      width: 8rem;
+      min-width: 7rem;
+    }
+
+    .col-food {
+      width: 14rem;
+      min-width: 11rem;
+    }
+
+    .col-protein {
+      width: 12rem;
+      min-width: 9rem;
+    }
+
+    .col-age {
+      width: 7rem;
+      min-width: 5.5rem;
+      text-align: center;
+    }
+
+    .ofc-portion-row {
+      transition: background-color 0.12s;
+
+      &:nth-child(even) {
+        background: var(--ofc-row-alt);
+      }
+
+      &:hover {
+        background: var(--ofc-row-hover);
+      }
+
+      td {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--ofc-border);
+        vertical-align: middle;
+        line-height: 1.4;
+      }
+
+      &.ofc-group-start td {
+        border-top: 1px solid var(--ofc-border);
+        padding-top: 0.625rem;
+      }
+    }
+  }
+
+  .ofc-allergen-badge {
+    display: inline-block;
+    padding: 0.2em 0.55em;
+    background: oklch(from var(--ofc-accent) l c h / 0.12);
+    color: var(--ofc-accent);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
   /* --- Skeleton Loading --- */
 
   .ofc-skeleton {
