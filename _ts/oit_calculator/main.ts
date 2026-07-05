@@ -214,11 +214,6 @@ async function initializeCalculator(): Promise<void> {
 		(document.querySelector(".changelog-link") as HTMLAnchorElement)?.href ||
 		"#";
 
-	// Wire up restricted mode login button
-	document
-		.getElementById("btn-restricted-login")
-		?.addEventListener("click", onLogin);
-
 	const getToolbarProps = () => ({
 		isLoggedIn: appState.isLoggedIn,
 		userEmail: appState.email,
@@ -260,7 +255,18 @@ async function initializeCalculator(): Promise<void> {
 	// Determine identity and vault state
 	if (vaultState === "UNAUTHENTICATED") {
 		// Public mode. Application is usable with publicFoods.
+		const restrictedCard = document.querySelector(
+			".restricted-card",
+		) as HTMLElement;
+		if (restrictedCard && restrictedCard.dataset.originalHtml) {
+			restrictedCard.innerHTML = restrictedCard.dataset.originalHtml;
+		}
 		appState.setAuthState(false, null);
+		// Re-attach event listener in case innerHTML replacement destroyed it
+		document
+			.getElementById("btn-restricted-login")
+			?.addEventListener("click", onLogin);
+
 		// renderToolbar is called by subscribeToAuth via setAuthState
 	} else if (vaultState === "LOCKED") {
 		// They are logged in to Supabase, but the DEK is missing in this tab.

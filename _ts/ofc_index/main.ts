@@ -171,6 +171,12 @@ async function initializeOFC() {
 
 	if (vaultState === "UNAUTHENTICATED") {
 		// Public mode => publicFoods
+		const instructions = document.querySelector(
+			".ofc-instructions",
+		) as HTMLElement;
+		if (instructions && instructions.dataset.originalHtml) {
+			instructions.innerHTML = instructions.dataset.originalHtml;
+		}
 		appState.setAuthState(false, null);
 	} else if (vaultState === "LOCKED") {
 		// Logged in to Supabase, but DEK missing: force unlock
