@@ -258,7 +258,7 @@ async function initializeCalculator(): Promise<void> {
 		const restrictedCard = document.querySelector(
 			".restricted-card",
 		) as HTMLElement;
-		if (restrictedCard && restrictedCard.dataset.originalHtml) {
+		if (restrictedCard?.dataset.originalHtml) {
 			restrictedCard.innerHTML = restrictedCard.dataset.originalHtml;
 		}
 		appState.setAuthState(false, null);

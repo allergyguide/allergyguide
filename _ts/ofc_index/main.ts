@@ -174,7 +174,7 @@ async function initializeOFC() {
 		const instructions = document.querySelector(
 			".ofc-instructions",
 		) as HTMLElement;
-		if (instructions && instructions.dataset.originalHtml) {
+		if (instructions?.dataset.originalHtml) {
 			instructions.innerHTML = instructions.dataset.originalHtml;
 		}
 		appState.setAuthState(false, null);
