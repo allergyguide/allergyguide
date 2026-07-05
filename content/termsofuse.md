@@ -73,7 +73,7 @@ Unless otherwise noted, the educational text, documentation, and design assets h
 
 ### Authorized User Materials (Proprietary)
 
-**Exceptions to the above:** All downloadable PDF handouts, resources, or other assets labelled as "**Copyright © 2026 allergyguide**" are **NOT** open source. They are strictly proprietary and protected by copyright law.
+**Exceptions to the above:** All downloadable PDF handouts, resources, or other assets bearing the "**Copyright © allergyguide**" notice (regardless of the year) are **NOT** open source. They are strictly proprietary and protected by copyright law.
 
 - **Authorized Use:** These materials are licensed for use solely by the authorized user for their direct clinical practice(s).
 - **No Redistribution:** You may NOT redistribute, resell, republish, or post these files on any public-facing website or repository.
