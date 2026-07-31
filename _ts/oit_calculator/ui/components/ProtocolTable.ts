@@ -11,6 +11,7 @@ import { repeat } from "lit-html/directives/repeat.js";
 import {
 	addStepAfter,
 	removeStep,
+	toggleStepMethod,
 	updateStepDailyAmount,
 	updateStepMixFoodAmount,
 	updateStepTargetMg,
@@ -203,7 +204,22 @@ export const ProtocolTable = (
               />
             </td>
 
-            <td class="col-method">${step.method}</td>
+            <td class="col-method">
+              ${
+								step.method === Method.CAPSULE || step.food === "B"
+									? html`<span class="method-badge ${step.method === Method.DILUTE ? "method-dilute" : step.method === Method.DIRECT ? "method-direct" : "method-capsule"}">${step.method}</span>`
+									: html`<button
+                      class="method-badge ${step.method === Method.DILUTE ? "method-dilute" : "method-direct"}"
+                      title="Click to switch to ${step.method === Method.DILUTE ? "DIRECT" : "DILUTE"}"
+                      @click=${() => handleToggleMethod(step.stepIndex)}
+                    >
+                      ${step.method}
+                      <svg class="method-swap-icon" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+                        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+                      </svg>
+                    </button>`
+							}
+            </td>
 
             ${
 							(step.method === Method.DILUTE) && step.mixFoodAmount
@@ -295,6 +311,29 @@ function handleRemoveStep(stepIndex: number) {
 		const updated = removeStep(current, stepIndex);
 		workspace.getActive().setProtocol(updated, `Removed Step ${stepIndex}`);
 	}
+}
+
+/**
+ * Handles toggling a step between DIRECT and DILUTE methods.
+ * If no feasible dilution candidate exists (protein target too small to dilute)
+ * protocol is unchanged and the warning system will surface the issue.
+ *
+ * @param stepIndex - The 1-based index of the step to toggle.
+ */
+function handleToggleMethod(stepIndex: number) {
+	const current = workspace.getActive().getProtocol();
+	if (!current) return;
+	const step = current.steps[stepIndex - 1];
+	if (!step) return;
+	const fromMethod = step.method;
+	if (fromMethod === "CAPSULE") return;
+	const toMethod = fromMethod === "DILUTE" ? "DIRECT" : "DILUTE";
+	const updated = toggleStepMethod(current, stepIndex);
+	// If protocol is unchanged, toggling was infeasible (no dilution candidate) — silently no-op
+	if (updated === current) return;
+	workspace
+		.getActive()
+		.setProtocol(updated, `Step ${stepIndex}: ${fromMethod} → ${toMethod}`);
 }
 
 /**

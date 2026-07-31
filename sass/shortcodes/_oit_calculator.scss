@@ -37,6 +37,8 @@
   --oit-warning-highlight-red-hover: oklch(from var(--core-danger) l c h / 0.2);
   --oit-warning-highlight-yellow: oklch(0.85 0.15 85 / 0.1);
   --oit-warning-highlight-yellow-hover: oklch(0.85 0.15 85 / 0.15);
+
+  --oit-method-direct-color: oklch(0.75 0.13 75);
 }
 
 :root.switch {
@@ -69,6 +71,8 @@
   --oit-warning-highlight-red-hover: oklch(from var(--core-danger) l c h / 0.12);
   --oit-warning-highlight-yellow: oklch(0.85 0.15 85 / 0.08);
   --oit-warning-highlight-yellow-hover: oklch(0.85 0.15 85 / 0.12);
+
+  --oit-method-direct-color: oklch(0.48 0.13 75);
 }
 
 .oit-hidden-on-init {
@@ -902,6 +906,12 @@
     .subtle-text {
       display: flex;
       align-items: center;
+      gap: 4px;
+      
+      span.mini-btn-add, span.mini-btn-remove {
+        display: inline-block;
+        vertical-align: middle;
+      }
     }
 
     .mini-btn-add,
@@ -1198,6 +1208,60 @@
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
+  }
+
+  // Method toggle in the table — minimal inline text button, no pill
+  .method-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+
+    // Interactive (button) variant
+    &:is(button) {
+      cursor: pointer;
+
+      .method-swap-icon {
+        opacity: 0.6;
+        flex-shrink: 0;
+        transition: opacity 0.15s ease;
+      }
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+
+        .method-swap-icon {
+          opacity: 1;
+        }
+      }
+    }
+
+    // DILUTE — primary blue
+    &.method-dilute {
+      color: var(--oit-button-primary);
+    }
+
+    // DIRECT — warm amber
+    &.method-direct {
+      color: var(--oit-method-direct-color);
+    }
+
+    // CAPSULE — muted static text
+    &.method-capsule {
+      color: var(--oit-text-secondary);
+    }
   }
 
   .na-cell {
