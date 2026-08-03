@@ -112,6 +112,22 @@ export async function generatePatientHandout(
 	y += 20;
 	doc.text("   - Do you need a refill prescription today?", MARGIN_X, y);
 	doc.text("[   ] Yes   [   ] No", MARGIN_X + 310, y);
+	y += 20;
+	doc.text("5. Safety check for day of next updose:", MARGIN_X, y);
+	y += 20;
+	doc.text("   - Recent flu / cold / fever?", MARGIN_X, y);
+	doc.text("[   ] Yes   [   ] No", MARGIN_X + 310, y);
+	y += 20;
+	doc.text("   - Ate a snack before today's appointment?", MARGIN_X, y);
+	doc.text("[   ] Yes   [   ] No", MARGIN_X + 310, y);
+	y += 20;
+	doc.text(
+		"   - Any difficulty breathing or using more asthma puffers than usual?",
+		MARGIN_X,
+		y,
+	);
+	doc.text("[   ] Yes   [   ] No", MARGIN_X + 310, y);
+	y += 20;
 
 	y += 40;
 	doc.setLineWidth(1);
@@ -133,7 +149,7 @@ export async function generatePatientHandout(
 	doc.text(instructions, MARGIN_X, y);
 	y += 30;
 
-	// Draw Table (8 empty rows fits nicely with the added checklist)
+	// Draw Table (6 empty rows fits nicely with the added checklist)
 	// biome-ignore lint/suspicious/noExplicitAny: jsPDF autotable is not fully typed
 	(doc as any).autoTable({
 		startY: y,
@@ -146,10 +162,23 @@ export async function generatePatientHandout(
 				"Action Taken",
 			],
 		],
-		body: Array(8).fill(["", "", "", ""]),
+		body: Array(6).fill(["", "", "", ""]),
 		theme: "grid",
-		styles: { minCellHeight: 45, fontSize: 10 },
-		headStyles: { fillColor: [220, 220, 220], textColor: 0, fontStyle: "bold" },
+		tableLineColor: [0, 0, 0],
+		tableLineWidth: 0.5,
+		styles: {
+			minCellHeight: 45,
+			fontSize: 10,
+			lineColor: [0, 0, 0],
+			lineWidth: 0.5,
+		},
+		headStyles: {
+			fillColor: [200, 200, 200],
+			textColor: 0,
+			fontStyle: "bold",
+			lineColor: [0, 0, 0],
+			lineWidth: 0.5,
+		},
 		columnStyles: {
 			0: { cellWidth: 70 },
 			1: { cellWidth: 80 },
@@ -253,15 +282,14 @@ function renderInstructions(
 			`1. Measure ${mixFoodAmountStr} ${mixUnit} of "${food.name}" using ${mixUnit === "g" ? "a scale" : "your syringe(s)"}.`,
 		);
 		lines.push(
-			`2. Mix the ${mixUnit === "g" ? "powder" : "liquid"} into ${mixWaterAmountStr} mL of liquid (water, juice, or milk).`,
+			`2. Mix the ${mixUnit === "g" ? "powder" : "liquid"} into ${mixWaterAmountStr} mL of water).`,
 		);
-		lines.push(`3. Shake or stir thoroughly until fully dissolved.`);
+		lines.push(
+			`3. Stir thoroughly until dissolved. There may be a little sediment remaining.`,
+		);
 		lines.push(`4. Draw ${drawAmount} mL of the mixture using a syringe.`);
 		lines.push(
 			`5. Give ${drawAmount} mL directly or mix with soft food (e.g., applesauce or yogurt).`,
-		);
-		lines.push(
-			`* Mixture Lifespan: Discard unused mixture after 3 days (ask your doctor if it can be longer). Store in a clean, sealed container in the refrigerator.`,
 		);
 	} else {
 		const drawAmount = formatAmount(step.dailyAmount, step.dailyAmountUnit);
