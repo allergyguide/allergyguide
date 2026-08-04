@@ -46,7 +46,7 @@ export const protocolModalTemplate = (
 	else if (isZero) warningMsg = "Protein content is zero.";
 
 	return html`
-        <div class="ofc-modal-backdrop" @click=${() => appState.setSelectedFood(null)}>
+        <div class="ofc-modal-backdrop">
             <div class="ofc-modal" @click=${(e: Event) => e.stopPropagation()}>
                 <button class="ofc-modal-close" @click=${() => appState.setSelectedFood(null)}>×</button>
                 

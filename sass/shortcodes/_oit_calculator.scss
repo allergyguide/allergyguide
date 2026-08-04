@@ -1,3 +1,5 @@
+@use "oit_calculator/modals";
+
 :root {
   /* Dark mode colors - Integrated with core tokens */
   --oit-bg: var(--core-bg);
@@ -35,6 +37,8 @@
   --oit-warning-highlight-red-hover: oklch(from var(--core-danger) l c h / 0.2);
   --oit-warning-highlight-yellow: oklch(0.85 0.15 85 / 0.1);
   --oit-warning-highlight-yellow-hover: oklch(0.85 0.15 85 / 0.15);
+
+  --oit-method-direct-color: oklch(0.75 0.13 75);
 }
 
 :root.switch {
@@ -67,6 +71,8 @@
   --oit-warning-highlight-red-hover: oklch(from var(--core-danger) l c h / 0.12);
   --oit-warning-highlight-yellow: oklch(0.85 0.15 85 / 0.08);
   --oit-warning-highlight-yellow-hover: oklch(0.85 0.15 85 / 0.12);
+
+  --oit-method-direct-color: oklch(0.48 0.13 75);
 }
 
 .oit-hidden-on-init {
@@ -93,6 +99,7 @@
 /* Public Kill-Switch Logic */
 .oit_calculator[data-public-restricted="true"] {
   &:not(.is-logged-in) {
+
     .oit-workspace-header,
     .settings-container,
     .dosing-strategy-container,
@@ -433,6 +440,14 @@
     padding: 1rem;
     border-radius: 8px;
     border: 1px solid var(--oit-border);
+    overflow: visible;
+    position: relative; // Ensure stacking context for tooltips
+    transition: z-index 0s; // Instant z-index change
+
+    &:hover,
+    &:focus-within {
+      z-index: 100; // Lift container above siblings when active
+    }
 
     h3 {
       margin: 0 0 0.5rem 0;
@@ -443,8 +458,6 @@
   }
 
   .food-b-container {
-    position: relative;
-
     &.disabled {
       opacity: 0.5;
       pointer-events: none;
@@ -650,6 +663,7 @@
       align-items: center;
       gap: 0.35rem;
       z-index: 5;
+      overflow: visible;
 
       background-color: var(--oit-bg);
       border: 1px solid var(--oit-border);
@@ -706,6 +720,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    overflow: visible;
   }
 
   .oit-advanced-settings {
@@ -713,7 +728,7 @@
     border: 1px solid var(--oit-border);
     border-radius: 6px;
     background-color: var(--oit-bg);
-    overflow: hidden;
+    overflow: visible;
 
     summary {
       cursor: pointer;
@@ -727,6 +742,7 @@
       font-size: 0.9rem;
       padding: 0.75rem;
       transition: background-color 0.2s;
+      border-radius: 6px 6px 0 0; // Top corners rounding since parent no longer clips
 
       &::-webkit-details-marker {
         display: none;
@@ -890,6 +906,12 @@
     .subtle-text {
       display: flex;
       align-items: center;
+      gap: 4px;
+      
+      span.mini-btn-add, span.mini-btn-remove {
+        display: inline-block;
+        vertical-align: middle;
+      }
     }
 
     .mini-btn-add,
@@ -956,10 +978,14 @@
 
   // Export Buttons
   .export-buttons {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    flex-wrap: wrap;
-    align-items: flex-start;
+
+    #export-handout {
+      grid-column: 1 / -1;
+      background-color: var(--core-secondary, #6c757d);
+    }
   }
 
   .btn-export,
@@ -1182,6 +1208,60 @@
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
+  }
+
+  // Method toggle in the table — minimal inline text button, no pill
+  .method-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+
+    // Interactive (button) variant
+    &:is(button) {
+      cursor: pointer;
+
+      .method-swap-icon {
+        opacity: 0.6;
+        flex-shrink: 0;
+        transition: opacity 0.15s ease;
+      }
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+
+        .method-swap-icon {
+          opacity: 1;
+        }
+      }
+    }
+
+    // DILUTE — primary blue
+    &.method-dilute {
+      color: var(--oit-button-primary);
+    }
+
+    // DIRECT — warm amber
+    &.method-direct {
+      color: var(--oit-method-direct-color);
+    }
+
+    // CAPSULE — muted static text
+    &.method-capsule {
+      color: var(--oit-text-secondary);
+    }
   }
 
   .na-cell {
@@ -1560,15 +1640,16 @@
       // Spacing and Typography
       padding: 0.5rem 0.75rem;
       border-radius: 0.25rem;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 600;
       line-height: 1.4;
       white-space: pre-wrap;
+
       width: max-content;
       max-width: 16rem;
       box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.15); // Soft shadow
-      z-index: 1000;
+      z-index: 4000;
       pointer-events: none;
-
       // Animation State
       opacity: 0;
       visibility: hidden;
@@ -1587,8 +1668,7 @@
       border-style: solid;
       // The top color matches the tooltip background to blend in
       border-color: var(--oit-bg-secondary) transparent transparent transparent;
-      z-index: 1000; // Keeps it above other elements
-
+      z-index: 4000; // Keeps it above other elements
       // Animation State
       opacity: 0;
       visibility: hidden;

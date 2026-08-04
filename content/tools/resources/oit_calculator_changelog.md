@@ -1,6 +1,6 @@
 +++
 title = "OIT Calculator Changelog"
-date = 2026-06-09
+date = 2026-06-14
 draft = false
 
 [extra]
@@ -12,7 +12,11 @@ authors = ["Joshua Yu"]
 
 ### Added
 
+- Single-Step Patient Handouts: Authorized users can now generate a targeted PDF patient handout for single protocol steps. The handout includes detailed preparation instructions, a pre-updose review checklist, and a reaction log.
+
 ### Changed
+
+- Performance: improved loading speeds for authorized users
 
 ### Deprecated
 
@@ -20,9 +24,28 @@ authors = ["Joshua Yu"]
 
 ### Fixed
 
+- Calculation: Fixed an issue where the initial doses generated for a transition food (Food B) were not applying the "smart snapping" to clean, measurable increments (like 0.05g or 0.5ml) until they were manually edited
+
 ### Security
 
 ---
+
+## [0.17.1] - 2026-06-14
+
+### Added
+
+- More options for water volumes: When customizing a protocol, the calculator now suggests a wider range of possible water volumes for dilutions
+
+### Changed
+
+- Performance: improve page load speed by loading profile information and data in parallel
+- PDF Format: Exported handouts and protocols now use A4 page sizing for better international printing support
+- Security: Access to the full calculator is restricted to authorized users for now to allow for testing
+
+### Fixed
+
+- Fixed a bug where the protocol name change button was visible for protocols that couldn't be renamed
+- Fixed a bug where tooltips were sometimes cut off at the edge of the screen
 
 ## [0.17.0] - 2026-06-09
 

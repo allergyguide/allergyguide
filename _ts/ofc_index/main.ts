@@ -1,4 +1,10 @@
-import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
+import { supabase } from "../core/api/supabase";
+import {
+	determineVaultState,
+	getActiveDEK,
+	lockAndSignOut,
+} from "../core/auth/login-client";
+import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import {
 	handleUserLoad,
@@ -6,11 +12,16 @@ import {
 	loadPublicFoods,
 } from "./data/loader";
 import { appState } from "./state/state";
-import { HttpError } from "./types";
+import { type FoodData, HttpError, type UserLoadResult } from "./types";
 import { initApp } from "./ui/app";
 
 /** Build-time injected version string */
 declare const __VERSION_OFC_INDEX__: string;
+
+// Module-level promise to cache background network fetches
+let bootstrapPromise: Promise<UserLoadResult> | null = null;
+let encryptedDocsPromise: ReturnType<typeof fetchAllEncryptedDocuments> | null =
+	null;
 
 /**
  * Shared callback for successful authentication and vault unlock
@@ -18,21 +29,49 @@ declare const __VERSION_OFC_INDEX__: string;
  */
 async function handleSuccessfulAuth() {
 	try {
-		const [userResult, customFoods] = await Promise.all([
-			handleUserLoad(),
-			loadCustomFoods(),
-		]);
+		if (!bootstrapPromise) {
+			bootstrapPromise = handleUserLoad();
+		}
+
+		if (!encryptedDocsPromise) {
+			encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
+		}
+
+		const userResult = await bootstrapPromise;
 
 		const currentPublicFoods = appState.getState().publicFoods;
 
 		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(currentPublicFoods, [
-			...userResult.foods,
-			...customFoods,
-		]);
+		appState.setFoods(currentPublicFoods, userResult.foods);
 
 		// Hide the modal on success
 		renderAuthUI("HIDDEN");
+
+		// Background fetch
+		appState.setSyncStatus("loading");
+		const dek = getActiveDEK();
+
+		encryptedDocsPromise
+			.then(async (encryptedRows) => {
+				const customFoodDocs = await decryptDocuments<FoodData>(
+					encryptedRows,
+					dek,
+					"custom_food",
+				);
+				const customFoods = await loadCustomFoods(customFoodDocs);
+
+				// Re-fetch public and provisioned foods from current state
+				const currentState = appState.getState();
+				appState.setFoods(currentState.publicFoods, [
+					...currentState.provisionedFoods,
+					...customFoods,
+				]);
+				appState.setSyncStatus("success");
+			})
+			.catch((err) => {
+				console.error("Failed to load custom assets:", err);
+				appState.setSyncStatus("error");
+			});
 	} catch (e) {
 		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
 		await lockAndSignOut(null);
@@ -63,6 +102,9 @@ async function handleSuccessfulAuth() {
 		}
 
 		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+	} finally {
+		bootstrapPromise = null; // ensure clear after use or error
+		encryptedDocsPromise = null;
 	}
 }
 
@@ -101,27 +143,88 @@ async function initializeOFC() {
 
 	// --- AUTHENTICATION AND DATA LOAD ---
 
-	// Load public data immediately (always available)
-	const publicFoods = await loadPublicFoods();
-	appState.setFoods(publicFoods, []);
+	// public data and session check in parallel
+	const publicFoodsPromise = loadPublicFoods();
+	const sessionPromise = supabase.auth.getSession();
 
-	// Determine Identity and Vault State
-	const vaultState = await determineVaultState();
+	// Start vault state resolution
+	const vaultStatePromise = determineVaultState();
+
+	const {
+		data: { session },
+	} = await sessionPromise;
+	if (session) {
+		// start network fetch without waiting for DEK
+		bootstrapPromise = handleUserLoad();
+		bootstrapPromise.catch(() => {});
+
+		encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
+		encryptedDocsPromise.catch(() => {});
+	}
+
+	// Load public data and check auth in parallel
+	const [publicFoods, vaultState] = await Promise.all([
+		publicFoodsPromise,
+		vaultStatePromise,
+	]);
+	appState.setFoods(publicFoods, []);
 
 	if (vaultState === "UNAUTHENTICATED") {
 		// Public mode => publicFoods
+		const instructions = document.querySelector(
+			".ofc-instructions",
+		) as HTMLElement;
+		if (instructions?.dataset.originalHtml) {
+			instructions.innerHTML = instructions.dataset.originalHtml;
+		}
 		appState.setAuthState(false, null);
 	} else if (vaultState === "LOCKED") {
 		// Logged in to Supabase, but DEK missing: force unlock
 		renderAuthUI("UNLOCK", handleSuccessfulAuth);
 	} else if (vaultState === "UNLOCKED") {
-		// Fully Authenticated and Decrypted! Load user data
-		const [userResult, customFoods] = await Promise.all([
-			handleUserLoad(),
-			loadCustomFoods(),
-		]);
-		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(publicFoods, [...userResult.foods, ...customFoods]);
+		try {
+			// Fully Authenticated and Decrypted! Load user data
+			if (!bootstrapPromise) {
+				bootstrapPromise = handleUserLoad();
+			}
+
+			const userResult = await bootstrapPromise;
+
+			appState.setAuthState(userResult.isLoggedIn, userResult.email);
+			appState.setFoods(publicFoods, userResult.foods);
+
+			appState.setSyncStatus("loading");
+			const dek = getActiveDEK();
+
+			if (!encryptedDocsPromise) {
+				encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
+			}
+
+			encryptedDocsPromise
+				.then(async (encryptedRows) => {
+					const customFoodDocs = await decryptDocuments<FoodData>(
+						encryptedRows,
+						dek,
+						"custom_food",
+					);
+					const customFoods = await loadCustomFoods(customFoodDocs);
+
+					const currentState = appState.getState();
+					// Merge the newly loaded custom foods with the provisioned foods
+					appState.setFoods(currentState.publicFoods, [
+						...userResult.foods,
+						...customFoods,
+					]);
+					appState.setSyncStatus("success");
+				})
+				.catch((err) => {
+					console.error("Failed to load custom assets:", err);
+					appState.setSyncStatus("error");
+				});
+		} finally {
+			bootstrapPromise = null;
+			encryptedDocsPromise = null;
+		}
 	}
 
 	const changelogLink =

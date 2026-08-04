@@ -127,4 +127,53 @@ describe("AppState", () => {
 		expect(state.isLoggedIn).toBe(true);
 		expect(state.email).toBe("test@example.com");
 	});
+
+	it("should prioritize foods with higher source weight on similar search scores", () => {
+		const testFoods: Food[] = [
+			{
+				name: "Peanut Generic",
+				gramsInServing: 25,
+				servingSize: 100,
+				type: FoodType.SOLID,
+				group: "Legumes",
+				source: SourceType.GENERIC,
+			},
+			{
+				name: "Peanut User",
+				gramsInServing: 25,
+				servingSize: 100,
+				type: FoodType.SOLID,
+				group: "Legumes",
+				source: SourceType.USER,
+			},
+			{
+				name: "Peanut Provisioned",
+				gramsInServing: 25,
+				servingSize: 100,
+				type: FoodType.SOLID,
+				group: "Legumes",
+				source: SourceType.PROVISIONED,
+			},
+			{
+				name: "Peanut Brand",
+				gramsInServing: 25,
+				servingSize: 100,
+				type: FoodType.SOLID,
+				group: "Legumes",
+				source: SourceType.BRAND,
+			},
+		];
+
+		appState.setFoods(testFoods);
+		(appState as any).state.debouncedSearchQuery = "Peanut";
+
+		const results = appState.getFilteredFoods();
+		expect(results).toHaveLength(4);
+
+		// Order should be USER (4), PROVISIONED (3), BRAND (2), GENERIC (1)
+		expect(results[0].name).toBe("Peanut User");
+		expect(results[1].name).toBe("Peanut Provisioned");
+		expect(results[2].name).toBe("Peanut Brand");
+		expect(results[3].name).toBe("Peanut Generic");
+	});
 });

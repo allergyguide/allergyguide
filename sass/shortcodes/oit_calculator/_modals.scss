@@ -1,0 +1,294 @@
+// sass/shortcodes/oit_calculator/_modals.scss
+
+#oit-handout-modal-mount {
+  .core-modal-content {
+    border-radius: 0.75rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+    padding: 0;
+
+    .oit-modal-header {
+      padding: 1rem 1.5rem 0.5rem 1.5rem;
+      margin-bottom: 0;
+      border-bottom: 1px solid var(--core-border);
+      color: var(--core-ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .oit-modal-close {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        opacity: 0.6;
+        color: var(--core-ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem;
+        margin: -0.25rem;
+        border-radius: 0.375rem;
+        transition: opacity 0.15s ease-out, background-color 0.15s ease-out;
+
+        &:hover,
+        &:focus-visible {
+          opacity: 1;
+          background-color: rgba(0, 0, 0, 0.05);
+          outline: none;
+        }
+
+        &:active {
+          opacity: 0.8;
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+
+    .oit-modal-body {
+      padding: 1rem 1.5rem 1.5rem 1.5rem;
+      color: var(--core-ink);
+
+      p.modal-description {
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--core-ink-muted);
+      }
+
+      // Styles the "Active Protocols" section heading
+      h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+    }
+
+    .oit-modal-settings {
+      margin-bottom: 1.5rem;
+      background: var(--core-surface);
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--core-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+      }
+
+      p {
+        font-size: 0.85rem;
+        color: var(--core-ink-muted);
+        margin: 0;
+      }
+
+      input {
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+        width: auto;
+        background: var(--core-bg);
+        color: var(--core-ink);
+        border: 1px solid var(--core-border);
+        transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+
+        &:hover {
+          border-color: var(--core-ink-muted);
+        }
+
+        &:focus-visible {
+          outline: none;
+          border-color: var(--core-primary);
+          box-shadow: 0 0 0 0.125rem rgba(0, 112, 243, 0.15);
+        }
+      }
+    }
+
+    .handout-food-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      p.subtle-text {
+        font-style: italic;
+        color: var(--core-ink-muted);
+        font-size: 0.9rem;
+      }
+    }
+
+    .handout-food-row {
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      transition: border-color 0.15s ease-out, background-color 0.15s ease-out, box-shadow 0.15s ease-out;
+      border: 1px solid var(--core-border);
+      background: transparent;
+
+      &:hover {
+        border-color: var(--core-ink-muted);
+      }
+
+      &.is-selected {
+        border-color: var(--core-primary);
+        background: var(--core-surface);
+        box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.04);
+      }
+
+      >label {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        margin: 0;
+        user-select: none;
+
+        input[type="checkbox"] {
+          width: 1.125rem;
+          height: 1.125rem;
+          cursor: pointer;
+          accent-color: var(--core-primary);
+          margin: 0;
+          transition: transform 0.1s ease-out;
+
+          &:active {
+            transform: scale(0.9);
+          }
+        }
+
+        .food-title {
+          font-weight: 600;
+          font-size: 1.05rem;
+          color: var(--core-ink);
+        }
+      }
+
+      .step-selector {
+        padding-left: 2.125rem;
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: var(--core-ink-muted);
+        }
+
+        select {
+          max-width: 100%;
+          padding: 0.5rem 2rem 0.5rem 0.75rem;
+          border-radius: 0.375rem;
+          font-size: 0.95rem;
+          cursor: pointer;
+          background: var(--core-bg);
+          color: var(--core-ink);
+          border: 1px solid var(--core-border);
+          transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+
+          &:hover {
+            border-color: var(--core-ink-muted);
+          }
+
+          &:focus-visible {
+            outline: none;
+            border-color: var(--core-primary);
+            box-shadow: 0 0 0 0.125rem rgba(0, 112, 243, 0.15);
+          }
+        }
+      }
+    }
+
+    .oit-modal-buttons {
+      padding: 1rem 1.5rem 1.25rem 1.5rem;
+      border-top: 1px solid var(--core-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      background: var(--core-surface);
+      border-bottom-left-radius: 0.75rem;
+      border-bottom-right-radius: 0.75rem;
+
+      button {
+        padding: 0.5rem 1.25rem;
+        border-radius: 0.375rem;
+        transition: transform 0.1s ease-out, background-color 0.15s ease-out;
+
+        &:active {
+          transform: scale(0.96);
+        }
+      }
+
+      .btn-export {
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Auth Feature Teaser (Injected into Login Modal)
+.auth-feature-teaser {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+
+  p {
+    text-align: center;
+    color: var(--core-ink-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0 0 0 0 !important;
+  }
+
+  .auth-feature-thumbnail-container {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--core-border);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      transform: translateY(-0.125rem);
+      box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.16);
+      outline: none;
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .auth-feature-thumbnail {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .btn-view-sample {
+    width: 100%;
+    text-align: center;
+  }
+}

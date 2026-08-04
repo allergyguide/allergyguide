@@ -1,3 +1,4 @@
+import { getStore } from "@netlify/blobs";
 import dotenv from "dotenv";
 
 dotenv.config({ override: true });
@@ -18,7 +19,6 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
 const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
-const ADMIN_USERS = process.env.ADMIN_USERS;
 
 if (!REPO_NAME || !GITHUB_OWNER || !GITHUB_TOKEN) {
 	console.error("No GitHub repo or token found. Check netlify settings");
@@ -48,11 +48,6 @@ if (
 	process.exit(1);
 }
 
-if (!ADMIN_USERS) {
-	console.error("No admin users defined");
-	process.exit(1);
-}
-
 export const ENV_VARS = {
 	GITHUB_TOKEN,
 	GITHUB_REPO,
@@ -64,5 +59,22 @@ export const ENV_VARS = {
 	SUPABASE_PUBLISHABLE_KEY,
 	SUPABASE_SECRET_KEY,
 	SUPABASE_JWT_SECRET,
-	ADMIN_USERS,
+};
+
+if (!process.env.NETLIFY_SITE_ID) {
+	console.error("Missing NETLIFY_SITE_ID - cannot connect to Netlify Blobs");
+	process.exit(1);
+}
+
+if (!process.env.NETLIFY_AUTH_TOKEN) {
+	console.error("Missing NETLIFY_AUTH_TOKEN");
+	process.exit(1);
+}
+
+export const getBlobStore = () => {
+	return getStore({
+		name: "allergyguide-secure-assets",
+		siteID: String(process.env.NETLIFY_SITE_ID),
+		token: String(process.env.NETLIFY_AUTH_TOKEN),
+	});
 };

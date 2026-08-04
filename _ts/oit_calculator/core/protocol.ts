@@ -12,6 +12,7 @@ import type { Food, Protocol, Step, Unit } from "../types";
 import { FoodAStrategy, FoodType, Method, type NumberLike } from "../types";
 import { generateUniqueId, getMeasuringUnit } from "../utils";
 import {
+	findDilutionCandidates,
 	findRoundedDirectAmount,
 	findRoundedMixWaterAmount,
 	generateStepForTarget,
@@ -200,14 +201,20 @@ export function addFoodBToProtocol(
 		} else {
 			// Fallback DIRECT if dilution generation fails
 			const P = existingStep.targetMg;
-			const neatMass = P.dividedBy(newProtocol.foodA.getMgPerUnit());
+			const preciseMass = P.dividedBy(newProtocol.foodA.getMgPerUnit());
+			const snappedMass = findRoundedDirectAmount(
+				P,
+				newProtocol.foodA,
+				preciseMass,
+				newProtocol.config,
+			);
 			const unit: Unit = newProtocol.foodA.type === FoodType.SOLID ? "g" : "ml";
 			normalizedSteps.push({
 				id: generateUniqueId(),
 				stepIndex: existingStep.stepIndex,
 				targetMg: P,
 				method: Method.DIRECT,
-				dailyAmount: neatMass,
+				dailyAmount: snappedMass,
 				dailyAmountUnit: unit,
 				food: "A",
 			});
@@ -253,26 +260,38 @@ export function addFoodBToProtocol(
 
 	// First Food B step uses same target as last Food A step
 	const firstBTargetMg = transitionTargetMg;
-	const firstBNeatMass = firstBTargetMg.dividedBy(foodB.getMgPerUnit());
+	const firstBPreciseMass = firstBTargetMg.dividedBy(foodB.getMgPerUnit());
+	const firstBSnappedMass = findRoundedDirectAmount(
+		firstBTargetMg,
+		foodB,
+		firstBPreciseMass,
+		newProtocol.config,
+	);
 	foodBSteps.push({
 		id: generateUniqueId(),
 		stepIndex: transitionIndex + 2, // Will be reindexed later
 		targetMg: firstBTargetMg,
 		method: Method.DIRECT,
-		dailyAmount: firstBNeatMass,
+		dailyAmount: firstBSnappedMass,
 		dailyAmountUnit: foodBUnit,
 		food: "B",
 	});
 
 	// Remaining Food B steps
 	for (const targetMg of originalTargets) {
-		const neatMass = targetMg.dividedBy(foodB.getMgPerUnit());
+		const preciseMass = targetMg.dividedBy(foodB.getMgPerUnit());
+		const snappedMass = findRoundedDirectAmount(
+			targetMg,
+			foodB,
+			preciseMass,
+			newProtocol.config,
+		);
 		foodBSteps.push({
 			id: generateUniqueId(),
 			stepIndex: 0, // Will be reindexed
 			targetMg,
 			method: Method.DIRECT,
-			dailyAmount: neatMass,
+			dailyAmount: snappedMass,
 			dailyAmountUnit: foodBUnit,
 			food: "B",
 		});
@@ -831,6 +850,97 @@ export function toggleFoodType(
 	});
 
 	return newProtocol;
+}
+
+/**
+ * Toggle a single step between DIRECT and DILUTE methods.
+ *
+ * - DIRECT → DILUTE: finds the best dilution candidate for the step's target.
+ *   Returns the original protocol unchanged if no valid candidate exists
+ *   (caller should surface this to the user via the warning system).
+ * - DILUTE → DIRECT: recomputes dailyAmount as a rounded neat dose.
+ * - CAPSULE steps are always returned unchanged (no-op).
+ *
+ * @param oldProtocol Protocol to update
+ * @param stepIndex 1-based index of the step to toggle
+ * @returns New Protocol with the toggled step, or the original protocol if toggling is not feasible
+ */
+export function toggleStepMethod(
+	oldProtocol: Protocol,
+	stepIndex: number,
+): Protocol {
+	if (!oldProtocol) return oldProtocol;
+
+	const newSteps = [...oldProtocol.steps];
+	const originalStep = newSteps[stepIndex - 1];
+	if (!originalStep) return oldProtocol;
+
+	// CAPSULE steps cannot be toggled
+	if (originalStep.method === Method.CAPSULE) return oldProtocol;
+
+	const isStepFoodB = originalStep.food === "B";
+	const food = isStepFoodB ? oldProtocol.foodB : oldProtocol.foodA;
+
+	if (!food) {
+		throw new Error(
+			`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${stepIndex}`,
+		);
+	}
+
+	if (originalStep.method === Method.DILUTE) {
+		// DILUTE → DIRECT
+		const P = originalStep.targetMg;
+		const neatMass = P.dividedBy(food.getMgPerUnit());
+		const dailyAmount = findRoundedDirectAmount(
+			P,
+			food,
+			neatMass,
+			oldProtocol.config,
+		);
+		const dailyAmountUnit = getMeasuringUnit(food);
+
+		const updatedStep: Step = {
+			id: originalStep.id,
+			stepIndex: originalStep.stepIndex,
+			targetMg: P,
+			method: Method.DIRECT,
+			dailyAmount,
+			dailyAmountUnit,
+			food: originalStep.food,
+		};
+
+		newSteps[stepIndex - 1] = updatedStep;
+		return { ...oldProtocol, steps: newSteps };
+	} else {
+		// DIRECT → DILUTE
+		const candidates = findDilutionCandidates(
+			originalStep.targetMg,
+			food,
+			oldProtocol.config,
+		);
+
+		if (candidates.length === 0) {
+			// No feasible dilution — return unchanged so warnings catch it
+			return oldProtocol;
+		}
+
+		const best = candidates[0];
+		const updatedStep: Step = {
+			id: originalStep.id,
+			stepIndex: originalStep.stepIndex,
+			targetMg: originalStep.targetMg,
+			method: Method.DILUTE,
+			dailyAmount: best.dailyAmount,
+			dailyAmountUnit: "ml",
+			mixFoodAmount: best.mixFoodAmount,
+			mixWaterAmount: best.mixWaterAmount,
+			servings: best.servings,
+			food: originalStep.food,
+		};
+
+		newSteps[stepIndex - 1] = updatedStep;
+		return { ...oldProtocol, steps: newSteps };
+	}
 }
 
 /**

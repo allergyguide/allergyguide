@@ -79,12 +79,18 @@ Whether or not having an ironclad understanding of the mechanisms and genetics o
 
 # Secondary
 
+- Malnutrition most common worldwide
 - Protein loss / lack of intake (Malnutrition, nephrotic syndrome, ascites, enteropathy)
 - HIV
 - Malignancy
 - Drugs
+  - immunosuppresive
+  - immunomodulatory
+    - ie anti CD19, anti TNF, anti il1
+  - certain antielpipeclics
 - Structural secondary (ie infectious bronchiectasis)
 - Metabolic disease
+  - diabets, severe liver disease, CKD
 - ? CF in here
 
 # from talk 07/02/2025
@@ -135,15 +141,17 @@ Below is primarily for primary IEI
 > 56% sensitivity, 16% specificity (Arkwright 2011)
 
 There is now the "14 warning signs" that also include severe czema, allergies, hemtoonlgoic disorers, autoimmunity; this does improve the sensitivity but it's not perfect
+Dabrowska 2023
 
 There is some more nuance to the questioning:
 
-- **AGE at onset** (before or after 6 months??)
-  - also preterm or term (preterm might not have IgG from mom?) need to clarify
+- **AGE at onset** (before or after 6 months - recall igg nadir is around 3-6 months)
+  - also preterm or term
   - SCID presents EARLY, usually humoral takes time
 - frequency (normal differs based on age)
 - context behind each infection
 - type: deep-seated, superficial; organism isolated?
+- type of organisms: broad, atypical, associated with syndromes (ie CGD)
 - response to treatment, if needed
 
 Unlike normal infections, those associated with ID may be:
@@ -198,6 +206,10 @@ A way to break it down could include:
   - PIDD (infection predominant patho)
   - PIRD (Primary immune regulatory disorders), ie IPEX, IBD, malignancy
 
+But these also overlap as well!
+
+You can also break it down by the type of infections you see.
+
 Category of IEI from infection types / pattern (not very specific, very simplified):
 
 > note: in the setting of PIDD or IEI things like serology are not particularly reliable for confirming infection; prefer direct measures such as cultures, DNA/RNA methods, direct antigen testing
@@ -210,6 +222,8 @@ Category of IEI from infection types / pattern (not very specific, very simplifi
 | IFN-gamma/IL-12 pathway defect           | Recurrent atypical mycobacterial (includes BCG), _Salmonella_ infections    |
 | Complement defects — early components    | Recurrent sinopulmonary and skin infections with encapsulated bacteria      |
 | Complement defects — terminal components | Recurrent _Neisseria_ infections                                            |
+
+There is also more autoimmunity with early complement defects (ie SLE is associated with C3)
 
 {% json_to_table() %}
 [

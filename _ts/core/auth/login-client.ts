@@ -1,4 +1,5 @@
 import { supabase } from "../api/supabase";
+import { SWR_CACHE_PREFIX } from "../constants";
 import { deriveAuthHash, deriveKEK } from "../crypto/derivation";
 import { base64ToBuffer, bufferToBase64 } from "../crypto/encoding";
 import { unwrapDEK } from "../crypto/encryption";
@@ -10,6 +11,35 @@ let activeDEK: CryptoKey | null = null;
 // prevents race condition and double reload
 let isNavigatingAway = false;
 
+/**
+ * Module level Promise to resolve to salts for given email
+ * Is populated by prefetchSalts() before the user submits form
+ * => loginAndUnlock() / unlockVault() can skip the RPC round-trip entirely
+ *
+ */
+let saltCacheEmail: string | null = null;
+// Use a native Promise instead of the query builder to prevent re-execution on await
+let saltCachePromise: Promise<Awaited<ReturnType<typeof supabase.rpc>>> | null =
+	null;
+
+/**
+ * Fires the `get_user_salts` RPC in the background and caches the result
+ * Safe to call speculatively - discards the cache if the email changes
+ *
+ * Should be called early Call to hide the ~1s cold-connection latency
+ *
+ * @param email - The user's email address to prefetch salts for.
+ */
+export function prefetchSalts(email: string): void {
+	if (!email || email === saltCacheEmail) return; // already in-flight or cached
+	saltCacheEmail = email;
+	// Wrap in a native Promise to memoize the network result
+	saltCachePromise = Promise.resolve(
+		supabase.rpc("get_user_salts", { user_email: email }),
+	);
+	void saltCachePromise.catch(() => {});
+}
+
 export type VaultState = "UNAUTHENTICATED" | "LOCKED" | "UNLOCKED";
 
 // Listen for global auth state changes (this fires across all tabs natively via Supabase)
@@ -18,6 +48,8 @@ supabase.auth.onAuthStateChange((event) => {
 	if (event === "SIGNED_OUT" && !isNavigatingAway) {
 		activeDEK = null;
 		sessionStorage.removeItem("active_dek");
+
+		clearSWRCache();
 
 		// Force a page reload to clear any decrypted UI state from the DOM
 		// This also includes assets not from Supabase too
@@ -74,13 +106,17 @@ export async function unlockVault(password: string): Promise<boolean> {
 		} = await supabase.auth.getSession();
 		if (!session) throw new Error("No active user session.");
 
-		// Fetch Salts via RPC
-		const { data: salts, error: rpcErr } = await supabase.rpc(
-			"get_user_salts",
-			{
-				user_email: session.user.email,
-			},
-		);
+		// Consume the prefetch cache if it matches; otherwise fall back to a live fetch
+		const email = session.user.email ?? "";
+		const cachedPromise = saltCacheEmail === email ? saltCachePromise : null;
+		saltCacheEmail = null;
+		saltCachePromise = null;
+
+		const saltResult = cachedPromise
+			? await cachedPromise
+			: await supabase.rpc("get_user_salts", { user_email: email });
+
+		const { data: salts, error: rpcErr } = saltResult;
 		if (rpcErr || !salts)
 			throw new Error("Could not retrieve encryption parameters.");
 
@@ -122,13 +158,16 @@ export async function loginAndUnlock(
 	captchaToken: string,
 ): Promise<void> {
 	try {
-		// Fetch Salts via anonymous RPC BEFORE logging in
-		const { data: salts, error: rpcErr } = await supabase.rpc(
-			"get_user_salts",
-			{
-				user_email: email,
-			},
-		);
+		// Consume the prefetch cache if it matches; otherwise fall back to a live fetch
+		const cachedPromise = saltCacheEmail === email ? saltCachePromise : null;
+		saltCacheEmail = null;
+		saltCachePromise = null;
+
+		const saltResult = cachedPromise
+			? await cachedPromise
+			: await supabase.rpc("get_user_salts", { user_email: email });
+
+		const { data: salts, error: rpcErr } = saltResult;
 		if (rpcErr || !salts)
 			throw new Error("Could not retrieve encryption parameters.");
 
@@ -160,6 +199,8 @@ export async function loginAndUnlock(
 		activeDEK = await unwrapDEK(userData.encrypted_dek, userData.dek_iv, kek);
 		const rawDekBuffer = await window.crypto.subtle.exportKey("raw", activeDEK);
 		sessionStorage.setItem("active_dek", bufferToBase64(rawDekBuffer));
+		// Set a non-sensitive localStorage item just for the UI skeleton to instantly read the email on cold loads
+		localStorage.setItem("allergyguide_user_email", email);
 	} catch (err) {
 		console.error("Login and unlock failed:", err);
 		// In failure clean up session
@@ -183,6 +224,11 @@ export async function lockAndSignOut(
 	isNavigatingAway = true;
 	activeDEK = null;
 	sessionStorage.removeItem("active_dek");
+
+	// Wipe the UI skeleton localStorage item
+	localStorage.removeItem("allergyguide_user_email");
+
+	clearSWRCache();
 
 	const { error } = await supabase.auth.signOut();
 	if (error) {
@@ -221,4 +267,21 @@ async function hydrateDek(base64Str: string): Promise<CryptoKey> {
 		true, // Must remain extractable if we need to sync it to another tab later
 		["encrypt", "decrypt"],
 	);
+}
+
+function clearSWRCache() {
+	try {
+		const keysToRemove = [];
+		for (let i = 0; i < localStorage.length; i++) {
+			const key = localStorage.key(i);
+			if (key?.startsWith(SWR_CACHE_PREFIX)) {
+				keysToRemove.push(key);
+			}
+		}
+		for (const k of keysToRemove) {
+			localStorage.removeItem(k);
+		}
+	} catch (e) {
+		console.warn("Failed to clear SWR cache (storage may be blocked):", e);
+	}
 }

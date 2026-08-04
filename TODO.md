@@ -1,6 +1,7 @@
 # Content
 
 - Vaccine schedule checklist calculator: for given age range, what vaccines to check for? Checklist to put in EMR
+- BC Coverage Tool for medications 
 - Aiming for rough drafts of new articles qmonthly as eventual goal
 - guideline compilation section (not sure if there's a way to automate this?)
 - Allergic rhinitis seasonal calendar for allergens: per Province
@@ -9,13 +10,10 @@
   - Supplies, etc.
 - Handouts
   - Typst, PDF, reviewed
-  - Should move to static/ instead of within content/? since there could be a tool that allows for quick compilation and printout of multiple handouts at once, where it would probably be easier just to have them in static/ ...
 
 # Shortcodes
 
 # Misc
 
-- CSP alteration: removed in-line <script>...</script>, move all JS to /js, inline event handlers: DONE - waiting to verify on production deploy after removing 'unsafe-inline'
 - remove CDNs if possible, load dynamically instead
 - head staff support?
-- recruitment of editors/contributors once vision better defined

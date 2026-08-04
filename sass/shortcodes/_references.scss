@@ -6,6 +6,8 @@
   --ref_border: #444;
   --ref_shadow: rgba(0, 0, 0, 0.5);
   --ref_link: #1e90ff;
+  --ref_notes_bg: rgba(255, 255, 255, 0.05); // Subtle contrast against dark background
+  --ref_notes_text: #a3a3a3;
 }
 
 :root.switch {
@@ -15,150 +17,87 @@
   --ref_border: #ccc;
   --ref_shadow: rgba(0, 0, 0, 0.1);
   --ref_link: #0645ad;
-}
-
-/* Popup overlay (hidden by default) */
-.ref-popup {
-  display: none; // hidden initially
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5); // semi-transparent background
-  align-items: center;
-  justify-content: center;
-  z-index: 1000; // on top of other elements
-}
-
-/* Show popup when active */
-.ref-popup.active {
-  display: flex;
-}
-
-.ref-popup-content {
-  background: var(--ref_background);
-  color: var(--ref_text);
-  border: 1px solid var(--ref_border);
-  padding: 1rem;
-  overflow-y: auto; // allow scrolling if content is long
-  box-shadow: 0 2px 10px var(--ref_shadow);
-  border-radius: 5px;
-  width: 90%;
-  max-width: 60vw; // Default for landscape
-  max-height: 80vh; // defauly for landspace
-
-  position: relative;
-
-  @media screen and (orientation: portrait) {
-    max-width: 80vw; // Increase width in portrait mode
-    max-height: 50vh; // defauly for landspace
-
-  }
-
-  @media screen and (orientation: landscape) {
-    max-width: 60vw; // Keep the default in landscape mode
-    max-height: 80vh; // defauly for landspace
-
-  }
-}
-
-/* Close button style */
-.ref-close {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  font-size: 1.5rem;
-  cursor: pointer;
+  --ref_notes_bg: #f5f5f5; // Subtle contrast against light background
+  --ref_notes_text: #666666;
 }
 
 /* Reference icon style */
 .ref-icon {
-  /* display: inline-block; */
-  /* vertical-align: middle; */
-
-  display: inline-block;
+  display: inline-flex;
   align-items: center;
-  background-size: contain;
-  background-repeat: no-repeat;
-  aspect-ratio: 1/1;
-  cursor: pointer; // Shows the pointer cursor on hover.
-
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 0.2rem;
+  vertical-align: middle;
+  border-radius: 4px;
+  padding: 2px;
+  transition: background-color 0.2s ease;
 }
 
 .ref-icon svg {
-  transition: fill 0.2s;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), fill 0.2s ease;
   fill: var(--a1); // Your highlight color
-
   width: 1rem;
   height: 1rem;
-
 }
 
-.ref-icon svg:hover {
-  fill: var(--a1); // Your highlight color
-  transform: scale(1.5);
+.ref-icon:hover {
+  background-color: color-mix(in srgb, var(--a1) 10%, transparent);
 }
 
-/* (Optional) Force a fill color on the SVG if desired.
-   This may need adjustments depending on your SVG file structure.
-.ref-icon img {
-  filter: brightness(0) saturate(100%) invert(50%) sepia(100%) hue-rotate(20deg);
+.ref-icon:hover svg {
+  transform: scale(1.1) translateY(-1px);
 }
-*/
 
-/* Individual reference entry styling */
+/* Individual reference entry styling inside modal */
 .ref-entry {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Styling for the reference text and notes */
-.ref-text,
-{
-margin: 0 0 0.5rem 0;
-color: var(--ref_text);
-text-indent: -20px; // Creates the hanging indent
-padding-left: 20px; // Indents all lines except the first one
-display: block; // Ensures it behaves correctly in different contexts
-font-size: 1rem;
-
-a {
-  color: var(--ref_text);
-  font-weight: normal;
+.ref-text {
+  margin: 0 0 0.5rem 0;
+  color: inherit;
+  text-indent: -1.5rem; // Creates the hanging indent
+  padding-left: 1.5rem; // Indents all lines except the first one
+  display: block; // Ensures it behaves correctly in different contexts
   font-size: 1rem;
-}
+  line-height: 1.5;
 
+  a {
+    color: inherit;
+    font-weight: normal;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .ref-notes {
-  color: var(--a1)
-}
-
-/* Link styling */
-.ref-link {
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  color: var(--ref_notes_text);
+  background-color: var(--ref_notes_bg);
+  padding: 0.875rem;
+  border-radius: 6px;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+  font-size: 0.9rem;
 }
 
 .ref-separator {
   border: none;
   height: 1px;
-  background: linear-gradient(to right, var(--a1), transparent);
-  margin: 12px 0;
+  background: var(--ref_border);
+  margin: 1.5rem 0;
 }
 
 .ref-bib {
   padding-left: 2rem;
-  /* Adjusts the amount of space for the hanging indent */
-
+  
   .item {
     text-indent: -2rem;
-    /* Moves the first line back */
-    padding-left: 0rem;
-    /* Creates space for the remaining lines */
-
+    padding-left: 0;
+    margin-bottom: 0.5rem;
   }
 }

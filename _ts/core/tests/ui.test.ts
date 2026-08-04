@@ -1,5 +1,3 @@
-// _ts/core/tests/ui.test.ts
-
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { supabase } from "../api/supabase";
 import {
@@ -15,6 +13,7 @@ vi.mock("../api/supabase", () => ({
 		auth: {
 			getSession: vi.fn(),
 		},
+		rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
 	},
 }));
 
@@ -23,6 +22,7 @@ vi.mock("../auth/login-client", () => ({
 	loginAndUnlock: vi.fn(),
 	unlockVault: vi.fn(),
 	lockAndSignOut: vi.fn(),
+	prefetchSalts: vi.fn(),
 }));
 
 describe("UI Module: Auth Modals", () => {

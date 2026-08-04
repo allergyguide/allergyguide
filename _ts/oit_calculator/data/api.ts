@@ -2,7 +2,10 @@
  * @module
  * Handles network requests for secure assets and to request protocol saving (email to dev).
  */
+
+import { withSWRCache } from "../../core/api/cache";
 import { supabase } from "../../core/api/supabase";
+import { CACHE_TTL_MS, SWR_CACHE_PREFIX } from "../../core/constants";
 import { HttpError, type OITBootstrapResponse } from "../types";
 
 /**
@@ -65,8 +68,8 @@ export async function ensureResponseOk(response: Response) {
 	);
 }
 
-/** Helper to grab the active token */
-async function getAuthHeaders(): Promise<Record<string, string>> {
+/** Helper to verify the active token exists before firing requests */
+async function ensureAuthenticated(): Promise<void> {
 	const {
 		data: { session },
 		error,
@@ -74,23 +77,26 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 	if (error || !session) {
 		throw new HttpError("Unauthorized: No active session", 401);
 	}
-	return {
-		"Content-Type": "application/json",
-		Authorization: `Bearer ${session.access_token}`,
-	};
 }
 
 /**
  * Fetches the user's provisioned foods, protocols, and config through bootstrap netlify endpoint
+ * Uses a Stale-While-Revalidate (SWR) caching strategy via localStorage for instant loads.
  *
  * @returns A promise resolving to the `OITBootstrapResponse` containing the user's provisioned data.
  * @throws {HttpError} If the network request fails, session is unauthorized, or the server returns non-JSON content.
  */
 export async function fetchOITBootstrap(): Promise<OITBootstrapResponse> {
-	const headers = await getAuthHeaders();
-	const response = await fetch("/.netlify/functions/oit-bootstrap", {
-		headers,
-	});
+	return withSWRCache(
+		`${SWR_CACHE_PREFIX}OIT_BOOTSTRAP`,
+		CACHE_TTL_MS,
+		fetchOITBootstrapLive,
+	);
+}
+
+async function fetchOITBootstrapLive(): Promise<OITBootstrapResponse> {
+	await ensureAuthenticated();
+	const response = await fetch("/.netlify/functions/oit-bootstrap");
 	await ensureResponseOk(response);
 
 	const contentType = response.headers.get("content-type");
@@ -115,12 +121,9 @@ export async function loadSecureAsset(
 	filepath: string,
 	format: "auto" | "buffer" | "blob" | "json",
 ) {
-	const headers = await getAuthHeaders();
+	await ensureAuthenticated();
 	const response = await fetch(
 		`/.netlify/functions/get-secure-asset?file=${filepath}`,
-		{
-			headers: { Authorization: headers.Authorization },
-		},
 	);
 
 	await ensureResponseOk(response);

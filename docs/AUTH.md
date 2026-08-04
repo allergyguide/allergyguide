@@ -16,8 +16,9 @@ Uses **Supabase Auth** for identity and a **Zero-Knowledge** vault for custom us
 - **Logic:**
   1. Check for a session via `supabase.auth.getSession()`.
   2. If `data.session` exists, the user is authenticated. You can ignore the `LOCKED` vault state.
-  3. Include the token in requests: `Authorization: Bearer ${session.access_token}`.
-  4. If no session, trigger `renderAuthUI("LOGIN", ...)` but do not proceed to `UNLOCK`.
+  3. **For Netlify Edge Functions (Reads):** execute a `fetch()`. Browser natively attaches the Supabase HTTP cookies.
+  4. **For Standard Functions (Mutations):** Manually include the token in requests: `Authorization: Bearer ${session.access_token}` for CSRF protection.
+  5. If no session, trigger `renderAuthUI("LOGIN", ...)` but do not proceed to `UNLOCK`.
 
 ---
 
@@ -31,17 +32,49 @@ The user's password is branched into two distinct keys via PBKDF2 using salts fe
 
 ---
 
-## 3. Server-Side Verification (Netlify Functions)
+## 3. Server-Side Verification
 
-All protected Netlify functions must verify the Supabase token:
+All protected backend routes must verify the Supabase token:
+
+### Edge Functions
+
+Edge functions (`netlify/edge-functions/`) reconstruct the session natively from the browser's chunked HTTP cookies using `@supabase/ssr`:
 
 ```ts
-// _lib/auth.mts
+import { createServerClient } from "@supabase/ssr";
+
+// Initialize SSR client parsing req.headers.get("Cookie")
+const ssrClient = createServerClient(...)
+// Edge verification with getClaims()
+const { data, error } = await ssrClient.auth.getClaims();
+const uuid = data.claims?.sub; // User's unique ID
+```
+
+### Standard Functions (Bearer Headers)
+
+Standard serverless functions (`netlify/functions/`) parse the manually injected JWT header:
+
+```ts
+const authHeader = event.headers.authorization || "";
+const token = authHeader.replace("Bearer ", "");
 const { data, error } = await supabase.auth.getClaims(token);
-const uuid = data.sub; // User's unique ID
+const uuid = data.claims.sub;
 ```
 
 **Asset Mapping:** Use the `uuid` to locate user-specific configuration `user_configs/${uuid}_config.json`.
+
+### Building New Auth-Gated Tools
+
+When building backends for new tools or migrating old ones:
+
+1. **Use Edge Functions for Latency:** Use Netlify Edge Functions (`netlify/edge-functions/`) instead of standard serverless functions for tasks that block UI rendering (like bootstrapping tool data on login).
+2. **Use Netlify Blobs for Storage:** Private assets (JSON configs, PDFs) are pushed to Netlify Blobs at build-time. Retrieve them using the shared store client:
+   ```ts
+   import { getBlobStore } from "./_lib/store.ts";
+   const store = getBlobStore();
+   const file = await store.get("path/to/asset.json", { type: "json" });
+   ```
+3. **Register Edge Routes:** Edge functions must be explicitly mapped in `netlify.toml` under the `[[edge_functions]]` directive (unlike standard functions which are auto-discovered).
 
 ---
 
@@ -51,3 +84,15 @@ const uuid = data.sub; // User's unique ID
 - **Onboarding:** Users set their password at `/signup/`, which initializes their salts and encrypted DEK.
 - **Tab Sync:** The active DEK is stored in `sessionStorage` and synced across tabs using `BroadcastChannel`.
 - **Wiping:** `lockAndSignOut()` clears all local session data and terminates the Supabase session.
+
+---
+
+## 5. Performance & Network Orchestration
+
+To prevent a "waterfall" latency delay during tool initialization, **network fetching is decoupled from vault decryption**:
+
+1. **Pre-fetching:** To mask RPC latency, salts are speculatively prefetched (`prefetchSalts()`) as soon as the user types a valid email or when the auth modal is opened for the first time. Then, as soon as `supabase.auth.getSession()` confirms a valid identity, background network requests for encrypted Supabase rows (`fetchAllEncryptedDocuments`) and Netlify configurations are fired immediately. This happens _in parallel_ with DEK retrieval (`determineVaultState()`).
+2. **In-Memory Caching:** The resulting Promise is cached at the module level (`networkDataPromise`) and given a dummy catch handler to suppress unhandled promise rejection warnings in the browser.
+3. **Persistent SWR Caching:** Non-sensitive provisioned assets (like tool configurations fetched via edge functions) are cached in `localStorage` using a Stale-While-Revalidate pattern (`withSWRCache`). This provides instant UI rendering on subsequent page loads while revalidating silently in the background.
+4. **Decryption:** Once the vault transitions to `UNLOCKED` (either immediately via `sessionStorage` or after user password entry), the cached background promise is awaited and the resulting rows are passed to `decryptDocuments`.
+5. **Cleanup:** `networkDataPromise` is cleared in a `finally` block to ensure subsequent auth changes (like switching users or retrying after a network failure) always trigger a fresh network fetch and prevent soft-locks. Local SWR caches are also securely wiped during `lockAndSignOut()`.

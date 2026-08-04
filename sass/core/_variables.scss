@@ -22,6 +22,7 @@
   --core-danger: oklch(0.65 0.20 25);
   --core-danger-bg: oklch(0.2 0.1 25);
   --core-success: oklch(0.75 0.15 140);
+  --core-warning: oklch(0.85 0.17 85); // Bright yellow/amber for dark mode
 }
 
 :root.switch {
@@ -42,6 +43,7 @@
   --core-danger: oklch(0.55 0.22 25); // Sharpened red
   --core-danger-bg: oklch(0.96 0.02 25);
   --core-success: oklch(0.45 0.16 140); // Darker green for readability
+  --core-warning: oklch(0.6 0.17 85); // Darker amber for light mode
 }
 
 // ============================================
@@ -60,6 +62,7 @@ $core-color-primary-dark: var(--core-primary-hover);
 $core-color-red: var(--core-danger);
 $core-color-red-light: var(--core-danger-bg);
 $core-color-green: var(--core-success);
+$core-color-yellow: var(--core-warning);
 
 // ============================================
 // SPACING SCALE (rem-based)

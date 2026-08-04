@@ -108,6 +108,8 @@ export interface OfcState {
 	publicFoods: Food[];
 	/** List of securely provisioned food items for logged-in user */
 	provisionedFoods: Food[];
+	/** Status of background network sync for custom assets */
+	customAssetsSyncStatus?: "loading" | "success" | "error";
 	/** Consolidated list of all foods with search optimizations */
 	searchableFoods: Food[];
 	/** Current raw search query from input field */

@@ -93,7 +93,8 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │   ├── topics/
 │   └── etc.
 │
-├── netlify/functions/         # Serverless functions (Auth, Asset Proxy)
+├── netlify/edge-functions/    # Edge routers for low latency data fetching
+├── netlify/functions/         # Standard Serverless functions (Auth, API)
 │
 ├── _legacy_js/                 # Source for raw JS files (copied to static/js at build)
 ├── secure_assets/             # (GitIgnored) Downloaded private assets
@@ -150,14 +151,16 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 ## Netlify Functions & Auth
 
-Some tools rely on Serverless Functions for authentication and data access.
+Some tools rely on Edge and Serverless Functions for authentication and data access.
 
 ### 1. Authentication Flow
 
 - **Identity:** Handled natively by Supabase Auth (`auth.users`).
 - **Zero-Knowledge Encryption:** The user's password never leaves the client. It is used to create an Auth Hash (sent to Supabase for login) and a Key Encryption Key (KEK) used to unwrap the local Data Encryption Key (DEK).
-- **Session:** Supabase issues an access token which is passed as a `Bearer` token to Netlify Functions.
-- **Logout:** Supabase handles session termination via `supabase.auth.signOut()`. Local encryption keys in memory and session storage are wiped.
+- **Session (Hybrid Architecture):**
+  - **Edge Functions (Reads):** Supabase injects HTTP cookies into the browser; Edge Functions can now verify JWTs natively at the edge with less latency.
+  - **Standard Functions (Mutations):** For POST requests (e.g., `submit-email`), the client manually extracts the JWT and passes it as an `Authorization: Bearer` header. Hopefully protects against CSRF vulnerabilities.
+- **Logout:** Supabase handles session termination via `supabase.auth.signOut()`. Local encryption keys in memory and session cookies are wiped.
 
 ### 2. Fetching Secure Assets
 
@@ -184,6 +187,10 @@ This application uses an invite-only onboarding process managed through Supabase
 ## Infrastructure and Deployment Safeguards (Production)
 
 Deploying to production requires coordination between Netlify (hosting), Cloudflare (CDN/Cache), and the browser's Service Worker. **Failure to follow these steps can result in "cache poisoning" where users are served stale CSP headers or broken Auth logic.**
+
+### Cloudflare R2 Bucket (assets.allergyguide.ca)
+
+Large public binary assets (e.g., PDFs, high-resolution images, slide decks; things that don't need strict version control) are manually managed and hosted on a external bucket, via the `assets.allergyguide.ca` subdomain.
 
 ### 1. The Cloudflare "Query String" Trap
 

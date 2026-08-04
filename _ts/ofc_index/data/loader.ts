@@ -1,7 +1,7 @@
 /**
  * Handles fetching and parsing of food data from both public assets and secure API endpoints
  */
-import { fetchSupaDocuments } from "../../core/data/db";
+import { fetchSupaDocuments, type SupaDocument } from "../../core/data/db";
 import {
 	type Food,
 	type FoodData,
@@ -100,10 +100,16 @@ export async function handleUserLoad(): Promise<UserLoadResult> {
 
 /**
  * Loads custom user foods from the database
+ *
+ * @param preDecryptedDocs - Optional array of pre-decrypted documents to use instead of fetching
  */
-export async function loadCustomFoods(): Promise<Food[]> {
+export async function loadCustomFoods(
+	preDecryptedDocs?: SupaDocument<FoodData>[],
+): Promise<Food[]> {
 	try {
-		const customDocs = await fetchSupaDocuments<FoodData[]>("custom_food");
+		const customDocs =
+			preDecryptedDocs ?? (await fetchSupaDocuments<FoodData>("custom_food")); // if preDecryptedDocs is not null or undefined, use it; otherwise, call fetchSupaDocuments
+
 		return customDocs
 			.map((doc) => {
 				try {

@@ -12,8 +12,13 @@
 // ============================================
 
 import Decimal from "decimal.js";
-import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
-import { fetchSupaDocuments } from "../core/data/db";
+import { supabase } from "../core/api/supabase";
+import {
+	determineVaultState,
+	getActiveDEK,
+	lockAndSignOut,
+} from "../core/auth/login-client";
+import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { runCrudTest } from "../core/data/test-crud";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import { VALIDATION_DEBOUNCE_MS } from "./constants";
@@ -23,6 +28,7 @@ import { appState, initializeAppState, workspace } from "./state/instances";
 import {
 	type FoodData,
 	HttpError,
+	type OITBootstrapResponse,
 	type ProtocolData,
 	type Warning,
 } from "./types";
@@ -61,11 +67,26 @@ Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 // INITIALIZATION
 // ============================================
 
+// Module-level promise to cache background network fetches
+let bootstrapPromise: Promise<OITBootstrapResponse> | null = null;
+let encryptedDocsPromise: ReturnType<typeof fetchAllEncryptedDocuments> | null =
+	null;
+
 // 1. Create the hydration callback
-const handleSuccessfulAuth = async () => {
+export const handleSuccessfulAuth = async () => {
 	try {
-		// Attempt to fetch the secure Netlify config
-		const userData = await loadUserConfiguration();
+		if (!bootstrapPromise) {
+			bootstrapPromise = loadUserConfiguration();
+		}
+
+		if (!encryptedDocsPromise) {
+			encryptedDocsPromise = fetchAllEncryptedDocuments([
+				"custom_food",
+				"custom_protocol",
+			]);
+		}
+
+		const userData = await bootstrapPromise;
 
 		appState.addProvisionedData(
 			userData.provisioned_foods,
@@ -73,24 +94,32 @@ const handleSuccessfulAuth = async () => {
 			userData.handouts,
 		);
 
-		// Attempt to fetch custom data from Supabase
-		try {
-			const [customFoods, customProtocols] = await Promise.all([
-				fetchSupaDocuments<FoodData>("custom_food"),
-				fetchSupaDocuments<ProtocolData>("custom_protocol"),
-			]);
-			appState.setUserData(
-				customFoods.map((doc) => doc.data),
-				customProtocols.map((doc) => doc.data),
-			);
-		} catch (dbErr) {
-			console.error("Failed to fetch custom user data:", dbErr);
-		}
-
 		appState.setAuthState(true, userData.email);
 
 		// Everything worked! Close the modal
 		renderAuthUI("HIDDEN");
+
+		// Fetch and decrypt custom assets in the background
+		appState.setSyncStatus("loading");
+		const dek = getActiveDEK();
+
+		encryptedDocsPromise
+			.then(async (encryptedRows) => {
+				const [customFoods, customProtocols] = await Promise.all([
+					decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
+					decryptDocuments<ProtocolData>(encryptedRows, dek, "custom_protocol"),
+				]);
+
+				appState.setUserData(
+					customFoods.map((doc) => doc.data),
+					customProtocols.map((doc) => doc.data),
+				);
+				appState.setSyncStatus("success");
+			})
+			.catch((err) => {
+				console.error("Failed to load custom assets:", err);
+				appState.setSyncStatus("error");
+			});
 	} catch (e) {
 		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
 		await lockAndSignOut(null);
@@ -122,6 +151,11 @@ const handleSuccessfulAuth = async () => {
 
 		// Keep the modal open and show the error!
 		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+	} finally {
+		// Ensure the promise is cleared regardless of success or failure
+		// so subsequent auth changes (e.g. logout then login or retries) get fresh data
+		bootstrapPromise = null;
+		encryptedDocsPromise = null;
 	}
 };
 
@@ -135,10 +169,32 @@ async function initializeCalculator(): Promise<void> {
 	if (!rulesUrl)
 		throw new Error("Missing url-container dataset: rulesUrl is required");
 
-	// Start loads
-	const publicDataPromise = loadPublicDatabases(); // for CNF foods basically
-	// Await Public Data (Required for AppState init)
-	const publicData = await publicDataPromise;
+	// start public data and session check in parallel
+	const publicDataPromise = loadPublicDatabases();
+	const sessionPromise = supabase.auth.getSession();
+
+	// Start vault state resolution
+	const vaultStatePromise = determineVaultState();
+
+	const {
+		data: { session },
+	} = await sessionPromise;
+	if (session) {
+		// start network fetch without waiting for DEK
+		bootstrapPromise = loadUserConfiguration();
+		bootstrapPromise.catch(() => {});
+
+		encryptedDocsPromise = fetchAllEncryptedDocuments([
+			"custom_food",
+			"custom_protocol",
+		]);
+		encryptedDocsPromise.catch(() => {});
+	}
+
+	const [publicData, vaultState] = await Promise.all([
+		publicDataPromise,
+		vaultStatePromise,
+	]);
 
 	// Init AppState and Subscribers
 	initializeAppState(publicData, rulesUrl);
@@ -158,11 +214,6 @@ async function initializeCalculator(): Promise<void> {
 		(document.querySelector(".changelog-link") as HTMLAnchorElement)?.href ||
 		"#";
 
-	// Wire up restricted mode login button
-	document
-		.getElementById("btn-restricted-login")
-		?.addEventListener("click", onLogin);
-
 	const getToolbarProps = () => ({
 		isLoggedIn: appState.isLoggedIn,
 		userEmail: appState.email,
@@ -170,6 +221,7 @@ async function initializeCalculator(): Promise<void> {
 		changelogUrl: changelogLink,
 		onLogin,
 		onLogout,
+		customAssetsSyncStatus: appState.customAssetsSyncStatus,
 	});
 
 	appState.subscribeToAuth((isLoggedIn) => {
@@ -201,10 +253,20 @@ async function initializeCalculator(): Promise<void> {
 
 	// SETUP AUTH
 	// Determine identity and vault state
-	const vaultState = await determineVaultState();
 	if (vaultState === "UNAUTHENTICATED") {
 		// Public mode. Application is usable with publicFoods.
+		const restrictedCard = document.querySelector(
+			".restricted-card",
+		) as HTMLElement;
+		if (restrictedCard?.dataset.originalHtml) {
+			restrictedCard.innerHTML = restrictedCard.dataset.originalHtml;
+		}
 		appState.setAuthState(false, null);
+		// Re-attach event listener in case innerHTML replacement destroyed it
+		document
+			.getElementById("btn-restricted-login")
+			?.addEventListener("click", onLogin);
+
 		// renderToolbar is called by subscribeToAuth via setAuthState
 	} else if (vaultState === "LOCKED") {
 		// They are logged in to Supabase, but the DEK is missing in this tab.
@@ -215,34 +277,60 @@ async function initializeCalculator(): Promise<void> {
 		renderAuthUI("HIDDEN");
 
 		try {
-			const userData = await loadUserConfiguration(); // This now uses Bearer token securely!
+			if (!bootstrapPromise) {
+				// Fallback just in case (e.g. session was briefly false but vault unlocked, edge case)
+				bootstrapPromise = loadUserConfiguration();
+			}
+
+			const userData = await bootstrapPromise;
+
 			appState.addProvisionedData(
 				userData.provisioned_foods,
 				userData.provisioned_protocols,
 				userData.handouts,
 			);
 
-			// Fetch custom user data
-			try {
-				const [customFoods, customProtocols] = await Promise.all([
-					fetchSupaDocuments<FoodData>("custom_food"),
-					fetchSupaDocuments<ProtocolData>("custom_protocol"),
+			appState.setAuthState(true, userData.email);
+
+			// Start background processing of custom assets
+			appState.setSyncStatus("loading");
+			const dek = getActiveDEK();
+
+			if (!encryptedDocsPromise) {
+				encryptedDocsPromise = fetchAllEncryptedDocuments([
+					"custom_food",
+					"custom_protocol",
 				]);
-				appState.setUserData(
-					customFoods.map((doc) => doc.data),
-					customProtocols.map((doc) => doc.data),
-				);
-			} catch (dbErr) {
-				console.error("Failed to fetch custom user data:", dbErr);
 			}
 
-			appState.setAuthState(true, userData.email);
-			// renderToolbar is called by subscribeToAuth
+			encryptedDocsPromise
+				.then(async (encryptedRows) => {
+					const [customFoods, customProtocols] = await Promise.all([
+						decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
+						decryptDocuments<ProtocolData>(
+							encryptedRows,
+							dek,
+							"custom_protocol",
+						),
+					]);
+					appState.setUserData(
+						customFoods.map((doc) => doc.data),
+						customProtocols.map((doc) => doc.data),
+					);
+					appState.setSyncStatus("success");
+				})
+				.catch((err) => {
+					console.error("Failed to load custom assets:", err);
+					appState.setSyncStatus("error");
+				});
 		} catch {
 			console.error(
 				"Failed to load provisioned assets. User may not have access.",
 			);
 			// Optionally handle 403s here
+		} finally {
+			bootstrapPromise = null; // Clear it for subsequent re-auths
+			encryptedDocsPromise = null;
 		}
 	}
 
@@ -377,9 +465,11 @@ const init = async () => {
 	}
 };
 
-// Initialize when DOM is ready
-if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", init);
-} else {
-	init();
+// Initialize when DOM is ready (but not during tests)
+if (typeof process === "undefined" || process.env.NODE_ENV !== "test") {
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", init);
+	} else {
+		init();
+	}
 }

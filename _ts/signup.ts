@@ -23,6 +23,7 @@ let userEmail = "";
 let userId = "";
 let isProcessing = false;
 let isUnderstood = false;
+let isTermsAccepted = false;
 let errorMessage = "";
 let complexityError = "";
 let matchError = false;
@@ -51,6 +52,12 @@ async function handleSetup(e: Event) {
 
 	if (!isUnderstood) {
 		errorMessage = "You must confirm you understand the recovery risk.";
+		updateUI();
+		return;
+	}
+
+	if (!isTermsAccepted) {
+		errorMessage = "You must accept the Terms of Use.";
 		updateUI();
 		return;
 	}
@@ -251,6 +258,20 @@ const setupTemplate = () => html`
             <span class="checkmark"></span>
             I understand that my data cannot be recovered if I lose this password.
           </label>
+          <label class="checkbox-container" style="margin-top: 1rem;">
+            <input 
+              type="checkbox" 
+              id="check-terms" 
+              ?disabled=${isProcessing}
+              .checked=${isTermsAccepted}
+              @change=${(e: Event) => {
+								isTermsAccepted = (e.target as HTMLInputElement).checked;
+								updateUI();
+							}}
+            >
+            <span class="checkmark"></span>
+            I acknowledge the Medical Disclaimer and agree to the <a href="/termsofuse" target="_blank" rel="noopener noreferrer">Terms of Use</a>.
+          </label>
         </div>
 
         ${
@@ -264,7 +285,7 @@ const setupTemplate = () => html`
             type="submit" 
             id="btn-submit" 
             class="core-btn core-btn-primary full-width"
-            ?disabled=${isProcessing || !isUnderstood || Boolean(complexityError) || matchError || !passwordValue}
+            ?disabled=${isProcessing || !isUnderstood || !isTermsAccepted || Boolean(complexityError) || matchError || !passwordValue}
           >
             ${isProcessing ? "Securing Account..." : "Set Password & Secure Account"}
           </button>

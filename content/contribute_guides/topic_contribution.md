@@ -59,7 +59,7 @@ Example of a finished topic page: [Chronic rhinosinusitis](/topics/hypersensitiv
 - If you need to list a specific prescription, format as "ExRx: Nasonex 2 sprays EN BID" (ExRx = Example Prescription)
   - If possible, you can also list a 'med-popup' linking to a relevant medication card. For example: {% popup() %}
 
-{{ medications_toml_load(meds=["bilastine"])}}
+{{ med_card(id="bilastine") }}
 
 {% end %}
 

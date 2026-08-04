@@ -10,6 +10,15 @@ export interface SupaDocument<T> {
 	updated_at: string;
 }
 
+export interface EncryptedDocument {
+	id: string;
+	doc_type: string;
+	encrypted_blob: string;
+	iv: string;
+	created_at: string;
+	updated_at: string;
+}
+
 /**
  * Represents a new document for the database where created_at is handled by default
  */
@@ -55,29 +64,43 @@ export async function saveSupaDocument<T>(
 }
 
 /**
- * Fetches and decrypts all rows for a specific document type
+ * Fetches encrypted rows from Postgres for the specified document types
+ * Does not require DEK
  *
- * @param doc_type - Document type identifier
- * @returns {Promise<SupaDocument<T>[]>} Promise resolving to an array of decrypted documents
- * @throws {Error} If vault is locked or fetch operation fails
+ * @param doc_types - Array of document type identifiers
+ * @returns {Promise<EncryptedDocument[]>} Promise resolving to an array of encrypted documents
  */
-export async function fetchSupaDocuments<T>(
-	doc_type: string,
-): Promise<SupaDocument<T>[]> {
-	const dek = getActiveDEK();
-
-	// Fetch encrypted rows from Postgres
+export async function fetchAllEncryptedDocuments(
+	doc_types: string[],
+): Promise<EncryptedDocument[]> {
 	const { data: rows, error } = await supabase
 		.from("user_documents")
 		.select("id, doc_type, encrypted_blob, iv, created_at, updated_at")
-		.eq("doc_type", doc_type);
+		.in("doc_type", doc_types);
 
-	if (error) throw new Error(`Failed to fetch ${doc_type} records.`);
-	if (!rows || rows.length === 0) return [];
+	if (error) throw new Error("Failed to fetch user documents");
+	return rows || [];
+}
 
-	// Decrypt all rows asynchronously
+/**
+ * Decrypts an array of encrypted documents
+ *
+ * @param rows - Array of encrypted documents
+ * @param dek - The Data Encryption Key
+ * @param docTypeFilter - Optional filter to only decrypt documents of a certain type
+ * @returns {Promise<SupaDocument<T>[]>} Promise resolving to an array of decrypted documents
+ */
+export async function decryptDocuments<T>(
+	rows: EncryptedDocument[],
+	dek: CryptoKey,
+	docTypeFilter?: string,
+): Promise<SupaDocument<T>[]> {
+	const filtered = docTypeFilter
+		? rows.filter((r) => r.doc_type === docTypeFilter)
+		: rows;
+
 	const decryptedDocs = await Promise.all(
-		rows.map(async (row) => {
+		filtered.map(async (row) => {
 			try {
 				const decryptedString = await decryptData(
 					row.encrypted_blob,
@@ -100,6 +123,21 @@ export async function fetchSupaDocuments<T>(
 
 	// Filter out any that failed to decrypt
 	return decryptedDocs.filter((doc): doc is SupaDocument<T> => doc !== null);
+}
+
+/**
+ * Fetches and decrypts all rows for a specific document type
+ *
+ * @param doc_type - Document type identifier
+ * @returns {Promise<SupaDocument<T>[]>} Promise resolving to an array of decrypted documents
+ * @throws {Error} If vault is locked or fetch operation fails
+ */
+export async function fetchSupaDocuments<T>(
+	doc_type: string,
+): Promise<SupaDocument<T>[]> {
+	const dek = getActiveDEK();
+	const rows = await fetchAllEncryptedDocuments([doc_type]);
+	return decryptDocuments<T>(rows, dek);
 }
 
 /**

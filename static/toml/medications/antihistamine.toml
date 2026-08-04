@@ -1,0 +1,367 @@
+[rupatadine]
+
+# =====================================================================
+# METADATA & HEADER
+# =====================================================================
+
+display_name = "Rupatadine"
+otc = "no"
+draft = true
+categories = ["antihistamine"]
+abbreviations = "CSU - Chronic Spontaneous Urticaria; AR - Allergic Rhinitis"
+brand_names = ["Rupall", "Rupafin", "Rupita"]
+
+authors.primary = "JY"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+# =====================================================================
+# CORE CLINICAL INFO
+# =====================================================================
+
+moa = "2nd generation H1 receptor antagonist and platelet-activating factor antagonist"
+pregnancy = "Avoid (not enough data)."
+side_effects_summary = "Well tolerated overall. Small risk of drowsiness; very rare instances of QT-prolongation."
+ix_before = ""
+ix_ongoing = ""
+contraindications = "QT prolongation, history of Torsades de Pointes, on CYP3A4 inhibitors."
+severe_side_effects = "All **very** rare (<1%): Torsades de Pointes (only 1 event post-market per monograph), liver enzyme elevation."
+side_effects_source = ""
+half_life = "~6 hours, but some metabolites (i.e., desloratadine) remain longer; effects last ~24 hours."
+
+available_forms = ["10mg tab", "1mg/ml liquid"]
+estimated_cost = "~$1.6 CAD / 10mg tab"
+interactions_summary = "CYP3A4 inhibitors (i.e. ketoconazole, azithromycin, fluconazole, diltiazem)"
+severe_interactions = """
+```
+RUPALL (rupatadine) is contraindicated in patients with:
+- hypersensitivity to rupatadine or to any ingredient in the formulation or component of the container. For a complete listing, see the DOSAGE FORMS, COMPOSITION AND PACKAGING.
+- history of QT prolongation and/or torsade de pointes, including congenital long QT syndromes, history of cardiac arrhythmias (see WARNINGS AND PRECAUTIONS).
+- use of CYP3A4 inhibitors or use of other QTc-prolonging drugs (see DRUG INTERACTIONS).
+```
+Source: 2023 monograph
+"""
+pearls = [
+  "Take with or without food (avoid grapefruit).",
+  "Going more than OD is technically off-label.",
+  "No data exists for dosing in hepatic or renal insufficiency.",
+]
+
+monograph_links = [
+  "https://assets.allergyguide.ca/monographs/rupatadine-2023-01.pdf",
+]
+
+# =====================================================================
+# DOSES
+# =====================================================================
+
+[[rupatadine.doses]]
+indication = "Chronic Spontaneous Urticaria, Allergic Rhinitis"
+patient_age = "≥12 yrs"
+dose = "10mg tab OD to QID"
+off_label = true
+patient_weight = ""
+notes = ""
+sample_rx = ""
+
+[[rupatadine.doses]]
+indication = "Chronic Spontaneous Urticaria, Allergic Rhinitis"
+patient_age = "2-11 yrs"
+patient_weight = "10-25 kg"
+dose = "2.5mg liquid OD to QID"
+off_label = true
+notes = ""
+sample_rx = ""
+
+[[rupatadine.doses]]
+indication = "Chronic Spontaneous Urticaria, Allergic Rhinitis"
+patient_age = "2-11 yrs"
+patient_weight = ">25 kg"
+dose = "5mg liquid OD to QID"
+off_label = true
+notes = ""
+sample_rx = ""
+
+
+# =====================================================================
+# ADVERSE EVENTS (TRIAL DATA)
+# =====================================================================
+
+[[rupatadine.side_effects]]
+symptom = "Drowsiness"
+comparator_name = "Placebo"
+notes = ""
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "3-9%"
+comparator = "2-5%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Headache"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1-6%"
+comparator = "2-5%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Tiredness"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1%"
+comparator = "1%"
+
+
+[[rupatadine.side_effects]]
+symptom = "QT-prolongation"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1%"
+comparator = "<1%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Dizziness"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "1%"
+comparator = "1%"
+
+
+[[rupatadine.side_effects]]
+symptom = "Nausea"
+
+[[rupatadine.side_effects.rates]]
+indication = "All"
+drug = "0-2%"
+comparator = "1-2%"
+
+
+# =====================================================================
+# COVERAGE & COST
+# =====================================================================
+
+[[rupatadine.coverage]]
+province = ["BC"]
+status = "Not Covered"
+tips = """
+- **Private:** most extended benefits should cover.
+"""
+[[rupatadine.coverage]]
+province = ["ON"]
+status = "Not Covered"
+tips = """
+- Not covered through ODB or OHIP+
+- **Private:** most insurance companies should cover
+"""
+
+[cetirizine]
+
+# =====================================================================
+# METADATA & HEADER
+# =====================================================================
+
+display_name = "Cetirizine"
+otc = "both"
+draft = true
+categories = ["antihistamine"]
+abbreviations = ""
+brand_names = ["Reactine", "Allacan"]
+
+authors.primary = "JY"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+# =====================================================================
+# CORE CLINICAL INFO
+# =====================================================================
+
+moa = "2nd gen H1 receptor antagonist"
+pregnancy = "Safe in pregnancy"
+side_effects_summary = "Well tolerated, but higher rates of drowsiness (~25% at 20mg OD)."
+
+ix_before = ""
+ix_ongoing = ""
+contraindications = "CrCl <10ml/min"
+severe_side_effects = "<1% and rare: see monograph"
+side_effects_source = "For 20mg OD, per monograph."
+half_life = "~8 hours"
+
+available_forms = [
+  "20mg tab (Rx)",
+  "5 or 10mg tab (OTC)",
+  "5mg/5mL liquid (OTC)",
+]
+estimated_cost = "~$0.40 CAD / 10mg tab"
+interactions_summary = "No clinically significant drug interactions have been found."
+severe_interactions = ""
+pearls = [
+  "Use with or without food, though food delays onset of effect",
+  "Safe in pregnancy!",
+  "No significant effect on QTc seen with 60mg OD",
+  "Comparatively to other 2nd-gen antihistamines, it has the highest drowsiness rates",
+]
+
+monograph_links = [
+  "https://assets.allergyguide.ca/monographs/cetirizine-2018-08.pdf",
+  "https://assets.allergyguide.ca/monographs/cetirizine-2025-03.pdf",
+  "https://assets.allergyguide.ca/monographs/cetirizine-2025-12.pdf",
+]
+
+# =====================================================================
+# DOSES
+# =====================================================================
+
+[[cetirizine.doses]]
+indication = "CSU, AR"
+patient_age = "≥12 yrs"
+dose = "10mg OD to QID"
+notes = "Tablet form approved 12 and up"
+[[cetirizine.doses.adjustments]]
+condition = "Moderate hepatic or renal impairment"
+dose = "Start with 5 mg OD"
+
+[[cetirizine.doses]]
+indication = "CSU, AR"
+patient_age = "6-12 yrs"
+dose = "10mg liq OD to QID"
+[[cetirizine.doses.adjustments]]
+condition = "Moderate hepatic or renal impairment"
+dose = "Start with 5 mg OD"
+
+[[cetirizine.doses]]
+indication = "CSU, AR"
+patient_age = "2-6 yrs"
+dose = "5mg liq OD to QID"
+
+# =====================================================================
+# ADVERSE EVENTS (TRIAL DATA)
+# =====================================================================
+
+[[cetirizine.side_effects]]
+symptom = "Drowsiness"
+[[cetirizine.side_effects.rates]]
+indication = "All"
+drug = "24%"
+comparator = "8%"
+[[cetirizine.side_effects]]
+symptom = "Fatigue"
+[[cetirizine.side_effects.rates]]
+indication = "All"
+drug = "7%"
+comparator = "2.5%"
+[[cetirizine.side_effects]]
+symptom = "Dry mouth"
+[[cetirizine.side_effects.rates]]
+indication = "All"
+drug = "8%"
+comparator = "1.5%"
+
+# =====================================================================
+# COVERAGE & COST
+# =====================================================================
+
+[[cetirizine.coverage]]
+province = "BC"
+status = "Restricted"
+tips = "Only Pharmacare Plan W (First Nations) will cover the 10mg tablet"
+[[cetirizine.coverage]]
+province = "ON"
+status = "Not Covered"
+tips = """
+- Not covered through ODB or OHIP+
+- **Private:** most insurance companies should cover
+"""
+
+[bilastine]
+draft = true
+display_name = "Bilastine"
+otc = "no"
+categories = ["antihistamine"]
+abbreviations = "CSU-chronic spontaneous urticaria; AR-allergic rhinitis"
+brand_names = ["Blexten"]
+
+authors.primary = "JY"
+authors.editors = "TBD"
+authors.staff = "TBD"
+
+moa = "2nd gen H1 receptor antagonist"
+pregnancy = "Avoid (not enough data)"
+side_effects_summary = "Generally well tolerated. QT prolongation (at 100mg ODx4, max mean increase 6ms)."
+
+contraindications = "QT prolongation or history of torsades"
+severe_side_effects = "Torsades (extremely rare; only 1 case reported in monograph post-market reactions)"
+half_life = "~15 hours. Peak action: ~1h, rapid absorption."
+
+interactions_summary = "Ketoconazole, erythromycin, diltiazem, P-Glycoprotein inhibitors."
+severe_interactions = """
+```text
+Ketoconazole and erythromycin
+Concomitant administration of bilastine and ketoconazole or erythromycin increased bilastine AUC 2-fold and Cmax 2-3 fold. These changes can be explained by interaction with intestinal efflux transporters, since bilastine is a substrate for P-gp and not metabolized. In a randomised, double-blind, placebo- and positive-controlled, 5-way crossover ECG assessment study in 30 healthy adult subjects, bilastine 20 mg/day administered alone for four days was associated with statistically significant positive mean differences from placebo in the QTcF interval at 1 and 3 h post-dosing on day 4, with a maximum mean difference from placebo of 4.0 ms (90% CI 1.20, 6.73) at 1 h, whereas bilastine 20 mg/day and ketoconazole 400 mg administered concomitantly for four days produced statistically significant QTcF prolongation at all time points from 0.5-12 h, inclusive, on day 4 with a maximum mean difference from placebo of 10.0 ms (90% CI 6.49, 13.43) at 1 h. Other medicinal products that are substrates or inhibitors of P-gp, such as cyclosporine, may likewise have the potential to increase plasma concentrations of bilastine. 
+
+Diltiazem
+Concomitant administration of BLEXTEN and diltiazem 60 mg increased Cmax of bilastine by 50%. This effect can be explained by interaction with intestinal efflux transporters, and does not appear to affect the safety profile of bilastine. 
+
+Inhibitors of P-Glycoprotein:
+Plasma levels of bilastine can be increased by inhibitors of P-glycoprotein; the concomitant use of these drugs with bilastine is not recommended. Drugs that inhibit P-glycoprotein include, but are not limited to certain azole antifungal, macrolide antibiotics, and HIV protease inhibitors (see WARNINGS AND PRECAUTIONS).
+```
+Source: 2021 monograph.
+"""
+
+available_forms = [
+  "10mg orodispersible tab",
+  "20mg tab",
+  "2.5mg/ml liq (uncommon)",
+]
+
+pearls = [
+  "Theoretically does not cross BBB; less sedating than other AHs",
+  "No renal adjustments needed; minimal data with hepatic impairment but not expected to cause issues",
+  "Going beyond OD is technically off-label",
+  "Take without food or juice otherwise absorption impaired",
+]
+
+monograph_links = [
+  "https://assets.allergyguide.ca/monographs/bilastine-2021-08.pdf",
+]
+
+estimated_cost = "~$1.1 CAD / 20mg tab"
+
+[[bilastine.side_effects]]
+symptom = "Drowsiness / Headache"
+[[bilastine.side_effects.rates]]
+indication = "All Indications"
+drug = "~4%"
+comparator = "~3%"
+
+[[bilastine.side_effects]]
+symptom = "Abdominal Pain"
+[[bilastine.side_effects.rates]]
+indication = "All Indications"
+drug = "3%"
+comparator = "3%"
+
+[[bilastine.doses]]
+indication = "CSU, AR"
+patient_age = "ages ≥12"
+dose = "20mg PO OD to QID"
+off_label = true
+
+[[bilastine.doses]]
+indication = "CSU, AR"
+patient_age = "ages 4-11"
+dose = "10mg PO OD to QID"
+off_label = true
+
+[[bilastine.coverage]]
+province = ["ON", "BC"]
+status = "Not Covered"
+tips = """
+- **Private:** most insurance companies should cover
+"""

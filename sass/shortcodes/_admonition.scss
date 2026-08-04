@@ -1,18 +1,20 @@
 @mixin admonition-type($type) {
   border-color: var(--admonition-#{$type}-border);
   background-color: var(--admonition-#{$type}-bg);
+  color: var(--admonition-#{$type}-text);
 
   >.admonition-content>p>code {
     background-color: var(--admonition-#{$type}-code);
+    color: var(--admonition-#{$type}-text);
   }
 
   a {
     border-bottom: 1px solid var(--admonition-#{$type}-border);
-    color: var(--admonition-#{$type}-border);
+    color: var(--admonition-#{$type}-text);
+    font-weight: 500;
 
     &:hover {
-      /* background-color: var(--admonition-#{$type}-border); */
-      color: var(--hover-color);
+      color: var(--admonition-#{$type}-border);
     }
   }
 
@@ -23,63 +25,69 @@
 }
 
 :root {
-  /* Dark mode */
-  --admonition-note-border: #d0d1d4;
-  --admonition-note-bg: #3d3e40;
-  --admonition-note-code: #495057;
+  /* Dark mode - OKLCH */
+  --admonition-note-bg: oklch(25% 0.01 250);
+  --admonition-note-border: oklch(65% 0.02 250);
+  --admonition-note-text: oklch(85% 0.01 250);
+  --admonition-note-code: oklch(35% 0.02 250);
 
-  --admonition-tip-border: #01b010;
-  --admonition-tip-bg: #013100;
-  --admonition-tip-code: #005f00;
+  --admonition-tip-bg: oklch(25% 0.03 140);
+  --admonition-tip-border: oklch(70% 0.1 140);
+  --admonition-tip-text: oklch(85% 0.03 140);
+  --admonition-tip-code: oklch(35% 0.05 140);
 
-  --admonition-info-border: #50a9d5;
-  --admonition-info-bg: #193C47;
-  --admonition-info-code: #245e70;
+  --admonition-info-bg: oklch(25% 0.04 240);
+  --admonition-info-border: oklch(70% 0.1 240);
+  --admonition-info-text: oklch(85% 0.04 240);
+  --admonition-info-code: oklch(35% 0.05 240);
 
-  --admonition-warning-border: #e19d0a;
-  --admonition-warning-bg: #4f3a01;
-  --admonition-warning-code: #8c6b00;
+  --admonition-warning-bg: oklch(25% 0.04 70);
+  --admonition-warning-border: oklch(75% 0.15 70);
+  --admonition-warning-text: oklch(85% 0.05 70);
+  --admonition-warning-code: oklch(35% 0.06 70);
 
-  --admonition-danger-border: #e74f54;
-  --admonition-danger-bg: #4c1012;
-  --admonition-danger-code: #8c2e00;
+  --admonition-danger-bg: oklch(25% 0.05 25);
+  --admonition-danger-border: oklch(70% 0.15 25);
+  --admonition-danger-text: oklch(85% 0.04 25);
+  --admonition-danger-code: oklch(35% 0.06 25);
 
-  --admonition-pearl-border: #ff4d58;
-  /* More intense coral-pink */
-  --admonition-pearl-bg: #5e2a3a;
-  /* Darker pinkish-brown */
-  --admonition-pearl-code: #a94d5b;
-  /* Muted pink with stronger hue */
+  --admonition-pearl-bg: oklch(25% 0.04 340);
+  --admonition-pearl-border: oklch(70% 0.15 340);
+  --admonition-pearl-text: oklch(85% 0.04 340);
+  --admonition-pearl-code: oklch(35% 0.06 340);
 }
 
 :root.switch {
-  /* Light mode */
-  --admonition-note-border: #5b6167;
-  --admonition-note-bg: #f2f4f7;
-  --admonition-note-code: #e1e3ed;
+  /* Light mode - OKLCH */
+  --admonition-note-bg: oklch(96% 0.01 250);
+  --admonition-note-border: oklch(60% 0.02 250);
+  --admonition-note-text: oklch(35% 0.02 250);
+  --admonition-note-code: oklch(90% 0.02 250);
 
-  --admonition-tip-border: #03970f;
-  --admonition-tip-bg: #f0fdf0;
-  --admonition-tip-code: #d3edc5;
+  --admonition-tip-bg: oklch(96% 0.03 140);
+  --admonition-tip-border: oklch(60% 0.1 140);
+  --admonition-tip-text: oklch(35% 0.05 140);
+  --admonition-tip-code: oklch(90% 0.05 140);
 
-  --admonition-info-border: #15a2b2;
-  --admonition-info-bg: #f5fbff;
-  --admonition-info-code: #d5e2f2;
+  --admonition-info-bg: oklch(96% 0.03 240);
+  --admonition-info-border: oklch(60% 0.1 240);
+  --admonition-info-text: oklch(35% 0.06 240);
+  --admonition-info-code: oklch(90% 0.05 240);
 
-  --admonition-warning-border: #eea719;
-  --admonition-warning-bg: #fff8e6;
-  --admonition-warning-code: #feee96;
+  --admonition-warning-bg: oklch(96% 0.03 70);
+  --admonition-warning-border: oklch(70% 0.15 70);
+  --admonition-warning-text: oklch(40% 0.1 70);
+  --admonition-warning-code: oklch(90% 0.06 70);
 
-  --admonition-danger-border: #d8292e;
-  --admonition-danger-bg: #ffebed;
-  --admonition-danger-code: #fcc1c5;
+  --admonition-danger-bg: oklch(96% 0.03 25);
+  --admonition-danger-border: oklch(60% 0.15 25);
+  --admonition-danger-text: oklch(35% 0.1 25);
+  --admonition-danger-code: oklch(90% 0.05 25);
 
-  --admonition-pearl-border: #ff4b6a;
-  /* More pink for the border */
-  --admonition-pearl-bg: #ffebef;
-  /* Light pink background */
-  --admonition-pearl-code: #f4a8b3;
-  /* Softer pink for code background */
+  --admonition-pearl-bg: oklch(96% 0.03 340);
+  --admonition-pearl-border: oklch(65% 0.15 340);
+  --admonition-pearl-text: oklch(35% 0.1 340);
+  --admonition-pearl-code: oklch(90% 0.05 340);
 }
 
 .admonition {
@@ -87,24 +95,20 @@
   grid-template-columns: auto 1fr;
   gap: 0.5rem;
   align-items: start;
-  border-radius: 10px;
-  border-inline-start: 6px solid;
-  border-right: 0;
-  border-top: 0;
-  border-bottom: 0;
-  padding: 0.8rem;
-  color: var(--text-color-high-contrast);
+  border-radius: 0.5rem;
+  padding: 0.8rem 1rem;
   font-family: var(--sans-serif-font);
+  border: 0; // Explicitly override any global resets that might apply borders
+  box-shadow: none;
+
+  &.bordered {
+    border: 0.125rem solid; // 1px equivalent
+    box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.05); // 0 1px 3px equivalent
+  }
 
   p {
     margin-block-end: 0;
     font-family: inherit;
-  }
-
-  a {
-    code {
-      color: inherit;
-    }
   }
 
   .admonition-content {
@@ -124,7 +128,7 @@
     ol {
       margin: 0;
       margin-left: 0.2rem;
-      color: var(--text-color-high-contrast);
+      color: inherit;
     }
   }
 
@@ -135,7 +139,6 @@
     background-repeat: no-repeat;
     aspect-ratio: 1/1;
     width: 1.5rem;
-
   }
 
   .admonition-title {
@@ -144,9 +147,7 @@
     font-weight: bold;
     font-size: 1rem;
   }
-
 }
-
 
 .admonition.note {
   @include admonition-type('note');

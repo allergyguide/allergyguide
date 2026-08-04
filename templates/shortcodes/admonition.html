@@ -2,6 +2,7 @@
 {%- set title = title | default(value=type | upper) -%}
 {%- set icon = icon | default(value=type) -%}
 {%- set text = text | default(value=body) -%}
+{%- set bordered = bordered | default(value=false) -%}
 
 {% if icon == "note" %}
 {% set icon_data = load_data(path="static/icon/t_note.svg") %}
@@ -22,7 +23,7 @@
 {% else %}
 {% set icon_data = null %}
 {% endif %}
-<div class="admonition {{ type }}">
+<div class="admonition {{ type }}{% if bordered %} bordered{% endif %}">
   <div class="admonition-icon">
     {{ icon_data | safe }}
   </div>

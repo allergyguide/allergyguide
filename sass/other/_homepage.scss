@@ -1,47 +1,147 @@
 .allergyguide-homepage {
 
-  .homepage-icon {
-    fill: var(--a1);
-    color: var(--a1);
-    height: 2em;
-    vertical-align: -0.2em;
-    margin-right: 0.5em;
-  }
-
   .hero {
     text-align: center;
-    margin: 1.5rem 0 1.5rem;
+    margin: 2rem 0 4rem;
     background-color: var(--c2);
-    padding: 1.5rem;
-    border-radius: 0.75rem;
+    padding: 5rem 2rem;
+    border-radius: 1.5rem;
+
+    /* Clean, extremely subtle border for light mode */
+    border: 1px solid color-mix(in srgb, var(--a1) 8%, transparent);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+
+    /* Elevated but clinical styling for dark mode */
+    :root.dark & {
+      border-color: color-mix(in srgb, var(--a1) 15%, transparent);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not(.light) & {
+        border-color: color-mix(in srgb, var(--a1) 15%, transparent);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--f2);
+    }
+
+    .lead {
+      font-size: 1.25rem;
+      color: var(--f1);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      .button {
+        text-decoration: none;
+        padding: 0.8rem 1.8rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        transition: all 0.2s ease;
+      }
+
+      .button-primary {
+        background-color: var(--a1);
+        color: var(--c1);
+
+        &:hover {
+          background-color: var(--a2);
+        }
+      }
+
+      .button-secondary {
+        background-color: transparent;
+        color: var(--a1);
+        border: 2px solid var(--a1);
+
+        &:hover {
+          background-color: color-mix(in srgb, var(--a1) 10%, transparent);
+        }
+      }
+    }
   }
 
-  ul {
-    list-style-type: none;
-    padding-left: 0;
+  .section-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--f2);
+  }
+
+  .features-list {
+    margin: 1rem 0;
+    padding: 0;
+    list-style: none;
 
     li {
-      margin-bottom: 1rem;
       display: flex;
       align-items: flex-start;
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+      color: var(--f1);
+      
+      .homepage-icon {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-right: 1rem;
+        margin-top: 0.15rem;
+        color: var(--a1);
+      }
+      
+      strong {
+        color: var(--f2);
+      }
     }
   }
 
   .contribute {
     text-align: center;
-    padding: 2rem 1rem;
-    background-color: var(--c2);
-    border-radius: 0.75rem;
-    margin: 1rem 0;
+    padding: 4rem 2rem;
+    background-color: color-mix(in srgb, var(--f2) 95%, var(--c1));
+    color: var(--c1);
+    border-radius: 1.5rem;
+    margin: 4rem 0 2rem;
+
+    h3 {
+      color: var(--c1);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: color-mix(in srgb, var(--c1) 85%, transparent);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
 
     .button {
       text-decoration: none;
       background-color: var(--a1);
       color: var(--c1);
-      padding: 0.8rem 1.5rem;
+      padding: 1rem 2rem;
       border-radius: 0.5rem;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      display: inline-block;
+
+      &:hover {
+        background-color: var(--a2);
+      }
     }
   }
-
 }

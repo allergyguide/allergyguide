@@ -1,24 +1,4 @@
-:root {
-  /* Dark mode */
-  --border-color: #333;
-  --summary-bg: #472F18;
-  --summary-hover-bg: #333;
-  --summary-color: #f90;
-  --content-bg: #111;
-  --content-color: #ccc;
-  --focus-color: #f90;
-}
-
-:root.switch {
-  /* Light mode */
-  --border-color: #ddd;
-  --summary-bg: #eee;
-  --summary-hover-bg: #ddd;
-  --summary-color: #222;
-  --content-bg: #fff;
-  --content-color: #333;
-  --focus-color: #c40;
-}
+// Uses CSS variables defined in sass/core/_variables.scss
 
 .dropdown {
   width: 100%;
@@ -28,10 +8,9 @@
 
   details {
     width: 100%;
-    border: 0.05rem solid var(--border-color);
+    border: 1px solid color-mix(in oklch, var(--core-primary) 25%, var(--core-border));
     border-radius: 0.5rem;
     overflow: hidden;
-    transition: all 0.3s ease;
     display: block;
     /* Ensures the details is a block element */
     position: relative;
@@ -39,8 +18,8 @@
 
     summary {
       padding: 1rem;
-      background-color: var(--summary-bg);
-      color: var(--summary-color);
+      background-color: color-mix(in oklch, var(--core-primary) 6%, var(--core-surface));
+      color: var(--core-ink);
       font-weight: 500;
       cursor: pointer;
       position: relative;
@@ -50,34 +29,47 @@
       transition: background-color 0.2s ease;
       text-align: left;
 
+      // CSS border chevron – no text character, so screen readers stay silent.
       &::before {
-        content: "▼";
-        font-size: 0.75rem;
-        transition: transform 0.3s ease;
+        content: "";
+        display: inline-block;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-right: 0.125rem solid var(--core-primary);
+        border-bottom: 0.125rem solid var(--core-primary);
+        transform: rotate(45deg);
+        transition: transform 0.2s ease;
         margin-right: 0.75rem;
         flex-shrink: 0;
       }
 
       &:hover {
-        background-color: var(--summary-hover-bg);
+        background-color: color-mix(in oklch, var(--core-primary) 12%, var(--core-surface));
       }
 
-      &:focus {
+      &:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 2px var(--focus-color);
+        box-shadow: 0 0 0 2px var(--core-bg), 0 0 0 4px var(--core-primary);
+        border-radius: 0.45rem;
       }
     }
 
+    // Rotate to point up when expanded.
     &[open] summary::before {
-      transform: rotate(180deg);
+      transform: rotate(-135deg);
+    }
+
+    // Add a separator line between the summary and content when expanded
+    &[open] summary {
+      border-bottom: 1px solid color-mix(in oklch, var(--core-primary) 25%, var(--core-border));
     }
   }
 
   .dropdown-content {
     padding: 0.5rem;
     padding-right: 2.25rem; // equilvalent to 1 + 0.75 (from the chevron) + 0.5 from baseline padding
-    background-color: var(--content-bg);
-    color: var(--content-color);
+    background-color: var(--core-bg);
+    color: var(--core-ink-muted);
     line-height: 1.5;
     text-align: left;
     font-weight: normal;
@@ -89,29 +81,10 @@
     cursor: default;
 
 
-    /* Fix for inline elements */
-    span {
-      display: inline;
-      vertical-align: baseline;
-      text-align: left !important;
-    }
-
-    /* Specific fix for reference spans */
-    span.references {
-      display: inline;
-      vertical-align: baseline;
-      font-size: inherit;
-      line-height: inherit;
-    }
-
-    /* Ensure inline elements stay inline */
-    b,
-    strong,
-    i,
-    em,
-    a,
-    code,
-    span {
+    // Ensure phrasing content rendered by Zola/markdown stays inline.
+    // `text-align` inherits from the parent `.dropdown-content` rule above;
+    // no !important needed. `span.references` font/line-height already inherit.
+    b, strong, i, em, a, code, span {
       display: inline;
       vertical-align: baseline;
     }

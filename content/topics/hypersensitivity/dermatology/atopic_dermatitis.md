@@ -162,4 +162,48 @@ ubccpd.ca/course/pediatric-atopic-dermatitis
 - What are the differentials to consider?
 - What are other types of eczema to keep in mind? Ie. dyshyrotic eczema
 
+# Relevant order sets:
+
+Hydrocortisone 2.5% in hydrophilic petrolatum, topical 1 application BID, dispense 250 grams, refills 2. Apply to affected area on face and body.
+
+Hydrocortisone 2.5% in Aquaphor, topical 1 application BID, dispense 250 grams, refills 2. Apply to affected area on face and body.
+
+Hydrocortisone 2.5% in Glaxal base, topical 1 application BID, dispense 250 grams, refills 2. Apply to affected area on face and body.
+
+ARON regime. Betamethasone valerate ointment 0.1% 30 g, mupirocin 2% ointment 25 g, and Hydrophilic Petrolatum base 400 g mixed to a total mass of 452 g (Apply to affected areas on skin). 1 application topical QID, refills 2. Apply to affected areas on skin.
+
+ARON regime. Betamethasone valerate ointment 0.1% 30 g, mupirocin 2% cream 25 g, and vanicream or CeraVe base 400 g mixed to a total mass of 452 g. 1 application topical QID, refills 2. Apply to affected areas on skin.
+
+Mupirocin 2% ointment topical 1 application TID for 10 days, dispense 1 tube, refills 0.
+
+Betamethasone valerate 0.1% cream topical 1 application BID, dispense 250 grams, refills 1. Apply to affected areas on the body (avoid face and folds).
+Betamethasone valerate 0.1% ointment topical 1 application BID, dispense 250 grams, refills 1. Apply to affected areas on the body (avoid face and folds).
+
+Mometasone 0.1% ointment topical 1 application BID, dispense 50 grams, refills 2. Apply to affected areas on the body (avoid face and folds).
+
+Clobetasol 0.05% ointment topical 1 application BID, dispense 50 grams, refills 0. Apply to resistant area (avoid face and folds).
+
+Tacrolimus 0.1% ointment topical 1 application BID, dispense 60 grams, refills 1. Apply to affected areas on face and folds. Off label use for children <2 years of age.
+
+Pimecrolimus 1% cream topical 1 application BID, dispense 30 grams, refills 2. Apply to affected areas on face and folds.
+
+Ruxolitinib 1.5% cream topical 1 application BID, dispense 60 grams, refills: 0. Bring to compounding pharmacy (Apply less than 20% of Body Surface Area).
+
+Roflumilast 0.3% cream topical 1 application qdaily, dispense 1 tube, refills 0. Apply to affected areas on face and folds, less than 20% of Body Surface Area.
+
+### monitoring
+
+Hep B screen
+Hep C screen
+HIV screen
+TBST vs IgRA
+Pregnancy testing
+below as well
+
+q3mo
+CBC with differential
+ALT ALP GGT bilirubin albumin
+Urea and Cr
+Lipid Panel (for JAKi)
+
 </div>

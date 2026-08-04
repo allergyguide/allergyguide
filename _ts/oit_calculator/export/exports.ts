@@ -159,7 +159,7 @@ function renderFoodSection(
 	titleMaxWidth?: number,
 ): number {
 	// Check page break before starting section
-	if (y > 650) {
+	if (y > 700) {
 		doc.addPage();
 		y = 40;
 	}
@@ -168,7 +168,7 @@ function renderFoodSection(
 	doc.setFontSize(14);
 	doc.setFont("helvetica", "bold");
 
-	const splitTitle = doc.splitTextToSize(name, titleMaxWidth || 520);
+	const splitTitle = doc.splitTextToSize(name, titleMaxWidth || 515);
 	// 440 for first food A
 	doc.text(splitTitle, 40, y);
 	y += 20 * splitTitle.length;
@@ -220,8 +220,8 @@ function renderFoodSection(
 			fontStyle: "bold",
 		},
 		styles: {
-			fontSize: 9,
-			cellPadding: 6,
+			fontSize: 10,
+			cellPadding: 8,
 			overflow: "linebreak",
 			valign: "middle",
 			halign: "left",
@@ -241,7 +241,7 @@ function renderFoodSection(
 function renderNotes(doc: jsPDF, y: number, note: string): number {
 	if (!note?.trim()) return y;
 
-	if (y > 650) {
+	if (y > 700) {
 		doc.addPage();
 		y = 40;
 	}
@@ -254,11 +254,11 @@ function renderNotes(doc: jsPDF, y: number, note: string): number {
 	doc.setFontSize(10);
 	doc.setFont("helvetica", "normal");
 
-	const maxWidth = 520;
+	const maxWidth = 515;
 	const lines = doc.splitTextToSize(note.trim(), maxWidth);
 
 	for (const line of lines) {
-		if (y > 730) {
+		if (y > 780) {
 			doc.addPage();
 			y = 40;
 		}
@@ -278,7 +278,7 @@ function renderFooterAndQR(doc: jsPDF, qrMap: Map<number, string | null>) {
 		doc.text(
 			`Always verify calculations before clinical use. Current tool version-hash: v${__VERSION_OIT_CALCULATOR__}-${__COMMIT_HASH__}`,
 			40,
-			772,
+			822,
 		);
 		doc.setTextColor(0);
 
@@ -286,7 +286,7 @@ function renderFooterAndQR(doc: jsPDF, qrMap: Map<number, string | null>) {
 		if (qrMap.has(i)) {
 			const qrDataUrl = qrMap.get(i);
 			if (qrDataUrl) {
-				doc.addImage(qrDataUrl, "PNG", 493, 10, 80, 80);
+				doc.addImage(qrDataUrl, "PNG", 475, 10, 80, 80);
 			}
 		}
 	}
@@ -319,7 +319,7 @@ export async function generatePdf(
 
 	try {
 		// Initialize PDF
-		const doc: jsPDF = new JsPdfClass({ unit: "pt", format: "letter" });
+		const doc: jsPDF = new JsPdfClass({ unit: "pt", format: "a4" });
 		const qrMap = new Map<number, string | null>();
 
 		for (let i = 0; i < exportData.length; i++) {

@@ -4,14 +4,10 @@
 .card_grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem 0;
+  gap: 2rem;
+  padding: 2rem 0;
   justify-content: center;
   align-content: start;
-
-  .grid-item {
-    display: flex;
-  }
 
   .contact-card-link {
     text-decoration: none;
@@ -19,16 +15,21 @@
     display: flex;
     flex-direction: column;
     background-color: var(--c2);
-    border: 0.05rem solid var(--c3);
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     width: 100%;
+    border: 1px solid transparent;
+
+    @media (prefers-color-scheme: dark) {
+      border: 1px solid var(--c3);
+    }
 
     &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      border-color: var(--a1);
     }
 
     &:focus {
@@ -41,32 +42,42 @@
     width: 100%;
     aspect-ratio: 19/18;
     object-fit: cover;
-    border-bottom: 0.2rem solid var(--a1);
+    border-bottom: 2px solid color-mix(in srgb, var(--a1) 20%, transparent);
+    transition: transform 0.3s ease;
+  }
+
+  .contact-card-link:hover .contact-card-image {
+    transform: scale(1.02);
   }
 
   :root .contact-card-image:not(.dark-invert) {
-    filter: brightness(0.85);
+    filter: brightness(0.9);
   }
 
   .contact-card-content {
-    padding: 1rem;
+    padding: 1.5rem;
     text-align: center;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    background-color: var(--c1);
   }
 
   .contact-card-title {
     font-size: 1.25em;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--f2);
     margin: 0 0 0.5rem 0;
   }
 
   .contact-card-body {
-    font-size: 0.9em;
+    font-size: 0.95em;
     color: var(--f1);
     margin: 0;
     flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
