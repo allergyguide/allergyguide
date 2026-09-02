@@ -25,7 +25,27 @@ function renderTurnstile() {
 	const sitekey = "0x4AAAAAACK7_weh_BsWxOhN";
 
 	try {
-		turnstileWidgetId = turnstile.render("#turnstile-widget", { sitekey });
+		turnstileWidgetId = turnstile.render("#turnstile-widget", {
+			sitekey,
+			appearance: "execute",
+			callback: () => {
+				const submitBtn = document.getElementById(
+					"btn-login-submit",
+				) as HTMLButtonElement;
+				if (submitBtn) {
+					submitBtn.disabled = false;
+					submitBtn.innerText = "Login";
+				}
+			},
+			"error-callback": () => {
+				const submitBtn = document.getElementById(
+					"btn-login-submit",
+				) as HTMLButtonElement;
+				if (submitBtn) {
+					submitBtn.innerText = "Security Check Failed";
+				}
+			},
+		});
 	} catch (err) {
 		console.error("Failed to render Turnstile:", err);
 	}
@@ -76,6 +96,7 @@ export const loginTemplate = (
 
 				// disable button on click to avoid doubling
 				submitBtn.disabled = true;
+				submitBtn.innerText = "Signing in...";
 
 				// Supabase Handles Auth + Turnstile together!
 				try {
@@ -83,8 +104,8 @@ export const loginTemplate = (
 					await loginAndUnlock(email, password, token);
 					await onSuccess(); // Reloads the page, and the user will bypass the Unlock modal!
 				} catch (err: unknown) {
-					if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
-					submitBtn.disabled = false;
+					// Lit-html does not overwrite manually mutated static text nodes, so we reset it manually:
+					submitBtn.innerText = "Verifying...";
 					pwdInput.value = "";
 					renderAuthUI(
 						"LOGIN",
@@ -108,7 +129,7 @@ export const loginTemplate = (
 				<div id="turnstile-widget"></div>
 				<div class="core-auth-modal-buttons">
 					<button type="button" class="core-btn core-btn-secondary" @click=${() => renderAuthUI("HIDDEN")}>Cancel</button>
-					<button type="submit" id="btn-login-submit" class="core-btn core-btn-primary">Login</button>
+					<button type="submit" id="btn-login-submit" class="core-btn core-btn-primary" disabled>Verifying...</button>
 				</div>
 			</form>
 		</div>
@@ -196,6 +217,14 @@ export function renderAuthUI(
 
 	// Update the module state so the ESC key knows what to do
 	currentModalState = state;
+
+	// Clean up Turnstile BEFORE Lit destroys the DOM
+	if (turnstileWidgetId) {
+		try {
+			turnstile.remove(turnstileWidgetId);
+		} catch {}
+		turnstileWidgetId = null;
+	}
 
 	if (state === "HIDDEN") {
 		document.body.style.overflow = ""; // Restore scrolling
