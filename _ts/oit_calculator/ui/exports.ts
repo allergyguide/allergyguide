@@ -6,7 +6,7 @@
 
 import { html } from "lit-html";
 import { renderAuthUI } from "../../core/ui/auth-modals";
-import { exportASCII, generatePdf } from "../export/exports";
+import { exportToClipboard, generatePdf } from "../export/exports";
 import { generatePatientHandout } from "../export/handout";
 import { handleSuccessfulAuth } from "../main";
 import { appState, workspace } from "../state/instances";
@@ -68,7 +68,7 @@ export function initExportEvents(): void {
 		if (target.id === "export-ascii") {
 			const data = getExportDataFromWorkspace();
 			if (data.length > 0) {
-				exportASCII(data);
+				exportToClipboard(data);
 			}
 		} else if (target.id === "export-pdf") {
 			if (isClickwrapAccepted()) {

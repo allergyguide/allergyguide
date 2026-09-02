@@ -18,7 +18,12 @@ import type {
 	Unit,
 } from "../types";
 import { FoodType, Method } from "../types";
-import { formatAmount, formatNumber, getMeasuringUnit } from "../utils";
+import {
+	escapeHtml,
+	formatAmount,
+	formatNumber,
+	getMeasuringUnit,
+} from "../utils";
 
 // Need global commit hash
 // And current tool version
@@ -560,17 +565,127 @@ export function generateAsciiContent(exportData: ProtocolExportData[]): string {
 }
 
 /**
- * Generate and copy an ASCII representation of the protocol(s) to clipboard.
+ * Generate and copy an ASCII and HTML representation of the protocol(s) to clipboard
  *
  * @param exportData Array of ProtocolExportData
  * @returns void
  */
-export function exportASCII(exportData: ProtocolExportData[]): void {
+export function exportToClipboard(exportData: ProtocolExportData[]): void {
 	const text = generateAsciiContent(exportData);
+	const html = generateHtmlContent(exportData);
+
 	if (!text) return;
 
-	// --- Copy to Clipboard ---
+	if (navigator.clipboard && window.ClipboardItem) {
+		const textBlob = new Blob([text], { type: "text/plain" });
+		const htmlBlob = new Blob([html], { type: "text/html" });
+
+		const clipboardItem = new ClipboardItem({
+			"text/plain": textBlob,
+			"text/html": htmlBlob,
+		});
+
+		navigator.clipboard.write([clipboardItem]).catch((err) => {
+			console.warn(
+				"Failed to write ClipboardItem, falling back to writeText",
+				err,
+			);
+			fallbackCopyText(text);
+		});
+	} else {
+		fallbackCopyText(text);
+	}
+}
+
+function fallbackCopyText(text: string) {
 	navigator.clipboard.writeText(text).catch(() => {
 		alert(`Failed to copy to clipboard. Please copy manually:\n\n${text}`);
 	});
+}
+
+function generateHtmlTableForFood(food: Food, rows: ExportRow[]): string {
+	if (!food || !rows) return "";
+
+	const foodType = food.type;
+	const foodUnit = food.type === FoodType.SOLID ? "g" : "ml";
+	let html = `<p><strong>${food.name} (${foodType})</strong><br>`;
+	html += `Protein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${foodUnit} serving.</p>`;
+
+	html += `<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-bottom: 1em; width: 100%; text-align: left; font-size: 14px; border: 1px solid #ccc;">`;
+	html += `
+		<thead>
+			<tr style="background-color: #f2f2f2;">
+				<th style="text-align: center; border: 1px solid #ccc;">Step</th>
+				<th style="text-align: center; border: 1px solid #ccc;">Protein</th>
+				<th style="text-align: center; border: 1px solid #ccc;">Method</th>
+				<th style="text-align: left; border: 1px solid #ccc;">How to make mix</th>
+				<th style="text-align: left; border: 1px solid #ccc;">Daily Amount</th>
+				<th style="text-align: left; border: 1px solid #ccc;">Interval</th>
+			</tr>
+		</thead>
+		<tbody>
+	`;
+
+	for (const row of rows) {
+		html += `
+			<tr>
+				<td style="text-align: center; border: 1px solid #ccc;">${row.stepIndex}</td>
+				<td style="text-align: center; border: 1px solid #ccc;">${row.targetProtein}</td>
+				<td style="text-align: center; border: 1px solid #ccc;">${row.method}</td>
+				<td style="text-align: left; border: 1px solid #ccc;">${row.mixDetails}</td>
+				<td style="text-align: left; border: 1px solid #ccc;">${row.dailyAmount}</td>
+				<td style="text-align: left; border: 1px solid #ccc;">${row.interval}</td>
+			</tr>
+		`;
+	}
+
+	html += `</tbody></table>`;
+	return html;
+}
+
+export function generateHtmlContent(exportData: ProtocolExportData[]): string {
+	if (exportData.length === 0) return "";
+	let html = `<div style="font-family: sans-serif;">`;
+	const isBatch = exportData.length > 1;
+
+	for (let i = 0; i < exportData.length; i++) {
+		const { protocol, customNote } = exportData[i];
+
+		if (isBatch) {
+			html += `<h2>PROTOCOL ${i + 1}</h2>`;
+		}
+
+		const foodAStepCount = getFoodAStepCount(protocol);
+		const hasFoodBSteps = foodAStepCount < protocol.steps.length;
+		const foodASteps = protocol.steps.slice(0, foodAStepCount);
+
+		if (foodASteps.length > 0) {
+			const foodARows = buildStepRows(
+				foodASteps,
+				protocol.foodA.type,
+				!hasFoodBSteps,
+			);
+			html += generateHtmlTableForFood(protocol.foodA, foodARows);
+		}
+
+		const totalSteps = protocol.steps.length;
+		if (protocol.foodB && foodAStepCount < totalSteps) {
+			if (foodASteps.length > 0) html += `<h3>--- TRANSITION TO ---</h3>`;
+
+			const foodBSteps = protocol.steps.slice(foodAStepCount);
+			const foodBRows = buildStepRows(foodBSteps, protocol.foodB.type, true);
+			html += generateHtmlTableForFood(protocol.foodB, foodBRows);
+		}
+
+		if (customNote?.trim()) {
+			const safeNote = escapeHtml(customNote.trim()).replace(/\r?\n/g, "<br>");
+			html += `<h3>NOTES</h3><p>${safeNote}</p>`;
+		}
+
+		if (i < exportData.length - 1) {
+			html += `<hr style="margin: 2em 0;">`;
+		}
+	}
+	html += `</div>`;
+	return html;
 }
