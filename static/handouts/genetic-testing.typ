@@ -181,7 +181,7 @@
   [
     Finding a specific genetic cause can significantly change how we approach medical care:
 
-    - *Better Treatments and Monitoring:*  If we know exactly which protein(s) are affected, it can help us pick the optimal treatments. Some genetic conditions are associated with development of complications later in life, and knowing the condition also tells us which parts of the body we need to check regularly.
+    - *Better Treatments and Monitoring:* If we know exactly which protein(s) are affected, it can help us pick the optimal treatments. Some genetic conditions are associated with development of complications later in life, and knowing the condition also tells us which parts of the body we need to check regularly.
 
     - *Testing Relatives:* Because we inherit our "books" from our parents, a genetic change might be shared with other family members. Identifying certain genetic variants may prompt us to offer testing to other family members to see if they share the same variation.
 
