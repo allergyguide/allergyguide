@@ -13,7 +13,7 @@ the skin will react to irritants and sometimes the bacteria naturally on the ski
 
 // add in some epidetmology here?
 
-Maybe add colander analogy with pictures - normal skin like a bowl, holds water well; eczema skin is leaky, skin becomes dry, easier for things from the outside to get in too
+// Maybe add colander analogy with pictures - normal skin like a bowl, holds water well; eczema skin is leaky, skin becomes dry, easier for things from the outside to get in too
 
 == header of some kind
 
@@ -45,13 +45,6 @@ avoid wool and tight clothing; cotton silk is preferred
 
 some folks will notice foods will flare eczema lasting days, usually in a delayed or incosistent fashion, without other symptoms such as XYZ. THIS IS NOT A FOOD ALLERGY. 
 Skin testing to wide variety of foods can leas to a sign # of flase pistiive results; we only test foods that have a clear history of true allergic reactions
-maybe add explanation for skin testing and what its looking for?
-
-if ur worreid set up a food diary please and dicsus at f/u
-
-== What is mild, moderate, or severe eczema? Why does that matter?
-// dx complications here too
-
 
 == What is 'Active Eczema'? or how do we know if I have a flare of eczema?
 
@@ -65,6 +58,10 @@ Should have a section here about moistuzers too
 - cream examples: Eucrein aquaphor, Eucerin Eczema Relif, cervave cream,cetaphil moisturizing cream, aveeno eczema carfe cream, gflaxal base cream
 - avoid lotions if possible
 
+== Principles of management - TWO KEY PRINCIPLES
+1. moisturize, moisturize, moisturize. Thick and gooey, the better (as tolerated)
+2. treat EARLY and aggressively when a flare is small, so that you need less medication overall
+3. eczema is a rollercoaster - it flares on and off. Spot treating 2-3x weekly over problem areas with topical medications (usually non-steroidal) helps prevent flares
 
 if it's active:
 - your skin is inflamed and you need an anti-inflammatory medication (usually topical) to decrease it. The best evidence for first line treatment is for TCS. These types of steroids are present in your body naturally, and *proper topical steroid use under guidance is EXTREMELY safe*. if you're off the medication more often than on it, it is very safe. these are antifinalmatory medications and not the same as the bodybuilding anabolic steroids used illegaly.
