@@ -23,8 +23,6 @@ Medication categories
 diagram - reliever helps you feel better - doesn't help with underlying inflammation
 ONLY using the reliever
 
-Medication table of possible options
-
 Contributing risk factors:
 - smoking
 - allergies

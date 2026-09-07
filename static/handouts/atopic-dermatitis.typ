@@ -9,15 +9,13 @@ Skin retains moisture and is the first barrier against outside pathogens and irr
 Eczema isn't an allergy itself and is NOT directly caused by food
 
 Eczema occurs when the skin barrier becomes weaker + immune system dysregulation (especially when younger) ie almost a quarter of children have it, but most will outgrow it naturally as their immune system 'calms down'
-the skin will react to irritants and sometimes the bacteria naturally on the skin (eh) that normally it would ignore; the skin is hyper-exctiable
+the skin will react to irritants and sometimes the bacteria naturally on the skin (eh) that normally it would ignore; the skin is hyper-excitable
 
 // add in some epidetmology here?
 
 // Maybe add colander analogy with pictures - normal skin like a bowl, holds water well; eczema skin is leaky, skin becomes dry, easier for things from the outside to get in too
 
-== header of some kind
-
-why does it keep flaring even though im doing everythig right?
+== why does it keep flaring even though im doing everythig right?
 
 Chronic condition, rollercoaster, flares intermittently; if skin si kept well moisturzed and irrtants are avoided, then those flares are less likely and usually less severe
 some flares are beyond your control
@@ -81,7 +79,9 @@ maybe add in?
 
 == How is eczema treated?
 
-Might be worth dividing this into separate handouts for mild/moderate eczema vs severe
+// Might be worth dividing this into separate handouts for mild/moderate eczema vs severe
+// Or this is just the principles of managment
+// and then separate handouts for AD-mild/moderate and the AD-severe?
 
 // discuss principles: maintain skin barrier, calm down inflammation, avoid triggers / irritants
 // the better maintained the skin barrier is and the smaller the fire, the less 'heavy-duty' anti-inflammatories are required overall
