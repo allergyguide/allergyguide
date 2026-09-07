@@ -1,6 +1,5 @@
-#set page(margin: 1in)
-#set text(font: "Linux Libertine", size: 11pt)
-#set par(justify: true, leading: 0.65em)
+#import "templates/handout-base.typ": patient_handout
+#show: patient_handout
 
 = Chronic spontaneous urticaria and angioedema
 

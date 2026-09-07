@@ -1,3 +1,7 @@
+#import "templates/handout-base.typ": patient_handout
+#show: patient_handout
+
+
 = Dust mites and how to avoid them
 
 // Picture? probably a grey scale small one

@@ -1,3 +1,7 @@
+#import "templates/handout-base.typ": patient_handout
+#show: patient_handout
+
+//
 // OUTLINE:
 // What is immunotherapy: brief explanation and benefits
 // For most patients, SCIT and SLIT will have roughly the same efficacy

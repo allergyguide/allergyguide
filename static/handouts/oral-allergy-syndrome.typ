@@ -1,3 +1,6 @@
+#import "templates/handout-base.typ": patient_handout
+#show: patient_handout
+
 = Oral allergy syndrome (OAS) - also known as pollen food allergy syndrome
 
 The foods that bother you usually depend on which specific pollen you are allergic to. Here are the most common cross-reactive categories:

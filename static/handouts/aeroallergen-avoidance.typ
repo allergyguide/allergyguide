@@ -1,3 +1,6 @@
+#import "templates/handout-base.typ": patient_handout
+#show: patient_handout
+
 // maybe add checkmark sectio for which allergens to avoid
 
 Environmental airborne allergens (aeroallergens) are microscopic proteins in the air that can trigger allergic rhinitis (hay fever), asthma, or sometimes eczema. Reducing exposure to these allergens is a crucial part of managing these conditions.

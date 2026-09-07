@@ -1,3 +1,6 @@
+#import "templates/handout-base.typ": patient_handout
+#show: patient_handout
+
 // form - single page - for OIT updose visits. Target audience: allergists, PCPs, nurses, etc.
 
 Patient demographics, add area for sticker (but note not all clinics can print stickers)
