@@ -1,5 +1,5 @@
 #import "../templates/handout-base.typ": (
-  info-box, patient_handout, standard-table, warning-box,
+  info-box, patient_handout, standard-table, warning-box, sig-line, fill-in
 )
 #show: patient_handout.with(last-updated: "September 2026")
 
@@ -53,21 +53,9 @@ The nature and purpose of the drug challenge, the risks involved, and the altern
 
 #v(1.5em)
 
-#let fill-in(width: 3.5in) = box(
-  width: width,
-  stroke: (bottom: 0.5pt),
-  outset: (bottom: 2pt),
-)[]
-
-Drug Name: #fill-in()
+Drug Name: #fill-in(width: 3.5in)
 
 #v(3em)
-
-#let sig-line(label) = block(width: 100%, [
-  #line(length: 100%, stroke: 0.5pt)
-  #v(0.3em)
-  #text(size: 9pt, fill: luma(80), label)
-])
 
 #grid(
   columns: (1fr, 1fr),

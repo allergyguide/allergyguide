@@ -84,12 +84,43 @@ Use `standard-table` for data that needs to be compared.
   [Use your epinephrine auto-injector.],
 )
 
+=== Forms & Signatures
+
+Use `fill-in` for blank lines within sentences, and `sig-line` with a `#grid` layout for professional signature blocks.
+
+*Code Example:*
+```typst
+#fill-in(width: 2in) (Last name), #fill-in(width: 2in) (First name)
+
+#v(2em)
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 3em,
+  sig-line("Patient (Printed name)"),
+  sig-line("Patient (Signature)"),
+)
+```
+
+*Result:*
+#fill-in(width: 2in) (Last name), #fill-in(width: 2in) (First name)
+
+#v(2em)
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 3em,
+  sig-line("Patient (Printed name)"),
+  sig-line("Patient (Signature)"),
+)
+
 == 4. Getting Started
 
 To create a new handout, start your file with:
 
 ```typst
-#import "templates/handout-base.typ": patient_handout, warning-box, info-box, patient-table
+#import "templates/handout-base.typ": (
+  patient_handout, warning-box, info-box, standard-table,
+  sig-line, fill-in
+)
 #show: patient_handout.with(last-updated: "Month Year")
 
 // Your content here...

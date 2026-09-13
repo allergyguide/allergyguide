@@ -1,7 +1,7 @@
 // from handout/, `tinymist compile consent-forms/food-challenge-consent.typ --root .`
 
 #import "../templates/handout-base.typ": (
-  info-box, patient_handout, standard-table, warning-box,
+  fill-in, info-box, patient_handout, sig-line, standard-table, warning-box,
 )
 #show: patient_handout.with(last-updated: "September 2026")
 
@@ -51,12 +51,6 @@
 #line(length: 100%, stroke: 1pt)
 #v(1.5em)
 
-#let fill-in(width: 2.5in) = box(
-  width: width,
-  stroke: (bottom: 0.5pt),
-  outset: (bottom: 2pt),
-)[]
-
 #fill-in() (Last name), #fill-in() (First name) is a candidate for an oral food challenge.
 
 - I have read and understand the benefits and risks of the oral food challenge, as described above.
@@ -78,12 +72,6 @@
 )
 
 #v(1.5em)
-
-#let sig-line(label) = block(width: 100%, [
-  #line(length: 100%, stroke: 0.5pt)
-  #v(0.3em)
-  #text(size: 9pt, fill: luma(80), label)
-])
 
 #v(1em)
 #grid(
@@ -107,4 +95,4 @@
 
 #v(1fr)
 #show bibliography: set text(size: 8pt, fill: luma(100))
-#bibliography("../references.bib", style: "nature", title: "Medical References")
+#bibliography("../references.bib", style: "nature", title: "References")

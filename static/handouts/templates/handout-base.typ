@@ -80,6 +80,20 @@
     ),
     fill: (x, y) => if y == 0 { luma(245) } else { none },
     inset: 8pt,
-    ..cells
   )
 }
+
+/// A fill-in-the-blank line for forms
+#let fill-in(width: 2.5in) = box(
+  width: width,
+  stroke: (bottom: 0.5pt),
+  outset: (bottom: 2pt)
+)[]
+
+/// A signature line with a small, gray label underneath
+#let sig-line(label) = block(width: 100%, [
+  #line(length: 100%, stroke: 0.5pt)
+  #v(0.3em)
+  #text(size: 9pt, fill: luma(80), label)
+])
+
