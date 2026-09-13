@@ -51,6 +51,7 @@ import {
 	renderTabs,
 	renderToolbar,
 	showProtocolUI,
+	updateBottomSection,
 	updateFoodBDisabledState,
 	updateUndoRedoButtons,
 	updateWarnings,
@@ -406,6 +407,12 @@ async function initializeCalculator(): Promise<void> {
 	 */
 	workspace.subscribeToTabs((tabs, activeId) => {
 		renderTabs(tabs, activeId);
+
+		// Ensure the bottom section (like export buttons) responds to batch state changes (ie if change is from deleting background tab)
+		const activeState = workspace.getActive();
+		if (activeState) {
+			updateBottomSection(activeState.getCustomNote());
+		}
 	});
 
 	// Set up clickwrap modal

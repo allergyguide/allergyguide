@@ -129,7 +129,7 @@ describe("UI Module: Auth Modals", () => {
 		await vi.waitFor(() => expect(onSuccess).toHaveBeenCalled());
 	});
 
-	it("login form submission should show error on failure and reset turnstile", async () => {
+	it("login form submission should show error on failure and re-render turnstile", async () => {
 		renderAuthUI("LOGIN", async () => {});
 		await vi.waitFor(() =>
 			expect((globalThis as any).turnstile.render).toHaveBeenCalled(),
@@ -146,7 +146,7 @@ describe("UI Module: Auth Modals", () => {
 			expect(
 				document.querySelector(".core-auth-error-message")?.textContent,
 			).toBe("Network Error");
-			expect((globalThis as any).turnstile.reset).toHaveBeenCalledWith(
+			expect((globalThis as any).turnstile.remove).toHaveBeenCalledWith(
 				"widget-id",
 			);
 		});
