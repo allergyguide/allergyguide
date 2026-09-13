@@ -31,3 +31,55 @@
 
   body
 }
+
+// --- Standard Components ---
+
+/// Uses a heavy left border
+#let warning-box(title: none, body) = {
+  block(
+    fill: luma(240),
+    stroke: (left: 4pt + black),
+    inset: 12pt,
+    radius: 4pt,
+    width: 100%,
+    [
+      #if title != none [
+        *#title* \
+      ]
+      #body
+    ],
+  )
+}
+
+/// A standard informational box with a subtle border
+#let info-box(title: none, body) = {
+  block(
+    fill: luma(250),
+    stroke: 1pt + luma(180),
+    inset: 12pt,
+    radius: 4pt,
+    width: 100%,
+    [
+      #if title != none [
+        *#title* \
+      ]
+      #body
+    ],
+  )
+}
+
+/// A standard table
+#let standard-table(columns: 1, ..cells) = {
+  table(
+    columns: columns,
+    stroke: (x, y) => (
+      bottom: if y == 0 { 0pt + black } else { 1pt },
+      top: if y == 0 { 1pt + black } else { 0pt },
+      left: 0pt,
+      right: 0pt,
+    ),
+    fill: (x, y) => if y == 0 { luma(245) } else { none },
+    inset: 8pt,
+    ..cells
+  )
+}
