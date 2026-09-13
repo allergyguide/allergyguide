@@ -4,9 +4,12 @@ import path from "node:path";
 import { getBlobStore } from "./build-config.mjs";
 
 // Typst version mgment
-const TYPST_VERSION = "0.14.2";
+// TODO! WILL NEED TO INCREMENT FOR NEW FEATURES
+// `curl -fL "https://github.com/typst/typst/releases/download/v${NEW_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" | shasum -a 256 | awk '{print $1}'`
+// ^ For local macos
+const TYPST_VERSION = "0.15.1";
 const TYPST_HASH =
-	"a6044cbad2a954deb921167e257e120ac0a16b20339ec01121194ff9d394996d";
+	"a6d077d0a95eed5a2eba715b2dae06be954f624ccbf85758a03f389ded33118c";
 const FILENAME = "typst.tar.xz";
 const typstBin = "./typst";
 const fontPath = "fonts";
