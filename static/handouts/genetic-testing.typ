@@ -1,5 +1,5 @@
 #import "templates/handout-base.typ": patient_handout
-#show: patient_handout
+#show: patient_handout.with(last-updated: "Sep 2026")
 
 #let warning-box(title, body) = {
   block(
@@ -178,14 +178,5 @@
     - *Family Planning:* For parents or those wanting to start a family, this test provides a clearer picture of the chances a condition might be passed on to future children.
   ]
 }
-
-#set page(footer: [
-  #line(length: 100%, stroke: 0.5pt + black)
-  #align(center)[
-    #text(size: 9pt, style: "italic")[
-      This handout is for informational purposes only.
-    ]
-  ]
-])
 
 #genetic-testing-handout()
