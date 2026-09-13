@@ -20,6 +20,7 @@ const typstSrcDirs = [
 	"secure_assets/oit_calculator",
 	"static/tool_assets/oit_calculator",
 	"static/handouts",
+	"static/handouts/consent-forms",
 ];
 
 /**
@@ -94,6 +95,7 @@ export async function compileTypst(commit_hash: string) {
 
 							// Pass variables via --input flags
 							const cmd = `${typstCommand} compile \
+            --root . \
             --font-path "${fontPath}" \
             --input commit_hash="${commit_hash}" \
             "${inputPath}" "${outputPath}"`;
