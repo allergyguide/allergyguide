@@ -1,5 +1,5 @@
 #import "templates/handout-base.typ": (
-  info-box, patient_handout, standard-table, warning-box,
+  fill-in, info-box, patient_handout, sig-line, standard-table, warning-box,
 )
 #show: patient_handout.with(last-updated: "September 2026")
 
@@ -108,8 +108,7 @@ Use `fill-in` for blank lines within sentences, and `sig-line` with a `#grid` la
 #grid(
   columns: (1fr, 1fr),
   gutter: 3em,
-  sig-line("Patient (Printed name)"),
-  sig-line("Patient (Signature)"),
+  sig-line("Patient (Printed name)"), sig-line("Patient (Signature)"),
 )
 
 == 4. Getting Started

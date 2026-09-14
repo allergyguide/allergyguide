@@ -80,6 +80,7 @@
     ),
     fill: (x, y) => if y == 0 { luma(245) } else { none },
     inset: 8pt,
+    ..cells,
   )
 }
 
