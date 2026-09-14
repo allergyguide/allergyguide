@@ -3,7 +3,7 @@
 #import "../templates/handout-base.typ": (
   fill-in, info-box, patient_handout, sig-line, standard-table, warning-box,
 )
-#show: patient_handout.with(last-updated: "September 2026")
+#show: patient_handout.with(last-updated: "Sep 2026")
 
 #v(0.5em)
 #align(center)[

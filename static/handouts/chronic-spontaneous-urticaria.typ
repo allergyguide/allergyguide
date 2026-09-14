@@ -1,98 +1,157 @@
-#import "templates/handout-base.typ": patient_handout
-#show: patient_handout
-
-= Chronic spontaneous urticaria and angioedema
-
-"Urticaria" is the medical term for hives. Hives are raised or puffy areas of the skin that are itchy. They are by definition transient: in general, hives should appear and disappear within several hours, or up to a day.
-
-They occur when immune cells in your skin called mast cells are activated and release natural chemicals. One important one is *histamine*, which creates a hive. Histamine can also result in deeper swelling, called *angioedema* in around half of patients with hives.
-
-// sample image; should be in Black and white though
-// maybe caption that hives can be harder to spot on darker skin
-// Should probably be a photo with angioedema as well
-#figure(
-  image("assets/hives-dermnet.jpg", width: 80%),
+#import "templates/handout-base.typ": (
+  info-box, patient_handout, standard-table, warning-box,
 )
-// from dermnet, https://dermnetnz.org/topics/chronic-inducible-urticaria
+#show: patient_handout.with(last-updated: "Sep 2026")
 
-// there's a asset for angioedema picture from dermnet, which just requires an attribution and link (https://dermnetnz.org/topics/angioedema) though it won't reallly be relevant for printed handouts...
+#set page(
+  footer: [
+    #line(length: 100%, stroke: 0.5pt + black)
+    #align(center)[
+      #text(size: 8pt)[
+        Handout for informational purposes only. © 2026 allergyguide. Licensed under CC BY 4.0. | Images sourced from DermNet (dermnetnz.org).
+      ]
+    ]
+  ],
+)
 
-What is NOT consistent with hives?
-- If you have an individual 'hive' that is persistent and does not away after 1–2 days, it is extremely unlikely to be a hive!
-- Severe pain, blistering, bruising of skin, and scarring after the hive leaves (assuming no significant trauma from scratching) are NOT typical and require a different workup.
-
-== What is Chronic spontaneous Urticaria and angioedema?
-develops hives and swelling every day to a few times a week for months to years
-not due to a food allergy.
-
-While we do not fully understand the exact mechanisms, it is thought to be due to an autoimmune process (this is where the body produces antibodies, which normally helps fight infections, but are now triggering your allergy cells to release histamine, which causing the hives and swelling)
-
-condition in vast majority of patients is not dangerous and is benign - though very annoying and can significantly impact an individual's quality-of-life, interfering with their sleep, work, school and leisure activities.
-
-many patients improve or clear spontaneously within a few years, though the timeline varies widely
-
-Remember:
-- hives are not contagious
-- chronic hives are rarely persistent; almost 50% of people are hive free within 1 year
-- chronic hives in the vast majority of people are benign and not life-threatening
-- the bothersome symptoms of chronic hives are treatable
-
-== What is Chronic Inducible Urticaria?
-
-- Can coexist with CSU
-- Physical triggers can make the mast cells release histamine
-- examples include: cold (hives appear in the cold, or as the skin warms up); increase in body temperature (ie in setting of exercise, sweating, hot showers/sauna), scratching, and delayed pressure (ie hives on shoulder after carrying a heavy bag). Much more rarely, triggers might include vibration, water, sunlight).
-- While CSU is usually shorter lived, the duration of CIU is not as well known, but on average will last several years longer than CSU.
-
-"Inducible hives are less well studied, but they tend to last longer than spontaneous hives and can persist for several years, with dermographism often resolving sooner than cold- or heat-induced types"
-
-// would be nice to have a photo of dermatographism
-// there's a asset for it from dermnet, which just requires an attribution and link (https://dermnetnz.org/topics/dermographism) though it won't reallly be relevant for printed handouts...
-
-== What can make my hives/angioedema worse?
-
-These are things that usually don't cause hives, but can make them harder to control and flare existing chronic hives.
-
-Although this is not a food/medication allergy, hives and swelling can be flared by alcohol, NSAIDs (anti-inflammatory drugs like Advil, Motrin, ibuprofen, naproxen, Anaprox, Voltaren, diclofenac...), opiates, and therefore these should be avoided if possible - use Tylenol instead! Stress can also exacerbate the hives; in some people, monthly periods also can worsen hives.
-
-== Is there a cure for chronic spontaneous urticaria and angioedema?
-Unfortunately, at this time there is no cure for the condition. The condition is managed by suppressing the hives until it naturally subsides.
-
-== What can I take to treat my symptoms?
-The following non-sedating antihistamines can be used to suppress the hives and swelling. A higher dose than what is written on the packaging is often required to maintain adequate control. If one of the antihistamines below does not seem to be effective, even at the higher dose, then switch to another antihistamine.
-
-- Claritin (loratadine) 10 mg - 1-2 tablets twice per day
-- Aerius (desloratadine) - 5 mg 1-2 tablets twice per day
-- Allegra 24-hour 120 mg - 1-2 tablets twice per day
-- Reactine (cetirizine) 10 mg - 1-2 tablets twice per day
-- Reactine (cetirizine) 20 mg - 1-2 tablets per day (prescription only)
-- Blexten 20 mg - 1-2 tablets twice per day (prescription only)
-- Rupall 10 mg - 1-2 tablets twice per day (prescription only)
-
-// the above could potentially be put into a table with the first row as: [generic, cetirizine, desloratadine, ... etc. ] then the next one being [Brand, Reactine, Aerius, etc.] then [1x dose: 10mg, 5mg, etc.] then [4x dose (max daily), 40mg, 20mg, etc.]
-
-Note that: cetirizine carries the highest risk of drowsiness / fatigue.
-
-antihistamines are most effective if taken on a daily basis to suppress the development of the hives and swelling. They are not as effective if taken after the hives develop. At the higher doses of some of the antihistamines can cause some sedation.
-
-*Note: do not take sedating antihistamines such as Atarax, Benadryl or chlorpheniramine for your hives/angioedema. These have significant side effects including drowsiness, cardiac arrhythmias, constipation, dry eyes or dry mouth.*
-
-=== How long can antihistamines be used for?
-// maybe in box?
-
-A recent, multi-centre, real-life pilot study assessed the efficacy and safety of long-term and high-dose antihistamines in patients with CSU.6 The average duration of therapy was 24 weeks. 7.9% (11/139) of patients experienced side effects at standard dosing (1x dose) while 5.2% (5/96) experienced side effects at higher doses. The most common side effect was somnolence; other infrequent side effects included headache, diarrhea, thirst, and hand numbness. Review of other studies by the European position statement also did not note any serious adverse effects at higher doses for long durations.1 As such, our local practice does not limit the duration of therapy.
-
-1. Zuberbier T, Aberer W, Asero R, et al. The EAACI/GA²LEN/EDF/WAO guideline for the definition, classification, diagnosis and management of urticaria. Allergy. 2018;73(7):1393-1414. doi:10.1111/all.13397
-6. Zhang L, Wu J, Qi Y, et al. Long-term combinations and updosing of second-generation H1-antihistamines show efficacy and safety in the treatment of chronic spontaneous urticaria: A multicenter real-life pilot study. J Allergy Clin Immunol Pract. 2020;8(5):1733-1736.e11. doi:10.1016/j.jaip.2019.12.006
-
-== How to taper your antihistamine dosing once symptoms are controlled
-
-attempt step-down after 3–6 months of complete symptom control
-if relapse, resuming the last effective dose for another 3–6 months before retrying
-
-// would be nice to have a figure with 4x regular dose then 3x then 2x then 1x with arrows and something like: if symptom free for 3-6 months, go down a step
-
-#v(1em)
+#v(0.5em)
 #align(center)[
-  *If antihistamines are not effective, there are several excellent second-line options that can be used.*
+  #text(weight: "bold", size: 18pt)[CHRONIC URTICARIA (HIVES)]\
 ]
+#line(length: 100%, stroke: 0.5pt + black)
+
+== What are Hives (Urticaria) and Angioedema?
+
+#grid(
+  columns: (1fr, 30%),
+  gutter: 1.5em,
+  [
+    Hives are raised or puffy areas of the skin that are itchy. *They are by definition transient*: in general, hives should appear and disappear within several hours, or up to a day.
+
+    Hives occur when immune cells in your skin called mast cells are activated and release natural chemicals; the main culprit is *histamine*. Histamine can also result in deeper swelling, called *angioedema*, in around half of patients with hives.
+
+    #v(0.5em)
+    #warning-box(title: "What is NOT consistent with hives?")[
+      - If you have an individual 'hive' that is persistent and does not go away after 1–2 days, it is *extremely unlikely* to be a hive!
+      - Severe pain, blistering, bruising of skin, and scarring after the hive leaves (assuming no significant scratching) *are NOT typical* and require a different workup.
+    ]
+  ],
+  align(center)[
+    #image("assets/hives-dermnet.jpg", width: 100%)
+    #v(-0.8em)
+    #text(size: 0.9em, style: "italic")[Hives (Urticaria)]
+    #v(0.5em)
+    #image("assets/angioedema-dermnet.jpg", width: 100%)
+    #v(-0.8em)
+    #text(size: 0.9em, style: "italic")[Angioedema of the lips]
+  ],
+)
+
+#v(0em)
+== What is Chronic Spontaneous Urticaria (CSU)?
+
+CSU is diagnosed when someone develops recurrent generally random hives (and sometimes swelling) for >6 weeks.
+
+While we do not fully understand the exact mechanisms, it is thought to be due to an autoimmune process. Your body produces antibodies which normally help fight infections, but are instead triggering your allergy cells to release histamine. *It is not from food or environmental allergens*.
+
+#info-box(title: "Key Facts about CSU")[
+  - *It is benign.* In the vast majority of patients, _it is not dangerous or life-threatening_.
+  - *It resolves spontaneously.* roughly 50% of people outgrow CSU within a few years or sooner.
+  - *It is treatable.* Bothersome symptoms are controllable with medication until it resolves.
+]
+
+== What are things that can make hives worse?
+
+These are things that usually don't cause hives, but can flare them / make them harder to control:
+
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 1em,
+  [
+    - Alcohol
+    - Opiates
+    - Stress
+  ],
+  [
+    - Menstrual periods
+    - NSAIDs (i.e. Advil, Motrin, ibuprofen, naproxen, diclofenac). *Use Tylenol instead!*
+  ],
+)
+
+#pagebreak()
+
+== What is Chronic Inducible Urticaria (CIU)?
+
+#grid(
+  columns: (1fr, 35%),
+  gutter: 1.5em,
+  [
+    CIU is a type of chronic hive where physical triggers make your allergy cells release histamine. It can coexist with CSU.
+    - *Examples:* Cold, increase in body temperature (sweating, hot showers, exercise), delayed pressure (e.g., carrying a heavy bag), or scratching the skin (_dermatographia_).
+    - *Duration:* While CSU is usually shorter-lived, CIU tends to persist for several years *longer* than CSU on average.
+  ],
+  align(center)[
+    #image("assets/dermatographia-dermnet.jpg", width: 85%)
+    #v(-0.5em)
+    #text(size: 0.9em, style: "italic")[Dermatographia]
+  ],
+)
+#v(-0.5em)
+
+== How are chronic hives treated?
+
+Unfortunately, at this time there is no quick cure for CSU/CIU. They are managed by treating the hives until it naturally resolves.
+
+The following *non-sedating antihistamines* can be used to suppress the hives and swelling. A *higher dose (up to 4x the regular amount)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to prevent the development of the hives and swelling. They are not as effective if taken only after the hives develop.
+
+#standard-table(
+  columns: (1.5fr, 1fr, 1fr, 1fr),
+  align: (left, left, right, right),
+  [*Generic Name*],
+  [*Brand Name*],
+  [*Standard Dose*],
+  [*Max Daily Dose*],
+  [loratadine],
+  [Claritin],
+  [10 mg],
+  [40 mg],
+  [desloratadine],
+  [Aerius],
+  [5 mg],
+  [20 mg],
+  [fexofenadine],
+  [Allegra 24-hour],
+  [120 mg],
+  [480 mg],
+  [cetirizine (prescription/OTC)],
+  [Reactine],
+  [10 mg],
+  [40 mg],
+  [bilastine (prescription)],
+  [Blexten],
+  [20 mg],
+  [80 mg],
+  [rupatadine (prescription)],
+  [Rupall],
+  [10 mg],
+  [40 mg],
+)
+
+#align(center)[
+  #text(size: 0.9em)[
+    *If max-dose daily antihistamines aren't sufficient, discuss second-line options with your doctor.*
+  ]
+]
+
+== Are higher doses of non-drowsy antihistamines safe long-term?
+
+*Yes*. Studies have shown that taking higher doses of these antihistamines long-term (e.g., for 6 months or longer) is both safe and effective for treating chronic spontaneous urticaria @zhang_long-term_2020 @zuberbier_international_2026. The commonest side effect at higher doses is drowsiness, and serious side effects are extremely rare.
+
+== Tapering your antihistamine dosing, once hives are controlled
+
+If symptoms are completely controlled (no hives or swelling) for *3 to 6 months*, you can attempt to step down your dose (i.e. 4 pills daily -> 3 pills daily). If you relapse and the hives return, resume your last effective dose for another 3 to 6 months before trying to lower it again.
+
+#v(1fr)
+
+#show bibliography: set text(size: 7pt, fill: luma(100))
+#bibliography("references.bib", style: "nature", title: none)
