@@ -11,8 +11,9 @@ They occur when immune cells in your skin called mast cells are activated and re
 // maybe caption that hives can be harder to spot on darker skin
 // Should probably be a photo with angioedema as well
 #figure(
-  image("assets/hives.webp", width: 80%, format: "webp"),
+  image("assets/hives-dermnet.jpg", width: 80%),
 )
+// from dermnet, https://dermnetnz.org/topics/chronic-inducible-urticaria
 
 // there's a asset for angioedema picture from dermnet, which just requires an attribution and link (https://dermnetnz.org/topics/angioedema) though it won't reallly be relevant for printed handouts...
 
@@ -68,13 +69,16 @@ The following non-sedating antihistamines can be used to suppress the hives and 
 - Blexten 20 mg - 1-2 tablets twice per day (prescription only)
 - Rupall 10 mg - 1-2 tablets twice per day (prescription only)
 
+// the above could potentially be put into a table with the first row as: [generic, cetirizine, desloratadine, ... etc. ] then the next one being [Brand, Reactine, Aerius, etc.] then [1x dose: 10mg, 5mg, etc.] then [4x dose (max daily), 40mg, 20mg, etc.]
+
 Note that: cetirizine carries the highest risk of drowsiness / fatigue.
 
 antihistamines are most effective if taken on a daily basis to suppress the development of the hives and swelling. They are not as effective if taken after the hives develop. At the higher doses of some of the antihistamines can cause some sedation.
 
 *Note: do not take sedating antihistamines such as Atarax, Benadryl or chlorpheniramine for your hives/angioedema. These have significant side effects including drowsiness, cardiac arrhythmias, constipation, dry eyes or dry mouth.*
 
-How long can antihistamines be used for?
+=== How long can antihistamines be used for?
+// maybe in box?
 
 A recent, multi-centre, real-life pilot study assessed the efficacy and safety of long-term and high-dose antihistamines in patients with CSU.6 The average duration of therapy was 24 weeks. 7.9% (11/139) of patients experienced side effects at standard dosing (1x dose) while 5.2% (5/96) experienced side effects at higher doses. The most common side effect was somnolence; other infrequent side effects included headache, diarrhea, thirst, and hand numbness. Review of other studies by the European position statement also did not note any serious adverse effects at higher doses for long durations.1 As such, our local practice does not limit the duration of therapy.
 
