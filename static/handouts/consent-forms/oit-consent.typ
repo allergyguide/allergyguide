@@ -1,33 +1,12 @@
-#import "@preview/cetz:0.4.2"
-
-#let commit_hash = sys.inputs.at("commit_hash", default: "dev-build")
-
-#set page(
-  paper: "us-letter",
-  margin: (x: 1in, y: 1in),
-  footer: {
-    [#text(style: "italic", size: 0.7em)[
-        version: #commit_hash | Copyright © #datetime.today().year() allergyguide
-      ] #h(1fr)
-    ]
-  },
+#import "../templates/handout-base.typ": (
+  fill-in, info-box, patient_handout, sig-line, standard-table, warning-box,
 )
-
-#set text(font: "Arimo", size: 11pt, lang: "en")
-#set par(justify: true, leading: 0.7em)
-
-#show heading.where(level: 1): it => block(
-  width: 100%,
-  stroke: (bottom: 0.5pt + gray),
-  inset: (bottom: 0.5em),
-  below: 1em,
-  it,
-)
+#show: patient_handout.with(last-updated: "Sep 2026")
 
 // Macro for the initial box next to each consent statement
 #let initial-box = box(
   stroke: 1pt + black,
-  width: 2.5em,
+  width: 1.5em,
   height: 1.5em,
   radius: 2pt,
   baseline: 0.3em,
@@ -42,26 +21,20 @@
   v(0.5em)
 }
 
+#v(0.5em)
 #align(center)[
-  #text(size: 20pt, weight: "bold")[Consent for Oral Immunotherapy (OIT)]\
-  #v(0.1em)
-  #line(length: 100%, stroke: 2pt)
+  #text(weight: "bold", size: 18pt)[CONSENT FOR ORAL IMMUNOTHERAPY (OIT)]\
 ]
+#line(length: 100%, stroke: 0.5pt + black)
 
 #v(1em)
 
 #grid(
-  columns: (1fr, 1fr),
-  gutter: 2em,
-  [
-    *Target Allergen(s):* #box(width: 1fr, stroke: (bottom: 0.5pt + black))
-  ],
-  [
-    *Date:* #box(width: 1fr, stroke: (bottom: 0.5pt + black))
-  ],
+  columns: (100%,),
+  [*Target Allergen(s):* #fill-in(width: 1fr)],
 )
 
-#v(2em)
+#v(1em)
 = Acknowledgement of Treatment and Risks
 
 #text(
@@ -70,7 +43,7 @@
 #v(1em)
 
 #consent-item([
-  *Information and Education:* I have received, read, and understand the detailed handout on Oral Immunotherapy. I have had the opportunity to ask questions, and they have been answered to my satisfaction.
+  *Information and Education:* I have received, read, and understand the detailed handouts on Oral Immunotherapy. I have had the opportunity to ask questions, and they have been answered to my satisfaction.
 ])
 
 #consent-item([
@@ -82,9 +55,14 @@
 ])
 
 = Commitments to Safety
+#text(
+  style: "italic",
+)[Please read and check each statement below to confirm your understanding:]
+#v(1em)
+
 
 #consent-item([
-  *Epinephrine Requirement:* I agree to have an unexpired, prescribed Epinephrine Auto-injector (e.g., EpiPen) immediately available at *all times*, including during every daily dose.
+  *Epinephrine Requirement:* I agree to have an unexpired, prescribed Epinephrine device (e.g., EpiPen, Neffy) immediately available at *all times*, including during every daily dose.
 ])
 
 #consent-item([
@@ -96,7 +74,7 @@
 ])
 
 #consent-item([
-  *Data & Quality Improvement:* I understand that my/my child's anonymized medical information and treatment outcomes may be reviewed by the clinical team for quality improvement and research purposes. No identifying information will be shared.
+  *Data and Quality Improvement:* I understand that my/my child's anonymized medical information and treatment outcomes may be reviewed by the clinical team for quality improvement and research purposes. No identifying information will be shared.
 ])
 
 #v(1em)
@@ -108,40 +86,19 @@ I have read the consent form and understand the information it contains. I have 
 
 #grid(
   columns: (1fr, 1fr),
-  gutter: 4em,
-  [
-    #line(length: 100%, stroke: 0.5pt + black)
-    *Patient / Legal Guardian Signature*
-  ],
-  [
-    #line(length: 100%, stroke: 0.5pt + black)
-    *Date (D-M-Y)*
-  ],
+  gutter: 3em,
+  sig-line("Patient / legal guardian\n(Printed name & Relationship)"),
+  sig-line("Patient / legal guardian (Signature)"),
 )
-#v(2em)
+
+#v(1.5em)
 #grid(
   columns: (1fr, 1fr),
-  gutter: 4em,
-  [
-    #line(length: 100%, stroke: 0.5pt + black)
-    *Print Name & Relationship to Patient*
-  ],
-  [
-
-  ],
+  gutter: 3em,
+  sig-line("Witness (Printed name)"), sig-line("Witness (Signature)"),
 )
 
-#v(7em)
-
-#grid(
-  columns: (1fr, 1fr),
-  gutter: 4em,
-  [
-    #line(length: 100%, stroke: 0.5pt + black)
-    *Witness name (printed) and signature*
-  ],
-  [
-    #line(length: 100%, stroke: 0.5pt + black)
-    *Date (D-M-Y)*
-  ],
-)
+#v(1.5em)
+#box(width: 45%)[
+  #sig-line("Date (D-M-Y)")
+]

@@ -95,6 +95,6 @@
 #let sig-line(label) = block(width: 100%, [
   #line(length: 100%, stroke: 0.5pt)
   #v(0.3em)
-  #text(size: 9pt, fill: luma(80), label)
+  #text(size: 11pt, fill: luma(60), label)
 ])
 
