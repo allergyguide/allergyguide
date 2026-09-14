@@ -23,8 +23,8 @@
 == What are Hives (Urticaria) and Angioedema?
 
 #grid(
-  columns: (1fr, 30%),
-  gutter: 1.5em,
+  columns: (1fr, 33%),
+  gutter: 1em,
   [
     Hives are raised or puffy areas of the skin that are itchy. *They are by definition transient*: in general, hives should appear and disappear within several hours, or up to a day.
 
@@ -37,6 +37,7 @@
     ]
   ],
   align(center)[
+    #v(-2em)
     #image("assets/hives-dermnet.jpg", width: 100%)
     #v(-0.8em)
     #text(size: 0.9em, style: "italic")[Hives (Urticaria)]
@@ -47,7 +48,7 @@
   ],
 )
 
-#v(0em)
+#v(-0.75em)
 == What is Chronic Spontaneous Urticaria (CSU)?
 
 CSU is diagnosed when someone develops recurrent generally random hives (and sometimes swelling) for >6 weeks.
@@ -56,16 +57,17 @@ While we do not fully understand the exact mechanisms, it is thought to be due t
 
 #info-box(title: "Key Facts about CSU")[
   - *It is benign.* In the vast majority of patients, _it is not dangerous or life-threatening_.
-  - *It resolves spontaneously.* roughly 50% of people outgrow CSU within a few years or sooner.
+  - *It is not contagious.*
+  - *It resolves spontaneously.* \~50% of people outgrow CSU within a few years or sooner.
   - *It is treatable.* Bothersome symptoms are controllable with medication until it resolves.
 ]
 
 == What are things that can make hives worse?
 
-These are things that usually don't cause hives, but can flare them / make them harder to control:
+These are things that usually don't cause hives, but may flare them / make them harder to control:
 
 #grid(
-  columns: (1fr, 1fr),
+  columns: (0.2fr, 1fr),
   gutter: 1em,
   [
     - Alcohol
@@ -74,7 +76,7 @@ These are things that usually don't cause hives, but can flare them / make them 
   ],
   [
     - Menstrual periods
-    - NSAIDs (i.e. Advil, Motrin, ibuprofen, naproxen, diclofenac). *Use Tylenol instead!*
+    - NSAIDs (i.e. ibuprofen, naproxen, diclofenac). *Use Tylenol instead!*
   ],
 )
 
@@ -84,26 +86,31 @@ These are things that usually don't cause hives, but can flare them / make them 
 
 #grid(
   columns: (1fr, 35%),
-  gutter: 1.5em,
+  gutter: 1em,
   [
-    CIU is a type of chronic hive where physical triggers make your allergy cells release histamine. It can coexist with CSU.
+    CIU occurs when *physical triggers* make your allergy cells release histamine. It can coexist with CSU.
+
     - *Examples:* Cold, increase in body temperature (sweating, hot showers, exercise), delayed pressure (e.g., carrying a heavy bag), or scratching the skin (_dermatographia_).
     - *Duration:* While CSU is usually shorter-lived, CIU tends to persist for several years *longer* than CSU on average.
   ],
   align(center)[
-    #image("assets/dermatographia-dermnet.jpg", width: 85%)
+    #v(-1.5em)
+    #image("assets/dermatographia-dermnet.jpg", width: 100%)
     #v(-0.5em)
     #text(size: 0.9em, style: "italic")[Dermatographia]
   ],
 )
-#v(-0.5em)
+#v(-1.5em)
 
 == How are chronic hives treated?
 
 Unfortunately, at this time there is no quick cure for CSU/CIU. They are managed by treating the hives until it naturally resolves.
 
-The following *non-sedating antihistamines* can be used to suppress the hives and swelling. A *higher dose (up to 4x the regular amount)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to prevent the development of the hives and swelling. They are not as effective if taken only after the hives develop.
+The following *non-sedating antihistamines* can be used to treat the hives and swelling. A *higher dose (up to 4x the regular amount)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to _prevent_ the development of the hives and swelling. They are not as effective if taken only after the hives develop.
 
+#v(-1em)
+#align(right)[#text(size: 0.8em, style: "italic")[These are *adult* doses.]]
+#v(-0.75em)
 #standard-table(
   columns: (1.5fr, 1fr, 1fr, 1fr),
   align: (left, left, right, right),
@@ -137,10 +144,8 @@ The following *non-sedating antihistamines* can be used to suppress the hives an
   [40 mg],
 )
 
-#align(center)[
-  #text(size: 0.9em)[
-    *If max-dose daily antihistamines aren't sufficient, discuss second-line options with your doctor.*
-  ]
+#text(size: 0.9em)[
+  #underline()[*If max-dose daily antihistamines aren't working, discuss second-line options with your doctor.*]
 ]
 
 == Are higher doses of non-drowsy antihistamines safe long-term?
