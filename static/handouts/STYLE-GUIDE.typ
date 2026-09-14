@@ -17,7 +17,7 @@ Covers editorial guidelines, structural rules, and standard component library.
 == 2. Structural Guidelines
 
 === Headings
-Use numbered headings for core questions (e.g., `1. What is Allergic Rhinitis?`).
+Should be for easily understandable core questions (e.g., `What is Allergic Rhinitis?`).
 
 === Formatting
 - Emphasize important terms using *bold text*.
