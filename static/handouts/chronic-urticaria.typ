@@ -28,7 +28,7 @@
   [
     Hives are raised or puffy areas of the skin that are itchy. *They are by definition transient*: in general, hives should appear and disappear within several hours, or up to a day.
 
-    Hives occur when immune cells in your skin called mast cells are activated and release natural chemicals; the main culprit is *histamine*. Histamine can also result in deeper swelling, called *angioedema*, in around half of patients with hives.
+    Hives occur when immune cells in your skin called mast cells are activated and release natural chemicals; the main culprit is *histamine*. Histamine can sometimes cause deeper swelling, called *angioedema*, in around half of patients with hives.
 
     #v(0.5em)
     #warning-box(title: "What is NOT consistent with hives?")[
@@ -106,7 +106,7 @@ These are things that usually don't cause hives, but may flare them / make them 
 
 Unfortunately, at this time there is no quick cure for CSU/CIU. They are managed by treating the hives until it naturally resolves.
 
-The following *non-sedating antihistamines* can be used to treat the hives and swelling. A *higher dose (up to 4x the regular amount)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to _prevent_ the development of the hives and swelling. They are not as effective if taken only after the hives develop.
+The following *non-sedating antihistamines* can be used to treat the hives and swelling. A *higher dose (UP TO 4X THE REGULAR AMOUNT)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to _prevent_ the development of the hives and swelling. They are not as effective if taken only after the hives develop.
 
 #v(-1em)
 #align(right)[#text(size: 0.8em, style: "italic")[These are *adult* doses.]]
