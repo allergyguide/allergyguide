@@ -86,11 +86,10 @@ While we do not fully understand the exact mechanisms, it is thought to be due t
 These are things that usually don't cause hives, but may flare them / make them harder to control:
 
 #grid(
-  columns: (0.2fr, 1fr),
+  columns: (0.4fr, 1fr),
   gutter: 1em,
   [
-    - Alcohol
-    - Opiates
+    - Alcohol, Opiates
     - Stress
   ],
   [
@@ -104,13 +103,13 @@ These are things that usually don't cause hives, but may flare them / make them 
 
 Unfortunately, at this time there is no quick cure for CSU/CIndU. They are managed by treating the hives until it naturally resolves.
 
-The following *non-sedating antihistamines* can be used to treat the hives and swelling. A *higher dose (UP TO 4X THE REGULAR AMOUNT)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to _prevent_ the development of the hives and swelling. They are not as effective if taken only after the hives develop.
+The following *non-drowsy antihistamines* can be used to treat the hives and swelling. A *higher dose (UP TO 4X THE REGULAR AMOUNT)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to _prevent_ the development of the hives and swelling. They are not as effective if taken only after the hives develop.
 
 #v(-1em)
 #align(right)[#text(size: 0.8em, style: "italic")[These are *adult* doses.]]
 #v(-0.75em)
 #block()[
-  #set text(size: 10pt)
+  #set text(size: 9pt)
   #standard-table(
     columns: (1.5fr, 1fr, 1fr, 1fr),
     align: (left, left, right, right),
@@ -143,8 +142,12 @@ The following *non-sedating antihistamines* can be used to treat the hives and s
     [10 mg],
     [40 mg],
   )
-
 ]
+
+#v(-0.5em)
+#text(
+  size: 0.7em,
+)[Note: *AVOID BENADRYL (_diphenhydramine_)*. It's an older drug that causes drowsiness, slowed thinking, and wears off quickly. Regular long-term use is linked to higher dementia risk.]
 
 == Are higher doses of non-drowsy antihistamines safe long-term?
 
@@ -163,6 +166,5 @@ If symptoms are completely controlled (no hives or swelling) for *1 to 3 months*
 ]
 
 #v(1fr)
-
 #show bibliography: set text(size: 7pt, fill: luma(100))
 #bibliography("references.bib", style: "nature", title: none)
