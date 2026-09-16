@@ -26,13 +26,21 @@
       ]
     ],
   )
-  set text(font: "Arimo", size: 12pt, lang: "en")
+  set text(font: "Arimo", size: 11pt, lang: "en")
   set par(justify: true, leading: 0.65em)
 
   body
 }
 
 // --- Standard Components ---
+
+/// title
+#let title(title: none) = {
+  align(center)[
+    #text(weight: "bold", size: 16pt)[#title]\
+  ]
+  line(length: 100%, stroke: 0.5pt + black)
+}
 
 /// Uses a heavy left border
 #let warning-box(title: none, body) = {
@@ -88,7 +96,7 @@
 #let fill-in(width: 2.5in) = box(
   width: width,
   stroke: (bottom: 0.5pt),
-  outset: (bottom: 2pt)
+  outset: (bottom: 2pt),
 )[]
 
 /// A signature line with a small, gray label underneath
