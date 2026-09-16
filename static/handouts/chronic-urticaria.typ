@@ -146,17 +146,21 @@ The following *non-sedating antihistamines* can be used to treat the hives and s
 
 ]
 
-#text(size: 0.9em)[
-  #underline()[*If max-dose daily antihistamines aren't working, discuss second-line options with your doctor.*]
-]
-
 == Are higher doses of non-drowsy antihistamines safe long-term?
 
-*Yes*. Studies have shown that taking higher doses of these antihistamines long-term (e.g., for 6 months or longer) is both safe and effective for treating chronic spontaneous urticaria @zhang_long-term_2020 @zuberbier_international_2026. The commonest side effect at higher doses is drowsiness, and serious side effects are extremely rare.
+*Yes*. Studies have shown that taking higher doses of these antihistamines long-term (e.g., for 6 months or longer) is both safe and effective for treating chronic spontaneous urticaria @zhang_long-term_2020 @zuberbier_international_2026. The commonest side effect at higher doses is drowsiness (especially with cetirizine). Serious side effects are extremely rare.
 
 == Tapering your antihistamine dosing, once hives are controlled
 
 If symptoms are completely controlled (no hives or swelling) for *1 to 3 months*, you can attempt to step down your dose (i.e. 4 pills daily -> 3 pills daily). If you relapse and the hives return, resume your last effective dose for another 1 to 3 months before trying to lower it again.
+
+#info-box(
+  title: "What happens if max-dose daily antihistamines aren't working?",
+)[
+  In some patients, 4x the regular dose of antihistamines is still not enough to fully control symptoms. *Contact your doctor if this occurs!*
+
+  There are several highly-effective next-line options available, including injectable biologics (_omalizumab_, _dupilumab_) and targeted oral pills (_remibrutinib_). However, these medications are #underline()[*extremely*] expensive. Insurance/government funding require proof you have tried and failed a trial of maximum-dose antihistamines first - so if you bought a large amount of OTC antihistamines, keep the receipts!
+]
 
 #v(1fr)
 
