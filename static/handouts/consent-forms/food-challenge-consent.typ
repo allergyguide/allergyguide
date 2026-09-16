@@ -1,28 +1,28 @@
 // from handout/, `tinymist compile consent-forms/food-challenge-consent.typ --root .`
 
 #import "../templates/handout-base.typ": (
-  fill-in, info-box, patient_handout, sig-line, standard-table, warning-box,
+  fill-in, info-box, patient_handout, sig-line, standard-table, title,
+  warning-box,
 )
 #show: patient_handout.with(last-updated: "Sep 2026")
 
-#v(0.5em)
-#align(center)[
-  #text(weight: "bold", size: 18pt)[BENEFITS AND RISKS OF ORAL FOOD CHALLENGES]\
-]
-#line(length: 100%, stroke: 0.5pt + black)
+#title(title: "BENEFITS AND RISKS OF ORAL FOOD CHALLENGES")
 
 = What is an Oral Food Challenge (OFC)?
+#v(0.5em)
 
 - During an OFC, the allergist feeds you the suspect food, starting usually with a very small amount. If you have no significant symptoms, you will gradually receive larger and larger doses.
 - If you show signs of a reaction, the challenge will stop.
 
 = Benefits
+#v(0.5em)
 
 - An oral food challenge is the most accurate test for seeing if you are allergic to a food.
 - If you pass the oral challenge, there is no need to avoid the food in question.
 - If you pass the oral challenge, there may no longer be a need to renew your epinephrine (e.g. EpiPen, Neffy).
 
 = Risks
+#v(0.5em)
 
 - *MILD allergic reactions:* This often shows up as minor skin rashes, such as hives on small areas of the body. Antihistamines are optional for mild reactions as a comfort measure.
   - The chance of a mild allergic reaction varies depending on the food or the patient.
@@ -30,15 +30,20 @@
 - *SEVERE allergic reactions:* This is also called anaphylaxis. It is potentially life-threatening. It is often defined as a reaction of two or more body systems (e.g., two or more of rashes, vomiting, breathing difficulty, and decreased blood pressure). Anaphylaxis itself also has different levels of severity, but all must be treated with epinephrine.
   - The chance of a severe allergic reaction is often less than 10%, but varies depending on the food or the patient.
 
+#v(1fr)
+
 #warning-box(title: "Epinephrine is the ONLY treatment for anaphylaxis.")[
   Anaphylaxis must be treated with epinephrine, which comes as either an injection into the thigh muscle (same as what is in an EpiPen) or a spray up the nose (Neffy). Every oral challenge has a risk of anaphylaxis, and booking the challenge means that you agree to the possibility of receiving epinephrine. *THE ONLY MEDICATION THAT SAVES LIVES IN ANAPHYLAXIS IS EPINEPHRINE. ANTIHISTAMINES DO NOT SAVE LIVES*.
 ]
+
 
 #info-box(title: "Understanding Mortality Rates of Anaphylaxis")[
   - Fatal anaphylaxis during an allergist-supervised OFC is *exceptionally rare*, and limited to scattered case reports worldwide.
   - For context, in the general population the mortality rate from food-induced anaphylaxis is very low, on the order of *less than 1 in 2 million per year* @pouessel_food-induced_2018 @mikhail_fatal_2021.
   - For comparison, death from anaphylaxis is _far less common_ than dying in a motor-vehicle crash, in a fire, or by homicide @umasunthar_incidence_2013.
 ]
+
+#pagebreak()
 
 = Guidelines for a Challenge
 
