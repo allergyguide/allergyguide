@@ -101,7 +101,7 @@ These are things that usually don't cause hives, but may flare them / make them 
 
 == How are chronic hives treated?
 
-Unfortunately, at this time there is no quick cure for CSU/CIndU. They are managed by treating the hives until it naturally resolves.
+There is no quick cure for CSU/CIndU. They are managed by treating the hives until it naturally resolves.
 
 The following *non-drowsy antihistamines* can be used to treat the hives and swelling. A *higher dose (UP TO 4X THE REGULAR AMOUNT)* may be needed for adequate control. Antihistamines are most effective if taken on a daily basis to _prevent_ the development of the hives and swelling. They are not as effective if taken only after the hives develop.
 
@@ -151,7 +151,7 @@ The following *non-drowsy antihistamines* can be used to treat the hives and swe
 
 == Are higher doses of non-drowsy antihistamines safe long-term?
 
-*Yes*. Studies have shown that taking higher doses of these antihistamines long-term (e.g., for 6 months or longer) is both safe and effective for treating chronic spontaneous urticaria @zhang_long-term_2020 @zuberbier_international_2026. The commonest side effect at higher doses is drowsiness (especially with cetirizine). Serious side effects are extremely rare.
+*Yes*. Taking higher doses of these antihistamines long-term (e.g., for 6 months or longer) is both safe and effective for treating chronic spontaneous urticaria @zhang_long-term_2020 @zuberbier_international_2026. The commonest side effect at higher doses is drowsiness (especially with cetirizine). Serious side effects are extremely rare.
 
 == Tapering your antihistamine dosing, once hives are controlled
 
