@@ -1,0 +1,42 @@
+{% component contributors(authors, editors, staff_reviewers) %}
+{%- set authors = authors | default(value=[]) -%}
+{%- set editors = editors | default(value=[]) -%}
+{%- set staff_reviewers = staff_reviewers | default(value=[]) -%}
+<div class="contributors">
+{% if authors %}
+<div class="contributor-group">
+<i class="fas fa-pen-nib fa-fw"></i>
+<strong>Author{% if authors | length > 1 %}s{% endif %}:</strong>
+<div class="contributor-names">
+{%- for person in authors -%}
+<span class="contributor">{{ person }}</span>{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+</div>
+</div>
+{% endif %}
+
+{% if editors %}
+<div class="contributor-group">
+<i class="fas fa-user-edit fa-fw"></i>
+<strong>Editor{% if editors | length > 1 %}s{% endif %}:</strong>
+<div class="contributor-names">
+{%- for person in editors -%}
+<span class="contributor">{{ person }}</span>{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+</div>
+</div>
+{% endif %}
+
+{% if staff_reviewers %}
+<div class="contributor-group">
+<i class="fas fa-star fa-fw"></i>
+<strong>Staff Reviewer{% if staff_reviewers | length > 1 %}s{% endif %}:</strong>
+<div class="contributor-names">
+{%- for person in staff_reviewers -%}
+<span class="contributor">{{ person }}</span>{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+</div>
+</div>
+{% endif %}
+</div>
+{% endcomponent contributors %}

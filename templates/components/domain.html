@@ -1,0 +1,57 @@
+
+
+{% component domain(domain, questions, links)  %}
+{#  #}
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+{% for question in questions %}
+{% set zero_index = loop.index - 1 %}
+<tr id="q{{ domain }}_{{ loop.index }}_row">
+<td>
+<span class="question-text"><a href="../../contribute_guides/rob-2-guide/{{ links[zero_index] }}">{{ domain }}.{{ loop.index }}: {{ question | safe }}</a></span>
+</td>
+<td>
+<div class="radio-inputs">
+<label class="radio">
+<input type="radio" name="q{{ domain }}_{{ loop.index }}">
+<span class="name">Yes</span>
+</label>
+<label class="radio">
+<input type="radio" name="q{{ domain }}_{{ loop.index }}">
+<span class="name">Prob<br>Yes</span>
+</label>
+<label class="radio">
+<input type="radio" name="q{{ domain }}_{{ loop.index }}">
+<span class="name">Prob<br>No</span>
+</label>
+<label class="radio">
+<input type="radio" name="q{{ domain }}_{{ loop.index }}">
+<span class="name">No</span>
+</label>
+{% if domain == 3 and loop.index == 2 %}
+{% else %}
+<label class="radio">
+<input type="radio" name="q{{ domain }}_{{ loop.index }}">
+<span class="name">No<br>info</span>
+</label>
+{% endif %}
+</div>
+</td>
+<td>
+<textarea class="question-details q{{ domain }}" id="q{{ domain }}_{{ loop.index }}_details" placeholder="Enter optional details..."></textarea>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<div class="admon_macro-{{ domain }}">
+{{ <admonition_macro type="info" title="Risk of bias judgement" icon="tip" text="Fill out the questions" /> }}
+</div>
+{% endcomponent %}

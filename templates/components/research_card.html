@@ -1,0 +1,69 @@
+{% component research_card(paper, show_title) %}
+{% set data = load_data(path="static/toml/research.toml") %}
+<!-- Build a list of valid paper keys -->
+{% set all_papers = [p for p, _ in data] %}
+<!-- Validate paper name -->
+{% if paper not in all_papers %}
+{{ throw(message=paper ~ " is not a valid paper name. Please refer to research.toml for the correct possible names.") }}
+{% endif %}
+
+{% set show_title = show_title | default(value=true) %}
+{% set paper_data = data[paper] %}
+<div class="research_card">
+<table class="paper-table">
+{% if show_title %}
+<thead>
+<tr>
+<th colspan="2"><i>The quick facts - {{ paper_data.title }}</i></th>
+</tr>
+</thead>
+{% endif %}
+<tbody>
+<tr>
+<td>Clinical Question</td>
+<td>{{ paper_data.clinical_question | safe }}</td>
+</tr>
+<tr>
+<td>Study Type</td>
+<td>{{ paper_data.study_type | safe  }}</td>
+</tr>
+<tr>
+<td>Population</td>
+<td>{{ paper_data.population | safe  }}</td>
+</tr>
+<tr>
+<td>Intervention</td>
+<td>{{ paper_data.intervention | safe }}</td>
+</tr>
+<tr>
+<td>Comparison</td>
+<td>{{ paper_data.comparison | safe  }}</td>
+</tr>
+<tr>
+<td>Outcomes</td>
+<td>{{ paper_data.outcomes | safe  }}</td>
+</tr>
+<tr>
+<td>Bottom Line</td>
+<td>{{ paper_data.bottom_line | safe  }}</td>
+</tr>
+<tr>
+<!-- <td>Quality of Evidence -->
+<!-- {% if paper_data.study_quality.type == "rob" %}(RoB-2) -->
+<!-- {% else %} -->
+<!-- (GRADE) -->
+<!-- {% endif %}</td> -->
+<td colspan="2">
+{% if paper_data.study_quality.type == "rob" %}
+{{ <mini_rob_summary headers={paper_data.study_quality.args.headers} rows={paper_data.study_quality.args.rows} outcomes={paper_data.study_quality.args.outcomes} /> }}
+{% elif paper_data.study_quality.type == "grade" %}
+{{ <mini_grade_summary score={paper_data.study_quality.args.score} /> }}
+{% else %}
+{{ throw(message=paper_data.study_quality.type ~ " is not a valid option. Must be 'rob' or 'grade'.") }}
+{% endif %}
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+{% endcomponent research_card %}

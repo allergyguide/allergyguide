@@ -14,7 +14,7 @@ authors = ["author 1", "author 2"]
 status="not-started"
 +++
 
-{{ wip() }}
+{{ <wip /> }}
 
 </br>
 </br>

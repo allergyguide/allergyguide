@@ -124,3 +124,17 @@ pre.language-md {
     /* Invert colors in dark mode */
   }
 }
+/* Tighten vertical spacing for article lists on index pages */
+article:has(.sum) {
+  padding: 0.5rem 0;
+  
+  h1, h2, h3 {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .sum p {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+}

@@ -1,0 +1,15 @@
+{% component load_macro(topic_name) %}
+{% set section = topic_name %}
+{% set data = load_data(path="static/toml/topic_macros.toml") %}
+{% set data = data[section] %} {# Access the specified section dynamically #}
+
+<!-- its gonna share its scss with _topic_macros_toml_load.scss -->
+<div class="topic_macros_toml_load">
+<div class="code-block-container">
+<button class="copy-button">Copy</button>
+<div class="txt">{{ data.content | trim | replace(from="\n", to="\n<!-- -->") | safe }}</div>
+</div>
+</div>
+<!-- For top right copy button -->
+<script src="/js/load_macro.js"></script>
+{% endcomponent load_macro %}

@@ -19,7 +19,7 @@ After exploring what options exist on the [contribution hub](https://docs.google
 <br>
 The contribution process follows this rough timeline:
 
-{% timeline() %}
+{% <timeline> %}
 [{
 "title":"Prerequisites",
 "body":"Pick a new or available topic [from the list](https://docs.google.com/spreadsheets/d/1tm2AntOqbr0d6mDEJ-A_TqVjwmLKI67KboSagkZ9Au0/edit?usp=sharing). Connect with an editor. Determine potential staff reviewer(s).",
@@ -40,11 +40,11 @@ The contribution process follows this rough timeline:
 "body":"An editor with coding know-how will create the final formatted page for final review by the primary author(s) and staff.",
 "date":"Step 4"
 }]
-{% end %}
+{% </timeline> %}
 
 ## Stylistic Principles
 
-{% important(header = "General writing guidelines") %}
+{% <important header="General writing guidelines"> %}
 
 - Be concise and clear -- the intended use is for residents
 - Use clear, structured formatting (headings, bullet points, tables) for readability
@@ -52,15 +52,15 @@ The contribution process follows this rough timeline:
 - Abbreviations are fine but must be defined
 - While a single topic might be quite complex (i.e. asthma), each page is still meant to be relatively simple -- the goal is **not** to be a comprehensive textbook. Link to a resource that goes more in depth at that juncture, to another subpage, or create a drop-down 'Deep-dive'
 
-{% end %}
+{% </important> %}
 
-{% warning(header = "General formatting guidelines") %}
+{% <warning header="General formatting guidelines"> %}
 
 - Bullet points: Prefer over long paragraphs; no periods at the end of items
 - Emphasize key points: Use bold, colour, and highlights
 - Tables/Figures: Only if they enhance understanding (e.g., decision algorithms)
 
-{% end %}
+{% </warning> %}
 
 ## Website / coding
 
@@ -75,5 +75,5 @@ oxipng -o 4 --strip all -a -Z *.png
 ## ROADMAP and TODO!:
 
 ```md
-{{ remote_text(src="https://raw.githubusercontent.com/allergyguide/allergyguide/refs/heads/main/TODO.md") }}
+{{ <remote_text src="https://raw.githubusercontent.com/allergyguide/allergyguide/refs/heads/main/TODO.md" /> }}
 ```

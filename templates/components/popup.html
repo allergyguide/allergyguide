@@ -1,0 +1,48 @@
+{% component popup(icon="rx") %}
+{#- Generate a unique ID per popup instance -#}
+{%- set popup_id = "popup-" ~ get_random(start=0, end=100000) -%}
+{#- Set icon type, default will be pill -#}
+{%- if icon == "capsule" -%}
+{%- set icon_data = load_data(path="static/icon/capsule.svg") -%}
+{%- elif icon == "capsule-pill" -%}
+{%- set icon_data = load_data(path="static/icon/capsule-pill.svg") -%}
+{%- elif icon == "rx" -%}
+{%- set icon_data = load_data(path="static/icon/rx.svg") -%}
+{%- elif icon == "note" -%}
+{%- set icon_data = load_data(path="static/icon/t_note.svg") -%}
+{%- elif icon == "tip" -%}
+{%- set icon_data = load_data(path="static/icon/t_tip.svg") -%}
+{%- elif icon == "info" -%}
+{%- set icon_data = load_data(path="static/icon/t_info.svg") -%}
+{%- elif icon == "warning" -%}
+{%- set icon_data = load_data(path="static/icon/t_warning.svg") -%}
+{%- elif icon == "danger" -%}
+{%- set icon_data = load_data(path="static/icon/t_danger.svg") -%}
+{%- elif icon == "pearl" -%}
+{%- set icon_data = load_data(path="static/icon/t_pearl.svg") -%}
+{%- elif icon == "question" -%}
+{%- set icon_data = load_data(path="static/icon/t_question.svg") -%}
+{%- elif icon == "flag" -%}
+{%- set icon_data = load_data(path="static/icon/flag.svg") -%}
+{%- else -%}
+{%- set icon_data = "" -%}
+{%- endif -%}
+{%- set popup_html -%}
+<button class="popup-trigger" data-popup-id="{{ popup_id }}" aria-haspopup="dialog" aria-controls="{{ popup_id }}">
+	<div class="popup-icon">
+		{{ icon_data | safe }}
+	</div>
+</button>
+<dialog id="{{ popup_id }}" class="popup-modal">
+	<div class="popup-content">
+		<form method="dialog">
+			<button class="popup-close" aria-label="Close" title="Close">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+			</button>
+		</form>
+		{{ body | safe }}
+	</div>
+</dialog>
+{%- endset -%}
+{{ popup_html | replace(from="\n", to="") | safe }}
+{% endcomponent popup %}

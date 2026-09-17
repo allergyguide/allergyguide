@@ -6,7 +6,7 @@ title = "Research homepage"
 description = "Research section homepage"
 +++
 
-{% text_image(text_position = "right", src="/images/gullibility_forestplot.png", alt="A fake forest plot", class = "dark-invert", height="80vh") %}
+{% <text_image text_position="right" src="/images/gullibility_forestplot.png" alt="A fake forest plot" class="dark-invert" height="80vh"> %}
 
 ## Research is difficult to interpret: evidence is complicated.
 
@@ -14,4 +14,4 @@ Our goal is to break down key landmark trials, systematic reviews, and meta-anal
 
 > _“A 21st century clinician who cannot critically read a study is as unprepared as one who cannot take a blood pressure or examine the cardiovascular system.”_
 
-{% end %}
+{% </text_image> %}

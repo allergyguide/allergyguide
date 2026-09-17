@@ -16,7 +16,7 @@ status="ready" # options include not-started, wip, or ready
 <div style="padding-top:1rem;">
 </div>
 
-{% admonition(type="info", icon="info", title="THE BOTTOM LINE") %}
+{% <admonition type="info" icon="info" title="THE BOTTOM LINE"> %}
 
 CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with three major subtypes: CRSsNP, CRSwNP, and AFRS. **Diagnosis requires _both_ objective structural evidence of sinus inflammation** (CT or endoscopy) and **≥2 cardinal symptoms for ≥12 weeks** (nasal congestion, facial pain or pressure, nasal drainage, and absent or reduced smell). Preliminary workup involves aeroallergen testing with other ad-hoc tests. **First-line management includes trigger avoidance, saline rinses, and INCS; failure of medical therapy may need ENT surgery**. Biologics such as dupilumab are very effective for CRSwNP, and are indicated for refractory/severe presentations.
 
@@ -24,11 +24,11 @@ CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with t
 
 [Patient Resource](/handouts/chronic-rhinosinusitis/)
 
-{% end %}
+{% </admonition> %}
 
 <br>
 
-{{ load_macro(topic_name = "chronic_rhinosinusitis") }}
+{{ <load_macro topic_name="chronic_rhinosinusitis" /> }}
 
 # Summary diagram
 
@@ -40,7 +40,7 @@ CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with t
 
 # Definitions
 
-{% two_columns() %}
+{% <two_columns> %}
 
 - AFRS: allergic fungal rhinosinusitis
 - CRS: chronic rhinosinusitis
@@ -53,13 +53,13 @@ CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with t
 - NERD: NSAID exacerbated respiratory disease
 - OMC: Ostiomeatal complex
 
-{% end %}
+{% </two_columns> %}
 
 <hr class="topic">
 
 # Diagnostic criteria (multiple exist)
 
-{% tabs() %}
+{% <tabs> %}
 
 <!-- TAB -->International: 2021 (our preference)
 <!-- CONTENT -->
@@ -69,9 +69,9 @@ Requires <span class="hl-yellow">both ≥2 key symptoms for ≥12 weeks AND obje
 <div style="padding-top:1rem">
 </div>
 
-{% two_columns() %}
+{% <two_columns> %}
 
-{% admonition(type="info", icon="info", title="Key symptoms - at least 2 for at least 12 weeks") %}
+{% <admonition type="info" icon="info" title="Key symptoms - at least 2 for at least 12 weeks"> %}
 
 - Nasal obstruction or congestion
 - Facial pain, pressure, or fullness
@@ -79,20 +79,20 @@ Requires <span class="hl-yellow">both ≥2 key symptoms for ≥12 weeks AND obje
 - Absent or decreased sense of smell
 - Cough (in Pediatric CRS)
 
-{% end %}
+{% </admonition> %}
 
 <!-- split -->
 
-{% admonition(type="info", icon="info", title="Objective sinus inflammation") %}
+{% <admonition type="info" icon="info" title="Objective sinus inflammation"> %}
 
 This is done through either:
 
 1. CT sinuses (non contrast) – will visualize sinus mucosal thickening, opacification (plain XR is not sensitive), OR
 2. Direct visualization with nasal endoscopy
 
-{% end %}
+{% </admonition> %}
 
-{% end %}
+{% </two_columns> %}
 
 <!-- TAB -->Canadian: 2011
 <!-- CONTENT -->
@@ -102,7 +102,7 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 <div style="padding-top:1rem">
 </div>
 
-{% admonition(type="info", icon="info", title="Key symptoms") %}
+{% <admonition type="info" icon="info" title="Key symptoms"> %}
 
 - Facial congestion/fullness
 - Facial pain/pressure/fullness
@@ -110,7 +110,7 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 - Purulent anterior/posterior nasal drainage (discharge may be nonpurulent, non discolored)
 - Hyposmia/anosmia
 
-{% end %}
+{% </admonition> %}
 
 <!-- TAB -->European: 2020
 <!-- CONTENT -->
@@ -120,25 +120,25 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 <div style="padding-top:1rem">
 </div>
 
-{% two_columns() %}
+{% <two_columns> %}
 
-{% admonition(type="info", icon="info", title="Major symptoms") %}
+{% <admonition type="info" icon="info" title="Major symptoms"> %}
 
 - Nasal blockage / obstruction / congestion
 - Nasal discharge (anterior / posterior nasal drip)
 
-{% end %}
+{% </admonition> %}
 
 <!-- split -->
 
-{% admonition(type="info", icon="info", title="Minor symptoms") %}
+{% <admonition type="info" icon="info" title="Minor symptoms"> %}
 
 - Adult: facial pain/pressure, OR reduction or loss of smell
 - Peds: facial pain/pressure, OR cough
 
-{% end %}
+{% </admonition> %}
 
-{% end %}
+{% </two_columns> %}
 
 <!-- TAB -->American: 2015
 <!-- CONTENT -->
@@ -148,16 +148,16 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 <div style="padding-top:1rem">
 </div>
 
-{% admonition(type="info", icon="info", title="Key symptoms") %}
+{% <admonition type="info" icon="info" title="Key symptoms"> %}
 
 - mucopurulent drainage (anterior, posterior, or both),
 - nasal obstruction (congestion)
 - facial pain-pressure-fullness
 - decreased sense of smell
 
-{% end %}
+{% </admonition> %}
 
-{% end %}
+{% </tabs> %}
 
 # Epidemiology and classifications
 
@@ -189,7 +189,7 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 - Specific criteria: ALL of
   - CRS symptoms, Type 1 hypersensitivity to fungi confirmed by history, skin test, or serology, typical CT findings, Eosinophilic mucin with non-invasive fungal hyphae, absence of immunodeficiency, uncontrolled diabetes <span class="references">lee_acaai_2024</span>
 
-{% dropdown(header="FYI: A new classification system?") %}
+{% <dropdown header="FYI: A new classification system?"> %}
 
 In 2020 a new classification system beyond sNP/wNP/AFRS was proposed based on primary vs secondary causes, and localization/type of inflammation (local vs diffuse; TH2 skewed vs non-TH2). <span class="references">grayson_contemporary_2020</span>
 
@@ -200,7 +200,7 @@ Note that not all guidelines / position statements use this classification. Read
 
 <br>
 
-{% mermaid() %}
+{% <mermaid> %}
 flowchart LR
 A["Primary CRS"] --> B["Localized
 (unilateral)"]
@@ -223,9 +223,9 @@ AFRS"]
 G --> K["Non-eCRS
 Poor corticosteroid response
 Older or smoker"]
-{% end %}
+{% </mermaid> %}
 
-{% mermaid() %}
+{% <mermaid> %}
 flowchart LR
 A["Secondary CRS"] --> B["`Localized
 (unilateral)`"]
@@ -256,15 +256,15 @@ G --> K["`Selective IgA
 deficiency
 CVID
 Diabetes`"]
-{% end %}
+{% </mermaid> %}
 
-{% end %}
+{% </dropdown> %}
 
 <hr class="topic">
 
 # Differential diagnosis
 
-{% two_columns() %}
+{% <two_columns> %}
 
 - Rhinitis (ie. allergic, vasomotor, medicamentosa, hormonal, etc.)
 - GPA/EGPA
@@ -277,9 +277,9 @@ Diabetes`"]
 - CF
 - Immunodeficiency
 
-{% end %}
+{% </two_columns> %}
 
-{% admonition(type="danger", icon="flag", title="RED FLAGS ON HISTORY") %}
+{% <admonition type="danger" icon="flag" title="RED FLAGS ON HISTORY"> %}
 
 - Signs of vasculitis
 - Purely unilateral symptoms (consider malignancy)
@@ -287,13 +287,13 @@ Diabetes`"]
 - Severe headache, neck stiffness, visual changes (? meningitis, abscess, cavernous sinus thrombosis)
 - Unexplained weight loss, recurrent fevers, night sweats
 
-{% end %}
+{% </admonition> %}
 
 <hr class="topic">
 
 # Pathophysiology and risk factors
 
-{% text_image(src="/topic_assets/chronic_rhinosinusitis/sinus.png", alt="Image of the sinuses", caption = "Red = inflamed sinuses, green is happy :)<br>_Created in https://BioRender.com_", height="40vh") %}
+{% <text_image src="/topic_assets/chronic_rhinosinusitis/sinus.png" alt="Image of the sinuses" caption="Red = inflamed sinuses, green is happy :)<br>_Created in https://BioRender.com_" height="40vh"> %}
 
 ### The sinuses
 
@@ -307,11 +307,11 @@ Diabetes`"]
   - For AFRS, common organisms: Bipolaris, Curvularia, Alternaria, Rhizopus, Drechslera, Helminthosporium, Fusarium, and Aspergillus <span class="references">lee_acaai_2024</span>
   - Exaggerated TH2 response and very thick mucous forms
 
-{% end %}
+{% </text_image> %}
 
 <h3>Predisposing conditions/risk factors to assess for ALL CRS</h3>
 
-{% two_columns() %}
+{% <two_columns> %}
 
 - <span class="hl-yellow">Allergic rhinitis (common culprits: dust mites, pets, molds, cockroaches)</span>; typically secretions are more clear/thin
 - Airborne irritants (ie. smoking, pollution, occupational exposures)
@@ -327,7 +327,7 @@ Diabetes`"]
 - Vasculitis
 - Pre-existing structural issues (ie. deviated septum): may predispose, but by themselves are a very uncommon cause. Weak evidence
 
-{% end %}
+{% </two_columns> %}
 
 <hr class="topic">
 
@@ -346,14 +346,14 @@ Diabetes`"]
 
 # Management
 
-{% admonition(type="tip", icon="tip", title="Goal of treatment is usually NOT curative") %}
+{% <admonition type="tip" icon="tip" title="Goal of treatment is usually NOT curative"> %}
 Goals are symptom control through reduction of inflammation and improvement of sinus patency.
-{% end %}
+{% </admonition> %}
 
 <div style="padding-top:1rem">
 </div>
 
-{% admonition(type="danger", icon="info", title="THE BRASS TACKS") %}
+{% <admonition type="danger" icon="info" title="THE BRASS TACKS"> %}
 
 - Determine subtype of CRS, consider CT sinus and involvement of ENT colleagues for endoscopic assessment & consideration of early management
 - First-line treatment trial (unless AFRS => likely early FESS + altered first-line) <b>for at least 2-3 months</b>, + treatment of any underlying risk factors (ie. AR, GERD, CF, immunodeficiency)
@@ -361,7 +361,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
 - Specific subtype treatment (ie. biologics for CRSwNP if patient qualifies)
 - FESS if medically refractory
 
-{% end %}
+{% </admonition> %}
 
 ### First line treatment
 
@@ -374,80 +374,78 @@ Goals are symptom control through reduction of inflammation and improvement of s
   - Multiple delivery methods, most common in Canada are spray and rinses; widely available <span class="hl-yellow">but very common operator misuse with sprays</span> (see how to use [here](/handouts/incs/))
   - Takes **8-12 weeks** to have maximal effect
   - Minimal concern for long-term side effects, ie. adrenal insufficiency
-  - _ExRx: Nasonex 2 sprays BID_ {% popup() %}
+  - _ExRx: Nasonex 2 sprays BID_ {% <popup> %}
+{{ <med_card id="bilastine" /> }}
+{% </popup> %}
 
-{{ med_card(id="bilastine") }}
-
-{% end %}
-
-{% dropdown(header="INCS Rx examples and potency") %}
+{% <dropdown header="INCS Rx examples and potency"> %}
 
 <ul>
   <li>
-    Nasonex (mometasone furoate 50 mcg) 2 sprays EN BID {% popup() %}
+    Nasonex (mometasone furoate 50 mcg) 2 sprays EN BID {% <popup> %}
 
-{{ med_card(id="bilastine") }}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
-
-</li>
-  <li>
-    Avamys (fluticasone furoate 27.5 mcg) 2 sprays EN daily {% popup() %}
-
-{{ med_card(id="bilastine") }}
-
-{% end %}
+{% </popup> %}
 
 </li>
   <li>
-    Omnaris 2 sprays EN daily {% popup() %}
+    Avamys (fluticasone furoate 27.5 mcg) 2 sprays EN daily {% <popup> %}
 
-{{ med_card(id="bilastine") }}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
-
-</li>
-  <li>
-    Flonase 2 sprays EN daily {% popup() %}
-
-{{ med_card(id="bilastine") }}
-
-{% end %}
+{% </popup> %}
 
 </li>
   <li>
-    Budesonide impregnated saline rinses (ie. Pulmicort, 0.5 mg respule per bottle of saline) BID {% popup() %}
+    Omnaris 2 sprays EN daily {% <popup> %}
 
-{{ med_card(id="bilastine") }}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
+{% </popup> %}
+
+</li>
+  <li>
+    Flonase 2 sprays EN daily {% <popup> %}
+
+{{ <med_card id="bilastine" /> }}
+
+{% </popup> %}
+
+</li>
+  <li>
+    Budesonide impregnated saline rinses (ie. Pulmicort, 0.5 mg respule per bottle of saline) BID {% <popup> %}
+
+{{ <med_card id="bilastine" /> }}
+
+{% </popup> %}
 
 </li>
   <li>
     Combination INCS/INAH if comorbid allergies
     <ul>
       <li>
-        Ryaltris 2 sprays each nostril BID {% popup() %}
+        Ryaltris 2 sprays each nostril BID {% <popup> %}
 
-{{ med_card(id="bilastine") }}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
+{% </popup> %}
 
 </li>
 <li>
-Dymista 1 spray EN BID {% popup() %}
+Dymista 1 spray EN BID {% <popup> %}
 
-{{ med_card(id="bilastine") }}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
-
-</li>
-</ul>
+{% </popup> %}
 
 </li>
 </ul>
 
-{% json_to_table()%}
+</li>
+</ul>
+
+{% <json_to_table> %}
 [
 {
 "INCS": "Beclomethasone dipropionate",
@@ -513,10 +511,10 @@ Dymista 1 spray EN BID {% popup() %}
 "Fragrance": "non-scented"
 }
 ]
-{% end %}
+{% </json_to_table> %}
 <i>Table adapted from Fowler and Sowerby (2021)</i><span class="references">fowler_using_2021</span>
 
-{% end %}
+{% </dropdown> %}
 
 - **Consider involving ENT** for endoscopic assessment and consideration of early surgical management
 - **Antibiotics**
@@ -524,7 +522,7 @@ Dymista 1 spray EN BID {% popup() %}
   - **CAUTION**: <span class="hl-yellow"><u>_this is not a routine treatment_</u></span> and there is poor quality evidence it has benefit <span class="references">fokkens_european_2020</span>: exercise antibiotic stewardship :). If requiring multiple courses or known resistant bugs => CULTURE first
   - _ExRx: clavulin 875 mg twice daily for 10 d, moxifloxacin 400 mg PO x10 if penicillin allergic_
 
-{% admonition(type="pearl", icon="pearl", title="PEARLS") %}
+{% <admonition type="pearl" icon="pearl" title="PEARLS"> %}
 
 <b>Empiric treatment without imaging/endoscopy?</b>
 
@@ -535,24 +533,24 @@ While technically imaging or endoscopy is needed to formally diagnose CRS, if th
 <b>Oral steroids for quick temporary relief</b>
 
 You may see oral corticosteroids used up-front for severely symptomatic cases, but more commonly for CRSwNP and AFRS.
-{% end %}
+{% </admonition> %}
 
 <div style="padding-top:1rem">
 </div>
 
-{% admonition(type="tip", icon="tip", title="How is treatment monitored?") %}
+{% <admonition type="tip" icon="tip" title="How is treatment monitored?"> %}
 In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-20 (higher score = worse QoL). However, it is not uncommon to see mainly gestalt (and therefore variable) assessments of symptom control.
-{% end %}
+{% </admonition> %}
 
-{% dropdown(header="SNOT-22 SCORE") %}
+{% <dropdown header="SNOT-22 SCORE"> %}
 
-{{ mobile_warning() }}
+{{ <mobile_warning /> }}
 
 <div style = "height:60vh">
 <iframe src="/topic_assets/chronic_rhinosinusitis/SNOT22.pdf" width="100%" height="100%" style="border: none;"></iframe>
 </div>
 
-{% end %}
+{% </dropdown> %}
 
 ### CRSsNP specific treatment
 
@@ -561,7 +559,7 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
 - **Surgery** last line
 - No biologics yet
 
-{% dropdown(header="DEEP-DIVE: INCS sprays in CRSsNP") %}
+{% <dropdown header="DEEP-DIVE: INCS sprays in CRSsNP"> %}
 
 <ul>
   <li>
@@ -579,7 +577,7 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
   </li>
 </ul>
 
-{% end %}
+{% </dropdown> %}
 
 ### CRSwNP specific treatment
 
@@ -587,7 +585,7 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
   - Oral steroids = <strong>rapid temporary</strong> relief that fades by a few months <span class="references">head_shortcourse_2016</span>; <strong>must consider significant S/E profile</strong>
     - _ExRx: prednisone 30 mg OD x7d <span class="references">chin_diagnosis_2025</span>; note that there is no consensus/consistent dose between trials_
 
-{% dropdown(header="DEEP-DIVE: INCS in CRSwNP") %}
+{% <dropdown header="DEEP-DIVE: INCS in CRSwNP"> %}
 
 <ul>
   <li><strong>Bottom-line:</strong> there is generally low quality evidence that INCS compared to placebo improves symptoms and QoL without significant side effects, though specifics vary by delivery system</li>
@@ -601,23 +599,23 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
   </li>
 </ul>
 
-{{ topics_crswnp_incs() }}
+{{ <topics_crswnp_incs /> }}
 
-{% end %}
+{% </dropdown> %}
 
 - **At any point biologics can <em>technically</em> be considered**, especially if high baseline severity or refractory to other medical therapy; greatest positive effect on QoL outcomes <span class="references">rank_joint_2023</span>
   - Three options: <span class="hl-yellow">dupilumab</span> (2024 monograph states adults, but studied in ≥12 yo for other indications), <span class="hl-yellow">omalizumab</span> (adults), <span class="hl-yellow">mepolizumab</span> (adults) (***<strong>tezepelumab (Tezspire) is coming soon! Update TBD</strong>)
     - All overall have excellent side effect profile
     - Cost/insurance prohibitive
     - Unclear on: long-term side effects, duration of treatment, predictive patient factors for most benefit
-    - <em>ExRx: Dupilumab 300mg SC q2w {% popup() %}
+    - <em>ExRx: Dupilumab 300mg SC q2w {% <popup> %}
 
-{{ med_card(id="bilastine") }}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
+{% </popup> %}
 . S/E profile similar to placebo but classically conjunctivitis, eosinophilia, injection site reactions</em>
 
-{% dropdown(header="DEEP-DIVE: Biologics in CRSwNP") %}
+{% <dropdown header="DEEP-DIVE: Biologics in CRSwNP"> %}
 
 <ul>
   <li><strong>Bottom-line:</strong> moderate/high quality evidence supporting large effect sizes of biologics in addition to INCS, with minimal side effects compared to placebo. Dupilumab had the largest effect sizes across multiple outcomes</li>
@@ -632,9 +630,9 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
   </li>
 </ul>
 
-{{ topics_crswnp_biologics() }}
+{{ <topics_crswnp_biologics /> }}
 
-{% end %}
+{% </dropdown> %}
 
 - **ASA desensitization** for coexisting NERD
   - Anecdotally, less commonly used with biologics available; logistically also difficult
@@ -642,11 +640,11 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
   - Reference [this practice parameter](https://www.jacionline.org/article/S0091-6749(22)01484-1/fulltext#app-1) if you want to deep dive
 - **Leukotriene receptor antagonists** (LTRA) in the setting of NERD
   - Note: generally **recommended against** for CRSwNP in EPOS 2020, noting poor quality evidence of benefit <span class="references">fokkens_european_2020</span>
-  - _ExRx: Montelukast 10mg PO OD (adult dose)_{% popup() %}
+  - _ExRx: Montelukast 10mg PO OD (adult dose)_{% <popup> %}
 
-{{ med_card(id="bilastine") }}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
+{% </popup> %}
 
 ### AFRS specific treatment
 
@@ -674,17 +672,17 @@ For CRSsNP and CRSwNP, FESS is considered if medical therapy has failed. Excelle
 
 # Quiz yourself:
 
-{{ wip(body="This section remains a work in progress. If you want to help contribute, see below :)") }}
+{{ <wip /> }}
 
 <hr class="topic">
 
 # Further reading:
 
-{{ references(showBib=true, path="content/topics/hypersensitivity/airway_ent/chronic_rhinosinusitis.bib") }}
+{{ <references showBib={true} path="content/topics/hypersensitivity/airway_ent/chronic_rhinosinusitis.bib" /> }}
 
 <h1>Contributors</h1>
 
-{{ contributors(authors=["Resident lead"], editors=["Resident reviewer"], staff_reviewers=["TBD"]) }}
+{{ <contributors authors={["Resident lead"]} editors={["Resident reviewer"]} staff_reviewers={["TBD"]} /> }}
 
 <script src="/js/tabs.js"></script>
 <script src="/js/popup.js"></script>

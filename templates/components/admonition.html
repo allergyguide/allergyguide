@@ -1,0 +1,35 @@
+{% component admonition(type, title, icon, bordered:bool = false) %}
+{%- set type = type | default(value="info") -%}
+{%- set title = title | default(value=type | upper) -%}
+{%- set icon = icon | default(value=type) -%}
+{%- set text = text | default(value=body) -%}
+{%- set bordered = bordered | default(value=false) -%}
+{%- if icon == "note" -%}
+{%- set icon_data = load_data(path="static/icon/t_note.svg") -%}
+{%- elif icon == "tip" -%}
+{%- set icon_data = load_data(path="static/icon/t_tip.svg") -%}
+{%- elif icon == "info" -%}
+{%- set icon_data = load_data(path="static/icon/t_info.svg") -%}
+{%- elif icon == "warning" -%}
+{%- set icon_data = load_data(path="static/icon/t_warning.svg") -%}
+{%- elif icon == "danger" -%}
+{%- set icon_data = load_data(path="static/icon/t_danger.svg") -%}
+{%- elif icon == "pearl" -%}
+{%- set icon_data = load_data(path="static/icon/t_pearl.svg") -%}
+{%- elif icon == "question" -%}
+{%- set icon_data = load_data(path="static/icon/t_question.svg") -%}
+{%- elif icon == "flag" -%}
+{%- set icon_data = load_data(path="static/icon/flag.svg") -%}
+{%- else -%}
+{%- set icon_data = null -%}
+{%- endif -%}
+<div class="admonition {{ type }}{% if bordered %} bordered{% endif %}">
+<div class="admonition-icon">
+{{ icon_data | safe }}
+</div>
+<strong class="admonition-title">{{ title | safe }}</strong>
+<div class="admonition-content">
+{{ body | markdown | safe }}
+</div>
+</div>
+{% endcomponent admonition %}
