@@ -15,7 +15,7 @@ port = 8888
 targetPort = 1111
 
 [build.environment]
-ZOLA_VERSION = "0.21.0"
+ZOLA_VERSION = "0.23.6"
 
 # see https://docs.netlify.com/build/edge-functions/declarations/
 [[edge_functions]]
