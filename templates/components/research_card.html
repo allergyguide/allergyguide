@@ -1,8 +1,8 @@
 {% component research_card(paper, show_title) %}
 {% set data = load_data(path="static/toml/research.toml") %}
-<!-- Build a list of valid paper keys -->
+{# Build a list of valid paper keys #}
 {% set all_papers = [p for p, _ in data] %}
-<!-- Validate paper name -->
+{# Validate paper name #}
 {% if paper not in all_papers %}
 {{ throw(message=paper ~ " is not a valid paper name. Please refer to research.toml for the correct possible names.") }}
 {% endif %}
@@ -48,11 +48,11 @@
 <td>{{ paper_data.bottom_line | safe  }}</td>
 </tr>
 <tr>
-<!-- <td>Quality of Evidence -->
-<!-- {% if paper_data.study_quality.type == "rob" %}(RoB-2) -->
-<!-- {% else %} -->
-<!-- (GRADE) -->
-<!-- {% endif %}</td> -->
+{# <td>Quality of Evidence #}
+{# {% if paper_data.study_quality.type == "rob" %}(RoB-2) #}
+{# {% else %} #}
+{# (GRADE) #}
+{# {% endif %}</td> #}
 <td colspan="2">
 {% if paper_data.study_quality.type == "rob" %}
 {{ <mini_rob_summary headers={paper_data.study_quality.args.headers} rows={paper_data.study_quality.args.rows} outcomes={paper_data.study_quality.args.outcomes} /> }}

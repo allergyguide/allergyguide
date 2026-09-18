@@ -1,9 +1,9 @@
 {% component profile_grid() %}
-<!-- This shortcode will pull a JSON from the body of the shortcode to display
+{# This shortcode will pull a JSON from the body of the shortcode to display
 The format of the json in the body must be as such:
 [
 { "name": "Joshua Yu, MD BSc", "src": "/images/profile_jy.png", "text": "PGY-3 IM resident at McMaster, fellow-to-be at UBC."}
-] -->
+] #}
 {# Load the JSON reference data passed into the shortcode #}
 {% set profiles = load_data(literal=body, format="json") %}
 <div class="profile_grid">

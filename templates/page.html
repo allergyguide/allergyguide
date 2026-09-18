@@ -3,7 +3,7 @@
 {%- block seo -%}
   {{- super() -}}
   {%- set title_addition = "" -%}
-  {%- if page.title and config.title -%}
+  {%- if page and page.title and config.title -%}
     {%- set title = page.title -%}
     {%- set title_addition = title_separator ~ config.title -%}
   {%- elif page.title -%}
