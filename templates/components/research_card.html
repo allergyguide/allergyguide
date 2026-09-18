@@ -1,4 +1,4 @@
-{% component research_card(paper, show_title) %}
+{% component research_card(paper, show_title=true) %}
 {% set data = load_data(path="static/toml/research.toml") %}
 {# Build a list of valid paper keys #}
 {% set all_papers = [p for p, _ in data] %}

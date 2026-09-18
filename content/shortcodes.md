@@ -23,11 +23,13 @@ See below for Markdown syntax used for the custom shortcodes used in this websit
 The below code does not work:
 
 ```md
-{%/* warning(header = "warning header") */%}
+{% raw %}
+{% <warning header = "warning header"> %}
 
 {{ <warning_box_only body="# nested warning!" /> }}
 
-{%/* end */%}
+{% </warning> %}
+{% endraw %}
 ```
 
 It will instead throw this error:
@@ -42,14 +44,16 @@ Caused by:
     1: Filter 'markdown' not found
 ```
 
-Calling {{/* warning_box_only(body="nested warning!") */}} is essentially asking to inject html in place of the shortcode. However, if you look at warning_box_only.html:
+Calling {% raw %}{{ <warning_box_only body="nested warning!" /> }}{% endraw %} is essentially asking to inject html in place of the shortcode. However, if you look at warning_box_only.html:
 
 ```html
+{% raw %}
 <blockquote class="warning_box_only">
   <div class="content">
     {{ body | markdown | safe }}
   </div>
 </blockquote>
+{% endraw %}
 ```
 
 it is expecting the body to be MARKDOWN, not HTML. If you remove the markdown filter from warning_box_only.html, then it will work -- but the markdown within the warning_box_only will not be rendered properly.
@@ -58,14 +62,18 @@ it is expecting the body to be MARKDOWN, not HTML. If you remove the markdown fi
 
 ### important
 
+### important
+
 ```md
-{%/* important(header = "important header") */%}
+{% raw %}
+{% <important header = "important header"> %}
 test
 Press <kbd>CTRL+ALT+Delete</kbd> to end the
 
 So it turns out you CAN put shortcodes inside other shortcodes, but it cannot be the % % with a body type.
 {{ <contributors authors={["Alice Smith", "Bob Johnson"]} editors={["Charlie Brown"]} staff_reviewers={["David Lee"]} /> }}
-{%/* end */%}
+{% </important> %}
+{% endraw %}
 ```
 
 {% <important header="important header"> %}
@@ -80,14 +88,16 @@ So it turns out you CAN put shortcodes inside other shortcodes, but it cannot be
 ### warning
 
 ```md
-{%/* warning(header = "warning header") */%}
+{% raw %}
+{% <warning header = "warning header"> %}
 This is a warning section.
 
 Here is an attempt at the % % nested shortcode.
 {% <important_box_only> %}
 important bx only!!!
 {% </important_box_only> %}
-{%/* end */%}
+{% </warning> %}
+{% endraw %}
 ```
 
 {% <warning header="warning header"> %}
@@ -102,11 +112,13 @@ important bx only!!!
 ### question
 
 ```md
-{%/* question(question= "this is the question. now lets make it very long to the point where it probably needs to wrap around because its so large and fat and i hope this doesn't look bad.<br><br>1) this or that<br>2)this") */%}
+{% raw %}
+{% <question question= "this is the question. now lets make it very long to the point where it probably needs to wrap around because its so large and fat and i hope this doesn't look bad.<br><br>1) this or that<br>2)this"> %}
 
 This is the question answer
 
-{%/* end */%}
+{% </question> %}
+{% endraw %}
 ```
 
 {% <question question="this is the question. now lets make it very long to the point where it probably needs to wrap around because its so large and fat and i hope this doesn't look bad.<br><br>1) this or that<br>2)this"> %}
@@ -116,11 +128,13 @@ This is the question answer
 ### important_box_only
 
 ```md
-{%/* important_box_only() */%}
+{% raw %}
+{% <important_box_only> %}
 
 important bx only!!!
 
-{%/* end */%}
+{% </important_box_only> %}
+{% endraw %}
 ```
 
 {% <important_box_only> %}
@@ -130,11 +144,13 @@ important bx only!!!
 ### warning_box_only
 
 ```md
-{%/* warning_box_only() */%}
+{% raw %}
+{% <warning_box_only> %}
 
 warning box only content
 
-{%/* end */%}
+{% </warning_box_only> %}
+{% endraw %}
 ```
 
 {% <warning_box_only> %}
@@ -148,11 +164,13 @@ Options for type/icon: note, tip, info, warning, danger, pearl, question (only t
 These can be mixed and matched.
 
 ```md
-{%/* admonition(type="danger", icon="danger", title="Warning DANGER") */%}
+{% raw %}
+{% <admonition type="danger" icon="danger" title="Warning DANGER"> %}
 This is a danger admonition with a danger icon.
 
 **Markdown can be used here :)**
-{%/* end */%}
+{% </admonition> %}
+{% endraw %}
 ```
 
 {% <admonition type="danger" icon="danger" title="DANGER" bordered={true}> %}
@@ -187,11 +205,13 @@ blah blah
 We also have the elusive pearl mode:
 
 ```md
-{%/* admonition(type="pearl", icon="pearl", title="PEARL") */%}
+{% raw %}
+{% <admonition type="pearl" icon="pearl" title="PEARL"> %}
 
 Insert sage clinical pearl
 
-{%/* end */%}
+{% </admonition> %}
+{% endraw %}
 ```
 
 {% <admonition type="pearl" icon="pearl" title="PEARL"> %}
@@ -200,14 +220,16 @@ Insert sage clinical pearl
 
 ## text_image
 
-Of note; you cannot nest a shortcode easily within a shortcode. Ie. I could not use {{ shortcode }} within the text image to right text.
+Of note; you cannot nest a shortcode easily within a shortcode. Ie. I could not use {% raw %}{{ shortcode }}{% endraw %} within the text image to right text.
 
 ```md
-{%/* text_image(src="/images/example.png", alt="An image description", caption = "test caption") */%}
+{% raw %}
+{% <text_image src="/images/example.png" alt="An image description" caption = "test caption"> %}
 
 _Here is some text_ on the left.</br><kbd>CTRL+ALT+Delete</kbd>
 
-{%/* end */%}
+{% </text_image> %}
+{% endraw %}
 ```
 
 {% <text_image src="/images/example.png" alt="An image description" caption="test caption"> %}
@@ -218,11 +240,13 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque lacinia ma
 {% </text_image> %}
 
 ```md
-{%/* text_image(text_position = "right", src="/images/example.png", alt="An image description", caption = "test caption") */%}
+{% raw %}
+{% <text_image text_position = "right" src="/images/example.png" alt="An image description" caption = "test caption"> %}
 
 _Here is some text_ on the right.</br><kbd>CTRL+ALT+Delete</kbd> Here's some more.
 
-{%/* end */%}
+{% </text_image> %}
+{% endraw %}
 ```
 
 {% <text_image text_position="right" src="/images/example.png" alt="An image description" caption="test caption"> %}
@@ -236,7 +260,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque lacinia ma
 ## two_columns
 
 ```md
-{%/* two_columns() */%}
+{% raw %}
+{% <two_columns> %}
 Left column text goes here.
 
 ### Markdown should be supported
@@ -244,7 +269,8 @@ Left column text goes here.
 <!-- split -->
 
 Right column text goes here.
-{%/* end */%}
+{% </two_columns> %}
+{% endraw %}
 ```
 
 {% <two_columns> %}
@@ -258,13 +284,15 @@ Right column text goes here.
 ## two_columns_fancy
 
 ```md
-{%/* two_columns_fancy() */%}
+{% raw %}
+{% <two_columns_fancy> %}
 Left column text goes here.
 
 <!-- split -->
 
 Right column text goes here.
-{%/* end */%}
+{% </two_columns_fancy> %}
+{% endraw %}
 ```
 
 {% <two_columns_fancy> %}
@@ -278,19 +306,23 @@ Right column text goes here.
 ## spoiler
 
 ```md
-this is a spoiler that you can click: {{/* spoiler(body="text to hide", fixed_blur=false) */}}
+{% raw %}
+this is a spoiler that you can click: {% <spoiler fixed_blur={false}> %}text to hide{% </spoiler> %}
+{% endraw %}
 ```
 
-this is a spoiler that you can click: {{ <spoiler body="text to hide" fixed_blur={false} /> }}
+this is a spoiler that you can click: {% <spoiler fixed_blur={false}> %}text to hide{% </spoiler> %}
 
 You can also use it like so (fixed_blur = true means you can't see it ever):
 
 ```md
-{%/* spoiler(fixed_blur = true) */%}
+{% raw %}
+{% <spoiler fixed_blur = {true}> %}
 
 testing this
 
-{%/* end */%}
+{% </spoiler> %}
+{% endraw %}
 ```
 
 {% <spoiler fixed_blur={true}> %}
@@ -300,7 +332,8 @@ testing this
 ## dropdown
 
 ```md
-{%/* dropdown(header="this is what the user will click on to get more info") */%}
+{% raw %}
+{% <dropdown header="this is what the user will click on to get more info"> %}
 
 This text will appear in the dropdown
 
@@ -314,7 +347,8 @@ This is a danger admonition with a danger icon.
 
 {% </admonition> %}
 
-{%/* end */%}
+{% </dropdown> %}
+{% endraw %}
 ```
 
 {% <dropdown header="this is what the user will click on to get more info"> %}
@@ -334,7 +368,9 @@ This is a danger admonition with a danger icon.
 ## contributors
 
 ```md
-{{/* contributors(authors=["Alice Smith", "Bob Johnson"], editors=["Charlie Brown"], staff_reviewers=["David Lee"]) */}}
+{% raw %}
+{{ <contributors authors=["Alice Smith" "Bob Johnson"] editors=["Charlie Brown"] staff_reviewers=["David Lee"] /> }}
+{% endraw %}
 ```
 
 {{ <contributors authors={["Alice Smith", "Bob Johnson"]} editors={["Charlie Brown"]} staff_reviewers={["David Lee"]} /> }}
@@ -344,7 +380,8 @@ This is a danger admonition with a danger icon.
 Adapted from the excellent pico theme.
 
 ```md
-{%/* timeline() */%}
+{% raw %}
+{% <timeline> %}
 
 [{
 "title":"Lorem Ipsum Event",
@@ -357,7 +394,8 @@ Adapted from the excellent pico theme.
 "date":"Jun-2022"
 }]
 
-{%/* end */%}
+{% </timeline> %}
+{% endraw %}
 ```
 
 {% <timeline> %}
@@ -376,7 +414,8 @@ Adapted from the excellent pico theme.
 ## mermaid
 
 ```md
-{%/* mermaid() */%}
+{% raw %}
+{% <mermaid> %}
 sequenceDiagram
 Alice ->> Bob: Hello Bob, how are you?
 Bob-->>John: How about you John?
@@ -387,7 +426,8 @@ Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text d
     Bob-->Alice: Checking with John...
     Alice->John: Yes... John, how are you?
 
-{%/* end */%}
+{% </mermaid> %}
+{% endraw %}
 ```
 
 {% <mermaid> %}
@@ -442,7 +482,9 @@ excludes weekends
 ## widget_penfast
 
 ```md
-{{/* widget_penfast() */}}
+{% raw %}
+{{ <widget_penfast /> }}
+{% endraw %}
 ```
 
 {{ <widget_penfast /> }}
@@ -450,7 +492,9 @@ excludes weekends
 ## wide_contact_card
 
 ```md
-{{/* wide_contact_card(title="example title", text = "test text", src="/images/example.png", url="/research/") */}}
+{% raw %}
+{{ <wide_contact_card title="example title" text = "test text" src="/images/example.png" url="/research/" /> }}
+{% endraw %}
 ```
 
 {{ <wide_contact_card title="example title" text="test text" src="/images/example.png" url="/research/" /> }}
@@ -458,11 +502,13 @@ excludes weekends
 ## custom_macro
 
 ```md
-{%/* custom_macro() */%}
+{% raw %}
+{% <custom_macro> %}
 
 Here is a custom macro copy paste section
 
-{%/* end */%}
+{% </custom_macro> %}
+{% endraw %}
 ```
 
 {% <custom_macro> %}
@@ -472,7 +518,9 @@ Here is a custom macro copy paste section
 ## load_macro
 
 ```md
-{{/* load_macro(topic_name = "chronic_rhinosinusitis") */}}
+{% raw %}
+{{ <load_macro topic_name = "chronic_rhinosinusitis" /> }}
+{% endraw %}
 ```
 
 {{ <load_macro topic_name="chronic_rhinosinusitis" /> }}
@@ -480,11 +528,13 @@ Here is a custom macro copy paste section
 ## popup
 
 ```md
-ExRx: Blexten 10mg OD to QID {%/* popup(icon="rx") */%}
+{% raw %}
+ExRx: Blexten 10mg OD to QID {% <popup icon="rx"> %}
 
 {{ <med_card id="bilastine" /> }}
 
-{%/* end */%}
+{% </popup> %}
+{% endraw %}
 ```
 
 Accepts parameter `icon` which is similar to the admonition icons, but a couple of added options (default: 'rx'). These include:
@@ -521,7 +571,9 @@ ExRx: Blexten 10mg OD to QID {% <popup icon="rx"> %}
 ## wip
 
 ```md
-{{/* wip() */}}
+{% raw %}
+{{ <wip /> }}
+{% endraw %}
 ```
 
 {{ <wip /> }}
@@ -529,7 +581,9 @@ ExRx: Blexten 10mg OD to QID {% <popup icon="rx"> %}
 ## remote_text
 
 ```md
-{{/* remote_text(src="https://raw.githubusercontent.com/allergyguide/allergyguide/refs/heads/main/TODO.md") */}}
+{% raw %}
+{{ <remote_text src="https://raw.githubusercontent.com/allergyguide/allergyguide/refs/heads/main/TODO.md" /> }}
+{% endraw %}
 ```
 
 ```md
@@ -581,11 +635,13 @@ Requires a .bib Bibtex file (easily generated with a citation software such as Z
 ```
 
 ```md
+{% raw %}
 This sentence needs two references <span class="references">yu_trends_2024, stehlin_guiding_2025</span> and some of this
 
 ... rest of the document content
 
-{{/* references(showBib = true, path="content/example.bib) */}}
+{{ <references showBib = {true} path="content/example.bib /> }}
+{% endraw %}
 ```
 
 This sentence needs two references <span class="references">yu_trends_2024, stehlin_guiding_2025</span> and some of this
@@ -599,7 +655,9 @@ This sentence needs two references <span class="references">yu_trends_2024, steh
 This will display a warning admonition if viewed from Mobile.
 
 ```md
-{{/* mobile_warning() */}}
+{% raw %}
+{{ <mobile_warning /> }}
+{% endraw %}
 ```
 
 {{ <mobile_warning /> }}
@@ -612,7 +670,8 @@ This will display a warning admonition if viewed from Mobile.
 For simple flat tables
 
 ```md
-{%/* json_to_table() */%}
+{% raw %}
+{% <json_to_table> %}
 
 [
 { "name": "Bob", "age": 21, "isCool": false },
@@ -620,7 +679,8 @@ For simple flat tables
 { "name": "Lee", "age": 23, "isCool": true }
 ]
 
-{%/* end */%}
+{% </json_to_table> %}
+{% endraw %}
 ```
 
 {% <json_to_table> %}
@@ -644,7 +704,8 @@ And for without headers:
 For more complex nested tables
 
 ```js
-{%/* json_to_table() */%}
+{% raw %}
+{% <json_to_table> %}
 
 {
   "C1Inh-HAE": {
@@ -654,7 +715,7 @@ For more complex nested tables
       "C4": "Low",
       "C1q": "Normal",
       "Anti-C1Inh Ab": "",
-      "Mutation": "_SERPING1_"
+      "Mutation": "<i>SERPING1</i>"
     },
     "HAE Type II": {
       "C1Inh function": "< 50%",
@@ -662,7 +723,7 @@ For more complex nested tables
       "C4": "Low",
       "C1q": "Normal",
       "Anti-C1Inh Ab": "",
-      "Mutation": "_SERPING1_"
+      "Mutation": "<i>SERPING1</i>"
     }
   },
   "C1Inh-AAE": {
@@ -682,12 +743,13 @@ For more complex nested tables
       "C4": "Normal",
       "C1q": "Normal",
       "Anti-C1Inh Ab": "",
-      "Mutation": "_FXII, PLG, ANGPT1, KNG1_"
+      "Mutation": "<i>FXII, PLG, ANGPT1, KNG1</i>"
     }
   }
 }
 
-{%/* end */%}
+{% </json_to_table> %}
+{% endraw %}
 ```
 
 {% <json_to_table> %}
@@ -699,7 +761,7 @@ For more complex nested tables
 "C4": "Low",
 "C1q": "Normal",
 "Anti-C1Inh Ab": "",
-"Mutation": "_SERPING1_"
+"Mutation": "<i>SERPING1</i>"
 },
 "HAE Type II": {
 "C1Inh function": "< 50%",
@@ -707,7 +769,7 @@ For more complex nested tables
 "C4": "Low",
 "C1q": "Normal",
 "Anti-C1Inh Ab": "",
-"Mutation": "_SERPING1_"
+"Mutation": "<i>SERPING1</i>"
 }
 },
 "C1Inh-AAE": {
@@ -727,7 +789,7 @@ For more complex nested tables
 "C4": "Normal",
 "C1q": "Normal",
 "Anti-C1Inh Ab": "",
-"Mutation": "_FXII, PLG, ANGPT1, KNG1_"
+"Mutation": "<i>FXII, PLG, ANGPT1, KNG1</i>"
 }
 }
 }
@@ -737,13 +799,17 @@ For more complex nested tables
 ## research_card
 
 ```md
-{{/* research_card(paper="sygma2") */}}
+{% raw %}
+{{ <research_card paper="sygma2" /> }}
+{% endraw %}
 ```
 
 {{ <research_card paper="sygma2" /> }}
 
 ```md
-{{/* research_card(paper="sygma2", show_title=false) */}}
+{% raw %}
+{{ <research_card paper="sygma2" show_title={false} /> }}
+{% endraw %}
 ```
 
 {{ <research_card paper="sygma2" show_title={false} /> }}
@@ -751,7 +817,8 @@ For more complex nested tables
 ## tabs
 
 ```md
-{%/* tabs() */%}
+{% raw %}
+{% <tabs> %}
 
 <!-- TAB -->Overview
 <!-- CONTENT -->
@@ -774,7 +841,8 @@ This is a danger admonition with a danger icon.
 <!-- CONTENT -->
 <p>Starting at <em>$9.99/month</em>.</p>
 
-{%/* end */%}
+{% </tabs> %}
+{% endraw %}
 ```
 
 Requires a script to be placed in the bottom of the page:
@@ -817,7 +885,9 @@ This allows for secure username/password protected content. The actual content i
 To use, the shortcode requires the relative path to the HTML file needed to hydrate the page.
 
 ```md
-{{/* protected(path="content/private/test.html") */}}
+{% raw %}
+{{ <protected path="content/private/test.html" /> }}
+{% endraw %}
 ```
 
 {{ <protected path="content/private/test.html" /> }}

@@ -3,7 +3,7 @@
 {# allowing individual interactive elements (like toggles) to function correctly. #}
 {# This avoids conflicts when multiple instances of the shortcode are used. #}
 {# More context: https://github.com/welpo/tabi/issues/82 #}
-{%- set random_id = get_random(end=100000) -%}
+{%- set random_id = get_random(start=1, end=100000) -%}
 {%- set fixed_blur = fixed_blur | default(value=false) -%}
 
 <label class="spoiler-container{% if fixed_blur %} fixed-blur{% endif %}">
