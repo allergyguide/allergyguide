@@ -1,4 +1,4 @@
-// Allows for mermaid shortcodes to be used that automatically switch themes with light and dark mode.
+// Allows for mermaid components to be used that automatically switch themes with light and dark mode.
 // Only detects changes and runs when the page has mermaid diagrams.
 
 // import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/+esm';

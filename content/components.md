@@ -1,8 +1,8 @@
 +++
-title = "Shortcodes"
-description = "Testing of shortcodes"
+title = "Components"
+description = "Documentation for how to use components"
 date = 2024-11-24
-updated = 2025-02-07
+updated = 2026-09-19
 draft = false
 in_search_index = false
 template = "pages.html"
@@ -10,57 +10,57 @@ template = "pages.html"
 
 ## Highlights
 
-Not a shortcode but still useful. You have several colours to choose from:
+Not a component but still useful. You have several colours to choose from:
 
 - This shows off the <span class="hl-yellow">yellow and</span> <span class="hl-green">green ones</span>
 - This is for the <span class="hl-pink">pink and</span> <span class="hl-red">red ones</span>
 - This is for the <span class="hl-blue">blue ones</span>
 
-See below for Markdown syntax used for the custom shortcodes used in this website.
+See below for Markdown syntax used for the custom component used in this website.
 
-## Re: nesting shortcodes
+## Nesting Components
 
-The below code does not work:
+To nest components, simply write them inside one another as standard block components:
 
 ```md
-{% raw %}
-{% <warning header = "warning header"> %}
+{% raw -%}
+{% <warning header="Test Header"> %}
+This is **bold text** and _italic text_ before the inner component.
 
-{{ <warning_box_only body="# nested warning!" /> }}
+{% <warning_box_only> %}
+
+# Inside the box
+
+This is **also bold** inside the nested component.
+{% </warning_box_only> %}
+
+Here is a list after the inner component:
+
+- Item 1
+- Item 2
 
 {% </warning> %}
-{% endraw %}
+{%- endraw %}
 ```
 
-It will instead throw this error:
+{% <warning header="Test Header"> %}
+This is **bold text** and _italic text_ before the inner component.
 
-```zsh
-Error: Reason: Failed to render 'shortcodes/warning.html'
-Error: Reason: Filter call 'markdown' failed
-Error: Reason: Failed to render markdown filter: Failed to render warning_box_only shortcode
+{% <warning_box_only> %}
 
-Caused by:
-    0: Failed to render 'shortcodes/warning_box_only.html'
-    1: Filter 'markdown' not found
-```
+# Inside the box
 
-Calling {% raw %}{{ <warning_box_only body="nested warning!" /> }}{% endraw %} is essentially asking to inject html in place of the shortcode. However, if you look at warning_box_only.html:
+This is **also bold** inside the nested component.
+{% </warning_box_only> %}
 
-```html
-{% raw %}
-<blockquote class="warning_box_only">
-  <div class="content">
-    {{ body | markdown | safe }}
-  </div>
-</blockquote>
-{% endraw %}
-```
+Here is a list after the inner component:
 
-it is expecting the body to be MARKDOWN, not HTML. If you remove the markdown filter from warning_box_only.html, then it will work -- but the markdown within the warning_box_only will not be rendered properly.
+- Item 1
+- Item 2
+
+{% </warning> %}
 
 ## Custom boxes
-
-### important
 
 ### important
 
@@ -70,7 +70,6 @@ it is expecting the body to be MARKDOWN, not HTML. If you remove the markdown fi
 test
 Press <kbd>CTRL+ALT+Delete</kbd> to end the
 
-So it turns out you CAN put shortcodes inside other shortcodes, but it cannot be the % % with a body type.
 {{ <contributors authors={["Alice Smith", "Bob Johnson"]} editors={["Charlie Brown"]} staff_reviewers={["David Lee"]} /> }}
 {% </important> %}
 {% endraw %}
@@ -80,7 +79,6 @@ So it turns out you CAN put shortcodes inside other shortcodes, but it cannot be
 test
 Press <kbd>CTRL+ALT+Delete</kbd> to end the
 
-So it turns out you CAN put shortcodes inside other shortcodes, but it cannot be the % % with a body type.
 {{ <contributors authors={["Alice Smith", "Bob Johnson"]} editors={["Charlie Brown"]} staff_reviewers={["David Lee"]} /> }}
 
 {% </important> %}
@@ -92,7 +90,7 @@ So it turns out you CAN put shortcodes inside other shortcodes, but it cannot be
 {% <warning header = "warning header"> %}
 This is a warning section.
 
-Here is an attempt at the % % nested shortcode.
+Here is an attempt at the % % nested component.
 {% <important_box_only> %}
 important bx only!!!
 {% </important_box_only> %}
@@ -103,7 +101,7 @@ important bx only!!!
 {% <warning header="warning header"> %}
 This is a warning section.
 
-Here is an attempt at the % % nested shortcode.
+Here is an attempt at the % % nested component.
 {% <important_box_only> %}
 important bx only!!!
 {% </important_box_only> %}
@@ -220,7 +218,7 @@ Insert sage clinical pearl
 
 ## text_image
 
-Of note; you cannot nest a shortcode easily within a shortcode. Ie. I could not use {% raw %}{{ shortcode }}{% endraw %} within the text image to right text.
+Of note; you cannot nest a component easily within a component. Ie. I could not use {% raw %}{{ component }}{% endraw %} within the text image to right text.
 
 ```md
 {% raw %}
@@ -554,7 +552,7 @@ flag
 popup
 ```
 
-To be interactive/work, this shortcode requires one script tag to be placed at the bottom of the page:
+To be interactive/work, this component requires one script tag to be placed at the bottom of the page:
 
 ```html
 <script src="/js/popup.js"></script>
@@ -882,7 +880,7 @@ This is a danger admonition with a danger icon.
 
 This allows for secure username/password protected content. The actual content is hidden in a private repository and is securely fetched dynamically to populate the content when the user signs in. Once the user signs in, until ~24h that password will be remembered on their machine. No log-out has been implemented yet but I see little utility at this time for that feature.
 
-To use, the shortcode requires the relative path to the HTML file needed to hydrate the page.
+To use, the component requires the relative path to the HTML file needed to hydrate the page.
 
 ```md
 {% raw %}

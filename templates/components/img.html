@@ -20,7 +20,8 @@
 
 {%- elif src is starting_with(pat="/") %} {# Root Path #}
 {%- set rootpath = (src | split(pat="/"))[:-1] | join(sep="/") -%}
-{%- set path = (config.base_url if config else "") ~ rootpath ~ "/"  %}
+{%- set base = config.base_url | trim_end(pat="/") if config else "" %}
+{%- set path = base ~ rootpath ~ "/"  %}
 {%- if not w or not h %}
 {%- set metapath = rootpath ~ "/" ~ img %}
 {%- set meta = get_image_metadata(path=metapath) %}

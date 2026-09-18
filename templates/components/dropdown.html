@@ -3,7 +3,7 @@
 <details>
 <summary>{{ header | safe }}</summary>
 <div class="dropdown-content">
-{{ body | safe }}
+{{ body | markdown | safe }}
 </div>
 </details>
 </div>

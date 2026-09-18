@@ -1,6 +1,6 @@
 {% component bibstrip(in)  %}
 {{ in | replace(from="---",to="—") | replace(from="--", to="-") | replace(from="{",to="") | replace(from="}", to="") | safe }}
-{% endcomponent %}
+{% endcomponent bibstrip %}
 
 {% component bib_book(ref)  %}
 {%- set authors = ref.tags.author | split(pat=" and ") -%}

@@ -167,7 +167,7 @@ export const TEMPLATES = {
 	Drugs: ALLERGENS.drugs.penicillins,
 	Venoms: ALLERGENS.venoms,
 	// CUSTOM OPTIONS.
-	// NEED TO UPDATE HTML SHORTCODE EACH TIME TO INCLUDE
+	// NEED TO UPDATE HTML COMPONENT EACH TIME TO INCLUDE
 	RLO: [
 		"D. farinae", // dust mite df
 		"D. pteronyssinus", // dust mite dp

@@ -89,7 +89,7 @@ export async function buildTS(
 		});
 
 		console.log("Tool versions built:", JSON.stringify(toolVersioning));
-		// write data for Zola to pick up with internal shortcode
+		// write data for Zola to pick up with internal component
 		writeFileSync(
 			"./static/js/tools_versioning.json",
 			JSON.stringify(zolaData, null, 2),

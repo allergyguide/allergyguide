@@ -112,27 +112,27 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 ├──  sass
 │   ├──  _extra.scss
 │   ├──  abridge.scss
-│   └──  shortcodes 
+│   └──  components 
 │
 ├── _ts/                       # Source TypeScript for client-side tools
 │   ├── tools_versioning.json  # Configuration: Maps tool names to versions
 │   ├── oit_calculator/        # Complex Tool (Folder-based)
 │   └── simple_script.ts       # Standalone script
 │
-└── templates/                 # HTML Templates & Shortcodes
+└── templates/                 # HTML Templates & Components
 ```
 
 ---
 
 ## Developing content
 
-### Simple shortcodes
+### Simple components
 
-- Create an HTML file in `templates/shortcodes/`.
-- For JS/SCSS: Place files in `_legacy_js/{name}.js` (if simple) or `sass/shortcodes/_{name}.scss`.
+- Create an HTML file in `templates/components/`.
+- For JS/SCSS: Place files in `_legacy_js/{name}.js` (if simple) or `sass/components/_{name}.scss`.
 - See Zola docs for syntax.
 
-### TypeScript shortcodes
+### TypeScript components
 
 - See [TS_TOOL_WORKFLOW.md](TS_TOOL_WORKFLOW.md) for details on adding more complex, versioned TypeScript applications.
 
