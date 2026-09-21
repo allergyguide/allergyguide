@@ -193,70 +193,9 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 
 In 2020 a new classification system beyond sNP/wNP/AFRS was proposed based on primary vs secondary causes, and localization/type of inflammation (local vs diffuse; TH2 skewed vs non-TH2). <span class="references">grayson_contemporary_2020</span>
 
-<br>
-<br>
-
 Note that not all guidelines / position statements use this classification. Read the referenced JAMA article if you’re interested in learning more :)
 
-<br>
-
-{% <mermaid> %}
-flowchart LR
-A["Primary CRS"] --> B["Localized
-(unilateral)"]
-A --> C["Diffuse
-(bilateral)"]
-B --> D["Type 2"]
-B --> E["Non-type 2"]
-
-C --> F["Type 2"]
-C --> G["Non-type 2"]
-
-D --> H["AFRS"]
-E --> I["OMC
-Isolated frontal
-Isolated sphenoid"]
-
-F --> J["CCAD
-eCRS
-AFRS"]
-G --> K["Non-eCRS
-Poor corticosteroid response
-Older or smoker"]
-{% </mermaid> %}
-
-{% <mermaid> %}
-flowchart LR
-A["Secondary CRS"] --> B["`Localized
-(unilateral)`"]
-A --> C["`Diffuse
-(bilateral)`"]
-
-B --> D["`Local
-pathology`"]
-
-C --> E["`Mechanical
-(mucociliary)`"]
-C --> F["`Inflammatory
-(autoimmune)`"]
-C --> G["`Immunity
-(immunodeficiency)`"]
-
-D --> H["`Odontogenic
-Fungal ball
-Tumor`"]
-
-E --> I["`PCD
-CF`"]
-
-F --> J["`GPA
-EGPA`"]
-
-G --> K["`Selective IgA
-deficiency
-CVID
-Diabetes`"]
-{% </mermaid> %}
+<img src="https://assets.allergyguide.ca/images/crs-classification.png" alt="Proposed classification of Chronic Rhinosinusitis" style="max-height: 60vh; display: block; margin: 1.5rem auto; border-radius: 4px;" loading="lazy" />
 
 {% </dropdown> %}
 
@@ -375,8 +314,8 @@ Goals are symptom control through reduction of inflammation and improvement of s
   - Takes **8-12 weeks** to have maximal effect
   - Minimal concern for long-term side effects, ie. adrenal insufficiency
   - _ExRx: Nasonex 2 sprays BID_ {% <popup> %}
-{{ <med_card id="bilastine" /> }}
-{% </popup> %}
+    {{ <med_card id="bilastine" /> }}
+    {% </popup> %}
 
 {% <dropdown header="INCS Rx examples and potency"> %}
 

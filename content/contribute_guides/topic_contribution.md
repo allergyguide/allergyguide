@@ -286,39 +286,4 @@ This is a danger admonition with a danger icon.
 
 {% </dropdown> %}
 
-#### mermaid
-
-mermaid diagrams are interesting to use but not mandatory. If you want to explore and use these, check out their [documentation](https://mermaid.js.org/intro/).
-
-```md
-{% raw %}
-{%/* mermaid() */%}
-
-sequenceDiagram
-Alice ->> Bob: Hello Bob, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
-
-    Bob-->Alice: Checking with John...
-    Alice->John: Yes... John, how are you?
-
-{%/* end */%}
-{% endraw %}
-```
-
-{% <mermaid> %}
-sequenceDiagram
-Alice ->> Bob: Hello Bob, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
-
-    Bob-->Alice: Checking with John...
-    Alice->John: Yes... John, how are you?
-
-{% </mermaid> %}
-
 <script src="/js/popup.js"></script>
