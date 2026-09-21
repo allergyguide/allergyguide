@@ -13,11 +13,11 @@ authors = ["Joshua Yu"]
 <br>
 <br>
 
-{% admonition(type="warning", icon="warning", title="PLAIN LANGUAGE") %}
+{% <admonition type="warning" icon="warning" title="PLAIN LANGUAGE"> %}
 
 **This tool is strictly for use by licensed physicians or healthcare professionals acting under their direct supervision. It does not replace professional medical advice**. OIT involves strict safety parameters, up-dosing schedules, and reaction management plans that vary by patient and institution. OIT should always be done under direct medical supervision. **Attempting to use these calculations without physician supervision can lead to life-threatening anaphylaxis and other harms. Do not use this tool to self-treat.**
 
-{% end %}
+{% </admonition> %}
 
 **By using this tool, you acknowledge that you are a licensed physician or a healthcare professional acting under the direct supervision of a licensed physician.**
 

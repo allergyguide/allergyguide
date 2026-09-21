@@ -15,7 +15,7 @@ authors = ["author 1", "author 2"]
 status="wip" # options include not-started, wip, or ready
 +++
 
-{{ wip() }}
+{{ <wip /> }}
 
 <div class="blur-container">
 

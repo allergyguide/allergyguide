@@ -18,7 +18,7 @@ Each time a protocol is loaded or edited in the OIT Calculator, it is validated 
 
 <br>
 
-{% admonition(type="danger", icon="danger", title="CRITICAL ISSUES") %}
+{% <admonition type="danger" icon="danger" title="CRITICAL ISSUES"> %}
 
 **Protocol too rapid**
 
@@ -60,11 +60,11 @@ Each time a protocol is loaded or edited in the OIT Calculator, it is validated 
 
 - The specified daily dose volume for a dilution step is greater than the total volume of the entire mixture. This is physically impossible.
 
-{% end %}
+{% </admonition> %}
 
 <br>
 
-{% admonition(type="warning", icon="warning", title="PRACTICAL CAUTIONS") %}
+{% <admonition type="warning" icon="warning" title="PRACTICAL CAUTIONS"> %}
 
 **Impractical Measurement**
 
@@ -118,4 +118,4 @@ Each time a protocol is loaded or edited in the OIT Calculator, it is validated 
 
 - A step increases by more than double from the previous. Most protocols do not exceed this, except potentially during initial very low magnitude protein targets.
 
-{% end %}
+{% </admonition> %}

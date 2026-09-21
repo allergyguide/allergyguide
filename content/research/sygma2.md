@@ -15,18 +15,18 @@ authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
 <table style="margin:0rem">
   <tr>
     <td>
-{% admonition(type="info", icon="info", title="Trial metadata") %}
+{% <admonition type="info" icon="info" title="Trial metadata"> %}
 
 - Published: 2018
 - Journal: NEJM
 - Funded by: AstraZeneca
 
-{% end %}
+{% </admonition> %}
 
 </td>
 <td>
 
-{% admonition(type="note", icon="info", title="Contributors") %}
+{% <admonition type="note" icon="info" title="Contributors"> %}
 
 <div class="contributor-group">
 <i class="fas fa-pen-nib"></i>  Primary Author: Resident Lead</div>
@@ -37,26 +37,26 @@ authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
 <i class="fas fa-star"></i>  Staff Reviewer: TBD
 </div>
 
-{% end %}
+{% </admonition> %}
 
 </td>
 
 </tr>
 </table>
 
-{{ research_card(paper="sygma2", show_title=true) }}
+{{ <research_card paper="sygma2" show_title={true} /> }}
 
 ## What's the clinical question?
 
 <span class="hl-yellow">In patients with mild asthma, is PRN budesonide-formoterol non-inferior to budesonide maintenance therapy in preventing severe asthma exacerbations?</span>
 
-{% admonition(type="tip", icon="question", title="Why should we care?") %}
+{% <admonition type="tip" icon="question" title="Why should we care?"> %}
 Adherence to regular controller steroid puffer therapy in mild asthma is poor, with underuse associated with severe asthma exacerbations. An alternative non-inferior PRN strategy would be a valuable option.
-{% end %}
+{% </admonition> %}
 
 ## PICO
 
-{% two_columns_fancy() %}
+{% <two_columns_fancy> %}
 
 **Population**:
 
@@ -86,19 +86,19 @@ Adherence to regular controller steroid puffer therapy in mild asthma is poor, w
   - ED visit due to asthma that required systemic steroids
 - **Relevant Secondary**: Time to first severe exacerbation, ACQ-5 scores, AQLQ scores, use of PRN reliever therapy, overall steroid use, pre-bronchodilator FEV1, adverse events
 
-{% end %}
+{% </two_columns_fancy> %}
 
 ## Study Design
 
 This study was a <span class="hl-yellow">double-blind, multicenter, parallel-group randomized controlled trial</span> conducted over <span class="hl-yellow">52 weeks</span> across 354 sites in 25 countries.
 
-{% text_image(src="/research/sygma2/study_design.png", class="dark-invert", alt="Figure S1, showing the study design", caption = "Study design. Figure S1 from the supplementary appendix.") %}
+{% <text_image src="/research/sygma2/study_design.png" class="dark-invert" alt="Figure S1, showing the study design" caption="Study design. Figure S1 from the supplementary appendix."> %}
 
 There was a **2 to 4 week run-in period** where patients used PRN terbutaline alone for symptom relief, before randomization. Randomization was stratified by study site, and computer generated. During the 52-week period there was no regular medication reminders.
 
 Follow-up over 52 weeks was done through both scheduled in-person visits and phone contact.
 
-{% end %}
+{% </text_image> %}
 
 ### How were outcomes assessed?
 
@@ -141,13 +141,13 @@ Time to the first severe exacerbation was analyzed using a Cox proportional-haza
 
 ### Primary Outcome
 
-{{ img(src="/research/sygma2/primary.png" alt="Primary outcome results", class="c1 dark-invert", caption = "Rate ratios for the annualized rate of severe asthma exacerbations. Solid line: non-inferiority margin; dashed line: superiority margin.") }}
+{{ <img src="/research/sygma2/primary.png" alt="Primary outcome results" class="c1 dark-invert" caption="Rate ratios for the annualized rate of severe asthma exacerbations. Solid line: non-inferiority margin; dashed line: superiority margin." /> }}
 
 <span class="hl-yellow">PRN budesonide-formoterol was non-inferior to budesonide maintenance therapy for the annualized rate of severe asthma exacerbations</span>, with rates of 0.11 (95% CI, 0.10 to 0.13) and 0.12 (95% CI, 0.10 to 0.14), respectively (RR 0.97; upper one-sided 95% confidence limit, 1.16).
 
 ### Secondary Outcomes
 
-{% text_image(src="/research/sygma2/time_to_ex.png",class="dark-invert", alt="Figure 1B, showing time to first severe exacerbation", caption = "Time to first exacerbation between treatment groups.") %}
+{% <text_image src="/research/sygma2/time_to_ex.png" class="dark-invert" alt="Figure 1B, showing time to first severe exacerbation" caption="Time to first exacerbation between treatment groups."> %}
 
 #### Exacerbations - time to first, total numbers
 
@@ -155,7 +155,7 @@ No significant difference was found between groups for time to first severe exac
 
 In total, 8.5% of the budesonide-formoterol group compared to 8.8% in the budesonide had a severe exacerbation, a non-significant difference.
 
-{% end %}
+{% </text_image> %}
 
 <div style = "  overflow-x: auto;">
 <table>
@@ -208,18 +208,18 @@ In total, 8.5% of the budesonide-formoterol group compared to 8.8% in the budeso
 
 #### ACQ-5, AQLQ
 
-{% admonition(type="warning", icon="info", title="What is the ACQ-5 score?") %}
+{% <admonition type="warning" icon="info" title="What is the ACQ-5 score?"> %}
 
 5-question survey about average symptoms over the past week including: 1) night-time symptoms, 2) morning symptoms, 3) activity limitations, 4) SOB, 5) wheezing.
 
 - Score <0.75 is well controlled; >1.5 is poorly controlled
 - A change of 0.5 is considered the minimal clinically important difference
 
-{% end %}
+{% </admonition> %}
 
 <br>
 
-{% two_columns() %}
+{% <two_columns> %}
 
 In both groups, the ACQ-5 and AQLQ score trended towards better control; while both analyses were not controlled for multiple comparisons, they both favoured the budesonide maintenance group.
 
@@ -230,12 +230,12 @@ However, the <span class="hl-yellow">actual magnitude of change for both scores 
 
 <!-- split -->
 
-{{ img(src="/research/sygma2/acq5.png" alt="ACQ-5 trend over time", class="c1 dark-invert", caption = "Trend of ACQ-5 over 52 weeks from baseline. Minimal clinically important difference is 0.5.") }}
-{{ img(src="/research/sygma2/aqlq.png" alt="AQLQ trend over time", class="c1 dark-invert", caption = "Trend of AQLQ over 52 weeks. Overall score is 1-7 inclusive; higher scores => better QOL.") }}
+{{ <img src="/research/sygma2/acq5.png" alt="ACQ-5 trend over time" class="c1 dark-invert" caption="Trend of ACQ-5 over 52 weeks from baseline. Minimal clinically important difference is 0.5." /> }}
+{{ <img src="/research/sygma2/aqlq.png" alt="AQLQ trend over time" class="c1 dark-invert" caption="Trend of AQLQ over 52 weeks. Overall score is 1-7 inclusive; higher scores => better QOL." /> }}
 
-{% end %}
+{% </two_columns> %}
 
-{% two_columns() %}
+{% <two_columns> %}
 
 #### Spirometry (FEV1)
 
@@ -244,8 +244,8 @@ However, the <span class="hl-yellow">actual magnitude of change for both scores 
 
 <!-- split -->
 
-{{ img(src="/research/sygma2/fev1.png" alt="FEV1 over 52 weeks", class="c1 dark-invert", caption = "Trend of FEV1 over 52 weeks.") }}
-{% end %}
+{{ <img src="/research/sygma2/fev1.png" alt="FEV1 over 52 weeks" class="c1 dark-invert" caption="Trend of FEV1 over 52 weeks." /> }}
+{% </two_columns> %}
 
 #### Puffer and steroid use
 
@@ -270,7 +270,7 @@ Adverse events were similar between groups. One asthma-related death in budesoni
 
 **Outcome: low risk**
 
-{% dropdown(header="Detailed risk of bias assessment") %}
+{% <dropdown header="Detailed risk of bias assessment"> %}
 
 <h3 id="domain-1-risk-of-bias-from-the-randomization-process">Domain 1: Risk of Bias from the Randomization Process</h3>
 <p>Outcome: low risk</p>
@@ -403,4 +403,4 @@ Adverse events were similar between groups. One asthma-related death in budesoni
 </tbody>
 </table>
 
-{% end %}
+{% </dropdown> %}

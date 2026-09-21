@@ -11,19 +11,19 @@ authors = ["Allergyguide"]
 <br>
 <br>
 
-{% admonition(type="tip", icon="tip", title="Appraisal structure") %}
+{% <admonition type="tip" icon="tip" title="Appraisal structure"> %}
 Critical appraisal of primary or secondary literature will have two major sections:
 
 1. A quick and concise need-to-know summary
 2. A more detailed breakdown of the paper and assessment of quality of the evidence
 
-{% end %}
+{% </admonition> %}
 
 # Quick facts
 
 This section should not be longer than half a page at most. It is meant as a **quick glance-over refresher** about what the take-home points were. Use highlights to emphasize the key information (ie. the primary outcomes of interest, key exclusions, etc.).
 
-{% two_columns() %}
+{% <two_columns> %}
 
 - What is the main clinical question?
 - What is the study type?
@@ -37,19 +37,19 @@ This section should not be longer than half a page at most. It is meant as a **q
 - What is the bottom line?
 - Quality of evidence (AMSTAR 2 for reviews, RoB-2 for randomized trials primary outcomes)
 
-{% end %}
+{% </two_columns> %}
 
 ### Examples
 
 From the [SYGMA2 trial](https://www.nejm.org/doi/full/10.1056/NEJMoa1715275) (primary evidence):
 
-{{ research_card(paper="sygma2", show_title=false) }}
+{{ <research_card paper="sygma2" show_title={false} /> }}
 
 # The more detailed review
 
 See the page for the [SYGMA2 trial](/research/sygma2) for an example:
 
-{% two_columns() %}
+{% <two_columns> %}
 
 - Metadata
   - Publish year
@@ -70,7 +70,7 @@ See the page for the [SYGMA2 trial](/research/sygma2) for an example:
 - Conclusion
 - Study quality
 
-{% end %}
+{% </two_columns> %}
 
 # Study quality
 

@@ -11,9 +11,9 @@ authors = ["Allergyguide"]
 <br>
 <br>
 
-{% admonition(type="note", icon="note", title="RoB-2 Credit") %}
+{% <admonition type="note" icon="note" title="RoB-2 Credit"> %}
 Information and excerpts are directly from the [Cochrane Risk of Bias assessment tool](https://methods.cochrane.org/risk-bias-2), licensed under CC BY-NC-ND 4.0. Higgins (2019).
-{% end %}
+{% </admonition> %}
 
 ## Why and when to use:
 
@@ -62,11 +62,11 @@ Do note: there are two versions of domain 2 (Bias due to deviations from intende
 
 ## Domain 2: Risk of bias due to deviations from the intended interventions (**_effect of assignment to intervention_**)
 
-{% admonition(type="warning", icon="warning", title="WARNING") %}
+{% <admonition type="warning" icon="warning" title="WARNING"> %}
 
 This variant of domain 2 should be used if: you want to assess the effect of assignment to the interventions at baseline, regardless of whether the interventions are received as intended (**the ‘intention-to-treat effect’**)
 
-{% end %}
+{% </admonition> %}
 
 ### 2.1 Were participants aware of their assigned intervention during the trial?
 
@@ -116,11 +116,11 @@ in the wrong group or excluded, if the outcome is rare or if exclusions are stro
 
 ## Domain 2: Risk of bias due to deviations from the intended interventions (**_effect of adhering to intervention_**)
 
-{% admonition(type="warning", icon="warning", title="WARNING") %}
+{% <admonition type="warning" icon="warning" title="WARNING"> %}
 
 This variant of domain 2 should be used if: you want to assess the effect of adhering to the interventions as specified in the trial protocol (**the ‘per-protocol effect’**)
 
-{% end %}
+{% </admonition> %}
 
 ### 2.1. Were participants aware of their assigned intervention during the trial?
 

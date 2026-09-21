@@ -15,7 +15,7 @@ This tool is meant to simplify and speed up documentation for SPT or IDT.
 
 If you're only doing a few skin tests and not a panel, _it's probably faster to not use this tool_, and just do it manually within your EMR.
 
-{% admonition(type="info", icon="info", title="Features") %}
+{% <admonition type="info" icon="info" title="Features"> %}
 
 1. Quick-search of allergens (see [list](/js/spt_generator_constants.js)) with smart autosuggestion
 2. Quick entry of wheal diameter
@@ -26,7 +26,7 @@ If you're only doing a few skin tests and not a panel, _it's probably faster to 
 
 <br>
 NOTE: this tool assumes that wheal sizes >=3mm are positive.
-{% end %}
+{% </admonition> %}
 
 #### Example outputs:
 
@@ -37,7 +37,7 @@ Otherwise, almond, brazil nut, hazelnut, macadamia, pecan, pine nut, apple, apri
 Positive control (6mm), Negative control (2mm).
 ```
 
-{% two_columns() %}
+{% <two_columns> %}
 
 ```txt
 (-) control -- 1mm
@@ -62,7 +62,7 @@ grass mix -- 5mm              ||
 -------------------------------------------------------
 ```
 
-{% end %}
+{% </two_columns> %}
 
 ## Instructions
 
@@ -92,13 +92,13 @@ grass mix -- 5mm              ||
 4. **Editing Entries**\
    All submitted entries can be deleted or modified. (See [Modifying Entries](#modifying-entries) below.)
 
-{% admonition(type="tip", icon="tip", title="Save time with templates") %}
+{% <admonition type="tip" icon="tip" title="Save time with templates"> %}
 In addition to manually adding entries, you can insert templates using the buttons at the top. These templates add a panel of entries without pre-populated diameters or notes. Once added, you can quickly edit these entries. _**Templates can be mixed and matched in any order and used multiple times**_ (though duplicate allergens may occur).
 
 <br>
 Note: Custom templates are not available at this time (but may be added in the future).
 
-{% end %}
+{% </admonition> %}
 
 ### Modifying Entries
 

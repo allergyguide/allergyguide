@@ -19,11 +19,11 @@ in_search_index = true
 
 <h2 class="section-title">Featured Content</h2>
 
-{{ card_grid(keys=["title2", "title4", "title6"]) }}
+{{ <card_grid keys={["title2", "title4", "title6"]} /> }}
 
 <h2 class="section-title">Our Goals</h2>
 
-{% two_columns() %}
+{% <two_columns> %}
 
 Create a comprehensive cross-Canada resident-led and faculty-reviewed website for high-yield and pragmatic information about clinical allergy & immunology.
 
@@ -59,7 +59,7 @@ Check out our [about](/about) section to learn more!
   </li>
 </ul>
 
-{% end %}
+{% </two_columns> %}
 
 <div class="contribute">
   <h3>Help shape AllergyGuide</h3>
