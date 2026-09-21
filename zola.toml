@@ -19,6 +19,10 @@ taxonomies = [
   { name = "tags", feed = true },
 ]
 
+generate_sitemap = true
+generate_robots_txt = true
+exclude_paginated_pages_in_sitemap = "all"
+
 # ignored_content = []
 # ignored_static = ["apple-touch-icon.png","banner.png","safari-pinned-tab.svg","favicon*","m*.png","android-chrome*png"]
 
