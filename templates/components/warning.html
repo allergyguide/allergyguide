@@ -1,16 +1,7 @@
 {% component warning(header) %}
 <blockquote class="warning">
-{% set icon = load_data(path="static/icon/warning.svg") %}
-<div class="icon">
-<span>
-{{ icon | safe }}
-{% if header %}
-<span><strong>
-{{ header }}
-</strong></span>
-{% endif %}
-</span>
-</div>
+{%- set icon = load_data(path="static/icon/warning.svg") -%}
+<div class="icon"><span>{{ icon | safe }}{% if header %}<strong>{{ header }}</strong>{% endif %}</span></div>
 <div class="content">
 {{ body | markdown | safe }}
 </div>
