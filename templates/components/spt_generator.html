@@ -1,0 +1,52 @@
+{% component spt_generator() %}
+{# spt_generator.html #}
+<div class="spt_generator">
+<div class="template-panel" role="toolbar">
+<button class="template-btn" id="reset-btn" aria-label="Reset all entries">Reset All</button>
+<button class="template-btn" data-template="controls" aria-label="Add controls template">Controls</button>
+<button class="template-btn aeroallergens" data-template="Insects" aria-label="Add insects template">Insects</button>
+<button class="template-btn aeroallergens" data-template="Plants" aria-label="Add insects template">Plants</button>
+<button class="template-btn aeroallergens" data-template="Fungi" aria-label="Add fungi template">Fungi</button>
+<button class="template-btn aeroallergens" data-template="Animals" aria-label="Add animals template">Animals</button>
+<button class="template-btn foods" data-template="Nuts" aria-label="Add nuts template">Nuts</button>
+<button class="template-btn foods" data-template="EggDairy" aria-label="Add egg/dairy template">Egg/Dairy</button>
+<button class="template-btn foods" data-template="Seeds" aria-label="Add seeds template">Seeds</button>
+<button class="template-btn foods" data-template="Shellfish" aria-label="Add shellfish template">Shellfish</button>
+<button class="template-btn foods" data-template="Fish" aria-label="Add fish template">Fish</button>
+<button class="template-btn foods" data-template="Meats" aria-label="Add meats template">Meats</button>
+<button class="template-btn foods" data-template="Vegetables" aria-label="Add vegetables template">Veg</button>
+<button class="template-btn foods" data-template="Fruits" aria-label="Add fruits template">Fruits</button>
+<button class="template-btn misc" data-template="Drugs" aria-label="Add drugs template">Drugs</button>
+<button class="template-btn misc" data-template="Venoms" aria-label="Add venoms template">Venoms</button>
+<button class="template-btn custom" data-template="RLO" aria-label="Add RLO template">RLO</button>
+</div>
+<div class="entry-creation">
+{# Inputs will be added dynamically by JavaScript #}
+</div>
+<div class="paragraph-display">
+<div class="code-block-container">
+<button class="copy-button" aria-label="Copy table format">Copy</button>
+<div class="txt" id="paragraphDisplay" role="region" aria-live="polite"></div>
+</div>
+<br>
+</div>
+<div class="display-block">
+<div class="column">
+<div class="code-block-container">
+<button class="copy-button" aria-label="Copy simple list">Copy</button>
+<div class="txt" id="simpleList" role="region" aria-live="polite"></div>
+</div>
+</div>
+<div class="column">
+<div class="code-block-container">
+<button class="copy-button" aria-label="Copy table format">Copy</button>
+<div class="txt" id="tableFormat" role="region" aria-live="polite"></div>
+</div>
+</div>
+</div>
+</div>
+<br>
+<br>
+<script src="https://cdn.jsdelivr.net/npm/fuzzysort@3.1.0/fuzzysort.min.js"></script>
+<script type="module" src="/js/spt_generator.js"></script>
+{% endcomponent spt_generator %}

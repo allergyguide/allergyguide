@@ -1,0 +1,46 @@
+{# headers: an array e.g. ["D1", "D2", "D3", "D4", "D5", "Overall"] #}
+{# rows: an array of arrays, e.g. [["red", "green", "yellow", "blue", "blue", "red"], ...] #}
+{# outcomes: an array of outcome labels for each row, e.g. ["Pass", "Fail"] #}
+
+{% component mini_rob_summary(headers, rows, outcomes)  %}
+{% set headers = headers | default(value=["D1", "D2", "D3", "D4", "D5", "Overall"]) %}
+{% set outcomes = outcomes | default(value=[]) %}
+<div class="mini-rob-2-summary-table">
+<table>
+<thead>
+<tr>
+<th></th>
+{% for h in headers %}
+<th>{{ h }}</th>
+{% endfor %}
+</tr>
+</thead>
+<tbody>
+{% for row in rows %}
+<tr>
+<td>
+{% if outcomes | length > loop.index0 %}
+{{ outcomes[loop.index0] }}
+{% else %}
+-
+{% endif %}
+</td>
+{% for v in row %}
+<td>
+<div class="icon {{ v }}">
+{% if v == "red" %}X
+{% elif v == "blue" %}?
+{% elif v == "yellow" %}-
+{% elif v == "green" %}+
+{% else %}
+{{ throw(message=v ~ " is not a valid option. Must be one of red, blue, yellow, or green.") }}
+{% endif %}
+</div>
+</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endcomponent %}

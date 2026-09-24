@@ -11,44 +11,43 @@
 @use "core/signup";
 @use "core/toolbar";
 @use "core/feedback-modal";
-@use "shortcodes/card_grid";
-@use "shortcodes/contributors";
-@use "shortcodes/important";
-@use "shortcodes/important_box_only";
-@use "shortcodes/profile_grid";
-@use "shortcodes/question";
-@use "shortcodes/text_image";
-@use "shortcodes/topic_macros_toml_load";
-@use "shortcodes/two_columns";
-@use "shortcodes/two_columns_fancy";
-@use "shortcodes/warning";
-@use "shortcodes/warning_box_only";
-@use "shortcodes/wide_contact_card";
-@use "shortcodes/widget_penfast";
-@use "shortcodes/medications";
-@use "shortcodes/admonition";
-@use "shortcodes/wip";
-@use "shortcodes/mermaid";
-@use "shortcodes/spoiler";
-@use "shortcodes/timeline";
-@use "shortcodes/references";
-@use "shortcodes/spt_generator";
-@use "shortcodes/json_to_table";
-@use "shortcodes/research_card";
-@use "shortcodes/rob_2";
-@use "shortcodes/mini_rob_summary";
-@use "shortcodes/mini_grade_summary";
-@use "shortcodes/hl";
-@use "shortcodes/dropdown";
-@use "shortcodes/topics_crswnp_incs";
-@use "shortcodes/topics_crswnp_biologics";
-@use "shortcodes/tabs";
-@use "shortcodes/popup";
-@use "shortcodes/badges";
-@use "shortcodes/protected";
-@use "shortcodes/ofc_index";
+@use "components/card_grid";
+@use "components/contributors";
+@use "components/important";
+@use "components/important_box_only";
+@use "components/profile_grid";
+@use "components/question";
+@use "components/text_image";
+@use "components/topic_macros_toml_load";
+@use "components/two_columns";
+@use "components/two_columns_fancy";
+@use "components/warning";
+@use "components/warning_box_only";
+@use "components/wide_contact_card";
+@use "components/widget_penfast";
+@use "components/medications";
+@use "components/admonition";
+@use "components/wip";
+@use "components/spoiler";
+@use "components/timeline";
+@use "components/references";
+@use "components/spt_generator";
+@use "components/json_to_table";
+@use "components/research_card";
+@use "components/rob_2";
+@use "components/mini_rob_summary";
+@use "components/mini_grade_summary";
+@use "components/hl";
+@use "components/dropdown";
+@use "components/topics_crswnp_incs";
+@use "components/topics_crswnp_biologics";
+@use "components/tabs";
+@use "components/popup";
+@use "components/badges";
+@use "components/protected";
+@use "components/ofc_index";
 @use "other/homepage";
-@use "shortcodes/oit_calculator";
+@use "components/oit_calculator";
 
 
 /* Markdown code blocks soft wrap */
@@ -122,5 +121,22 @@ pre.language-md {
   img.dark-invert {
     filter: invert(0%);
     /* Invert colors in dark mode */
+  }
+}
+
+/* Tighten vertical spacing for article lists on index pages */
+article:has(.sum) {
+  padding: 0.5rem 0;
+
+  h1,
+  h2,
+  h3 {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .sum p {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
   }
 }

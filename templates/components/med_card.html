@@ -1,0 +1,13 @@
+{%- component med_card(id) -%}
+{%- set med_html -%}
+{%- if not med_script_loaded -%}
+{%- set_global med_script_loaded = true -%}
+{%- set data = load_data(path="static/toml/medications.json") -%}
+<script type="application/json" id="med-database-json" data-json="{{ data | json_encode() | escape_html }}"></script>
+{%- set tools = load_data(path="static/js/tools_versioning.json") -%}
+<script type="module" src="/js/{{ tools.medications.file }}"></script>
+{%- endif -%}
+<div class="med-card-mount" data-drug-id="{{ id }}"></div>
+{%- endset -%}
+{{- med_html | replace(from="\n", to="") | safe -}}
+{%- endcomponent med_card -%}

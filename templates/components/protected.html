@@ -1,0 +1,15 @@
+{% component protected(path, id="", loading="", class="") %}
+{# templates/components/protected.html - DEBUG VERSION #}
+{% set container_id = id | default(value="protected-" ~ path | replace(from="/", to="-") | replace(from=".", to="-")) %}
+{% set loading_text = loading | default(value="Loading protected content...") %}
+{% set css_class = class | default(value="protected") %}
+<div id="{{ container_id }}" class="{{ css_class }}" data-protected-path="{{ path }}" data-loading-text="{{ loading_text }}">
+	{{ loading_text }}
+</div>
+{% if not protected_script_loaded %}
+{% set_global protected_script_loaded = true %}
+<!-- Only load scripts once per page -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/js/protected.js"></script>
+{% endif %}
+{% endcomponent protected %}

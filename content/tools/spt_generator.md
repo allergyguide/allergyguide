@@ -15,13 +15,13 @@ authors = ["Allergyguide"]
 </br>
 </br>
 
-{% admonition(type="info", icon="tip", title="Quick start. See <a href='/tools/resources/spt-generator-instructions/' ><i>instructions</i></a>") %}
+{% <admonition type="info" icon="tip" title="Quick start. See <a href='/tools/resources/spt-generator-instructions/' ><i>instructions</i></a>"> %}
 Type an allergen, <kbd><kbd>TAB</kbd></kbd> and <kbd><kbd>SHIFT-TAB</kbd></kbd> to cycle through suggestions. You are able to type a custom allergen. <kbd><kbd>ENTER</kbd></kbd> to move to diameter input. <kbd><kbd>ENTER</kbd></kbd> again to submit.
 
 Mix and match the templates to save time.
 
-{% end %}
+{% </admonition> %}
 
-{{ mobile_warning() }}
+{{ <mobile_warning /> }}
 <br>
-{{ spt_generator() }}
+{{ <spt_generator /> }}

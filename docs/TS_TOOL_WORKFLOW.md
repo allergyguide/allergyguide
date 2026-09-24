@@ -17,7 +17,7 @@ For complex tools (like the OIT Calculator) and interactive components, we use *
 │   └── js/                    # Output (built files)
 │       ├── simple_script.1.0.0-a1b2c3d.js
 │       ├── oit_calculator.0.8.0-a1213b2c.js
-│       ├── tools_versioning.json # Generated map for Zola/Shortcodes
+│       ├── tools_versioning.json # Generated map for Zola/Components
 │       └── chunks/            # Shared code (e.g. libraries)
 │
 └── ...
@@ -47,7 +47,7 @@ Open `_ts/tools_versioning.json` and add your tool with a version number. The ke
 
 ### 3. Integrate with Zola
 
-In your shortcode or HTML template, dynamically load the hashed filename:
+In your component or HTML template, dynamically load the hashed filename:
 
 ```html
 {%/* set tools = load_data(path="/js/tools_versioning.json") */%}
@@ -77,7 +77,7 @@ Note:
 - **Bundler:** `esbuild`
 - **Hashing:** Output filenames include a commit hash (e.g., `tool.1.0.0-a1b2c3d.js`) for cache busting.
 - **Code Splitting:** Shared libraries (like `decimal.js`) are automatically extracted into `static/js/chunks/` to prevent code duplication between tools.
-- **Linting & Formatting:** This project uses [Biome](https://biomejs.dev/) for fast linting and formatting. 
+- **Linting & Formatting:** This project uses [Biome](https://biomejs.dev/) for fast linting and formatting.
   - Run `npm run lint` to check for issues.
   - Run `npm run lint:fix` to automatically apply fixes.
 - **Testing:** Run `npm test` to execute Vitest unit tests located inside `_ts/`.

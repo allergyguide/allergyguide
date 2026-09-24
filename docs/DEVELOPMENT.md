@@ -82,7 +82,7 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │   ├── build-utils.mts            # Shared utility functions
 │   └── build-config.mts           # Environment variables and config
 ├── build-patch-sw.js          # Service Worker Patcher (Critical for Auth)
-├── config.toml                # Zola Configuration
+├── zola.toml                  # Zola Configuration
 ├── netlify.toml               # Netlify Configuration (Headers, Redirects)
 ├── package.json               # NPM Scripts & Dependencies
 ├── tools/                     # Developer utilities (not part of site build)
@@ -112,27 +112,27 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 ├──  sass
 │   ├──  _extra.scss
 │   ├──  abridge.scss
-│   └──  shortcodes 
+│   └──  components 
 │
 ├── _ts/                       # Source TypeScript for client-side tools
 │   ├── tools_versioning.json  # Configuration: Maps tool names to versions
 │   ├── oit_calculator/        # Complex Tool (Folder-based)
 │   └── simple_script.ts       # Standalone script
 │
-└── templates/                 # HTML Templates & Shortcodes
+└── templates/                 # HTML Templates & Components
 ```
 
 ---
 
 ## Developing content
 
-### Simple shortcodes
+### Simple components
 
-- Create an HTML file in `templates/shortcodes/`.
-- For JS/SCSS: Place files in `_legacy_js/{name}.js` (if simple) or `sass/shortcodes/_{name}.scss`.
+- Create an HTML file in `templates/components/`.
+- For JS/SCSS: Place files in `_legacy_js/{name}.js` (if simple) or `sass/components/_{name}.scss`.
 - See Zola docs for syntax.
 
-### TypeScript shortcodes
+### TypeScript components
 
 - See [TS_TOOL_WORKFLOW.md](TS_TOOL_WORKFLOW.md) for details on adding more complex, versioned TypeScript applications.
 
@@ -213,7 +213,7 @@ If you add a new external service (Analytics, CDNs) or a new Netlify function:
 
 If you edit `build-patch-sw.js` or the theme's PWA logic:
 
-1. Open `config.toml` and increment the `pwa_VER` variable (e.g., `3.12.5` -> `3.12.6`).
+1. Open `zola.toml` and increment the `pwa_VER` variable (e.g., `3.12.5` -> `3.12.6`).
 2. Deploy to Netlify. (This forces Zola to update the HTML references, prompting the browser to download the new SW).
 3. **Purge Everything** in Cloudflare to ensure the new SW file isn't blocked by edge caching.
 
@@ -221,7 +221,7 @@ If you edit `build-patch-sw.js` or the theme's PWA logic:
 
 If Supabase or Netlify functions fail only in production:
 
-1. **Test in Incognito:** If it works in Incognito but fails in a normal window, the user's **local Service Worker** is stale. Solution: Bump `pwa_VER` in `config.toml`.
+1. **Test in Incognito:** If it works in Incognito but fails in a normal window, the user's **local Service Worker** is stale. Solution: Bump `pwa_VER` in `zola.toml`.
 2. **Check Headers:** If it fails in Incognito, the issue is at the **CDN/Hosting level**. Solution: Check `netlify.toml` for CSP errors or Purge Cloudflare.
 
 ---

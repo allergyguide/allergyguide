@@ -2,4 +2,4 @@
 template = "pages.html"
 +++
 
-{{ med_index() }}
+{{ <med_index /> }}

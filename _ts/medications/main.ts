@@ -15,7 +15,8 @@ function initMedications() {
 		return;
 	}
 
-	const jsonStr = scriptEl.textContent || "";
+	const jsonStr =
+		scriptEl.getAttribute("data-json") || scriptEl.textContent || "";
 	let rawData: unknown;
 	try {
 		rawData = JSON.parse(jsonStr);

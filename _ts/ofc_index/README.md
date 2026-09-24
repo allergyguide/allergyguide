@@ -19,7 +19,7 @@ Oral food challenges are key procedures. Calculation of challenge steps - while 
 
 ### Zola Integration
 
-The tool is mounted via a Zola shortcode (`templates/shortcodes/ofc_index.html`). It uses a **Static Skeleton Loader** pattern:
+The tool is mounted via a Zola component (`templates/components/ofc_index.html`). It uses a **Static Skeleton Loader** pattern:
 
 1. Zola renders a noninteractive HTML skeleton.
 2. The bundled JS loads and initiates data bootstrapping.

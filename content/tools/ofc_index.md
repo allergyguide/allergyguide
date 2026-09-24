@@ -15,7 +15,7 @@ authors = ["Joshua Yu"]
 </br>
 </br>
 
-{{ ofc_index() }}
+{{ <ofc_index /> }}
 
 </br>
 

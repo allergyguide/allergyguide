@@ -15,7 +15,7 @@ authors = ["author 1", "author 2"]
 status="not-started" # options include not-started, wip, or ready
 +++
 
-{{ wip() }}
+{{ <wip /> }}
 
 </br>
 </br>
@@ -225,7 +225,7 @@ Category of IEI from infection types / pattern (not very specific, very simplifi
 
 There is also more autoimmunity with early complement defects (ie SLE is associated with C3)
 
-{% json_to_table() %}
+{% <json_to_table> %}
 [
 {
 "microorganism": "Viruses",
@@ -264,7 +264,7 @@ There is also more autoimmunity with early complement defects (ie SLE is associa
 }
 ]
 
-{% end %}
+{% </json_to_table> %}
 
 ## predominantly antibody deficiency
 

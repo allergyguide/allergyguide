@@ -8,11 +8,11 @@ toc = true
 authors = ["Allergyguide"]
 +++
 
-Medications can be found in this [page here](/medications/) and are also accessible through popups {% popup() %}
+Medications can be found in this [page here](/medications/) and are also accessible through popups {% <popup> %}
 
-{{ med_card(id="dupilumab") }}
+{{ <med_card id="dupilumab" /> }}
 
-{% end %}
+{% </popup> %}
 
 - The goal is cards that are succinct and relevant, not a deep dive – the user can look at the monograph if needed for more detail.
   - What do you think would be useful to see as a quick reference? What's helpful for counseling patients?

@@ -29,4 +29,4 @@ The application fetches its data at runtime from the compiled static TOML file:
 ## Development
 
 All changes to these TypeScript files are compiled via the `esbuild` pipeline orchestrated by `scripts/build.mts`.
-For styling, refer to `sass/shortcodes/_medications.scss`.
+For styling, refer to `sass/components/_medications.scss`.

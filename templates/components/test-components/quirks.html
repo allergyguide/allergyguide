@@ -1,0 +1,143 @@
+{% component test_multiline() %}
+<div class="test-box multiline-box" style="border: 1px solid red; padding: 0.5rem; margin-bottom: 0.5rem;">
+  <span>Line 1</span>
+
+  <span>Line 2 after a blank line</span>
+</div>
+{% endcomponent test_multiline %}
+
+{% component test_singleline() %}
+{%- set html_out -%}
+<div class="test-box singleline-box" style="border: 1px solid green; padding: 0.5rem; margin-bottom: 0.5rem;">
+  <span>Line 1</span>
+
+  <span>Line 2 after a blank line</span>
+</div>
+{%- endset -%}
+{{ html_out | replace(from="\n", to=" ") | safe }}
+{% endcomponent test_singleline %}
+
+{% component test_json_attr() %}
+<div id="json-test-mount" data-json="{{ body | replace(from='\n', to=' ') | escape }}" style="font-weight: bold; margin: 1rem 0;"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('json-test-mount');
+    if (!el) return;
+    try {
+      const data = JSON.parse(el.getAttribute('data-json'));
+      el.innerHTML = "✅ JSON parsed correctly! Target: " + data.target;
+      el.style.color = "green";
+    } catch (e) {
+      el.innerHTML = "❌ JSON parsing failed: " + e.message;
+      el.style.color = "red";
+    }
+  });
+</script>
+{% endcomponent test_json_attr %}
+
+{% component test_list_breaker() %}
+<!-- This is an HTML comment that historically broke lists -->
+<span class="list-item-content" style="color: purple;">I am a component item</span>
+{% endcomponent test_list_breaker %}
+
+{% component test_outer() %}
+<div style="border: 2px solid blue; padding: 1rem; border-radius: 4px; margin: 1rem 0;">
+  <strong>Outer component</strong>
+  <div>{{ body | safe }}</div>
+</div>
+{% endcomponent test_outer %}
+
+{% component test_inner() %}
+<span style="color: red; font-weight: bold;">Inner component rendered!</span>
+{% endcomponent test_inner %}
+
+{% component test_args(required, optional="default value") %}
+<div style="background: #eee; padding: 1rem; border-radius: 4px; color: #333;">
+  <strong>Required arg:</strong> {{ required }} <br>
+  <strong>Optional arg:</strong> {{ optional }}
+</div>
+{% endcomponent test_args %}
+
+{% component test_blockquote_injection() %}
+<div style="border: 1px dashed orange; padding: 0.5rem; margin-bottom: 0.5rem;">
+<a href="https://example.com"
+
+>This should be a simple link</a>
+</div>
+{% endcomponent test_blockquote_injection %}
+
+{% component test_squished_text() %}
+{%- set html_out -%}
+<span>Hello</span>
+<span>World</span>
+{%- endset -%}
+<div style="border: 1px dashed teal; padding: 0.5rem;">
+  <strong>Empty string replace:</strong> {{ html_out | replace(from="\n", to="") | safe }}<br>
+  <strong>Space replace:</strong> {{ html_out | replace(from="\n", to=" ") | safe }}
+</div>
+{% endcomponent test_squished_text %}
+
+{% component test_markdown_filter() %}
+<div class="with-markdown-filter" style="border: 1px solid purple; padding: 0.5rem; margin-top: 1rem;">
+  <strong>With filter:</strong>
+  <div class="content">
+    {{ body | markdown | safe }}
+  </div>
+</div>
+{% endcomponent test_markdown_filter %}
+
+{% component test_no_markdown_filter() %}
+<div class="without-markdown-filter" style="border: 1px solid brown; padding: 0.5rem; margin-top: 1rem;">
+  <strong>Without filter:</strong>
+  <div class="content">
+    {{ body | safe }}
+  </div>
+</div>
+{% endcomponent test_no_markdown_filter %}
+
+{% component test_table_inline() %}
+<span style="color: blue;"><strong>In Table</strong></span>
+{% endcomponent test_table_inline %}
+
+{% component test_table_inline_safe() -%}
+<span style="color: green;"><strong>Safe Table</strong></span>
+{%- endcomponent test_table_inline_safe %}
+
+{% component test_leak() %}
+{% set leak_var = "LEAKED_VALUE" %}
+<span style="color: gray;">[Component sets leak_var]</span>
+{% endcomponent test_leak %}
+
+{% component test_recursive(depth) %}
+{% if depth > 0 %}
+<div style="padding-left: 10px; border-left: 1px solid black;">
+  Depth {{ depth }}
+  {{ <test_recursive depth={depth - 1} /> }}
+</div>
+{% else %}
+<span style="color: green;">Base reached</span>
+{% endif %}
+{% endcomponent test_recursive %}
+
+{% component test_url() -%}
+https://example.com
+{%- endcomponent test_url %}
+
+{% component test_spread(class="default-class", ...rest) %}
+<div class="{{ class }}" {% for key, value in rest %} {{ key }}="{{ value }}" {% endfor %} style="border: 1px solid #ccc; padding: 0.5rem;">
+  Spread test (inspect my attributes)
+</div>
+{% endcomponent test_spread %}
+
+{# §14 — set_global does NOT persist across component calls.
+   Each invocation sees an isolated context, so the counter never increments.
+   Use get_random() for unique IDs instead. #}
+{% component test_global() %}
+{% if not global_counter %}
+{% set_global global_counter = 1 %}
+<p>Counter started</p>
+{% else %}
+{% set_global global_counter = global_counter + 1 %}
+<p>Counter incremented to {{ global_counter }}</p>
+{% endif %}
+{% endcomponent test_global %}
