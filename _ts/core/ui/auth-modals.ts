@@ -27,7 +27,7 @@ function renderTurnstile() {
 	try {
 		turnstileWidgetId = turnstile.render("#turnstile-widget", {
 			sitekey,
-			appearance: "execute",
+			appearance: "always",
 			callback: () => {
 				const submitBtn = document.getElementById(
 					"btn-login-submit",
