@@ -6,26 +6,6 @@
 <div id="core-feedback-mount"></div>
 <div id="oit-handout-modal-mount"></div>
 <div class="oit_calculator" data-public-restricted="true">
-<div id="oit-toolbar-skeleton" class="core-toolbar">
-<div class="core-version-auth">
-<button id="static-btn-login-trigger" class="login-link-btn" title="Login" aria-label="Login">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-<path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-</svg>
-</button>
-<span id="static-user-badge" class="core-user-badge" style="display: none;"></span>
-<button id="static-btn-logout-trigger" class="login-link-btn" style="display: none;" title="Logout" aria-label="Logout">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-<path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
-<path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
-</svg>
-</button>
-<span class="separator">|</span>
-<a href="{{ get_url(path='@/tools/resources/oit_calculator_changelog.md') }}" target="_blank" rel="noopener noreferrer" class="changelog-link"><span class="core-version">v{{ tool_info.version }}</span></a>
-</div>
-</div>
-<div id="core-toolbar-mount"></div>
 <!-- Workspace Header (Tabs + Actions) -->
 <div class="oit-workspace-header">
 <div id="oit-tabs-list" class="oit-tabs-list">
@@ -123,6 +103,7 @@ to access the tool.</p>
 <table id="protocol-table-mount" style="display: none;">
 <!-- Lit-html will mount here -->
 </table>
+</div>
 <div class="bottom-section oit-hidden-on-init">
 <div class="export-container">
 <div class="export-buttons">
@@ -140,7 +121,6 @@ rows="8"
 </div>
 </div>
 <div class="warnings-container"></div>
-</div>
 </div>
 </div>
 {% include "components/oit_calculator_components/clickwrap_modal.html" %}

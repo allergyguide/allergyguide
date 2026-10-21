@@ -671,7 +671,11 @@
       border-radius: 50px; // Pill shape
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 
-      animation: metadataPillEntry 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: metadataPillEntry 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
     }
 
     @keyframes metadataPillEntry {
@@ -904,30 +908,32 @@
     align-items: center;
 
     .subtle-text {
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 4px;
-      
-      span.mini-btn-add, span.mini-btn-remove {
-        display: inline-block;
-        vertical-align: middle;
-      }
+      line-height: 1.5;
     }
 
     .mini-btn-add,
     .mini-btn-remove {
-      width: 0.8rem;
-      height: 0.8rem;
+      width: 1.15rem;
+      height: 1.15rem;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      text-align: center;
       background-color: var(--oit-bg-secondary);
       border: 1px solid var(--oit-border);
       border-radius: 3px;
       font-weight: bold;
-      margin: 0 3px;
-      line-height: 1;
+      font-size: 0.85rem;
+      line-height: 0;
+      margin: 0 2px;
       cursor: default;
+      box-sizing: border-box;
+      user-select: none;
+      vertical-align: middle;
     }
 
     .mini-btn-add {
@@ -948,13 +954,10 @@
     width: 100%;
     position: relative;
 
-    // Apply overflow logic ONLY when screen is small (e.g., tablet/mobile)
-    @media (max-width: 650px) {
-      overflow-x: auto; // Allow horizontal scroll
-      overflow-y: auto; // Allow vertical scroll
-
-      max-height: 85vh; // required sadly
-      border: 1px solid var(--oit-border);
+    // Allow horizontal scroll ONLY when screen is small (e.g., tablet/mobile)
+    @media (max-width: 768px) {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
 
@@ -1492,43 +1495,93 @@
 
   // Responsive Design
   @media (max-width: 768px) {
-    padding: 1rem;
-
-    .oit-modal-overlay,
-    .oit-modal-content {
-      max-width: 100%;
-      width: 100%;
-      overflow-x: auto;
-    }
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0.25rem;
+    padding-bottom: 1.5rem;
+    border-radius: 0;
+    width: 100%;
+    max-width: 100%;
 
     .settings-container {
-      gap: 1rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
     }
 
     .food-a-container,
     .food-b-container {
-      padding: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+    }
+
+    .dosing-strategy-container {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    .step-controls-footer {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin-bottom: 0.5rem;
     }
 
     .output-container {
-      gap: 1rem;
+      width: 100%;
+      gap: 0;
+      margin-top: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .restricted-mode-message {
+      margin: 1rem 0.5rem;
+      padding: 2.5rem 1rem;
+      border-radius: 8px;
     }
 
     .bottom-section {
       grid-template-columns: 1fr;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      margin-top: 1rem;
+      gap: 1rem;
     }
 
     table {
+      width: 100%;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
       font-size: 0.85rem;
 
       thead th {
-        padding: 0.75rem 0.5rem;
+        padding: 0.75rem 0.4rem;
         font-size: 0.8rem;
+        white-space: nowrap;
+
+        &:first-child {
+          padding-left: 0.75rem;
+        }
+
+        &:last-child {
+          padding-right: 0.75rem;
+        }
       }
 
       tbody td {
-        padding: 0.5rem;
+        padding: 0.5rem 0.4rem;
         font-size: 0.85rem;
+
+        &:first-child {
+          padding-left: 0.75rem;
+        }
+
+        &:last-child {
+          padding-right: 0.75rem;
+        }
       }
     }
 
@@ -1723,6 +1776,13 @@
   p {
     line-height: 1.6;
     margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    width: 95%;
+    max-width: 95%;
+    padding: 1.25rem 0.85rem;
+    box-sizing: border-box;
   }
 }
 
@@ -2407,5 +2467,43 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Standalone Clinical App Container Overrides for OIT */
+.clinical-app-container {
+  .oit_calculator {
+    padding-top: 0.5rem;
+  }
+
+  /* Calculation formula accordion at the bottom of the page */
+  details#how-to-check-calculations {
+    margin-top: 2rem;
+    background-color: var(--core-surface);
+    border: 1px solid var(--core-border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+
+    @media (max-width: 768px) {
+      margin-left: 0;
+      margin-right: 0;
+      padding: 0.85rem 1rem;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--core-ink);
+
+      &:hover {
+        color: var(--core-primary);
+      }
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--core-border);
+      margin: 1.5rem 0;
+    }
   }
 }

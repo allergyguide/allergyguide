@@ -35,6 +35,26 @@ node_bundler = "esbuild"
 # included_files = ["secure_assets/**"]  # Assets now served from Netlify Blobs — no longer needs to be bundled
 
 [[redirects]]
+from = "/tools/oit-calculator/*"
+to = "/oit"
+status = 301
+
+[[redirects]]
+from = "/tools/oit-calculator"
+to = "/oit"
+status = 301
+
+[[redirects]]
+from = "/tools/oit_calculator/*"
+to = "/oit"
+status = 301
+
+[[redirects]]
+from = "/tools/oit_calculator"
+to = "/oit"
+status = 301
+
+[[redirects]]
 from = "https://allergyguidenetlify.netlify.app/*"
 to = "https://allergyguide.ca/:splat"
 status = 301

@@ -1,0 +1,81 @@
+{#- Template for fullscreen apps -#}
+{%- extends "base.html" -%}
+
+{%- block seo -%}
+  {{- super() -}}
+  {%- set title_addition = title_separator ~ config.title -%}
+  {%- set description = page.description | default(value=config.description) -%}
+  {{<seo config={config} title={page.title} title_addition={title_addition} description={description} page_url={current_url} type="website" page={page} />}}
+{%- endblock seo -%}
+
+{%- block header %}
+  {%- set home_url = get_url(path="/", lang=lang) -%}
+  {%- if not home_url or home_url == "" %}{%- set home_url = "/" %}{%- endif -%}
+  <header class="clinical-app-header">
+    <div class="clinical-app-header-inner">
+      {%- block app_header_brand %}
+      <div class="clinical-app-brand">
+        <a href="{{ home_url }}" class="clinical-home-link" title="Return to allergyguide">
+          <img src="/icon/immunoglobulin.svg" alt="allergyguide" class="clinical-brand-logo" width="24" height="24">
+        </a>
+        <span class="clinical-breadcrumb-separator">/</span>
+        <h1 class="clinical-app-title">{{ page.title }}</h1>
+      </div>
+      {%- endblock app_header_brand %}
+      <div class="clinical-app-actions">
+        {%- block app_header_actions %}
+          {%- if config.extra.js_switcher -%}
+            <button type="button" id="mode" class="clinical-theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+              <i class="js {{ config.extra.icon_adjust | default(value='svgs adjust') }}"></i>
+            </button>
+          {%- endif -%}
+        {%- endblock app_header_actions %}
+      </div>
+    </div>
+  </header>
+{%- endblock header %}
+
+{%- block content %}
+  <div class="clinical-app-container">
+    {%- block app_content %}
+      {{ page.content | safe }}
+    {%- endblock app_content %}
+  </div>
+{%- endblock content %}
+
+{%- block footer %}
+  {%- set home_url = get_url(path="/", lang=lang) -%}
+  {%- if not home_url or home_url == "" %}{%- set home_url = "/" %}{%- endif -%}
+  <footer class="clinical-app-footer">
+    <div class="clinical-app-footer-inner">
+      {%- block app_footer_legal %}
+      <div class="clinical-footer-legal">
+        <span class="clinical-disclaimer-text">
+          {%- if page.extra.disclaimer -%}
+            {{ page.extra.disclaimer }}
+          {%- else -%}
+            Strictly for informational and clinical decision-support purposes by qualified health care professionals. Not for PHI.
+          {%- endif -%}
+        </span>
+      </div>
+      {%- endblock app_footer_legal %}
+      {%- block app_footer_meta %}
+      <div class="clinical-footer-meta">
+        <a href="{{ home_url }}">allergyguide.ca</a>
+        {%- if page.extra.terms -%}
+          <span class="clinical-footer-sep">&bull;</span>
+          <a href="{{ get_url(path=page.extra.terms) }}" target="_blank" rel="noopener noreferrer">Terms of Use</a>
+        {%- endif -%}
+        {%- if page.extra.changelog -%}
+          <span class="clinical-footer-sep">&bull;</span>
+          <a href="{{ get_url(path=page.extra.changelog) }}" target="_blank" rel="noopener noreferrer">Changelog</a>
+        {%- endif -%}
+      </div>
+      {%- endblock app_footer_meta %}
+    </div>
+  </footer>
+{%- endblock footer %}
+
+{%- block gotop %}
+{# Clean workspace layout without floating buttons #}
+{%- endblock gotop %}

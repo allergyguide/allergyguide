@@ -107,7 +107,9 @@ export function renderToolbar(props: CoreToolbarProps): void {
 		);
 
 		// Hide skeleton on first successful render
-		const skeleton = document.getElementById("oit-toolbar-skeleton");
+		const skeleton =
+			document.getElementById("app-toolbar-skeleton") ||
+			document.getElementById("oit-toolbar-skeleton");
 		if (skeleton) {
 			skeleton.style.display = "none";
 		}
@@ -385,6 +387,15 @@ export function renderProtocolTable(
 export function updateBottomSection(customNote: string) {
 	const bottomSection = document.querySelector(".bottom-section");
 	if (!bottomSection) return;
+
+	const activeState = workspace.getActive();
+	const activeProtocol = activeState?.getProtocol();
+
+	// If there is no active protocol loaded in the current tab, keep the bottom section hidden
+	if (!activeProtocol) {
+		bottomSection.classList.add("oit-hidden-on-init");
+		return;
+	}
 
 	// Ensure the section is visible (handles the oit-hidden-on-init class removal)
 	bottomSection.classList.remove("oit-hidden-on-init");
