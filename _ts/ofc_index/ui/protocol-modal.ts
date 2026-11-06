@@ -117,6 +117,27 @@ export const protocolModalTemplate = (
 };
 
 /**
+ * Active element helper to prevent typing clobbering while keeping reactivity across columns
+ */
+const getStepFoodDisplay = (foodGrams: Decimal, inputId: string): string => {
+	const active =
+		typeof document !== "undefined" ? document.activeElement : null;
+	if (active && active.id === inputId) {
+		return (active as HTMLInputElement).value;
+	}
+	return foodGrams.toFixed(2);
+};
+
+const getStepProteinDisplay = (targetMg: Decimal, inputId: string): string => {
+	const active =
+		typeof document !== "undefined" ? document.activeElement : null;
+	if (active && active.id === inputId) {
+		return (active as HTMLInputElement).value;
+	}
+	return targetMg.toString();
+};
+
+/**
  * Template for an individual PRACTALL protocol table
  *
  * @param practall - Protocol type ("5" or "7")
@@ -130,7 +151,10 @@ const protocolTableTemplate = (
 	food: Food,
 	steps: DosingStep[],
 	state: OfcState,
-): TemplateResult => html`
+): TemplateResult => {
+	const unit = getMeasuringUnit(food);
+
+	return html`
     <div class="ofc-protocol-wrapper">
         <div class="ofc-table-header">
             <span>${practall === "5" ? "PRACTALL-5" : "PRACTALL-7"}</span>
@@ -141,34 +165,79 @@ const protocolTableTemplate = (
                 <thead>
                     <tr>
                         <th>Step</th>
-                        <th>Food (${getMeasuringUnit(food)})</th>
+                        <th>Food (${unit})</th>
                         <th>Protein (mg)</th>
                         <th>Cumulative dose (mg)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${steps.map(
-											(step, idx) => html`
+                    ${steps.map((step, idx) => {
+											const foodInputId = `practall-${practall}-food-${idx}`;
+											const proteinInputId = `practall-${practall}-protein-${idx}`;
+
+											return html`
                         <tr>
                             <td>${step.step}</td>
-                            <td>${step.foodGrams.toFixed(2)}</td>
                             <td>
                                 <input 
-                                    type="number" 
+                                    id=${foodInputId}
+                                    type="number"
+                                    step="any"
                                     min="0"
-                                    .value=${live(step.targetMg.toString())}
-                                    @input=${(e: InputEvent) => appState.updateModalStep(practall, idx, parseFloat((e.target as HTMLInputElement).value) || 0)}
+                                    aria-label="Step ${step.step} food amount in ${unit}"
+                                    .value=${live(getStepFoodDisplay(step.foodGrams, foodInputId))}
+                                    @input=${(e: InputEvent) => {
+																			const raw = (e.target as HTMLInputElement)
+																				.value;
+																			appState.updateModalStepByFood(
+																				practall,
+																				idx,
+																				raw.trim() === ""
+																					? 0
+																					: parseFloat(raw) || 0,
+																			);
+																		}}
+                                    @blur=${(e: Event) => {
+																			(e.target as HTMLInputElement).value =
+																				step.foodGrams.toFixed(2);
+																		}}
+                                />
+                            </td>
+                            <td>
+                                <input 
+                                    id=${proteinInputId}
+                                    type="number" 
+                                    step="any"
+                                    min="0"
+                                    aria-label="Step ${step.step} protein in mg"
+                                    .value=${live(getStepProteinDisplay(step.targetMg, proteinInputId))}
+                                    @input=${(e: InputEvent) => {
+																			const raw = (e.target as HTMLInputElement)
+																				.value;
+																			appState.updateModalStep(
+																				practall,
+																				idx,
+																				raw.trim() === ""
+																					? 0
+																					: parseFloat(raw) || 0,
+																			);
+																		}}
+                                    @blur=${(e: Event) => {
+																			(e.target as HTMLInputElement).value =
+																				step.targetMg.toString();
+																		}}
                                 />
                             </td>
                             <td>${step.cumulativeMg.toFixed(2)}</td>
                         </tr>
-                    `,
-										)}
+                    `;
+										})}
                 </tbody>
             </table>
         </div>
     </div>
 `;
+};
 
 /**
  * Generates an ASCII representation of the protocol and copies it to the system clipboard

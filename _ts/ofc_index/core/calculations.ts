@@ -55,3 +55,20 @@ export function calculateSteps(
 		};
 	});
 }
+
+/**
+ * Calculates target protein amount (mg) for a given quantity of food (g or ml)
+ *
+ * @param foodAmount - Quantity of food in grams or ml
+ * @param proteinPerGram - Protein concentration in grams per 1g (or ml) of food
+ * @returns {Decimal} Calculated protein in milligrams
+ */
+export function calculateTargetMg(
+	foodAmount: number,
+	proteinPerGram: Decimal,
+): Decimal {
+	if (!proteinPerGram.gt(0) || foodAmount <= 0) {
+		return new Decimal(0);
+	}
+	return new Decimal(foodAmount).mul(proteinPerGram).mul(1000);
+}

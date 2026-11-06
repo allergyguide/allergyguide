@@ -3,6 +3,7 @@
  * Subscription model for UI reactivity, search memoization
  */
 
+import Decimal from "decimal.js";
 import fuzzysort from "fuzzysort";
 import {
 	PRACTALL_5_STEPS,
@@ -10,6 +11,7 @@ import {
 	SEARCH_DEBOUNCE_MS,
 	SEARCH_RESULTS_LIMIT,
 } from "../constants";
+import { calculateTargetMg } from "../core/calculations";
 import { type Food, type OfcState, SourceType } from "../types";
 import { debounce } from "../utils";
 
@@ -194,6 +196,33 @@ export class AppState {
 			this.state.modalSteps7 = newSteps;
 		}
 		this.notify();
+	}
+
+	/**
+	 * Updates a protocol step based on a target food quantity (g or ml)
+	 * Automatically converts food quantity to target protein mg and updates state
+	 *
+	 * @param practall - The protocol type ("5" or "7")
+	 * @param index - The step index (0-based)
+	 * @param foodAmount - The food quantity in g or ml
+	 */
+	updateModalStepByFood(
+		practall: "5" | "7",
+		index: number,
+		foodAmount: number,
+	) {
+		const safeFood = Math.max(0, foodAmount);
+		const proteinPerGram =
+			this.state.modalServingSize > 0
+				? new Decimal(this.state.modalGramsInServing).div(
+						new Decimal(this.state.modalServingSize),
+					)
+				: new Decimal(0);
+
+		const targetMgDecimal = calculateTargetMg(safeFood, proteinPerGram);
+		const targetMg = targetMgDecimal.toDecimalPlaces(2).toNumber();
+
+		this.updateModalStep(practall, index, targetMg);
 	}
 
 	/**

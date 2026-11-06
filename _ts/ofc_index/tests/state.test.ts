@@ -176,4 +176,54 @@ describe("AppState", () => {
 		expect(results[2].name).toBe("Peanut Brand");
 		expect(results[3].name).toBe("Peanut Generic");
 	});
+
+	describe("updateModalStepByFood", () => {
+		it("should update PRACTALL-5 step target mg based on food amount", () => {
+			const food = mockPublicFoods[0]; // Peanut: 25g protein per 100g serving = 0.25 g/g
+			appState.setSelectedFood(food);
+
+			// Step 0: User enters 0.5g of peanut
+			// 0.5g * 0.25 * 1000 = 125mg
+			appState.updateModalStepByFood("5", 0, 0.5);
+
+			const state = appState.getState();
+			expect(state.modalSteps5[0]).toBe(125);
+		});
+
+		it("should update PRACTALL-7 step target mg based on food amount", () => {
+			const food = mockPublicFoods[0]; // Peanut: 25g protein per 100g serving = 0.25 g/g
+			appState.setSelectedFood(food);
+
+			// Step 0: User enters 0.05g
+			// 0.05g * 0.25 * 1000 = 12.5mg
+			appState.updateModalStepByFood("7", 0, 0.05);
+
+			const state = appState.getState();
+			expect(state.modalSteps7[0]).toBe(12.5);
+		});
+
+		it("should clamp negative food inputs to 0", () => {
+			const food = mockPublicFoods[0];
+			appState.setSelectedFood(food);
+
+			appState.updateModalStepByFood("5", 0, -2);
+			expect(appState.getState().modalSteps5[0]).toBe(0);
+		});
+
+		it("should round calculated targetMg to 2 decimal places", () => {
+			// Food with 7g protein per 30g serving = 0.2333333333... g/g
+			appState.setSelectedFood({
+				name: "Custom Nut",
+				gramsInServing: 7,
+				servingSize: 30,
+				type: FoodType.SOLID,
+				group: "Nuts",
+				source: SourceType.GENERIC,
+			});
+
+			// User enters 1g food -> 1 * (7 / 30) * 1000 = 233.333333... mg -> 233.33 mg
+			appState.updateModalStepByFood("5", 0, 1);
+			expect(appState.getState().modalSteps5[0]).toBe(233.33);
+		});
+	});
 });

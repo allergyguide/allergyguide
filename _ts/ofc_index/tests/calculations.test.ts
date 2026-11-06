@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { describe, expect, it } from "vitest";
 import { PRACTALL_5_STEPS, PRACTALL_7_STEPS } from "../constants";
-import { calculateSteps } from "../core/calculations";
+import { calculateSteps, calculateTargetMg } from "../core/calculations";
 
 describe("OFC Calculations", () => {
 	it("should calculate food grams correctly for a simple case", () => {
@@ -32,5 +32,35 @@ describe("OFC Calculations", () => {
 		expect(steps[0].targetMg.toNumber()).toBe(3);
 		expect(steps[6].targetMg.toNumber()).toBe(3000);
 		expect(steps[6].foodGrams.toNumber()).toBeCloseTo(300, 5);
+	});
+
+	describe("calculateTargetMg", () => {
+		it("should calculate target mg correctly for normal food amount", () => {
+			// 0.5g food with 0.25 g/g protein = 0.125g protein = 125mg
+			const mg = calculateTargetMg(0.5, Decimal(0.25));
+			expect(mg.toNumber()).toBeCloseTo(125, 5);
+		});
+
+		it("should handle zero and negative food amounts gracefully", () => {
+			expect(calculateTargetMg(0, Decimal(0.25)).toNumber()).toBe(0);
+			expect(calculateTargetMg(-5, Decimal(0.25)).toNumber()).toBe(0);
+		});
+
+		it("should handle zero protein concentration gracefully", () => {
+			expect(calculateTargetMg(10, Decimal(0)).toNumber()).toBe(0);
+		});
+
+		it("should be symmetric with calculateSteps (round-trip)", () => {
+			const proteinPerGram = Decimal(0.1);
+			const foodAmount = 2.5;
+
+			// Convert food -> mg
+			const targetMg = calculateTargetMg(foodAmount, proteinPerGram);
+			expect(targetMg.toNumber()).toBe(250);
+
+			// Convert mg -> food
+			const steps = calculateSteps([targetMg.toNumber()], proteinPerGram, "g");
+			expect(steps[0].foodGrams.toNumber()).toBeCloseTo(foodAmount, 5);
+		});
 	});
 });
