@@ -41,7 +41,7 @@
 		"pako": "^2.1.0",
 		"pdf-lib": "^1.17.1",
 		"qrcode": "^1.5.4",
-		"replace-in-file": "^7.2.0",
+		"replace-in-file": "^8.4.0",
 		"resend": "^6.12.4",
 		"uglify-js": "^3.17.4",
 		"zod": "^4.1.13"
@@ -66,5 +66,8 @@
 		"core-js@3.47.0": true,
 		"esbuild@0.28.1": true,
 		"fsevents@2.3.3": true
+	},
+	"overrides": {
+		"glob": "^14.0.4"
 	}
 }
