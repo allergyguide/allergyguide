@@ -36,12 +36,23 @@ export function validateProtocol(
 	protocol: Protocol,
 	standardFoods?: FoodData[],
 ): Warning[] {
-	let warnings: Warning[] = [];
-
-	warnings = [...validateSettings(protocol, standardFoods)];
-	warnings = [...warnings, ...validateAllSteps(protocol)];
-
-	return warnings;
+	try {
+		return [
+			...validateSettings(protocol, standardFoods),
+			...validateAllSteps(protocol),
+		];
+	} catch (err) {
+		// a throw would leave the previous (possibly clean) warnings on screen
+		console.error("Validation failed:", err);
+		return [
+			{
+				severity: "red",
+				code: WarningCode.Red.VALIDATION_FAILED,
+				message:
+					"This protocol could not be checked for problems. Review every step carefully before using it.",
+			},
+		];
+	}
 }
 
 // ============================================
@@ -396,10 +407,10 @@ function checkMeasurability({
 	} else {
 		// DIRECT Method
 		// GET ROUNDED AMOUNTS
-		const dailyAmountUnit = step.dailyAmountUnit;
-		const roundedDailyAmount = new Decimal(
-			formatAmount(step.dailyAmount, dailyAmountUnit),
-		);
+		const dailyAmountStr = formatAmount(step.dailyAmount, step.dailyAmountUnit);
+		// "" means NaN (e.g. 0 mg target with a 0-protein food); INVALID_TARGET already flags it
+		if (!dailyAmountStr) return [];
+		const roundedDailyAmount = new Decimal(dailyAmountStr);
 
 		if (
 			food.type === FoodType.SOLID &&

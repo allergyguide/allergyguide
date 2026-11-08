@@ -24,7 +24,12 @@ import {
 	type Unit,
 	type Warning,
 } from "../../types";
-import { formatAmount, formatNumber, getMeasuringUnit } from "../../utils";
+import {
+	formatAmount,
+	formatNumber,
+	getMeasuringUnit,
+	parseSafeDecimal,
+} from "../../utils";
 import { activeSafe } from "../directives/activeSafe";
 
 /**
@@ -329,8 +334,13 @@ function handleToggleMethod(stepIndex: number) {
 	if (fromMethod === "CAPSULE") return;
 	const toMethod = fromMethod === "DILUTE" ? "DIRECT" : "DILUTE";
 	const updated = toggleStepMethod(current, stepIndex);
-	// If protocol is unchanged, toggling was infeasible (no dilution candidate) — silently no-op
-	if (updated === current) return;
+	// unchanged protocol means no dilution candidate exists
+	if (updated === current) {
+		alert(
+			`Step ${stepIndex}: no practical dilution exists for this dose with this food. The step stays as a direct dose.`,
+		);
+		return;
+	}
 	workspace
 		.getActive()
 		.setProtocol(updated, `Step ${stepIndex}: ${fromMethod} → ${toMethod}`);
@@ -362,18 +372,11 @@ function handleInput(
 	stepIndex: number,
 	field: "targetMg" | "dailyAmount" | "mixFoodAmount",
 ) {
-	const target = e.target as HTMLInputElement;
-	const rawValue = target.value || "0";
-
-	let value: Decimal;
-
-	// parse string into Decimal if possible, else fall back to 0
-	try {
-		value = new Decimal(rawValue);
-		if (value.isNegative()) value = new Decimal(0);
-	} catch {
-		value = new Decimal(0);
-	}
+	// empty, invalid or negative input becomes 0
+	const value = parseSafeDecimal(
+		(e.target as HTMLInputElement).value,
+		new Decimal(0),
+	);
 
 	const current = workspace.getActive().getProtocol();
 	if (!current) return;

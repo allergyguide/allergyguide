@@ -290,7 +290,7 @@ export function parseSafeDecimal(
 	if (!input || input.trim() === "") return defaultValue;
 	try {
 		let val = new Decimal(input);
-		if (val.isNaN()) return defaultValue;
+		if (!val.isFinite()) return defaultValue; // also rejects "Infinity"
 		if (decimals !== undefined) val = val.toDecimalPlaces(decimals);
 		const minimum = new Decimal(min);
 		return val.lessThan(minimum) ? minimum : val;

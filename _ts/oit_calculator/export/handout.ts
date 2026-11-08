@@ -282,7 +282,7 @@ function renderInstructions(
 			`1. Measure ${mixFoodAmountStr} ${mixUnit} of "${food.name}" using ${mixUnit === "g" ? "a scale" : "your syringe(s)"}.`,
 		);
 		lines.push(
-			`2. Mix the ${mixUnit === "g" ? "powder" : "liquid"} into ${mixWaterAmountStr} mL of water).`,
+			`2. Mix the ${mixUnit === "g" ? "powder" : "liquid"} into ${mixWaterAmountStr} mL of water.`,
 		);
 		lines.push(
 			`3. Stir thoroughly until dissolved. There may be a little sediment remaining.`,

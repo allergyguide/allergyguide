@@ -8,7 +8,7 @@ vi.mock("../../main", () => ({
 }));
 
 import Decimal from "decimal.js";
-import { generateAsciiContent } from "../../export/exports";
+import { generateAsciiContent, generateHtmlContent } from "../../export/exports";
 import type { Protocol, ProtocolExportData } from "../../types";
 import { DosingStrategy, FoodAStrategy, FoodType, Method, SourceType } from "../../types";
 
@@ -157,5 +157,24 @@ describe("Export: ASCII Generation", () => {
 
 	it("should return empty string for empty input", () => {
 		expect(generateAsciiContent([])).toBe("");
+	});
+});
+
+describe("Export: food header", () => {
+	const withFoodA = (overrides: Partial<Protocol["foodA"]>): ProtocolExportData[] => {
+		const protocol = createMockProtocol("P", "Food");
+		protocol.foodA = { ...protocol.foodA, ...overrides };
+		return [{ protocol, customNote: "", history: [] }];
+	};
+
+	it("omits the protein line for capsules", () => {
+		const data = withFoodA({ type: FoodType.CAPSULE });
+		expect(generateAsciiContent(data)).not.toContain("Protein:");
+		expect(generateHtmlContent(data)).not.toContain("Protein:");
+	});
+
+	it("escapes the food name in HTML", () => {
+		const html = generateHtmlContent(withFoodA({ name: "Rice <Brand X>" }));
+		expect(html).toContain("Rice &lt;Brand X&gt;");
 	});
 });

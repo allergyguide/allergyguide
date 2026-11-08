@@ -638,3 +638,29 @@ describe("Validator: food names in messages", () => {
 		expect(w?.message).toContain("Ben & Jerry's");
 	});
 });
+
+describe("Validator: never throws", () => {
+	it("returns VALIDATION_FAILED instead of throwing", () => {
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		// a Food B step with no Food B makes validateAllSteps throw
+		protocol.steps[0] = { ...protocol.steps[0], food: "B" };
+		const warnings = validateProtocol(protocol);
+		expect(warnings.map((w) => w.code)).toEqual([
+			WarningCode.Red.VALIDATION_FAILED,
+		]);
+	});
+
+	it("handles a NaN direct amount (0 mg target, 0 protein food)", () => {
+		const food = { ...createFood(), gramsInServing: new Decimal(0), getMgPerUnit: () => new Decimal(0) };
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		const i = protocol.steps.findIndex((s) => s.method === Method.DIRECT);
+		protocol.steps[i] = {
+			...protocol.steps[i],
+			targetMg: new Decimal(0),
+			dailyAmount: new Decimal(Number.NaN),
+		};
+		const codes = validateProtocol({ ...protocol, foodA: food }).map((w) => w.code);
+		expect(codes).not.toContain(WarningCode.Red.VALIDATION_FAILED);
+		expect(codes).toContain(WarningCode.Red.INVALID_TARGET);
+	});
+});

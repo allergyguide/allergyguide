@@ -8,7 +8,7 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
-## [Unreleased]
+## [0.17.3]
 
 ### Added
 
@@ -36,6 +36,10 @@ authors = ["Joshua Yu"]
 - Loading a protocol into a tab now replaces that tab's note, so a note from the previous protocol no longer carries over
 - Loading a saved protocol with a Food B transition threshold of 0 no longer loses the threshold
 - Warning messages now display food names with special characters (e.g. "&" or apostrophes) correctly
+- Warnings: if the protocol cannot be checked because of an unexpected error, a critical warning now asks you to review every step by hand. Previously the warnings from before the edit stayed on screen
+- Warnings: a 0 mg target on a direct step of a food with 0 g protein no longer stops the warnings from updating
+- Copy to Clipboard: capsule foods no longer show a protein line with an incorrect "ml" serving unit, and food names with special characters (e.g. "<") now display correctly when pasted as formatted text
+- Switching a step from direct to dilution now shows a message when no practical dilution exists, instead of doing nothing
 
 ### Security
 

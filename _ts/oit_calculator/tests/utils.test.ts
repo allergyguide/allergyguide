@@ -106,6 +106,7 @@ describe("Utils", () => {
 		it("should return default value for invalid numeric strings", () => {
 			const def = new Decimal(0);
 			expect(utils.parseSafeDecimal("abc", def)).toBe(def);
+			expect(utils.parseSafeDecimal("Infinity", def)).toBe(def);
 		});
 
 		it("should clamp to minimum value", () => {

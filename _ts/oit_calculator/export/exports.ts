@@ -485,10 +485,10 @@ async function handlePdfMergeAndDownload(
 function generateRoughAsciiTableForFood(food: Food, rows: ExportRow[]): string {
 	if (!food || !rows) return "";
 
-	let text = "";
-	const foodType = food.type;
-	const foodUnit = food.type === FoodType.SOLID ? "g" : "ml";
-	text += `${food.name} (${foodType}).\nProtein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${foodUnit} serving.\n`;
+	let text = `${food.name} (${food.type}).\n`;
+	if (food.type !== FoodType.CAPSULE) {
+		text += `Protein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${getMeasuringUnit(food)} serving.\n`;
+	}
 
 	for (const row of rows) {
 		if (row.method === Method.DILUTE) {
@@ -606,10 +606,11 @@ function fallbackCopyText(text: string) {
 function generateHtmlTableForFood(food: Food, rows: ExportRow[]): string {
 	if (!food || !rows) return "";
 
-	const foodType = food.type;
-	const foodUnit = food.type === FoodType.SOLID ? "g" : "ml";
-	let html = `<p><strong>${food.name} (${foodType})</strong><br>`;
-	html += `Protein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${foodUnit} serving.</p>`;
+	let html = `<p><strong>${escapeHtml(food.name)} (${food.type})</strong>`;
+	if (food.type !== FoodType.CAPSULE) {
+		html += `<br>Protein: ${formatNumber(food.gramsInServing, 2)} g per ${food.servingSize} ${getMeasuringUnit(food)} serving.`;
+	}
+	html += `</p>`;
 
 	html += `<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; margin-bottom: 1em; width: 100%; text-align: left; font-size: 14px; border: 1px solid #ccc;">`;
 	html += `
