@@ -7,10 +7,10 @@ import Decimal from "decimal.js";
 import { DEFAULT_CONFIG } from "../constants";
 import {
 	generateDefaultProtocol,
-	generateStepForTarget,
+	generateStepOrDirectFallback,
 } from "../core/calculator";
 import { addFoodBToProtocol } from "../core/protocol";
-import { workspace } from "../state/instances";
+import { appState, workspace } from "../state/instances";
 import type {
 	Food,
 	FoodData,
@@ -99,8 +99,19 @@ export function selectFoodB(foodData: FoodData): void {
  * @returns void
  */
 export function selectCustomFood(name: string, inputId: string): void {
+	const trimmedName = (name || "Custom Food").trim();
+	const existingCustom = appState
+		?.getUserFoods()
+		.find((f) => f.name.trim().toLowerCase() === trimmedName.toLowerCase());
+	if (existingCustom) {
+		alert(
+			`A custom food named "${trimmedName}" already exists in your library. Please use a unique name or select the existing food.`,
+		);
+		return;
+	}
+
 	const food: Food = {
-		name: name || "Custom Food",
+		name: trimmedName,
 		type: FoodType.SOLID,
 		gramsInServing: new Decimal(10),
 		servingSize: new Decimal(100),
@@ -303,35 +314,17 @@ export function clearFoodB(): void {
 	// Iterate over filtered steps to preserve their targetMg
 	filteredSteps.forEach((step, i) => {
 		// generate a step for Food A for this target
-		const newStep = generateStepForTarget(
-			step.targetMg,
-			i + 1, // 1-based index
-			protocolWithoutB.foodA,
-			"A",
-			protocolWithoutB.foodAStrategy,
-			protocolWithoutB.diThreshold,
-			protocolWithoutB.config,
+		newSteps.push(
+			generateStepOrDirectFallback(
+				step.targetMg,
+				i + 1, // 1-based index
+				protocolWithoutB.foodA,
+				"A",
+				protocolWithoutB.foodAStrategy,
+				protocolWithoutB.diThreshold,
+				protocolWithoutB.config,
+			),
 		);
-
-		if (newStep) {
-			newSteps.push(newStep);
-		} else {
-			// Fallback if dilution fails (e.g. target too small for Food A config)
-			// force a DIRECT step so the data isn't lost
-			console.error("Unable to find new valid dilution for step:", step);
-			const unit = protocolWithoutB.foodA.type === FoodType.SOLID ? "g" : "ml";
-			newSteps.push({
-				id: generateUniqueId(),
-				stepIndex: i + 1,
-				targetMg: step.targetMg,
-				method: Method.DIRECT,
-				dailyAmount: step.targetMg.dividedBy(
-					protocolWithoutB.foodA.getMgPerUnit(),
-				),
-				dailyAmountUnit: unit,
-				food: "A",
-			});
-		}
 	});
 
 	protocolWithoutB.steps = newSteps;

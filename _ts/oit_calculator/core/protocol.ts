@@ -15,7 +15,7 @@ import {
 	findDilutionCandidates,
 	findRoundedDirectAmount,
 	findRoundedMixWaterAmount,
-	generateStepForTarget,
+	generateStepOrDirectFallback,
 } from "./calculator";
 
 /**
@@ -184,9 +184,8 @@ export function addFoodBToProtocol(
 
 	// Normalize all existing steps to be valid Food A steps
 	// => if the transition point moves "later" (ie. another food B is chosen), steps before it which might have been Food B previously are correctly recalculated as Food A using `generateStepForTarget`
-	const normalizedSteps: Step[] = [];
-	for (const existingStep of cleanedSourceSteps) {
-		const step = generateStepForTarget(
+	newProtocol.steps = cleanedSourceSteps.map((existingStep) =>
+		generateStepOrDirectFallback(
 			existingStep.targetMg,
 			existingStep.stepIndex,
 			newProtocol.foodA,
@@ -194,33 +193,8 @@ export function addFoodBToProtocol(
 			newProtocol.foodAStrategy,
 			newProtocol.diThreshold,
 			newProtocol.config,
-		);
-
-		if (step) {
-			normalizedSteps.push(step);
-		} else {
-			// Fallback DIRECT if dilution generation fails
-			const P = existingStep.targetMg;
-			const preciseMass = P.dividedBy(newProtocol.foodA.getMgPerUnit());
-			const snappedMass = findRoundedDirectAmount(
-				P,
-				newProtocol.foodA,
-				preciseMass,
-				newProtocol.config,
-			);
-			const unit: Unit = newProtocol.foodA.type === FoodType.SOLID ? "g" : "ml";
-			normalizedSteps.push({
-				id: generateUniqueId(),
-				stepIndex: existingStep.stepIndex,
-				targetMg: P,
-				method: Method.DIRECT,
-				dailyAmount: snappedMass,
-				dailyAmountUnit: unit,
-				food: "A",
-			});
-		}
-	}
-	newProtocol.steps = normalizedSteps;
+		),
+	);
 
 	// Calculate foodBmgThreshold
 	const foodBmgThreshold = threshold.amount.times(foodB.getMgPerUnit());
@@ -324,26 +298,19 @@ export function addFoodBToProtocol(
 export function recalculateProtocol(oldProtocol: Protocol): Protocol {
 	const newProtocol = { ...oldProtocol };
 
-	const targetProteins = DOSING_STRATEGIES[newProtocol.dosingStrategy];
-	const steps: Step[] = [];
-
 	// Regenerate Food A steps
-	for (let i = 0; i < targetProteins.length; i++) {
-		const step = generateStepForTarget(
-			targetProteins[i],
-			i + 1,
-			newProtocol.foodA,
-			"A",
-			newProtocol.foodAStrategy,
-			newProtocol.diThreshold,
-			newProtocol.config,
-		);
-		if (step) {
-			steps.push(step);
-		}
-	}
-
-	newProtocol.steps = steps;
+	newProtocol.steps = DOSING_STRATEGIES[newProtocol.dosingStrategy].map(
+		(target, i) =>
+			generateStepOrDirectFallback(
+				target,
+				i + 1,
+				newProtocol.foodA,
+				"A",
+				newProtocol.foodAStrategy,
+				newProtocol.diThreshold,
+				newProtocol.config,
+			),
+	);
 
 	// Re-add Food B if it exists
 	if (newProtocol.foodB && newProtocol.foodBThreshold) {
@@ -387,21 +354,18 @@ export function recalculateStepMethods(oldProtocol: Protocol): Protocol {
 				`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${i + 1}`,
 			);
 		}
-		const step = generateStepForTarget(
-			targetMg,
-			i + 1,
-			food,
-			preservedFoods[i],
-			foodAStrategy,
-			newProtocol.diThreshold,
-			newProtocol.config,
-			newProtocol.steps[i].id,
+		steps.push(
+			generateStepOrDirectFallback(
+				targetMg,
+				i + 1,
+				food,
+				preservedFoods[i],
+				foodAStrategy,
+				newProtocol.diThreshold,
+				newProtocol.config,
+				newProtocol.steps[i].id,
+			),
 		);
-
-		if (step) {
-			step.food = preservedFoods[i]; // Preserve the original food property
-			steps.push(step);
-		}
 	}
 
 	newProtocol.steps = steps;
@@ -782,34 +746,16 @@ export function toggleFoodType(
 			}
 
 			// If switching FROM Capsule (to Solid or Liquid)
-			const newStep = generateStepForTarget(
+			return generateStepOrDirectFallback(
 				originalStep.targetMg,
 				originalStep.stepIndex,
 				newFood,
-				isFoodB ? "B" : "A",
+				originalStep.food,
 				stepIsFoodB ? FoodAStrategy.DILUTE_NONE : newProtocol.foodAStrategy, // Food B always Dilute None
 				newProtocol.diThreshold,
 				newProtocol.config,
+				originalStep.id,
 			);
-
-			if (newStep) {
-				// Restore the food property ("A" or "B")
-				newStep.food = originalStep.food;
-				return newStep;
-			} else {
-				// Fallback DIRECT if generation fails
-				const unit = targetType === FoodType.SOLID ? "g" : "ml";
-				return {
-					...originalStep,
-					id: originalStep.id || generateUniqueId(),
-					method: Method.DIRECT,
-					dailyAmount: originalStep.targetMg.dividedBy(newFood.getMgPerUnit()),
-					dailyAmountUnit: unit,
-					mixFoodAmount: undefined,
-					mixWaterAmount: undefined,
-					servings: undefined,
-				};
-			}
 		}
 
 		// CASE 2: SOLID <-> LIQUID (Form Change)

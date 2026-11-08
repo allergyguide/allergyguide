@@ -25,6 +25,8 @@ authors = ["Joshua Yu"]
 ### Fixed
 
 - Calculation: Fixed an issue where the initial doses generated for a transition food (Food B) were not applying the "smart snapping" to clean, measurable increments (like 0.05g or 0.5ml) until they were manually edited
+- Duplicate detection for custom foods. New custom foods that share a name with an existing custom food are not allowed; if they share it with an existing CNF/Brand/Provisioned food, a warning is displayed
+- If a dilution is impossible, the calculator will fall back to direct dosing. Previously it would omit the impossible step entirely. This is only applicable in the case of extremely low protein concentrations where dilutions in the first place would be inappropriate
 
 ### Security
 

@@ -1,6 +1,7 @@
 import { render } from "lit-html";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FoodType } from "../../../types";
+import { appState, initializeAppState } from "../../../state/instances";
+import { FoodType, SourceType } from "../../../types";
 import { SearchDropdown } from "../../../ui/components/SearchDropdown";
 
 describe("SearchDropdown Component", () => {
@@ -227,5 +228,50 @@ describe("SearchDropdown Component", () => {
 		item.click();
 
 		expect(mockCallbacks.onSelectFoodB).toHaveBeenCalledWith(food);
+	});
+
+	it("should indicate duplicate custom food and block creation when query matches an existing custom food", () => {
+		if (!appState) {
+			initializeAppState({ foods: [], protocols: [] }, "https://example.com");
+		}
+		appState.setUserData(
+			[
+				{
+					id: "custom-existing",
+					name: "Existing Custom Food",
+					type: FoodType.SOLID,
+					gramsInServing: 10,
+					servingSize: 100,
+					source: SourceType.USER,
+				},
+			],
+			[],
+		);
+
+		const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+		render(
+			SearchDropdown(
+				"food-a-search",
+				[],
+				"Existing Custom Food",
+				-1,
+				mockCallbacks,
+			),
+			mount,
+		);
+
+		const customItem = mount.querySelector(".sticky-bottom") as HTMLElement;
+		expect(customItem.textContent).toContain("Custom Food Exists:");
+		expect(customItem.classList.contains("disabled")).toBe(true);
+
+		customItem.click();
+
+		expect(alertMock).toHaveBeenCalledWith(
+			expect.stringContaining("already exists in your library"),
+		);
+		expect(mockCallbacks.onSelectCustom).not.toHaveBeenCalled();
+
+		alertMock.mockRestore();
 	});
 });

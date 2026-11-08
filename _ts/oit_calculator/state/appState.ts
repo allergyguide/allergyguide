@@ -121,6 +121,15 @@ export class AppState {
 		return [...this.userFoods];
 	}
 
+	/**
+	 * Returns active standard foods (public CNF + provisioned branded).
+	 */
+	public getStandardFoods(): FoodData[] {
+		return [...this.publicFoods, ...this.provisionedFoods].filter(
+			(f) => !("is_active" in f) || f.is_active !== false,
+		);
+	}
+
 	public upsertUserFood(food: FoodData) {
 		const index = this.userFoods.findIndex(
 			(f) => (f as { id?: string }).id === (food as { id?: string }).id,

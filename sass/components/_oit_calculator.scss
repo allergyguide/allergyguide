@@ -2073,8 +2073,24 @@
   }
 }
 
+.oit-warning-message {
+  color: var(--oit-warning-yellow-text);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  text-align: left;
+  display: block;
+
+  // Hide when empty
+  &:empty {
+    display: none;
+  }
+}
+
 // Compact override for food settings panel
-.food-name-container+.oit-error-message {
+.food-name-container+.oit-error-message,
+.food-name-container+.oit-warning-message {
   margin-top: -0.4rem;
   margin-bottom: -0.5rem;
 }

@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import { html, nothing, render } from "lit-html";
 import { live } from "lit-html/directives/live.js";
+import { validateCustomFoodAgainstStandard } from "../../core/validator";
 import { appState, workspace } from "../../state/instances";
 import type { ProtocolState } from "../../state/protocolState";
 import type { WorkspaceManager } from "../../state/workspaceManager";
@@ -21,7 +22,7 @@ import {
 } from "../actions/settingsActions";
 import { saveCustomFood } from "../actions/vaultActions";
 
-const validateFoodName = (name: string, currentId?: string): string => {
+export const validateFoodName = (name: string, currentId?: string): string => {
 	const trimmed = name.trim();
 	if (trimmed.length === 0) return "Name cannot be empty.";
 
@@ -36,6 +37,22 @@ const validateFoodName = (name: string, currentId?: string): string => {
 
 	return "";
 };
+
+/**
+ * Renders consolidated inline validation feedback (blocking error or non-blocking caution).
+ */
+export function renderFoodValidationNotice(
+	errorMsg?: string,
+	warningMsg?: string,
+) {
+	if (errorMsg) {
+		return html`<div class="oit-error-message oit-slide-up">${errorMsg}</div>`;
+	}
+	if (warningMsg) {
+		return html`<div class="oit-warning-message oit-slide-up">⚠️ ${warningMsg}</div>`;
+	}
+	return nothing;
+}
 
 /**
  * Helper to render source badges (BRAND, USER) and food metadata pills
@@ -169,7 +186,14 @@ const baseFoodForm = (
 	const isCapsule = food.type === FoodType.CAPSULE;
 	const unit = food.type === FoodType.SOLID ? "g" : "ml";
 
-	const errorMsg = validateFoodName(food.name, food.id);
+	const errorMsg =
+		food.source === SourceType.USER ? validateFoodName(food.name, food.id) : "";
+	const standardWarnings =
+		food.source === SourceType.USER && appState?.getStandardFoods
+			? validateCustomFoodAgainstStandard(food, appState.getStandardFoods())
+			: [];
+	const standardWarningMsg =
+		standardWarnings.length > 0 ? standardWarnings[0].message : "";
 
 	// --- DIRTY & DRIFT CALCULATION ---
 	let driftTooltip = "";
@@ -295,11 +319,7 @@ const baseFoodForm = (
 />
 ${renderBadge(food, isDirty, errorMsg, targetSlot, driftTooltip)}
 </div>
-${
-	errorMsg
-		? html`<div class="oit-error-message oit-slide-up">${errorMsg}</div>`
-		: nothing
-}
+${renderFoodValidationNotice(errorMsg, standardWarningMsg)}
 
 <div class="setting-row">
       <label>Protein:</label>

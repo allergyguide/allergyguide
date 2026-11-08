@@ -339,6 +339,45 @@ export function generateStepForTarget(
 }
 
 /**
+ * Same as generateStepForTarget, but never drops a step: if a required dilution is not feasible, returns a DIRECT step (snapped neat amount) instead so the protocol keeps every target. Validation flags any resulting issues
+ *
+ * @returns Step definition (never null)
+ */
+export function generateStepOrDirectFallback(
+	targetMg: Decimal,
+	stepIndex: number,
+	food: Food,
+	foodLabel: "A" | "B",
+	foodAStrategy: FoodAStrategy,
+	diThreshold: Decimal,
+	config: ProtocolConfig,
+	id?: string,
+): Step {
+	const step = generateStepForTarget(
+		targetMg,
+		stepIndex,
+		food,
+		foodLabel,
+		foodAStrategy,
+		diThreshold,
+		config,
+		id,
+	);
+	if (step) return step;
+
+	const neatMass = targetMg.dividedBy(food.getMgPerUnit());
+	return {
+		id: id || generateUniqueId(),
+		stepIndex,
+		targetMg,
+		method: Method.DIRECT,
+		dailyAmount: findRoundedDirectAmount(targetMg, food, neatMass, config),
+		dailyAmountUnit: getMeasuringUnit(food),
+		food: foodLabel,
+	};
+}
+
+/**
  * Attempt to find a "cleaner" direct dose amount (e.g. 1.4g instead of 1.41g) that still delivers a protein dose within the allowable tolerance.
  *
  * Tries successively coarser resolutions (e.g. 0.5 -> 0.1 -> 0.05).
@@ -408,39 +447,19 @@ export function generateDefaultProtocol(
 ): Protocol {
 	const dosingStrategy = DosingStrategy.STANDARD;
 	const foodAStrategy = FoodAStrategy.DILUTE_INITIAL;
-	const unit: Unit = getMeasuringUnit(food);
 	const diThreshold = config.DEFAULT_FOOD_A_DILUTION_THRESHOLD;
 
-	const targetProteins = DOSING_STRATEGIES[dosingStrategy];
-	const steps: Step[] = [];
-
-	for (let i = 0; i < targetProteins.length; i++) {
-		const step = generateStepForTarget(
-			targetProteins[i],
+	const steps: Step[] = DOSING_STRATEGIES[dosingStrategy].map((target, i) =>
+		generateStepOrDirectFallback(
+			target,
 			i + 1,
 			food,
 			"A",
 			foodAStrategy,
 			diThreshold,
 			config,
-		);
-		if (step) {
-			steps.push(step);
-		} else {
-			// Cannot generate step - still add it as direct with warning
-			const P = targetProteins[i];
-			const neatMass = P.dividedBy(food.getMgPerUnit());
-			steps.push({
-				id: generateUniqueId(),
-				stepIndex: i + 1,
-				targetMg: P,
-				method: Method.DIRECT,
-				dailyAmount: neatMass,
-				dailyAmountUnit: unit,
-				food: "A",
-			});
-		}
-	}
+		),
+	);
 
 	return {
 		source: SourceType.USER,

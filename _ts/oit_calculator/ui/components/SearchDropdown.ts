@@ -1,5 +1,6 @@
 import { html, nothing } from "lit-html";
 import { SEARCH_DISPLAY_LIMIT } from "../../constants";
+import { appState } from "../../state/instances";
 import { FoodType, type SearchResult, SourceType } from "../../types";
 import { getMeasuringUnit } from "../../utils";
 import type { SearchCallbacks } from "../searchUI";
@@ -44,7 +45,22 @@ export const SearchDropdown = (
 ) => {
 	const displayResults = results.slice(0, SEARCH_DISPLAY_LIMIT);
 
+	const trimmedQuery = (query || "").trim().toLowerCase();
+	const isDuplicateCustom =
+		trimmedQuery !== "" &&
+		Boolean(
+			appState
+				?.getUserFoods()
+				.some((f) => f.name.trim().toLowerCase() === trimmedQuery),
+		);
+
 	const handleSelectCustom = () => {
+		if (isDuplicateCustom) {
+			alert(
+				`A custom food named "${query.trim()}" already exists in your library. Please use a unique name or select the existing food.`,
+			);
+			return;
+		}
 		callbacks.onSelectCustom(query || "New Food", inputId);
 	};
 
@@ -95,11 +111,15 @@ export const SearchDropdown = (
 
       <!-- Custom Food Item (Sticky at Bottom) -->
       <div
-        class="search-result-item sticky-bottom ${activeIndex === displayResults.length ? "highlighted" : ""}"
+        class="search-result-item sticky-bottom ${activeIndex === displayResults.length ? "highlighted" : ""} ${isDuplicateCustom ? "disabled" : ""}"
         data-index="${displayResults.length}"
         @click=${handleSelectCustom}
       >
-        <strong>Create Custom Food:</strong> ${query || "New food"}
+        ${
+					isDuplicateCustom
+						? html`<strong>Custom Food Exists:</strong> ${query.trim()}`
+						: html`<strong>Create Custom Food:</strong> ${query || "New food"}`
+				}
       </div>
     </div>
   `;

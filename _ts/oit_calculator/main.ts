@@ -242,7 +242,7 @@ async function initializeCalculator(): Promise<void> {
 		// Force UI refresh if protocol exists
 		const p = workspace.getActive().getProtocol();
 		if (p) {
-			cachedWarnings = validateProtocol(p);
+			cachedWarnings = validateProtocol(p, appState?.getStandardFoods());
 			renderProtocolTable(
 				p,
 				workspace.getActive().getCustomNote(),
@@ -376,7 +376,10 @@ async function initializeCalculator(): Promise<void> {
 				// first tho, render immediately with cached warnings to keep math snappy but colors stable
 
 				validationTimer = window.setTimeout(() => {
-					cachedWarnings = validateProtocol(protocol);
+					cachedWarnings = validateProtocol(
+						protocol,
+						appState?.getStandardFoods(),
+					);
 					renderProtocolTable(protocol, note, cachedWarnings);
 
 					updateWarnings(protocol, appState.warningsPageURL, cachedWarnings);
@@ -384,7 +387,10 @@ async function initializeCalculator(): Promise<void> {
 				}, VALIDATION_DEBOUNCE_MS);
 			} else {
 				// INSTANT PATH (Structural, History, Load), no debounce needed
-				cachedWarnings = validateProtocol(protocol);
+				cachedWarnings = validateProtocol(
+					protocol,
+					appState?.getStandardFoods(),
+				);
 				renderProtocolTable(protocol, note, cachedWarnings);
 				updateWarnings(protocol, appState.warningsPageURL, cachedWarnings);
 			}

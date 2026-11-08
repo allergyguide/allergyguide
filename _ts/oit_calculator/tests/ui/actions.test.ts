@@ -1,11 +1,11 @@
 import Decimal from "decimal.js";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_CONFIG } from "../../constants";
 import { generateDefaultProtocol } from "../../core/calculator";
 import { addFoodBToProtocol, updateStepTargetMg } from "../../core/protocol";
-import { workspace } from "../../state/instances";
+import { appState, initializeAppState, workspace } from "../../state/instances";
 import { type Food, FoodType, SourceType } from "../../types";
-import { clearFoodB } from "../../ui/actions";
+import { clearFoodB, selectCustomFood } from "../../ui/actions";
 
 // Helper to create food
 const createFood = (name: string, type: FoodType = FoodType.SOLID): Food => ({
@@ -62,6 +62,48 @@ describe("UI Actions", () => {
 			// Step target should still be 1.5mg (preserved)
 			// If it was reset to default, it would likely be 1.0mg or whatever the first standard step is
 			expect(current?.steps[0].targetMg.toNumber()).toBe(1.5);
+		});
+	});
+
+	describe("selectCustomFood duplicate checks", () => {
+		beforeEach(() => {
+			if (!appState) {
+				initializeAppState({ foods: [], protocols: [] }, "https://example.com");
+			}
+			appState.setUserData(
+				[
+					{
+						id: "custom-1",
+						name: "Existing Custom",
+						type: FoodType.SOLID,
+						gramsInServing: 10,
+						servingSize: 100,
+						source: SourceType.USER,
+					},
+				],
+				[],
+			);
+		});
+
+		it("should block creation and alert if custom food has exact same name as existing custom food", () => {
+			const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+			selectCustomFood("Existing Custom", "food-a-search");
+
+			expect(alertMock).toHaveBeenCalledWith(
+				expect.stringContaining("already exists in your library"),
+			);
+			expect(workspace.getActive().getProtocol()).toBeNull();
+
+			alertMock.mockRestore();
+		});
+
+		it("should allow creation if food name is unique", () => {
+			selectCustomFood("Brand New Custom", "food-a-search");
+
+			const current = workspace.getActive().getProtocol();
+			expect(current?.foodA.name).toBe("Brand New Custom");
+			expect(current?.foodA.source).toBe(SourceType.USER);
 		});
 	});
 });

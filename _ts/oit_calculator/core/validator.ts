@@ -10,8 +10,8 @@ import {
 	SOLID_RESOLUTION,
 } from "../constants";
 
-import type { Food, Protocol, Step, Warning } from "../types";
-import { FoodType, Method, WarningCode } from "../types";
+import type { Food, FoodData, Protocol, Step, Warning } from "../types";
+import { FoodType, Method, SourceType, WarningCode } from "../types";
 import {
 	escapeHtml,
 	formatAmount,
@@ -33,12 +33,16 @@ import {
  *
  * @remarks Validation should act on the ROUNDED VALUES PRESENTED TO THE USER, not the internally calculated ones.
  * @param protocol Protocol to validate
+ * @param standardFoods Optional list of standard foods to validate custom foods against
  * @returns Array of warnings, possibly empty
  */
-export function validateProtocol(protocol: Protocol): Warning[] {
+export function validateProtocol(
+	protocol: Protocol,
+	standardFoods?: FoodData[],
+): Warning[] {
 	let warnings: Warning[] = [];
 
-	warnings = [...validateSettings(protocol)];
+	warnings = [...validateSettings(protocol, standardFoods)];
 	warnings = [...warnings, ...validateAllSteps(protocol)];
 
 	return warnings;
@@ -53,8 +57,12 @@ export function validateProtocol(protocol: Protocol): Warning[] {
  * - if TOO_FEW_STEPS
  * - if food B exists and there's no valid transition point
  * - if food A or B has invalid settings
+ * - if custom food has duplicate name with different protein/form against standard foods
  */
-function validateSettings(protocol: Protocol): Warning[] {
+function validateSettings(
+	protocol: Protocol,
+	standardFoods?: FoodData[],
+): Warning[] {
 	const warnings: Warning[] = [];
 
 	// TOO_FEW_STEPS: Too few steps
@@ -71,6 +79,18 @@ function validateSettings(protocol: Protocol): Warning[] {
 	warnings.push(...validateFoodConfig(protocol.foodA));
 	if (protocol.foodB) {
 		warnings.push(...validateFoodConfig(protocol.foodB));
+	}
+
+	// Standard food collision checks for custom foods
+	if (standardFoods && standardFoods.length > 0) {
+		warnings.push(
+			...validateCustomFoodAgainstStandard(protocol.foodA, standardFoods),
+		);
+		if (protocol.foodB) {
+			warnings.push(
+				...validateCustomFoodAgainstStandard(protocol.foodB, standardFoods),
+			);
+		}
 	}
 
 	// NO_TRANSITION_POINT: No transition point found for food B if it exists. That means the transition threshold is too high.
@@ -122,6 +142,127 @@ function validateFoodConfig(food: Food): Warning[] {
 		});
 	}
 	return warnings;
+}
+
+/**
+ * Helper to validate a custom food against standard library foods.
+ * Emits yellow warnings if a custom food shares the exact same name (case-insensitive, trimmed) with a standard food but has different protein concentration or form.
+ * If both form and protein match, no warning is emitted.
+ *
+ * @param food Custom food to check
+ * @param standardFoods Standard foods from library (CNF + provisioned branded)
+ * @returns Array of warnings
+ */
+export function validateCustomFoodAgainstStandard(
+	food: Food,
+	standardFoods: FoodData[],
+): Warning[] {
+	if (food.source !== SourceType.USER) return [];
+	const trimmedName = food.name.trim().toLowerCase();
+	if (!trimmedName) return [];
+
+	const matchingStandards = standardFoods.filter(
+		(sf) =>
+			(!("is_active" in sf) || sf.is_active !== false) &&
+			sf.name.trim().toLowerCase() === trimmedName,
+	);
+
+	if (matchingStandards.length === 0) return [];
+
+	// Check if there is an exact match for both form and protein
+	const hasExactMatch = matchingStandards.some((sf) => {
+		const formsMatch = food.type === sf.type;
+		if (!formsMatch) return false;
+
+		if (food.type === FoodType.CAPSULE || sf.type === FoodType.CAPSULE) {
+			return new Decimal(food.gramsInServing).equals(
+				new Decimal(sf.gramsInServing),
+			);
+		}
+
+		const standardMg = new Decimal(sf.gramsInServing)
+			.times(1000)
+			.dividedBy(sf.servingSize);
+		return food.getMgPerUnit().minus(standardMg).abs().lessThan(0.001);
+	});
+
+	if (hasExactMatch) return [];
+
+	const ref = matchingStandards[0];
+
+	// Form mismatch check
+	const formMatchesAny = matchingStandards.some((sf) => food.type === sf.type);
+	const customForm =
+		food.type.charAt(0).toUpperCase() + food.type.slice(1).toLowerCase();
+	const refForm =
+		ref.type.charAt(0).toUpperCase() + ref.type.slice(1).toLowerCase();
+
+	// Protein mismatch check
+	let isProteinMismatch = false;
+	let proteinDetail = "";
+
+	if (food.type !== FoodType.CAPSULE && ref.type !== FoodType.CAPSULE) {
+		const customMg = food.getMgPerUnit();
+		const refMg = new Decimal(ref.gramsInServing)
+			.times(1000)
+			.dividedBy(ref.servingSize);
+
+		const proteinMatchesAny = matchingStandards.some((sf) => {
+			if (sf.type === FoodType.CAPSULE) return false;
+			const sfMg = new Decimal(sf.gramsInServing)
+				.times(1000)
+				.dividedBy(sf.servingSize);
+			return customMg.minus(sfMg).abs().lessThan(0.001);
+		});
+
+		if (!proteinMatchesAny) {
+			isProteinMismatch = true;
+			const customUnit = getMeasuringUnit(food);
+			const refUnit = getMeasuringUnit(ref as unknown as Food);
+			proteinDetail = `${formatNumber(customMg, 1)} mg/${customUnit} vs ${formatNumber(refMg, 1)} mg/${refUnit}`;
+		}
+	} else if (
+		food.type === FoodType.CAPSULE &&
+		ref.type === FoodType.CAPSULE &&
+		!new Decimal(food.gramsInServing).equals(new Decimal(ref.gramsInServing))
+	) {
+		isProteinMismatch = true;
+		proteinDetail = `${formatNumber(food.gramsInServing, 2)} g vs ${formatNumber(ref.gramsInServing, 2)} g per capsule`;
+	}
+
+	const isFormMismatch = !formMatchesAny;
+
+	if (isProteinMismatch && isFormMismatch) {
+		return [
+			{
+				severity: "yellow",
+				code: WarningCode.Yellow.STANDARD_FOOD_COLLISION,
+				message: `A standard library food has the same name, but different protein content (${proteinDetail}) and form (${customForm} vs ${refForm}).`,
+			},
+		];
+	}
+
+	if (isProteinMismatch) {
+		return [
+			{
+				severity: "yellow",
+				code: WarningCode.Yellow.STANDARD_FOOD_PROTEIN_MISMATCH,
+				message: `A standard library food has the same name, but different protein content (${proteinDetail}).`,
+			},
+		];
+	}
+
+	if (isFormMismatch) {
+		return [
+			{
+				severity: "yellow",
+				code: WarningCode.Yellow.STANDARD_FOOD_FORM_MISMATCH,
+				message: `A standard library food has the same name, but different form (${customForm} vs ${refForm}).`,
+			},
+		];
+	}
+
+	return [];
 }
 
 // ============================================

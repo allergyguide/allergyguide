@@ -6,6 +6,7 @@ import {
 	addFoodBToProtocol,
 	addStepAfter,
 	recalculateProtocol,
+	recalculateStepMethods,
 	removeStep,
 	toggleFoodType,
 	updateStepDailyAmount,
@@ -13,7 +14,13 @@ import {
 	updateStepTargetMg,
 } from "../../core/protocol";
 import type { Food, Protocol } from "../../types";
-import { DosingStrategy, FoodType, Method, SourceType } from "../../types";
+import {
+	DosingStrategy,
+	FoodAStrategy,
+	FoodType,
+	Method,
+	SourceType,
+} from "../../types";
 
 const createFood = (name: string, type: FoodType = FoodType.SOLID): Food => ({
 	name,
@@ -85,6 +92,39 @@ describe("Core: Protocol Manipulation", () => {
 			// Check if steps still transition
 			const hasB = newProto.steps.some((s) => s.food === "B");
 			expect(hasB).toBe(true);
+		});
+	});
+
+	describe("Infeasible dilutions never drop steps", () => {
+		// 5 mg protein/g: high targets (80-300 mg) cannot be diluted within limits
+		const lowProteinFood: Food = {
+			...createFood("Low protein"),
+			gramsInServing: new Decimal(0.5),
+		};
+		const targets = (p: Protocol) => p.steps.map((s) => s.targetMg.toNumber());
+
+		it("recalculateStepMethods keeps every step, falling back to DIRECT", () => {
+			const base = generateDefaultProtocol(lowProteinFood, DEFAULT_CONFIG);
+			const updated = recalculateStepMethods({
+				...base,
+				foodAStrategy: FoodAStrategy.DILUTE_ALL,
+			});
+
+			expect(targets(updated)).toEqual(targets(base));
+			expect(updated.steps.map((s) => s.stepIndex)).toEqual(
+				base.steps.map((_, i) => i + 1),
+			);
+			expect(updated.steps.at(-1)?.method).toBe(Method.DIRECT);
+		});
+
+		it("recalculateProtocol keeps every step of the dosing strategy", () => {
+			const base = generateDefaultProtocol(lowProteinFood, DEFAULT_CONFIG);
+			const updated = recalculateProtocol({
+				...base,
+				foodAStrategy: FoodAStrategy.DILUTE_ALL,
+			});
+
+			expect(targets(updated)).toEqual(targets(base));
 		});
 	});
 

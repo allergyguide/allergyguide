@@ -10,18 +10,64 @@ import errorProtocols from "./fixtures/error-protocols.json";
 
 describe("Data Integrity Suite", () => {
 	describe("Positive Testing: Production Assets", () => {
+		// Inject GENERIC source for CNF foods if missing (they are public/generic by definition)
+		const cnfWithSource = (cnfFoods as any[]).map((item) => ({
+			...item,
+			source: item.source || "GENERIC",
+		}));
+
 		it("validates CNF foods (Structure & Physics)", () => {
-			const cnfList = cnfFoods as unknown[];
-			expect(Array.isArray(cnfList)).toBe(true);
-
-			// Inject GENERIC source for CNF foods if missing (they are public/generic by definition)
-			const listWithSource = cnfList.map((item: any) => ({
-				...item,
-				source: item.source || "GENERIC",
-			}));
-
-			const invalidCount = validateFoodList(listWithSource, "cnf_foods.json");
+			expect(Array.isArray(cnfFoods)).toBe(true);
+			const invalidCount = validateFoodList(cnfWithSource, "cnf_foods.json");
 			expect(invalidCount, `Found ${invalidCount} invalid CNF foods`).toBe(0);
+		});
+
+		it("has unique food names across CNF + each user's provisioned foods", (ctx) => {
+			// Mirrors oit-bootstrap: each user gets CNF + the files in their config, merged into one standard library. validateCustomFoodAgainstStandard assumes one match per name.
+			const files = import.meta.glob("../../../secure_assets/**/*.json", {
+				eager: true,
+				import: "default",
+			});
+			const prefix = "../../../secure_assets/";
+			const configPaths = Object.keys(files).filter((p) =>
+				p.startsWith(`${prefix}user_configs/`),
+			);
+			if (configPaths.length === 0) {
+				ctx.skip();
+				return;
+			}
+
+			let totalErrors = 0;
+			for (const configPath of configPaths) {
+				const config = files[configPath] as {
+					tools?: { oit_calculator?: { provisioned_foods?: string[] } };
+				};
+				const seenNames = new Set<string>();
+				validateFoodList(cnfWithSource, "cnf_foods.json", true, seenNames);
+				for (const file of config.tools?.oit_calculator?.provisioned_foods ??
+					[]) {
+					// oit-bootstrap unwraps { metadata, data } files (e.g. brand_foods.json)
+					const raw = files[prefix + file] as { data?: unknown } | undefined;
+					const foods = Array.isArray(raw) ? raw : raw?.data;
+					if (!Array.isArray(foods)) {
+						console.error(
+							`[${configPath}] Missing provisioned food file: ${file}`,
+						);
+						totalErrors++;
+						continue;
+					}
+					totalErrors += validateFoodList(
+						foods,
+						`${configPath} -> ${file}`,
+						false,
+						seenNames,
+					);
+				}
+			}
+			expect(
+				totalErrors,
+				`Found ${totalErrors} food issues in user libraries`,
+			).toBe(0);
 		});
 
 		it("validates all secure_assets/oit_calculator .jsons", async (ctx) => {
@@ -137,9 +183,9 @@ function validateFoodList(
 	list: unknown[],
 	filePath: string,
 	silent = false,
+	seenNames = new Set<string>(),
 ): number {
 	let errors = 0;
-	const seenNames = new Set<string>();
 
 	list.forEach((item, index) => {
 		if (!validateFood(item, filePath, index, silent)) {
@@ -148,7 +194,10 @@ function validateFoodList(
 		}
 
 		// Type assertion is safe here as validateFood successfully parsed the structure via Zod
-		const name = (item as { name: string }).name;
+		// Normalised to match validateCustomFoodAgainstStandard's name comparison
+		const food = item as { name: string; is_active?: boolean };
+		if (food.is_active === false) return; // inactive foods are dropped by getStandardFoods
+		const name = food.name.trim().toLowerCase();
 		if (seenNames.has(name)) {
 			if (!silent) console.error(`[${filePath}] Duplicate Food: "${name}"`);
 			errors++;
