@@ -17,6 +17,7 @@
   // Brand
   --core-primary: oklch(0.77 0.17 64); // Brand Orange
   --core-primary-hover: oklch(0.82 0.15 64); // Slightly brighter for dark mode interaction
+  --core-on-primary: oklch(0.2 0.03 64); // Dark ink on bright orange: 8.4:1 (white was 2.2:1)
 
   // Status
   --core-danger: oklch(0.65 0.20 25);
@@ -36,8 +37,9 @@
   --core-border: oklch(0.9 0.01 64);
 
   // Brand (Hardened for light mode contrast)
-  --core-primary: oklch(0.65 0.18 64); // Deepened orange for white backgrounds
-  --core-primary-hover: oklch(0.55 0.19 64); // Darker for hover
+  --core-primary: oklch(0.55 0.16 55); // Burnt orange: 5.1:1 with white, as fill or as text on white
+  --core-primary-hover: oklch(0.5 0.15 50); // Darker for hover (6.3:1 with white)
+  --core-on-primary: oklch(1 0 0);
 
   // Status
   --core-danger: oklch(0.55 0.22 25); // Sharpened red
@@ -58,6 +60,7 @@ $core-color-border: var(--core-border);
 
 $core-color-primary: var(--core-primary);
 $core-color-primary-dark: var(--core-primary-hover);
+$core-color-on-primary: var(--core-on-primary);
 
 $core-color-red: var(--core-danger);
 $core-color-red-light: var(--core-danger-bg);
