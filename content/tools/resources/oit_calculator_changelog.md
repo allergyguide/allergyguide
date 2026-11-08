@@ -8,7 +8,23 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
-## [0.17.3]
+## [unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+---
+
+## [0.17.3] - 2026-11-08
 
 ### Added
 
@@ -18,10 +34,6 @@ authors = ["Joshua Yu"]
 
 - Performance: improved loading speeds for authorized users
 - Food settings: protein content and serving size entries are now limited to 1 decimal place. Foods from the CNF/Brand/Provisioned libraries keep their original precision, and the settings fields now display it in full (e.g. 9.54 g instead of 9.5 g) so the value shown always matches the value used in calculations
-
-### Deprecated
-
-### Removed
 
 ### Fixed
 
@@ -40,10 +52,6 @@ authors = ["Joshua Yu"]
 - Warnings: a 0 mg target on a direct step of a food with 0 g protein no longer stops the warnings from updating
 - Copy to Clipboard: capsule foods no longer show a protein line with an incorrect "ml" serving unit, and food names with special characters (e.g. "<") now display correctly when pasted as formatted text
 - Switching a step from direct to dilution now shows a message when no practical dilution exists, instead of doing nothing
-
-### Security
-
----
 
 ## [0.17.1] - 2026-06-14
 
