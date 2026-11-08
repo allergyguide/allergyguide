@@ -15,37 +15,37 @@ oit_calculator/
 │   ├── search.ts           # fuzzy search
 │   └── minify.ts           # data for qr code compression and generation
 ├── state/                  
-│   ├── appstate.ts         # global app config (merges public + secure data)
-│   ├── protocolstate.ts    # observable state container for a single protocol tab
+│   ├── appState.ts         # global app config (merges public + provisioned + user data, auth/sync status, search indices)
+│   ├── protocolState.ts    # observable state container for a single protocol tab (undo/redo, baselines, chain of custody)
 │   ├── workspaceManager.ts # manages multiple protocol states (tabs) and active view
 │   └── instances.ts        # singleton instances (workspace, appState)
 ├── data/
-│   ├── loader.ts           # orchestrates loading of public JSONs and secure user assets
-│   ├── api.ts              # secure asset fetcher from secure_assets/
-│   └── auth.ts             # login/logout API interactions
+│   ├── loader.ts           # orchestrates loading of public JSONs and the oit-bootstrap payload
+│   └── api.ts              # oit-bootstrap + get-secure-asset fetchers (SWR cached), HttpError handling
 ├── export/                 
-│   └── exports.ts          # pdf (jspdf) and ascii generation logic
-├── tests/                  
-│   ├── core/               
-│   ├── export/             
+│   ├── exports.ts          # pdf (jspdf/pdf-lib + QR), ascii, and html generation logic
+│   └── handout.ts          # patient daily dosing instructions handout (fillable name/start date PDF)
+├── tests/                  # mirrors source layout (core/, state/, ui/, export/), plus fixtures/
 │   └── data_integrity.test.ts  
 └── ui/                     
-    ├── components/         # declarative lit-html components (Table, Settings, Search, Sidebar)
+    ├── components/         # lit-html components: ProtocolTable, FoodSettings, SearchDropdown, WarningsSidebar,
+    │                       #   LibraryModal (user's saved foods/protocols), SaveModals, HandoutModal
     ├── directives/         # specialized lit-html directives (activeSafe)
-    ├── actions/            # specialized action handlers (e.g. settingsActions.ts)
+    ├── actions/            # settingsActions.ts (food settings), vaultActions.ts (save/rename/delete encrypted user docs)
     ├── renderers.ts        # orchestrates rendering; patches Tabs, Dosing, and Empty State manually
     ├── events.ts           # global event delegation (Tabs, Dosing, Undo/Redo, Notes)
     ├── actions.ts          # high-level actions connecting search/loading to state
     ├── searchUI.ts         # search input events and dropdown orchestration
-    ├── modals.ts           # clickwrap, login, and save request modal logic
-    └── exports.ts          # export ui triggers
+    ├── modals.ts           # clickwrap modal logic (login/unlock modals live in _ts/core/ui/)
+    └── exports.ts          # export ui triggers (PDF, ASCII, handouts, debug "export as provisioned")
 
-Edge + Serverless Functions (Netlify)
-├── get-secure-asset.ts     # (Edge) Serves permission-gated assets (JSON/PDF) using Supabase UUID via Netlify Blobs
-├── oit-bootstrap.ts        # (Edge) Aggregates provisioned protocols and foods for authenticated users
-├── request-save-oit-protocol.mts # (Serverless) Processes protocol save requests via Resend API
-└── _lib/auth.ts            # (Edge) Verifies Supabase tokens and extracts user claims
+Edge Functions (Netlify, netlify/edge-functions/)
+├── get-secure-asset.ts     # Serves permission-gated assets (JSON/PDF) from Netlify Blobs
+├── oit-bootstrap.ts        # Aggregates provisioned protocols, foods, and handouts for authenticated users
+└── _lib/auth.ts            # Verifies the Supabase SSR cookie session (getClaims) and loads the user config
 ```
+
+Shared auth, crypto, and the encrypted document DB live in `_ts/core/` (see `docs/AUTH.md`).
 
 ## Patterns
 
@@ -75,13 +75,17 @@ The tool uses a hybrid model to support multi-tenancy while keeping the base too
 
 1. **Tier 1: Public Assets:** Fetched on initialization (e.g., the standard CNF `cnf_foods.json`). Available to all users.
 2. **Tier 2: Provisioned Assets:** Private food databases and protocol templates maintained by administrators in a private repository. These are bundled during build and served to authenticated users via the `oit-bootstrap` endpoint.
-3. **Tier 3: Custom Assets (Future):** User-created foods and protocols that will be persisted in a Supabase database. This will allow for individual customization that persists across sessions.
+3. **Tier 3: Custom Assets:** User-created foods and protocols (`SourceType.USER`), stored in Supabase as zero-knowledge encrypted documents (`custom_food`, `custom_protocol`). They are encrypted/decrypted client-side with the user's DEK and persist across sessions. Saving, renaming, and deleting is handled by `ui/actions/vaultActions.ts`.
 
 ### Authentication & Secure Data Flow
 
-- **Login:** Handled by `_ts/core/auth/login-client.ts`. Users authenticate with Supabase using a derived high-entropy hash as their password.
-- **Bootstrap:** On app start, `loader.ts` calls the `oit-bootstrap` endpoint with the Supabase access token. The backend verifies the token and aggregates **Tier 2 (Provisioned)** assets.
+- **Login / Unlock:** Handled by `_ts/core/auth/login-client.ts`. The password is split via PBKDF2 into an auth hash (sent to Supabase) and a KEK that unwraps the DEK; `determineVaultState()` resolves UNAUTHENTICATED / LOCKED / UNLOCKED on start.
+- **Bootstrap:** On app start, `loader.ts` calls the `oit-bootstrap` edge function. The Supabase SSR cookie session is verified (`getClaims()`), the user's config is checked, and **Tier 2 (Provisioned)** assets are aggregated. In parallel, the encrypted Tier 3 documents are fetched and then decrypted in the background once the DEK is available (`appState` sync status: loading / success / error).
 - **Merging:** `AppState` merges the public, provisioned, and custom data, rebuilding search indices to provide a seamless unified view.
+
+### Chain of Custody
+
+Curated records are never silently modified. Any edit (that isn't an initial load, `setProtocol(..., { isLoad: true })`) to a non-`USER` protocol converts it to `source: USER` and strips its `id`, so saving creates a new user document instead of overwriting a provisioned one. Foods follow the same rule. Custom foods whose names collide with a standard food are checked against it (`validateCustomFoodAgainstStandard`) for protein/form mismatches.
 
 ### Hybrid Rendering Strategy
 
@@ -108,14 +112,12 @@ The application shell (Tabs, Dosing Strategy toggles, Export buttons, and the Em
 
 ## Environment Configuration
 
-Deployment requires the following Netlify environment variables (and ideally within local .env):
+The full list of build/deploy environment variables is in `scripts/build-config.mts` (see also `docs/DEVELOPMENT.md`). The OIT edge functions themselves read:
 
-- `JWT_SECRET`: Secret key for signing Netlify session tokens.
-- `SUPABASE_URL`: The URL of your Supabase project.
-- `SUPABASE_SECRET_KEY`: The key for backend administration.
-- `SUPABASE_JWT_SECRET`: The JWT secret from Supabase.
-- `TOKEN_EXPIRY_HOURS`: Session duration (default 24).
-- `TURNSTILE_SECRET`: Cloudflare Turnstile secret for login verification.
+- `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`: to verify the Supabase session cookie.
+- `NETLIFY_SITE_ID`, `NETLIFY_AUTH_TOKEN`: Netlify Blobs access for user configs and secure assets.
+
+The client bundle gets `__SUPABASE_URL__`, `__SUPABASE_PUBLISHABLE_KEY__`, `__COMMIT_HASH__`, and `__VERSION_OIT_CALCULATOR__` injected by esbuild at build time.
 
 ## Roadmap to v1.0.0
 
@@ -144,10 +146,7 @@ Deployment requires the following Netlify environment variables (and ideally wit
 ### Data Persistence & Multi-Tenancy (3-Tier System)
 
 - **Tier 1 (Public) & Tier 2 (Provisioned):** DONE. Signed-in users can load private food databases and protocols provisioned via the private GitHub repository.
-- **Tier 3 (Custom User Assets):** PLANNED.
-- This represents a major feature change (Supabase persistence) and will require thorough review.
-- Will need to ensure stable and secure user authentication system that also is convenient.
-- Need to stabilize spec of how users will save and edit these custom foods/protocols directly through the UI.
+- **Tier 3 (Custom User Assets):** IMPLEMENTED (zero-knowledge encrypted Supabase documents, saved/edited via the Library and Save modals). Still needs thorough review and user testing of the save/edit UX and the auth/unlock flow.
 
 ### Development of export content / format
 
