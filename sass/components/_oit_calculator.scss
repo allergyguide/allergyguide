@@ -2365,6 +2365,35 @@
     background: var(--oit-bg-hover);
   }
 
+  // Delete in flight: fade the row and sweep a soft highlight across it
+  &.is-deleting {
+    position: relative;
+    overflow: hidden;
+    opacity: 0.55;
+    pointer-events: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        100deg,
+        transparent 20%,
+        color-mix(in srgb, var(--oit-text) 10%, transparent) 50%,
+        transparent 80%
+      );
+      transform: translateX(-100%);
+      animation: libraryRowShimmer 1.2s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::after {
+        animation: none;
+        display: none;
+      }
+    }
+  }
+
   .item-info {
     display: flex;
     flex-direction: column;
@@ -2471,6 +2500,12 @@
         background: var(--oit-bg-secondary);
       }
     }
+  }
+}
+
+@keyframes libraryRowShimmer {
+  to {
+    transform: translateX(100%);
   }
 }
 
