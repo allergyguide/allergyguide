@@ -63,12 +63,12 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 | `PRIVATE_TOKEN`       | GitHub Personal Access Token to fetch private assets/tools.            |
 | `GITHUB_OWNER`        | Owner of the repo (e.g., `john-doe`).                                  |
 | `GITHUB_REPO`         | Repository name (e.g. `repo-name`).                                    |
-| `JWT_SECRET`          | Secret key used to sign Auth Cookies.                                  |
 | `SUPABASE_URL`        | URL of the Supabase project.                                           |
 | `SUPABASE_SECRET_KEY` | for backend access ONLY.                                               |
-| `SUPABASE_JWT_SECRET` | JWT Secret for signing client tokens (from Supabase Project Settings). |
-| `TOKEN_EXPIRY_HOURS`  | Duration of the user session in hours (Default: 24).                   |
-| `TURNSTILE_SECRET`    | Secret key from Cloudflare Turnstile for server-side verify            |
+| `SUPABASE_PUBLISHABLE_KEY` | Public Supabase key, injected into client bundles.                |
+| `RESEND_API_KEY`      | Resend API key for `submit-email`.                                     |
+| `NETLIFY_SITE_ID`     | Site ID for Netlify Blobs access during the build.                     |
+| `NETLIFY_AUTH_TOKEN`  | Netlify token for Netlify Blobs access during the build.               |
 
 ## Project structure
 
@@ -85,8 +85,6 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 ├── zola.toml                  # Zola Configuration
 ├── netlify.toml               # Netlify Configuration (Headers, Redirects)
 ├── package.json               # NPM Scripts & Dependencies
-├── tools/                     # Developer utilities (not part of site build)
-│   └── hash_password.ts       # Utility to generate bcrypt hashes
 │
 ├── content/                   # Markdown content
 │   ├── tools/

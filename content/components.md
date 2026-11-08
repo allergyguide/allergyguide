@@ -807,17 +807,3 @@ This is a danger admonition with a danger icon.
 {% </tabs> %}
 
 <script src="/js/tabs.js"></script>
-
-## protected
-
-This allows for secure username/password protected content. The actual content is hidden in a private repository and is securely fetched dynamically to populate the content when the user signs in. Once the user signs in, until ~24h that password will be remembered on their machine. No log-out has been implemented yet but I see little utility at this time for that feature.
-
-To use, the component requires the relative path to the HTML file needed to hydrate the page.
-
-```md
-{% raw %}
-{{ <protected path="content/private/test.html" /> }}
-{% endraw %}
-```
-
-{{ <protected path="content/private/test.html" /> }}

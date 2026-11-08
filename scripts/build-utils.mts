@@ -131,8 +131,7 @@ export async function getPathsUsingGitTree(
 }
 
 /**
- * Verifies the integrity of the `AUTH_USERS` environment variables.
- * Ensures that every non-admin user has an associated config file in secure_assets.
+ * Verifies that every non-admin user in Supabase `authorized_users` has an associated config file in secure_assets.
  * If the security config is invalid, the build terminates.
  */
 export async function verifyUsersData() {
