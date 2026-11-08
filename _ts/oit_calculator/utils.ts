@@ -279,16 +279,19 @@ export function serializeProtocol(
  * @param input - The string to parse
  * @param defaultValue - Value to return if parsing fails
  * @param min - Minimum allowed value (default 0)
+ * @param decimals - If set, rounds the parsed value to this many decimal places (before the min clamp)
  */
 export function parseSafeDecimal(
 	input: string,
 	defaultValue: Decimal,
 	min: number = 0,
+	decimals?: number,
 ): Decimal {
 	if (!input || input.trim() === "") return defaultValue;
 	try {
-		const val = new Decimal(input);
+		let val = new Decimal(input);
 		if (val.isNaN()) return defaultValue;
+		if (decimals !== undefined) val = val.toDecimalPlaces(decimals);
 		const minimum = new Decimal(min);
 		return val.lessThan(minimum) ? minimum : val;
 	} catch {

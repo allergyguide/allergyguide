@@ -8,6 +8,7 @@ import {
 	DEFAULT_CONFIG,
 	LIQUID_RESOLUTION,
 	SOLID_RESOLUTION,
+	STANDARD_FOOD_PROTEIN_TOLERANCE_MG,
 } from "../constants";
 
 import type { Food, FoodData, Protocol, Step, Warning } from "../types";
@@ -183,7 +184,11 @@ export function validateCustomFoodAgainstStandard(
 		const standardMg = new Decimal(sf.gramsInServing)
 			.times(1000)
 			.dividedBy(sf.servingSize);
-		return food.getMgPerUnit().minus(standardMg).abs().lessThan(0.001);
+		return food
+			.getMgPerUnit()
+			.minus(standardMg)
+			.abs()
+			.lessThanOrEqualTo(STANDARD_FOOD_PROTEIN_TOLERANCE_MG);
 	});
 
 	if (hasExactMatch) return [];
@@ -203,23 +208,24 @@ export function validateCustomFoodAgainstStandard(
 
 	if (food.type !== FoodType.CAPSULE && ref.type !== FoodType.CAPSULE) {
 		const customMg = food.getMgPerUnit();
-		const refMg = new Decimal(ref.gramsInServing)
-			.times(1000)
-			.dividedBy(ref.servingSize);
 
 		const proteinMatchesAny = matchingStandards.some((sf) => {
 			if (sf.type === FoodType.CAPSULE) return false;
 			const sfMg = new Decimal(sf.gramsInServing)
 				.times(1000)
 				.dividedBy(sf.servingSize);
-			return customMg.minus(sfMg).abs().lessThan(0.001);
+			return customMg
+				.minus(sfMg)
+				.abs()
+				.lessThanOrEqualTo(STANDARD_FOOD_PROTEIN_TOLERANCE_MG);
 		});
 
 		if (!proteinMatchesAny) {
 			isProteinMismatch = true;
-			const customUnit = getMeasuringUnit(food);
-			const refUnit = getMeasuringUnit(ref as unknown as Food);
-			proteinDetail = `${formatNumber(customMg, 1)} mg/${customUnit} vs ${formatNumber(refMg, 1)} mg/${refUnit}`;
+			// Show protein as entered (g per serving), not internal mg/unit; toString avoids rounding away small differences
+			const asEntered = (f: Food | FoodData) =>
+				`${new Decimal(f.gramsInServing).toString()} g/${new Decimal(f.servingSize).toString()} ${getMeasuringUnit(f)}`;
+			proteinDetail = `${asEntered(food)} vs ${asEntered(ref)}`;
 		}
 	} else if (
 		food.type === FoodType.CAPSULE &&

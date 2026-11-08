@@ -491,7 +491,43 @@ describe("Core: Validator", () => {
 			);
 			expect(warnings[0].severity).toBe("yellow");
 			expect(warnings[0].message).toBe(
-				"A standard library food has the same name, but different protein content (350.0 mg/g vs 250.0 mg/g).",
+				"A standard library food has the same name, but different protein content (35 g/100 g vs 25 g/100 g).",
+			);
+		});
+
+		it("should treat protein within 0.5 mg/g of the standard as the same (1-decimal rounding)", () => {
+			const standard: FoodData[] = [
+				{
+					name: "Cheese souffle",
+					type: FoodType.SOLID,
+					gramsInServing: 9.54,
+					servingSize: 100,
+					source: SourceType.GENERIC,
+				},
+			];
+			const rounded = createCustomFood({
+				name: "Cheese souffle",
+				gramsInServing: new Decimal(9.5), // 95 vs 95.4 mg/g
+			});
+			expect(validateCustomFoodAgainstStandard(rounded, standard)).toHaveLength(0);
+
+			const different = createCustomFood({
+				name: "Cheese souffle",
+				gramsInServing: new Decimal(9.6), // 96 vs 95.4 mg/g
+			});
+			expect(validateCustomFoodAgainstStandard(different, standard)[0].code).toBe(
+				WarningCode.Yellow.STANDARD_FOOD_PROTEIN_MISMATCH,
+			);
+		});
+
+		it("should show protein as entered (g per serving), without rounding", () => {
+			const customFood = createCustomFood({
+				gramsInServing: new Decimal(12.55),
+				servingSize: new Decimal(50), // 251 mg/g vs 250 mg/g
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings[0].message).toBe(
+				"A standard library food has the same name, but different protein content (12.55 g/50 g vs 25 g/100 g).",
 			);
 		});
 
@@ -520,7 +556,7 @@ describe("Core: Validator", () => {
 				WarningCode.Yellow.STANDARD_FOOD_COLLISION,
 			);
 			expect(warnings[0].message).toBe(
-				"A standard library food has the same name, but different protein content (500.0 mg/ml vs 250.0 mg/g) and form (Liquid vs Solid).",
+				"A standard library food has the same name, but different protein content (50 g/100 ml vs 25 g/100 g) and form (Liquid vs Solid).",
 			);
 		});
 

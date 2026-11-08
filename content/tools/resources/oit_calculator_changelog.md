@@ -17,6 +17,7 @@ authors = ["Joshua Yu"]
 ### Changed
 
 - Performance: improved loading speeds for authorized users
+- Food settings: protein content and serving size entries are now limited to 1 decimal place. Foods from the CNF/Brand/Provisioned libraries keep their original precision, and the settings fields now display it in full (e.g. 9.54 g instead of 9.5 g) so the value shown always matches the value used in calculations
 
 ### Deprecated
 
@@ -26,6 +27,7 @@ authors = ["Joshua Yu"]
 
 - Calculation: Fixed an issue where the initial doses generated for a transition food (Food B) were not applying the "smart snapping" to clean, measurable increments (like 0.05g or 0.5ml) until they were manually edited
 - Duplicate detection for custom foods. New custom foods that share a name with an existing custom food are not allowed; if they share it with an existing CNF/Brand/Provisioned food, a warning is displayed
+- Duplicate food warnings: protein content is shown as entered (e.g. "35 g/100 g vs 25 g/100 g") rather than as mg per g/ml, and differences of up to 0.05 g per 100 g (0.5 mg per g/ml) are not flagged, so rounding a library value to 1 decimal place doesn't trigger a warning usually
 - If a dilution is impossible, the calculator will fall back to direct dosing. Previously it would omit the impossible step entirely. This is only applicable in the case of extremely low protein concentrations where dilutions in the first place would be inappropriate
 
 ### Security

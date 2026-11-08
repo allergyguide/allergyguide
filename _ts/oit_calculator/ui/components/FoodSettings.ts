@@ -22,6 +22,10 @@ import {
 } from "../actions/settingsActions";
 import { saveCustomFood } from "../actions/vaultActions";
 
+// Show at least 1 decimal, but never hide extra precision from curated values (e.g. CNF 9.54), so what is shown is what is calculated
+const formatFoodInput = (d: Decimal) =>
+	d.decimalPlaces() > 1 ? d.toString() : d.toFixed(1);
+
 export const validateFoodName = (name: string, currentId?: string): string => {
 	const trimmed = name.trim();
 	if (trimmed.length === 0) return "Name cannot be empty.";
@@ -328,7 +332,7 @@ ${renderFoodValidationNotice(errorMsg, standardWarningMsg)}
           type="number"
           min="0"
           id="${idPrefix}-protein"
-          .value="${live(food.gramsInServing.toFixed(1))}"
+          .value="${live(formatFoodInput(food.gramsInServing))}"
           step="0.1"
           ?disabled="${isCapsule}"
           @change="${(e: Event) => handlers.onProtein(state, (e.target as HTMLInputElement).value)}"
@@ -338,7 +342,7 @@ ${renderFoodValidationNotice(errorMsg, standardWarningMsg)}
           type="number"
           min="0"
           id="${idPrefix}-serving-size"
-          .value="${live(food.servingSize.toFixed(1))}"
+          .value="${live(formatFoodInput(food.servingSize))}"
           step="0.1"
           ?disabled="${isCapsule}"
           @change="${(e: Event) => handlers.onServing(state, (e.target as HTMLInputElement).value)}"
