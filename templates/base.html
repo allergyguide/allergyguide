@@ -35,9 +35,8 @@
         </a>
 
         {%- elif config.extra.textlogo -%}
-        <a class="site-title" href="{{ get_url(path="/", lang=lang) }}{%- if uglyurls -%}
-        {%- if lang == config.default_language -%}/{%- endif -%}
-        index.html{%- endif -%}" title="{{config.title}}">{{ config.extra.textlogo | safe }}</a>
+        {#- get_url(path="/") renders "" when base_url = "/", which just reloads the page -#}
+        <a class="site-title" href="{{ config.base_url | safe }}{%- if uglyurls -%}index.html{%- endif -%}" title="{{config.title}}">{{ config.extra.textlogo | safe }}</a>
         {%- elif config.title -%}
         <a class="site-title" href="{{ get_url(path="/", lang=lang) }}{%- if uglyurls %}/index.html{%- endif %}" title="{{config.title}}">{{ config.title | safe }}</a>
         {%- endif -%}
