@@ -65,6 +65,13 @@ await buildTS(toolVersioning, commit_hash);
 console.log("---------------------------\n");
 
 // PRUNE ORPHANED BLOBS
+// Production only: every build (previews, branch deploys, local) shares the live blob store, so a non-production build whose fetch list differs would delete files the live site still serves
 console.log("-----PRUNE ORPHANED BLOBS-----");
-await pruneBlobs();
+if (process.env.CONTEXT === "production") {
+	await pruneBlobs();
+} else {
+	console.log(
+		`Skipping prune (CONTEXT=${process.env.CONTEXT ?? "unset"}, not production)`,
+	);
+}
 console.log("---------------------------\n");
