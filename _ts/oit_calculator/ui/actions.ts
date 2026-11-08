@@ -26,7 +26,7 @@ import {
 	Method,
 	SourceType,
 } from "../types";
-import { generateUniqueId, hydrateFoodData } from "../utils";
+import { generateUniqueId, getMeasuringUnit, hydrateFoodData } from "../utils";
 
 /**
  * Select Food A from database entry and initialize a default protocol.
@@ -159,6 +159,9 @@ export function selectCustomFood(name: string, inputId: string): void {
  */
 export function selectProtocol(protocolData: ProtocolData): void {
 	const foodA: Food = hydrateFoodData(protocolData.food_a);
+	const foodB: Food | undefined = protocolData.food_b
+		? hydrateFoodData(protocolData.food_b)
+		: undefined;
 
 	const protocol: Protocol = {
 		id: protocolData.id,
@@ -178,9 +181,9 @@ export function selectProtocol(protocolData: ProtocolData): void {
 	};
 	const activeTab = workspace.getActive();
 
-	if (protocolData.custom_note) {
-		activeTab.setCustomNote(protocolData.custom_note);
-	}
+	// always overwrite, so a note from the tab's previous protocol can't carry over
+	// skipRender: setProtocol below renders
+	activeTab.setCustomNote(protocolData.custom_note ?? "", { skipRender: true });
 
 	// load steps
 	const tableToLoad = protocolData.table;
@@ -213,11 +216,8 @@ export function selectProtocol(protocolData: ProtocolData): void {
 				dailyAmountUnit = "ml";
 			} else {
 				// DIRECT
-				const isFoodA = row.food === "A";
-				const foodType = isFoodA
-					? foodA.type
-					: (protocolData.food_b?.type as FoodType);
-				dailyAmountUnit = foodType === FoodType.SOLID ? "g" : "ml";
+				const rowFood = row.food === "B" && foodB ? foodB : foodA;
+				dailyAmountUnit = getMeasuringUnit(rowFood);
 			}
 		}
 
@@ -236,12 +236,9 @@ export function selectProtocol(protocolData: ProtocolData): void {
 			step.mixFoodAmount = new Decimal(row.mix_amount);
 			step.mixWaterAmount = new Decimal(row.water_amount);
 			// Calculate servings
-			let mgPerUnit = foodA.getMgPerUnit();
-			if (row.food === "B" && protocolData.food_b) {
-				const fbGrams = new Decimal(protocolData.food_b.gramsInServing);
-				const fbServing = new Decimal(protocolData.food_b.servingSize);
-				mgPerUnit = fbGrams.times(1000).dividedBy(fbServing);
-			}
+			const mgPerUnit = (
+				row.food === "B" && foodB ? foodB : foodA
+			).getMgPerUnit();
 
 			const totalMixProtein = step.mixFoodAmount.times(mgPerUnit);
 			step.servings = totalMixProtein.dividedBy(step.targetMg);
@@ -251,11 +248,11 @@ export function selectProtocol(protocolData: ProtocolData): void {
 	}
 
 	// Load Food B if present
-	if (protocolData.food_b) {
-		protocol.foodB = hydrateFoodData(protocolData.food_b);
-		if (protocolData.food_b_threshold) {
+	if (foodB) {
+		protocol.foodB = foodB;
+		if (protocolData.food_b_threshold !== undefined) {
 			protocol.foodBThreshold = {
-				unit: protocol.foodB.type === FoodType.SOLID ? "g" : "ml",
+				unit: getMeasuringUnit(foodB),
 				amount: new Decimal(protocolData.food_b_threshold),
 			};
 		}

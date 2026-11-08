@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_CONFIG } from "../../constants";
 import {
 	findDilutionCandidates,
+	findRoundedMixWaterAmount,
 	generateDefaultProtocol,
 	generateStepForTarget,
 } from "../../core/calculator";
@@ -425,5 +426,20 @@ describe("Core: Calculator", () => {
 				expectedMass.toNumber(),
 			);
 		});
+	});
+});
+
+describe("findRoundedMixWaterAmount", () => {
+	it("tries the rounded-up water amount when rounding down gives 0 ml", () => {
+		// 0.2 g of 100 mg/g food = 20 mg; ideal water ~0.48 ml floors to 0, ceil 0.5 ml delivers 40 mg (4.1% off)
+		const water = findRoundedMixWaterAmount(
+			new Decimal(41.7),
+			createFood(FoodType.SOLID, 10),
+			new Decimal(0.2),
+			new Decimal(20).dividedBy(41.7),
+			new Decimal(1),
+			DEFAULT_CONFIG.PROTEIN_TOLERANCE,
+		);
+		expect(water?.toString()).toBe("0.5");
 	});
 });

@@ -605,3 +605,36 @@ describe("Core: Validator", () => {
 		});
 	});
 });
+
+describe("Validator: invalid dilution values", () => {
+	it("returns a red warning instead of throwing when dilution values are NaN", () => {
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		const i = protocol.steps.findIndex((s) => s.method === Method.DILUTE);
+		// 0 mg target with 0 g mix food => 0/0 servings and water
+		protocol.steps[i] = {
+			...protocol.steps[i],
+			targetMg: new Decimal(0),
+			mixFoodAmount: new Decimal(0),
+			servings: new Decimal(Number.NaN),
+			mixWaterAmount: new Decimal(Number.NaN),
+		};
+		const warnings = validateProtocol(protocol);
+		expect(
+			warnings.some(
+				(w) =>
+					w.code === WarningCode.Red.INVALID_DILUTION_STEP_VALUES &&
+					w.stepIndex === i + 1,
+			),
+		).toBe(true);
+	});
+});
+
+describe("Validator: food names in messages", () => {
+	it("keeps special characters unescaped (lit escapes on render)", () => {
+		const food = { ...createFood(), name: "Ben & Jerry's", gramsInServing: new Decimal(0) };
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		const warnings = validateProtocol({ ...protocol, foodA: food });
+		const w = warnings.find((w) => w.code === WarningCode.Red.INVALID_CONCENTRATION);
+		expect(w?.message).toContain("Ben & Jerry's");
+	});
+});

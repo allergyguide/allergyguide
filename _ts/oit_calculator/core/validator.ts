@@ -13,12 +13,7 @@ import {
 
 import type { Food, FoodData, Protocol, Step, Warning } from "../types";
 import { FoodType, Method, SourceType, WarningCode } from "../types";
-import {
-	escapeHtml,
-	formatAmount,
-	formatNumber,
-	getMeasuringUnit,
-} from "../utils";
+import { formatAmount, formatNumber, getMeasuringUnit } from "../utils";
 
 /**
  * Validate protocol-level and per-step constraints, yielding warnings.
@@ -106,7 +101,7 @@ function validateSettings(
 			warnings.push({
 				severity: "yellow",
 				code: WarningCode.Yellow.NO_TRANSITION_POINT,
-				message: `${escapeHtml(protocol.foodB.name)} has no transition point. Decrease the threshold if you want to transition.`,
+				message: `${protocol.foodB.name} has no transition point. Decrease the threshold if you want to transition.`,
 			});
 		}
 	}
@@ -129,7 +124,7 @@ function validateFoodConfig(food: Food): Warning[] {
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.INVALID_CONCENTRATION,
-			message: `${escapeHtml(food.name)} protein concentration must be > 0 to be considered for OIT`,
+			message: `${food.name} protein concentration must be > 0 to be considered for OIT`,
 		});
 	}
 	if (
@@ -139,7 +134,7 @@ function validateFoodConfig(food: Food): Warning[] {
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.INVALID_CONCENTRATION,
-			message: `${escapeHtml(food.name)} protein amount cannot be greater than a serving size of ${formatAmount(food.servingSize, getMeasuringUnit(food))}`,
+			message: `${food.name} protein amount cannot be greater than a serving size of ${formatAmount(food.servingSize, getMeasuringUnit(food))}`,
 		});
 	}
 	return warnings;
@@ -337,15 +332,23 @@ function checkMeasurability({
 	// FOR DILUTION STEPS (need to handle mix food and mix water amounts)
 	if (step.method === Method.DILUTE) {
 		// GET ROUNDED AMOUNTS - USER FACING
-		const roundedMixFoodAmount = new Decimal(
-			formatAmount(step.mixFoodAmount, getMeasuringUnit(food)),
-		);
-		const roundedMixWaterAmount = new Decimal(
-			formatAmount(step.mixWaterAmount, "ml"),
-		);
-		const roundedDailyAmount = new Decimal(
-			formatAmount(step.dailyAmount, "ml"),
-		);
+		const mixFoodStr = formatAmount(step.mixFoodAmount, getMeasuringUnit(food));
+		const mixWaterStr = formatAmount(step.mixWaterAmount, "ml");
+		const dailyAmountStr = formatAmount(step.dailyAmount, "ml");
+		// "" means missing or NaN (e.g. 0 mg target with 0 g mix): new Decimal("") would throw
+		if (!mixFoodStr || !mixWaterStr || !dailyAmountStr) {
+			return [
+				{
+					severity: "red",
+					code: WarningCode.Red.INVALID_DILUTION_STEP_VALUES,
+					message: `Step ${step.stepIndex}: Dilution amounts cannot be calculated. Check the target protein and amount of food to mix.`,
+					stepIndex: step.stepIndex,
+				},
+			];
+		}
+		const roundedMixFoodAmount = new Decimal(mixFoodStr);
+		const roundedMixWaterAmount = new Decimal(mixWaterStr);
+		const roundedDailyAmount = new Decimal(dailyAmountStr);
 
 		// Mix Food Amount Resolution
 		if (

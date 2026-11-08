@@ -29,6 +29,13 @@ authors = ["Joshua Yu"]
 - Duplicate detection for custom foods. New custom foods that share a name with an existing custom food are not allowed; if they share it with an existing CNF/Brand/Provisioned food, a warning is displayed
 - Duplicate food warnings: protein content is shown as entered (e.g. "35 g/100 g vs 25 g/100 g") rather than as mg per g/ml, and differences of up to 0.05 g per 100 g (0.5 mg per g/ml) are not flagged, so rounding a library value to 1 decimal place doesn't trigger a warning usually
 - If a dilution is impossible, the calculator will fall back to direct dosing. Previously it would omit the impossible step entirely. This is only applicable in the case of extremely low protein concentrations where dilutions in the first place would be inappropriate
+- Food B settings: changing Food B's protein content, serving size, or transition threshold no longer resets customized step doses to the default dosing strategy. Manual edits to Food A steps (e.g. mix amounts) are also kept
+- Warnings: entering a target protein of 0 mg together with 0 g of food to mix no longer stops the warnings from updating; a critical warning is shown for that step instead
+- Dilutions: for very small dilutions, the calculator now suggests a rounded water amount of 0.5 ml when rounding down would give 0 ml
+- Switching a food between solid and liquid now rounds dilution water amounts to clean increments, the same as when editing a step
+- Loading a protocol into a tab now replaces that tab's note, so a note from the previous protocol no longer carries over
+- Loading a saved protocol with a Food B transition threshold of 0 no longer loses the threshold
+- Warning messages now display food names with special characters (e.g. "&" or apostrophes) correctly
 
 ### Security
 

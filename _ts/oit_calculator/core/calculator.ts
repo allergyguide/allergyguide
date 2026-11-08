@@ -504,58 +504,28 @@ export function findRoundedMixWaterAmount(
 	const roundedDailyAmount = new Decimal(formatAmount(dailyAmount, "ml"));
 	const roundedMixAmount = new Decimal(formatAmount(mixAmount, unit));
 
-	// test floor first
-	let floorMixTotalVolume: Decimal;
-	if (food.type === FoodType.SOLID) {
-		floorMixTotalVolume = floorWater;
-	} else {
-		floorMixTotalVolume = floorWater.add(roundedMixAmount);
-	}
-	if (floorMixTotalVolume.isZero()) return null;
-	const floorMg = calculateDilutionActualProtein(
-		food,
-		roundedMixAmount,
-		floorMixTotalVolume,
-		roundedDailyAmount,
-	);
-	if (!floorMg) return null;
-	const floorDifference = findPercentDifference(floorMg, P);
+	// floor first, so it wins ties
+	const options = ceilWater.equals(floorWater)
+		? [floorWater]
+		: [floorWater, ceilWater];
 
-	// test ceilWater if it's not the same as floor
-	if (!ceilWater.equals(floorWater)) {
-		let ceilMixTotalVolume: Decimal;
-		if (food.type === FoodType.SOLID) {
-			ceilMixTotalVolume = ceilWater;
-		} else {
-			ceilMixTotalVolume = ceilWater.add(roundedMixAmount);
-		}
-		if (ceilMixTotalVolume.isZero()) return null;
-		const ceilMg = calculateDilutionActualProtein(
+	let best: { water: Decimal; diff: Decimal } | null = null;
+	for (const water of options) {
+		const mixTotalVolume =
+			food.type === FoodType.SOLID ? water : water.add(roundedMixAmount);
+		// a zero-volume option (e.g. floor of 0.3 ml is 0) is skipped, not fatal
+		const mg = calculateDilutionActualProtein(
 			food,
 			roundedMixAmount,
-			ceilMixTotalVolume,
+			mixTotalVolume,
 			roundedDailyAmount,
 		);
-		if (!ceilMg) return null;
-		const ceilDifference = findPercentDifference(ceilMg, P);
-
-		// find best out of ceilWater and floor water; if the best is still >= protein tolerance, return null
-		const minDiff = Decimal.min(floorDifference, ceilDifference);
-		if (floorDifference.equals(minDiff)) {
-			return floorDifference.lessThanOrEqualTo(protein_tolerance)
-				? floorWater
-				: null;
-		} else {
-			return ceilDifference.lessThanOrEqualTo(protein_tolerance)
-				? ceilWater
-				: null;
-		}
-	} else {
-		// if floor is the same as ceiling just do floor
-		return floorDifference.lessThanOrEqualTo(protein_tolerance)
-			? floorWater
-			: null;
+		if (!mg) continue;
+		const diff = findPercentDifference(mg, P);
+		if (!best || diff.lessThan(best.diff)) best = { water, diff };
 	}
+
+	return best?.diff.lessThanOrEqualTo(protein_tolerance) ? best.water : null;
 }
 
 /**
