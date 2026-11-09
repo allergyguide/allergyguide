@@ -2083,6 +2083,11 @@
   text-align: left;
   display: block;
 
+  svg {
+    vertical-align: -0.15em;
+    margin-right: 0.25rem;
+  }
+
   // Hide when empty
   &:empty {
     display: none;
