@@ -3,6 +3,7 @@ import {
 	determineVaultState,
 	getActiveDEK,
 	lockAndSignOut,
+	setSignedInHook,
 } from "../core/auth/login-client";
 import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { renderAuthUI } from "../core/ui/auth-modals";
@@ -22,6 +23,15 @@ declare const __VERSION_OFC_INDEX__: string;
 let bootstrapPromise: Promise<UserLoadResult> | null = null;
 let encryptedDocsPromise: ReturnType<typeof fetchAllEncryptedDocuments> | null =
 	null;
+
+/** Starts session-only fetches (no DEK needed). Overwrites any stale promises from a previous session */
+const startUserFetches = () => {
+	bootstrapPromise = handleUserLoad();
+	bootstrapPromise.catch(() => {});
+
+	encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
+	encryptedDocsPromise.catch(() => {});
+};
 
 /**
  * Shared callback for successful authentication and vault unlock
@@ -153,14 +163,10 @@ async function initializeOFC() {
 	const {
 		data: { session },
 	} = await sessionPromise;
-	if (session) {
-		// start network fetch without waiting for DEK
-		bootstrapPromise = handleUserLoad();
-		bootstrapPromise.catch(() => {});
-
-		encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
-		encryptedDocsPromise.catch(() => {});
-	}
+	// start network fetch without waiting for DEK
+	if (session) startUserFetches();
+	// On fresh login, start them as soon as Supabase sign-in returns
+	setSignedInHook(startUserFetches);
 
 	// Load public data and check auth in parallel
 	const [publicFoods, vaultState] = await Promise.all([

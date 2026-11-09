@@ -1,6 +1,8 @@
 {% component oit_calculator() %}
 {% set tools = load_data(path="/js/tools_versioning.json") %}
 {% set tool_info = tools.oit_calculator %}
+<!-- Open the Supabase TLS connection while JS loads (auth, encrypted docs) -->
+<link rel="preconnect" href="https://xkaoewokysgfukntktaz.supabase.co" crossorigin>
 <div id="auth-modal-mount"></div>
 <div id="oit-library-modal-mount"></div>
 <div id="core-feedback-mount"></div>

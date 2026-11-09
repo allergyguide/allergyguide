@@ -17,6 +17,7 @@ import {
 	determineVaultState,
 	getActiveDEK,
 	lockAndSignOut,
+	setSignedInHook,
 } from "../core/auth/login-client";
 import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { runCrudTest } from "../core/data/test-crud";
@@ -72,6 +73,18 @@ Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 let bootstrapPromise: Promise<OITBootstrapResponse> | null = null;
 let encryptedDocsPromise: ReturnType<typeof fetchAllEncryptedDocuments> | null =
 	null;
+
+/** Starts session-only fetches (no DEK needed). Overwrites any stale promises from a previous session */
+const startUserFetches = () => {
+	bootstrapPromise = loadUserConfiguration();
+	bootstrapPromise.catch(() => {});
+
+	encryptedDocsPromise = fetchAllEncryptedDocuments([
+		"custom_food",
+		"custom_protocol",
+	]);
+	encryptedDocsPromise.catch(() => {});
+};
 
 // 1. Create the hydration callback
 export const handleSuccessfulAuth = async () => {
@@ -180,17 +193,10 @@ async function initializeCalculator(): Promise<void> {
 	const {
 		data: { session },
 	} = await sessionPromise;
-	if (session) {
-		// start network fetch without waiting for DEK
-		bootstrapPromise = loadUserConfiguration();
-		bootstrapPromise.catch(() => {});
-
-		encryptedDocsPromise = fetchAllEncryptedDocuments([
-			"custom_food",
-			"custom_protocol",
-		]);
-		encryptedDocsPromise.catch(() => {});
-	}
+	// start network fetch without waiting for DEK
+	if (session) startUserFetches();
+	// On fresh login, start them as soon as Supabase sign-in returns
+	setSignedInHook(startUserFetches);
 
 	const [publicData, vaultState] = await Promise.all([
 		publicDataPromise,

@@ -1,6 +1,8 @@
 {% component ofc_index() %}
 {% set tools = load_data(path="/js/tools_versioning.json") %}
 {% set tool_info = tools.ofc_index %}
+<!-- Open the Supabase TLS connection while JS loads (auth, encrypted docs) -->
+<link rel="preconnect" href="https://xkaoewokysgfukntktaz.supabase.co" crossorigin>
 <div class="ofc_index ofc-loading">
 <!-- Interactive App Mount Point -->
 <div id="ofc-app-mount"></div>

@@ -40,6 +40,17 @@ export function prefetchSalts(email: string): void {
 	void saltCachePromise.catch(() => {});
 }
 
+/**
+ * Tool-registered callback fired by loginAndUnlock() right after Supabase sign-in, before the DEK fetch
+ * Lets tools start session-only requests (bootstrap, encrypted docs) in parallel with DEK retrieval
+ * Must not throw; it should only kick off promises
+ */
+let signedInHook: (() => void) | null = null;
+
+export function setSignedInHook(hook: () => void): void {
+	signedInHook = hook;
+}
+
 export type VaultState = "UNAUTHENTICATED" | "LOCKED" | "UNLOCKED";
 
 // Listen for global auth state changes (this fires across all tabs natively via Supabase)
@@ -186,6 +197,9 @@ export async function loginAndUnlock(
 			});
 		if (authErr || !authData.session)
 			throw new Error(authErr?.message || "Login failed.");
+
+		// Session cookie is now set: let the tool start its fetches alongside the DEK fetch
+		signedInHook?.();
 
 		// Fetch the Encrypted DEK from Postgres
 		const { data: userData, error: dbErr } = await supabase
