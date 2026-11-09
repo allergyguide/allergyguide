@@ -67,8 +67,17 @@ export function initExportEvents(): void {
 		const target = e.target as HTMLElement;
 		if (target.id === "export-ascii") {
 			const data = getExportDataFromWorkspace();
-			if (data.length > 0) {
-				exportToClipboard(data);
+			if (data.length > 0 && (await exportToClipboard(data))) {
+				target.dataset.label ??= target.textContent ?? "";
+				// The export column is auto-width; pin the button so the shorter label doesn't reflow the layout
+				target.style.minWidth = `${target.offsetWidth}px`;
+				target.textContent =
+					data.length > 1 ? `Copied ${data.length} protocols` : "Copied";
+				setTimeout(() => {
+					target.textContent = target.dataset.label ?? "";
+					target.style.minWidth = "";
+					delete target.dataset.label;
+				}, 2000);
 			}
 		} else if (target.id === "export-pdf") {
 			if (isClickwrapAccepted()) {

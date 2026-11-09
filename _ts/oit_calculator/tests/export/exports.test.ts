@@ -8,7 +8,11 @@ vi.mock("../../main", () => ({
 }));
 
 import Decimal from "decimal.js";
-import { generateAsciiContent, generateHtmlContent } from "../../export/exports";
+import {
+	exportToClipboard,
+	generateAsciiContent,
+	generateHtmlContent,
+} from "../../export/exports";
 import type { Protocol, ProtocolExportData } from "../../types";
 import { DosingStrategy, FoodAStrategy, FoodType, Method, SourceType } from "../../types";
 
@@ -176,5 +180,33 @@ describe("Export: food header", () => {
 	it("escapes the food name in HTML", () => {
 		const html = generateHtmlContent(withFoodA({ name: "Rice <Brand X>" }));
 		expect(html).toContain("Rice &lt;Brand X&gt;");
+	});
+});
+
+describe("Export: clipboard", () => {
+	const data = (): ProtocolExportData[] => [
+		{ protocol: createMockProtocol("P1", "Peanut"), customNote: "", history: [] },
+	];
+
+	it("reports success when the clipboard write succeeds", async () => {
+		vi.stubGlobal("navigator", {
+			clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+		});
+		await expect(exportToClipboard(data())).resolves.toBe(true);
+		vi.unstubAllGlobals();
+	});
+
+	it("reports failure and alerts when every write fails", async () => {
+		vi.stubGlobal("navigator", {
+			clipboard: { writeText: vi.fn().mockRejectedValue(new Error("denied")) },
+		});
+		const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+		await expect(exportToClipboard(data())).resolves.toBe(false);
+		expect(alertSpy).toHaveBeenCalledOnce();
+		vi.unstubAllGlobals();
+	});
+
+	it("returns false without copying when there is nothing to export", async () => {
+		await expect(exportToClipboard([])).resolves.toBe(false);
 	});
 });

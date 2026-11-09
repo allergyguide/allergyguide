@@ -568,13 +568,15 @@ export function generateAsciiContent(exportData: ProtocolExportData[]): string {
  * Generate and copy an ASCII and HTML representation of the protocol(s) to clipboard
  *
  * @param exportData Array of ProtocolExportData
- * @returns void
+ * @returns true if something was copied
  */
-export function exportToClipboard(exportData: ProtocolExportData[]): void {
+export async function exportToClipboard(
+	exportData: ProtocolExportData[],
+): Promise<boolean> {
 	const text = generateAsciiContent(exportData);
 	const html = generateHtmlContent(exportData);
 
-	if (!text) return;
+	if (!text) return false;
 
 	if (navigator.clipboard && window.ClipboardItem) {
 		const textBlob = new Blob([text], { type: "text/plain" });
@@ -585,22 +587,27 @@ export function exportToClipboard(exportData: ProtocolExportData[]): void {
 			"text/html": htmlBlob,
 		});
 
-		navigator.clipboard.write([clipboardItem]).catch((err) => {
+		try {
+			await navigator.clipboard.write([clipboardItem]);
+			return true;
+		} catch (err) {
 			console.warn(
 				"Failed to write ClipboardItem, falling back to writeText",
 				err,
 			);
-			fallbackCopyText(text);
-		});
-	} else {
-		fallbackCopyText(text);
+		}
 	}
+	return fallbackCopyText(text);
 }
 
-function fallbackCopyText(text: string) {
-	navigator.clipboard.writeText(text).catch(() => {
+async function fallbackCopyText(text: string): Promise<boolean> {
+	try {
+		await navigator.clipboard.writeText(text);
+		return true;
+	} catch {
 		alert(`Failed to copy to clipboard. Please copy manually:\n\n${text}`);
-	});
+		return false;
+	}
 }
 
 function generateHtmlTableForFood(food: Food, rows: ExportRow[]): string {
