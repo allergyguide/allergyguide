@@ -2,11 +2,10 @@
   margin: 1rem 0 2.5rem;
 
   .topic-index-head {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0;
 
-    h1 {
-      font-size: 1.75rem;
-      margin: 0 0 0.5rem;
+    + .topic-group {
+      margin-top: 0.85rem;
     }
   }
 
