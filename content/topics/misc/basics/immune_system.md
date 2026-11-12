@@ -15,8 +15,6 @@ authors = ["author 1", "author 2"]
 status = "not-started" # Can be either 'not-started', 'WIP', or 'ready'
 +++
 
-{{ <wip /> }}
-
 </br>
 </br>
 

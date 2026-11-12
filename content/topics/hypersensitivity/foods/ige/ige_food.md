@@ -13,8 +13,6 @@ authors = ["author 1", "author 2"]
 status="not-started"
 +++
 
-{{ <wip /> }}
-
 </br>
 </br>
 

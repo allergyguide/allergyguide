@@ -1,0 +1,73 @@
+// Article page (templates/page.html): sidebar contents + related topics
+
+.sblock .page-toc {
+  border-top: 1px solid var(--core-border);
+  padding: 0.75rem 0.75rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.35;
+
+  div {
+    padding: 0.15rem 0;
+  }
+
+  .hpad {
+    padding-left: 0.75rem;
+  }
+
+  a:hover {
+    color: var(--a1);
+  }
+}
+
+.page-toc-title {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--core-ink-muted) !important; // beats .blockdiv a
+}
+
+.related-topics {
+  margin: 2.5rem 0 1rem;
+  padding: 0.75rem 1rem 0.5rem;
+  background-color: var(--core-surface);
+  border: 1px solid var(--core-border);
+  border-radius: 0.75rem;
+
+  .related-topics-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.35rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 2 16rem;
+    column-gap: 1.5rem;
+  }
+
+  li {
+    margin: 0;
+    padding: 0.2rem 0;
+    font-size: 0.95rem;
+    break-inside: avoid;
+  }
+
+  a {
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  [aria-current="page"] {
+    font-weight: 600;
+    color: var(--core-ink-muted);
+  }
+}
