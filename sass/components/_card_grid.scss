@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
-  padding: 2rem 0;
+  padding: 0;
   justify-content: center;
   align-content: start;
 
@@ -40,8 +40,9 @@
 
   .contact-card-image {
     width: 100%;
-    aspect-ratio: 19/18;
+    aspect-ratio: 16/9;
     object-fit: cover;
+    object-position: top;
     border-bottom: 2px solid color-mix(in srgb, var(--a1) 20%, transparent);
     transition: transform 0.3s ease;
   }
