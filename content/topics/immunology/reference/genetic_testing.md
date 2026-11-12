@@ -1,9 +1,10 @@
 +++
+aliases = ["/topics/immunology/genetic-testing/"]
 title = "Genetic testing"
 description = "Genetic testing"
 date = 2025-01-01
 draft = false
-weight=6
+weight = 4
 
 
 [taxonomies]

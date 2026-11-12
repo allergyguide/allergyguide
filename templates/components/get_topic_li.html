@@ -17,22 +17,38 @@
 {{ <topic_li url={page.permalink} title={page.title} status={page.extra.status | default(value="")} /> }}
 {% endfor %}
 
-{# Then each subsection inline: its pages nested under a plain label (the section page itself redirects).
-   A subsection with a single page shows just that page. #}
+{# Then each subsection inline (its own section page redirects):
+   - if its first page has extra.overview = true, the subsection label links to that page;
+   - a subsection with a single (non-overview) page shows just that page;
+   - otherwise a plain label with the pages nested beneath. Empty subsections render nothing. #}
 {% for subsection in section.subsections %}
 {% set sub = get_section(path=subsection) %}
-{% if sub.pages | length == 1 %}
-{% set p = sub.pages[0] %}
-{{ <topic_li url={p.permalink} title={p.title} status={p.extra.status | default(value="")} /> }}
-{% elif sub.pages | length > 1 %}
+{% set n = sub.pages | length %}
+{% if n > 0 %}
+{% set first = sub.pages[0] %}
+{% set has_overview = first.extra.overview | default(value=false) %}
+{% if has_overview and n == 1 %}
+{{ <topic_li url={first.permalink} title={sub.title} status={first.extra.status | default(value="")} /> }}
+{% elif n == 1 %}
+{{ <topic_li url={first.permalink} title={first.title} status={first.extra.status | default(value="")} /> }}
+{% else %}
 <li class="topic-subgroup">
+{% if has_overview %}
+<ul class="topic-subgroup-head">
+{{ <topic_li url={first.permalink} title={sub.title} status={first.extra.status | default(value="")} /> }}
+</ul>
+{% else %}
 <span class="topic-subgroup-label">{{ sub.title }}</span>
+{% endif %}
 <ul>
 {% for p in sub.pages %}
+{% if not (has_overview and loop.first) %}
 {{ <topic_li url={p.permalink} title={p.title} status={p.extra.status | default(value="")} /> }}
+{% endif %}
 {% endfor %}
 </ul>
 </li>
+{% endif %}
 {% endif %}
 {% endfor %}
 
@@ -41,4 +57,17 @@
 {% component get_page_li(page_path) %}
 {% set page = get_page(path=page_path) %}
 {{ <topic_li url={page.permalink} title={page.title} status={page.extra.status | default(value="")} /> }}
+{% endcomponent %}
+
+{% component topic_card(title, section_path) %}
+{# A category card listing a section; skipped entirely while the section has no pages. #}
+{% set items %}{{ <get_section_li section_path={section_path} /> }}{% endset %}
+{% if items | trim %}
+<section class="topic-card">
+<h3>{{ title }}</h3>
+<ul>
+{{ items | safe }}
+</ul>
+</section>
+{% endif %}
 {% endcomponent %}

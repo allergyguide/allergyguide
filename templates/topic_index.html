@@ -95,15 +95,10 @@ This Template is for the topic homepage where all the conditions and topics are 
 			{{ <get_page_li page_path="topics/immunology/approach.md"/> }}
 		</ul>
 		<div class="topic-grid">
-			<section class="topic-card">
-				<ul>
-					{{ <get_page_li page_path="topics/immunology/b_cell.md"/> }}
-					{{ <get_page_li page_path="topics/immunology/t_cell.md"/> }}
-					{{ <get_page_li page_path="topics/immunology/secondary.md"/> }}
-					{{ <get_page_li page_path="topics/immunology/immunoglobulin_replacement.md"/> }}
-					{{ <get_page_li page_path="topics/immunology/genetic_testing.md"/> }}
-				</ul>
-			</section>
+			{{ <topic_card title="By presentation" section_path="topics/immunology/presentation/_index.md"/> }}
+			{{ <topic_card title="By arm of immunity" section_path="topics/immunology/arm/_index.md"/> }}
+			{{ <topic_card title="Quick reference" section_path="topics/immunology/reference/_index.md"/> }}
+			{{ <topic_card title="Management" section_path="topics/immunology/management/_index.md"/> }}
 		</div>
 	</section>
 

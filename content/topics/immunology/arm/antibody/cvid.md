@@ -1,9 +1,9 @@
 +++
-title = "B-cell defects"
+title = "Common variable immunodeficiency (CVID)"
 description = "[description of md page]"
 date = 2025-01-01
 draft = false
-weight=2
+weight = 2
 
 
 [taxonomies]
@@ -15,9 +15,4 @@ authors = ["author 1", "author 2"]
 status="not-started" # options include not-started, wip, or ready
 +++
 
-</br>
-</br>
-
-<div class="blur-container">
-
-</div>
+<!-- Draft stub. See the "Immunology topics" section of the topic contribution guide. -->

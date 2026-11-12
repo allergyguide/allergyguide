@@ -1,9 +1,10 @@
 +++
+aliases = ["/topics/immunology/secondary/"]
 title = "Secondary immunodeficiencies"
 description = "[description of md page]"
 date = 2025-01-01
 draft = false
-weight=4
+weight = 1
 
 
 [taxonomies]

@@ -1,10 +1,9 @@
 +++
-title = "T-cell defects"
+title = "Live vaccines in immunodeficiency"
 description = "[description of md page]"
-date = 2025-01-01
+date = 2026-11-12
 draft = false
-weight=3
-
+weight = 3
 
 [taxonomies]
 tags = ["immunology"]
@@ -15,9 +14,4 @@ authors = ["author 1", "author 2"]
 status="not-started" # options include not-started, wip, or ready
 +++
 
-</br>
-</br>
-
-<div class="blur-container">
-
-</div>
+<!-- Draft stub. See the "Immunology topics" section of the topic contribution guide. -->

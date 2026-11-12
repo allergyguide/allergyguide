@@ -124,6 +124,18 @@
     }
   }
 
+  // Arm label that links to its overview page: same size as the label, sits flush.
+  .topic-subgroup ul.topic-subgroup-head {
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    .topic-item {
+      padding: 0;
+      font-size: 0.95rem;
+    }
+  }
+
   .topic-subgroup-label {
     display: block;
     font-size: 0.95rem;

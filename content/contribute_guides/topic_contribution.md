@@ -49,6 +49,43 @@ Example of a finished topic page: [Chronic rhinosinusitis](/topics/hypersensitiv
 
 {% </two_columns> %}
 
+## Immunology topics
+
+Immunology is too broad to cover every condition (the IUIS classification alone has 10 categories and hundreds of entities). Our focus is on **conceptual understanding, quick references, and practical approaches**, and links out to detailed references if required by the reader.
+
+The section is organized as:
+
+- **By presentation**: presentation-based approaches (e.g. recurrent infections, low immunoglobulins, abnormal newborn screen, infection with autoimmunity).
+- **By arm of immunity**: one conceptual page per arm (antibody, combined/T-cell, phagocyte, complement, immune dysregulation, secondary), with any high-yield conditions nested beneath.
+- **Quick reference**: short pages (e.g. interpreting immunoglobulins, vaccine responses, lymphocyte subsets and functional tests, genetic testing, table of list of genetic conditions and their presentations / labs).
+- **Management**: e.g. immunoglobulin replacement, infection prophylaxis, live vaccines and prophylaxis
+
+### Arm-of-immunity page skeleton
+
+```txt
+# The concept
+3–4 lines: what this arm normally does, and what goes wrong when it fails.
+Link to the relevant crash course section for background.
+
+# When to suspect it
+Infection pattern (organisms, sites), non-infectious features, red flags.
+
+# Key conditions
+| Condition | Defect | Hallmark features | Key test |
+|---|---|---|---|
+One row per entity. Link the condition name to its own page only if it has one;
+otherwise link to the detailed reference.
+
+# Workup
+First-line tests (in general), then specialist tests.
+
+# Management principles
+General principles for this arm; condition-specific management goes on the condition's own page.
+
+# Further reading
+IUIS classification, ESID criteria, guidelines, review articles, etc.
+```
+
 ## Other topic content specifics:
 
 - <span class="hl-yellow">**Not all topics will fit this general structure, and it is meant as a general scaffold**</span>. If you look at [this article](/topics/hypersensitivity/airway_ent/chronic-rhinosinusitis/), you can see how the structure can be deviated (but the content remains comprehensive)
