@@ -1,16 +1,18 @@
 +++
-title = "Eosinophilia"
+weight = 2
+aliases = ["/topics/basic_physiology/pediatrics/"]
+title = "Pediatrics crash course"
 description = "[description of md page]"
-date = 2025-01-01
+date = 2025-03-21
 draft = false
 
 [taxonomies]
-tags = ["misc"]
+tags = ["physiology"]
 [extra]
 toc = true
-series = "misc"
+series = "physiology"
 authors = ["author 1", "author 2"]
-status = "not-started"
+status="not-started"
 +++
 
 {{ <wip /> }}

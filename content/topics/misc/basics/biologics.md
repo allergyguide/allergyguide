@@ -1,4 +1,6 @@
 +++
+weight = 3
+aliases = ["/topics/misc/biologics/"]
 title = "Biologics crash course"
 description = "[description of md page]"
 date = 2025-01-01

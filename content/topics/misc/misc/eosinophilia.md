@@ -1,16 +1,17 @@
 +++
-title = "The normal immune system"
+aliases = ["/topics/misc/eosinophilia/"]
+title = "Eosinophilia"
 description = "[description of md page]"
-date = 2025-03-21
+date = 2025-01-01
 draft = false
 
 [taxonomies]
-tags = ["physiology"]
+tags = ["misc"]
 [extra]
 toc = true
-series = "physiology"
+series = "misc"
 authors = ["author 1", "author 2"]
-status = "not-started" # Can be either 'not-started', 'WIP', or 'ready'
+status = "not-started"
 +++
 
 {{ <wip /> }}

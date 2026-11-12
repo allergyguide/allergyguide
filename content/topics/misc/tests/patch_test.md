@@ -1,4 +1,5 @@
 +++
+aliases = ["/topics/tests/patch-test/"]
 title = "Patch testing"
 description = "[description of md page]"
 date = 2025-01-01

@@ -1,111 +1,24 @@
-:root {
-  /* Dark mode */
-  --badge-not-started-bg: #d32f2f;
-  --badge-not-started-text: #ffffff;
-  --badge-wip-bg: #f57c00;
-  --badge-wip-text: #000000;
-  --badge-ready-bg: #388e3c;
-  --badge-ready-text: #ffffff;
-
-  /* Common tokens */
-  --badge-radius: 9999px;
-  --badge-font-size: 0.7rem;
-  --badge-font-weight: 600;
-  --badge-padding-y: 0.15rem;
-  --badge-padding-x: 0.5rem;
-  --badge-gap: 0.35rem;
-  --badge-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-  --badge-border-color: rgba(255, 255, 255, 0.15);
-  --badge-ring-color: rgba(255, 255, 255, 0.8);
-  --badge-dot-size: 0.55rem;
-}
-
-:root.switch {
-  /* Light mode - more vibrant colors */
-  --badge-not-started-bg: #ff5252;
-  --badge-not-started-text: #212121;
-  --badge-wip-bg: #ffab40;
-  --badge-wip-text: #212121;
-  --badge-ready-bg: #69f0ae;
-  --badge-ready-text: #212121;
-
-  /* Light mode tokens */
-  --badge-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  --badge-border-color: rgba(0, 0, 0, 0.08);
-  --badge-ring-color: rgba(0, 0, 0, 0.08);
-}
-
+/* Topic status chips (status_badge component). not-started has no chip; it is muted via .is-not-started. */
 .status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--badge-gap);
-  padding: var(--badge-padding-y) var(--badge-padding-x);
-  margin-left: 0.35em;
-  font-size: var(--badge-font-size);
-  font-weight: var(--badge-font-weight);
-  font-style: normal;
-  border-radius: var(--badge-radius);
-  vertical-align: middle;
-  line-height: 1.2;
-  height: auto;
-  border: 1px solid var(--badge-border-color);
-  box-shadow: var(--badge-shadow);
+  --badge-hue: var(--core-ink-muted);
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
   white-space: nowrap;
+  border-radius: 9999px;
+  color: color-mix(in oklch, var(--badge-hue) 75%, var(--core-ink));
+  background-color: color-mix(in oklch, var(--badge-hue) 16%, transparent);
   user-select: none;
 }
 
-.status-badge.is-dot {
-  width: var(--badge-dot-size);
-  height: var(--badge-dot-size);
-  padding: 0;
-  margin-left: 0.4em;
-  border-radius: 50%;
-  border: 0em solid var(--badge-ring-color);
-  box-shadow: none;
-  line-height: 1;
-  text-indent: -9999px;
-  /* hide text if any is present */
-  overflow: hidden;
-}
-
-.badge-not-started {
-  background-color: var(--badge-not-started-bg);
-  color: var(--badge-not-started-text);
-}
-
 .badge-wip {
-  background-color: var(--badge-wip-bg);
-  color: var(--badge-wip-text);
+  --badge-hue: var(--core-warning);
 }
 
 .badge-ready {
-  background-color: var(--badge-ready-bg);
-  color: var(--badge-ready-text);
-}
-
-/* Legend layout for topic_index page */
-.status-legend {
-  margin: .5rem 0 0rem 0.6rem;
-}
-
-.status-legend-list {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.4rem 0.9rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.legend-item .legend-text {
-  font-size: 0.85rem;
-  opacity: 0.85;
+  --badge-hue: var(--core-success);
 }

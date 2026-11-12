@@ -34,87 +34,101 @@ This Template is for the topic homepage where all the conditions and topics are 
 }}
 {%- endblock seo %}
 {%- block content %}
-<div>
-	<nav class="status-legend" aria-label="Topic status legend">
-		<ul class="status-legend-list">
-			<li class="legend-item">
-				{{ <status_badge status="not-started" msg=""/>
-				}}
-				<span class="legend-text">Not started</span>
-			</li>
-			<li class="legend-item">
-				{{ <status_badge status="wip" msg=""/>
-				}}
-				<span class="legend-text">Work in progress</span>
-			</li>
-			<li class="legend-item">
-				{{ <status_badge status="ready" msg=""/>
-				}}
-				<span class="legend-text">Ready</span>
-			</li>
-		</ul>
-	</nav>
-	<div class="two_columns_fancy">
-		<div class="column">
-			<u><h2>Hypersensitivity disorders</h2></u>
-			<ul>
-				{{ <get_page_li page_path="topics/hypersensitivity/hypersensitivity_approach.md"/>
-				}}
-			</ul>
-			<h5>Food</h5>
-			<ul>
-				{{ <get_section_li section_path="topics/hypersensitivity/foods/_index.md"/>
-				}}
-			</ul>
-			<h5>Drugs</h5>
-			<ul>
-				{{ <get_section_li section_path="topics/hypersensitivity/drugs/_index.md"/>
-				}}
-			</ul>
-			<h5>Airway and ENT</h5>
-			<ul>
-				{{ <get_section_li section_path="topics/hypersensitivity/airway_ent/_index.md"/>
-				}}
-			</ul>
-			<h5>Dermatology</h5>
-			<ul>
-				{{ <get_section_li section_path="topics/hypersensitivity/dermatology/_index.md"/>
-				}}
-			</ul>
-		</div>
-		<div class="column">
-			<u><h2>Hypersensitivity disorders continued</h2></u>
-			<h5>Anaphylaxis and mast cell disorders</h5>
-			<ul>
-				{{ <get_section_li section_path="topics/hypersensitivity/anaphylaxis/_index.md"/>
-				}}
-			</ul>
-			<h5>Misc</h5>
-			<ul>
-				{{ <get_section_li section_path="topics/hypersensitivity/misc/_index.md"/>
-				}}
-			</ul>
-			<u><h2>Basic physiology</h2></u>
-			<ul>
-				{{ <get_section_li section_path="topics/basic_physiology/_index.md"/>
-				}}
-			</ul>
-			<u><h2>Immunology</h2></u>
-			<ul>
-				{{ <get_section_li section_path="topics/immunology/_index.md"/>
-				}}
-			</ul>
-			<u><h2>Tests</h2></u>
-			<ul>
-				{{ <get_section_li section_path="topics/tests/_index.md"/>
-				}}
-			</ul>
-			<u><h2>Other key topics</h2></u>
-			<ul>
-				{{ <get_section_li section_path="topics/misc/_index.md"/>
-				}}
-			</ul>
-		</div>
+<div class="topic-index">
+	<div class="topic-index-head">
+		<h1>Topics and conditions</h1>
+		<p class="topic-legend">
+			<span class="status-badge badge-ready">Ready</span>
+			<span class="status-badge badge-wip">In progress</span>
+			<span class="topic-legend-muted">Not started</span>
+		</p>
 	</div>
+
+	<section class="topic-group" aria-labelledby="tg-hypersensitivity">
+		<h2 id="tg-hypersensitivity">Hypersensitivity disorders</h2>
+		<ul class="topic-lead">
+			{{ <get_page_li page_path="topics/hypersensitivity/hypersensitivity_approach.md"/> }}
+		</ul>
+		<div class="topic-grid">
+			<section class="topic-card">
+				<h3>Food</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/hypersensitivity/foods/_index.md"/> }}
+				</ul>
+			</section>
+			<section class="topic-card">
+				<h3>Drugs</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/hypersensitivity/drugs/_index.md"/> }}
+				</ul>
+			</section>
+			<section class="topic-card">
+				<h3>Airway and ENT</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/hypersensitivity/airway_ent/_index.md"/> }}
+				</ul>
+			</section>
+			<section class="topic-card">
+				<h3>Dermatology</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/hypersensitivity/dermatology/_index.md"/> }}
+				</ul>
+			</section>
+			<section class="topic-card">
+				<h3>Anaphylaxis and mast cell disorders</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/hypersensitivity/anaphylaxis/_index.md"/> }}
+				</ul>
+			</section>
+			<section class="topic-card">
+				<h3>Misc</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/hypersensitivity/misc/_index.md"/> }}
+				</ul>
+			</section>
+		</div>
+	</section>
+
+	<section class="topic-group" aria-labelledby="tg-immunology">
+		<h2 id="tg-immunology">Immunology</h2>
+		<ul class="topic-lead">
+			{{ <get_page_li page_path="topics/immunology/approach.md"/> }}
+		</ul>
+		<div class="topic-grid">
+			<section class="topic-card">
+				<ul>
+					{{ <get_page_li page_path="topics/immunology/b_cell.md"/> }}
+					{{ <get_page_li page_path="topics/immunology/t_cell.md"/> }}
+					{{ <get_page_li page_path="topics/immunology/secondary.md"/> }}
+					{{ <get_page_li page_path="topics/immunology/immunoglobulin_replacement.md"/> }}
+					{{ <get_page_li page_path="topics/immunology/genetic_testing.md"/> }}
+				</ul>
+			</section>
+		</div>
+	</section>
+
+	<section class="topic-group" aria-labelledby="tg-other">
+		<h2 id="tg-other">Other topics</h2>
+		<div class="topic-grid">
+			<section class="topic-card">
+				<h3>Tests</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/misc/tests/_index.md"/> }}
+				</ul>
+			</section>
+			<section class="topic-card">
+				<h3>Misc topics</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/misc/misc/_index.md"/> }}
+				</ul>
+			</section>
+			<section class="topic-card">
+				<h3>Crash courses</h3>
+				<ul>
+					{{ <get_section_li section_path="topics/misc/basics/_index.md"/> }}
+				</ul>
+			</section>
+		</div>
+	</section>
 </div>
 {%- endblock content %}

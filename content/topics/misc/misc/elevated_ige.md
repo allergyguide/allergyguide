@@ -1,4 +1,5 @@
 +++
+aliases = ["/topics/misc/elevated-ige/"]
 title = "Elevated IgE"
 description = "[description of md page]"
 date = 2025-01-01

@@ -1,4 +1,5 @@
 +++
+aliases = ["/topics/misc/pruritus/"]
 title = "Pruritus"
 description = ""
 date = 2025-01-01

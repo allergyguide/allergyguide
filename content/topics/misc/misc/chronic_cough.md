@@ -1,4 +1,5 @@
 +++
+aliases = ["/topics/misc/chronic-cough/"]
 title = "Chronic cough"
 description = ""
 date = 2025-01-01

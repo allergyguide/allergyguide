@@ -1,4 +1,5 @@
 +++
+aliases = ["/topics/tests/pfts/"]
 title = "Pulmonary function testing"
 description = "[description of md page]"
 date = 2025-01-01

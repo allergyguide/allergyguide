@@ -1,4 +1,5 @@
 +++
+aliases = ["/topics/tests/spt-ige-intradermal/"]
 title = "SPTs, sIgE, and intradermal testing"
 description = "[description of md page]"
 date = 2025-01-01

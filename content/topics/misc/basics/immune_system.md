@@ -1,5 +1,7 @@
 +++
-title = "Pediatrics crash course"
+weight = 1
+aliases = ["/topics/basic_physiology/immune-system/"]
+title = "The normal immune system"
 description = "[description of md page]"
 date = 2025-03-21
 draft = false
@@ -10,7 +12,7 @@ tags = ["physiology"]
 toc = true
 series = "physiology"
 authors = ["author 1", "author 2"]
-status="not-started"
+status = "not-started" # Can be either 'not-started', 'WIP', or 'ready'
 +++
 
 {{ <wip /> }}
