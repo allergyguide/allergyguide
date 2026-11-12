@@ -105,7 +105,30 @@
     }
   }
 
-  .topic-card .topic-item + .topic-item {
+  .topic-card > ul > li + li {
     border-top: 1px solid color-mix(in oklch, var(--core-border) 60%, transparent);
+  }
+
+  // Subsection: plain label with its pages indented beneath (no intermediate page).
+  .topic-subgroup {
+    padding: 0.2rem 0;
+
+    ul {
+      margin: 0.1rem 0 0 0.15rem;
+      padding-left: 0.75rem;
+      border-left: 1px solid var(--core-border);
+    }
+
+    .topic-item {
+      padding: 0.12rem 0;
+      font-size: 0.9rem;
+    }
+  }
+
+  .topic-subgroup-label {
+    display: block;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: var(--core-ink);
   }
 }

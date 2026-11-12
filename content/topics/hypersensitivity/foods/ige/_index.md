@@ -1,6 +1,6 @@
 +++
-paginate_by = 7
-sort_by = "date"
+redirect_to = "/topics/"
+sort_by = "weight"
 template = "index_w_frontmatter_last.html"
 title = "IgE mediated food reactions"
 description = ""

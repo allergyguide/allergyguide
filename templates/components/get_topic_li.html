@@ -1,4 +1,7 @@
 {% component topic_li(url, title, status) %}
+{% if not status %}
+{{ throw(message=title ~ ": this page requires a status under [extra]. Only not-started, wip, or ready are accepted.") }}
+{% endif %}
 <li class="topic-item is-{{ status }}">
 <a href="{{ url }}">{{ title }}</a>
 {{ <status_badge status={status} /> }}
@@ -9,29 +12,33 @@
 {% set section = get_section(path=section_path) %}
 
 {# First, display all pages directly in this section #}
-{# ORDER IS DETERMINED BY THE WEIGHT IN THE FRONTMATTER #}
+{# ORDER IS DETERMINED BY THE SECTION'S sort_by (weight or date) #}
 {% for page in section.pages %}
-{% if not page.extra.status %}
-{{ throw(message=page.title ~ ": this page requires a status under [extra]. Only not-started, wip, or ready are accepted.") }}
-{% endif %}
-{{ <topic_li url={page.permalink} title={page.title} status={page.extra.status} /> }}
+{{ <topic_li url={page.permalink} title={page.title} status={page.extra.status | default(value="")} /> }}
 {% endfor %}
 
-{# Then, display links to all immediate subsections #}
+{# Then each subsection inline: its pages nested under a plain label (the section page itself redirects).
+   A subsection with a single page shows just that page. #}
 {% for subsection in section.subsections %}
-{% set subsection_obj = get_section(path=subsection) %}
-{% if not subsection_obj.extra.status %}
-{{ throw(message=subsection_obj.title ~ ": this SECTION requires a status under [extra]. Only not-started, wip, or ready are accepted.") }}
+{% set sub = get_section(path=subsection) %}
+{% if sub.pages | length == 1 %}
+{% set p = sub.pages[0] %}
+{{ <topic_li url={p.permalink} title={p.title} status={p.extra.status | default(value="")} /> }}
+{% elif sub.pages | length > 1 %}
+<li class="topic-subgroup">
+<span class="topic-subgroup-label">{{ sub.title }}</span>
+<ul>
+{% for p in sub.pages %}
+{{ <topic_li url={p.permalink} title={p.title} status={p.extra.status | default(value="")} /> }}
+{% endfor %}
+</ul>
+</li>
 {% endif %}
-{{ <topic_li url={subsection_obj.permalink} title={subsection_obj.title} status={subsection_obj.extra.status} /> }}
 {% endfor %}
 
 {% endcomponent %}
 
 {% component get_page_li(page_path) %}
 {% set page = get_page(path=page_path) %}
-{% if not page.extra.status %}
-{{ throw(message=page.title ~ ": this page requires a status under [extra]. Only not-started, wip, or ready are accepted.") }}
-{% endif %}
-{{ <topic_li url={page.permalink} title={page.title} status={page.extra.status} /> }}
+{{ <topic_li url={page.permalink} title={page.title} status={page.extra.status | default(value="")} /> }}
 {% endcomponent %}
