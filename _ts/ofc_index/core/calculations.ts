@@ -22,6 +22,18 @@ export interface DosingStep {
 }
 
 /**
+ * Protein concentration (g protein per 1 g or ml of food); 0 if serving size is not positive
+ */
+export function proteinPerGram(
+	gramsInServing: number,
+	servingSize: number,
+): Decimal {
+	return servingSize > 0
+		? new Decimal(gramsInServing).div(servingSize)
+		: new Decimal(0);
+}
+
+/**
  * Calculates a series of dosing steps for a given challenge protocol
  *
  * @param targetMgSteps - Array of target protein amounts (mg) for each step of the protocol

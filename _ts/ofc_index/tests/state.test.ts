@@ -128,6 +128,34 @@ describe("AppState", () => {
 		expect(state.email).toBe("test@example.com");
 	});
 
+	it("should rank a clearly better match above a weak match from a higher-weight source", () => {
+		appState.setFoods([
+			{
+				name: "Peanut, raw",
+				gramsInServing: 25,
+				servingSize: 100,
+				type: FoodType.SOLID,
+				group: "Legumes",
+				source: SourceType.GENERIC,
+			},
+			{
+				name: "Granola bar with pecan and nuts",
+				gramsInServing: 8,
+				servingSize: 100,
+				type: FoodType.SOLID,
+				group: "Snacks",
+				source: SourceType.USER,
+			},
+		]);
+		(appState as any).state.debouncedSearchQuery = "peanut";
+
+		const results = appState.getFilteredFoods();
+		expect(results.map((f) => f.name)).toEqual([
+			"Peanut, raw",
+			"Granola bar with pecan and nuts",
+		]);
+	});
+
 	it("should prioritize foods with higher source weight on similar search scores", () => {
 		const testFoods: Food[] = [
 			{

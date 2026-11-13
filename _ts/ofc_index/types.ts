@@ -78,10 +78,8 @@ export interface Food {
 export interface UserLoadResult {
 	/** Array of provisioned food items specific to user */
 	foods: Food[];
-	/** Email of logged-in user, or null if unauthenticated */
-	email: string | null;
-	/** Boolean flag indicating if user is currently logged in */
-	isLoggedIn: boolean;
+	/** Email of logged-in user */
+	email: string;
 }
 
 /**

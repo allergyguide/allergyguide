@@ -1,3 +1,4 @@
+import { html, render } from "lit-html";
 import { supabase } from "../core/api/supabase";
 import {
 	determineVaultState,
@@ -13,78 +14,86 @@ import {
 	loadPublicFoods,
 } from "./data/loader";
 import { appState } from "./state/state";
-import { type FoodData, HttpError, type UserLoadResult } from "./types";
+import {
+	type Food,
+	type FoodData,
+	HttpError,
+	type UserLoadResult,
+} from "./types";
 import { initApp } from "./ui/app";
 
 /** Build-time injected version string */
 declare const __VERSION_OFC_INDEX__: string;
 
-// Module-level promise to cache background network fetches
-let bootstrapPromise: Promise<UserLoadResult> | null = null;
-let encryptedDocsPromise: ReturnType<typeof fetchAllEncryptedDocuments> | null =
-	null;
+interface UserFetches {
+	bootstrap: Promise<UserLoadResult>;
+	encryptedDocs: ReturnType<typeof fetchAllEncryptedDocuments>;
+}
 
-/** Starts session-only fetches (no DEK needed). Overwrites any stale promises from a previous session */
-const startUserFetches = () => {
-	bootstrapPromise = handleUserLoad();
-	bootstrapPromise.catch(() => {});
+/** Session-only fetches (no DEK needed), started early and consumed by handleSuccessfulAuth */
+let pendingFetches: UserFetches | null = null;
 
-	encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
-	encryptedDocsPromise.catch(() => {});
-};
+/** Starts session-only fetches. Overwrites any stale fetches from a previous session */
+function startUserFetches(): UserFetches {
+	const bootstrap = handleUserLoad();
+	bootstrap.catch(() => {});
+	const encryptedDocs = fetchAllEncryptedDocuments(["custom_food"]);
+	encryptedDocs.catch(() => {});
+	pendingFetches = { bootstrap, encryptedDocs };
+	return pendingFetches;
+}
 
 /**
- * Shared callback for successful authentication and vault unlock
- * Orchestrates loading of protected assets
+ * Decrypts custom foods in the background and appends them after the provisioned foods
+ */
+function loadCustomFoodsInBackground(
+	encryptedDocs: UserFetches["encryptedDocs"],
+	provisionedFoods: Food[],
+) {
+	appState.setSyncStatus("loading");
+	const dek = getActiveDEK();
+
+	encryptedDocs
+		.then(async (encryptedRows) => {
+			const customFoodDocs = await decryptDocuments<FoodData>(
+				encryptedRows,
+				dek,
+				"custom_food",
+			);
+			appState.setFoods(appState.getState().publicFoods, [
+				...provisionedFoods,
+				...loadCustomFoods(customFoodDocs),
+			]);
+			appState.setSyncStatus("success");
+		})
+		.catch((err) => {
+			console.error("Failed to load custom assets:", err);
+			appState.setSyncStatus("error");
+		});
+}
+
+/**
+ * Shared callback for an unlocked vault (fresh login, unlock, or page load with a DEK)
+ * Loads protected assets; on failure signs out silently and shows the login modal with the reason
  */
 async function handleSuccessfulAuth() {
+	const { bootstrap, encryptedDocs } = pendingFetches ?? startUserFetches();
+	pendingFetches = null; // consumed; the next login starts fresh fetches
+
 	try {
-		if (!bootstrapPromise) {
-			bootstrapPromise = handleUserLoad();
-		}
+		const userResult = await bootstrap;
 
-		if (!encryptedDocsPromise) {
-			encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
-		}
-
-		const userResult = await bootstrapPromise;
-
-		const currentPublicFoods = appState.getState().publicFoods;
-
-		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(currentPublicFoods, userResult.foods);
+		appState.setAuthState(true, userResult.email);
+		appState.setFoods(appState.getState().publicFoods, userResult.foods);
 
 		// Hide the modal on success
 		renderAuthUI("HIDDEN");
 
-		// Background fetch
-		appState.setSyncStatus("loading");
-		const dek = getActiveDEK();
-
-		encryptedDocsPromise
-			.then(async (encryptedRows) => {
-				const customFoodDocs = await decryptDocuments<FoodData>(
-					encryptedRows,
-					dek,
-					"custom_food",
-				);
-				const customFoods = await loadCustomFoods(customFoodDocs);
-
-				// Re-fetch public and provisioned foods from current state
-				const currentState = appState.getState();
-				appState.setFoods(currentState.publicFoods, [
-					...currentState.provisionedFoods,
-					...customFoods,
-				]);
-				appState.setSyncStatus("success");
-			})
-			.catch((err) => {
-				console.error("Failed to load custom assets:", err);
-				appState.setSyncStatus("error");
-			});
+		loadCustomFoodsInBackground(encryptedDocs, userResult.foods);
 	} catch (e) {
 		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
 		await lockAndSignOut(null);
+		appState.setAuthState(false, null);
 
 		let userFacingMessage =
 			"An unexpected error occurred while loading your profile.";
@@ -112,21 +121,9 @@ async function handleSuccessfulAuth() {
 		}
 
 		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
-	} finally {
-		bootstrapPromise = null; // ensure clear after use or error
-		encryptedDocsPromise = null;
 	}
 }
 
-/**
- * Main initialization function
- *
- * 1. Finds mount point in DOM
- * 2. Sets up global state subscriptions
- * 3. Registers global keyboard shortcuts
- * 4. Determines identity and vault state
- * 5. Mounts Lit-html application
- */
 async function initializeOFC() {
 	const mountPoint = document.getElementById("ofc-app-mount");
 	if (!mountPoint) {
@@ -155,24 +152,31 @@ async function initializeOFC() {
 
 	// public data and session check in parallel
 	const publicFoodsPromise = loadPublicFoods();
-	const sessionPromise = supabase.auth.getSession();
-
-	// Start vault state resolution
 	const vaultStatePromise = determineVaultState();
 
-	const {
-		data: { session },
-	} = await sessionPromise;
-	// start network fetch without waiting for DEK
-	if (session) startUserFetches();
-	// On fresh login, start them as soon as Supabase sign-in returns
-	setSignedInHook(startUserFetches);
+	let publicFoods: Food[];
+	let vaultState: Awaited<typeof vaultStatePromise>;
+	try {
+		const {
+			data: { session },
+		} = await supabase.auth.getSession();
+		// start network fetch without waiting for DEK
+		if (session) startUserFetches();
+		// On fresh login, start them as soon as Supabase sign-in returns
+		setSignedInHook(startUserFetches);
 
-	// Load public data and check auth in parallel
-	const [publicFoods, vaultState] = await Promise.all([
-		publicFoodsPromise,
-		vaultStatePromise,
-	]);
+		[publicFoods, vaultState] = await Promise.all([
+			publicFoodsPromise,
+			vaultStatePromise,
+		]);
+	} catch (e) {
+		console.error("OFC index failed to start:", e);
+		render(
+			html`<p class="ofc-warning-text">Couldn't load the food database. Reload the page to try again.</p>`,
+			mountPoint,
+		);
+		return;
+	}
 	appState.setFoods(publicFoods, []);
 
 	if (vaultState === "UNAUTHENTICATED") {
@@ -188,49 +192,8 @@ async function initializeOFC() {
 		// Logged in to Supabase, but DEK missing: force unlock
 		renderAuthUI("UNLOCK", handleSuccessfulAuth);
 	} else if (vaultState === "UNLOCKED") {
-		try {
-			// Fully Authenticated and Decrypted! Load user data
-			if (!bootstrapPromise) {
-				bootstrapPromise = handleUserLoad();
-			}
-
-			const userResult = await bootstrapPromise;
-
-			appState.setAuthState(userResult.isLoggedIn, userResult.email);
-			appState.setFoods(publicFoods, userResult.foods);
-
-			appState.setSyncStatus("loading");
-			const dek = getActiveDEK();
-
-			if (!encryptedDocsPromise) {
-				encryptedDocsPromise = fetchAllEncryptedDocuments(["custom_food"]);
-			}
-
-			encryptedDocsPromise
-				.then(async (encryptedRows) => {
-					const customFoodDocs = await decryptDocuments<FoodData>(
-						encryptedRows,
-						dek,
-						"custom_food",
-					);
-					const customFoods = await loadCustomFoods(customFoodDocs);
-
-					const currentState = appState.getState();
-					// Merge the newly loaded custom foods with the provisioned foods
-					appState.setFoods(currentState.publicFoods, [
-						...userResult.foods,
-						...customFoods,
-					]);
-					appState.setSyncStatus("success");
-				})
-				.catch((err) => {
-					console.error("Failed to load custom assets:", err);
-					appState.setSyncStatus("error");
-				});
-		} finally {
-			bootstrapPromise = null;
-			encryptedDocsPromise = null;
-		}
+		// Fully authenticated and decrypted: load user data
+		await handleSuccessfulAuth();
 	}
 
 	const changelogLink =

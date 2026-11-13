@@ -3,7 +3,6 @@
  * Subscription model for UI reactivity, search memoization
  */
 
-import Decimal from "decimal.js";
 import fuzzysort from "fuzzysort";
 import {
 	PRACTALL_5_STEPS,
@@ -11,7 +10,7 @@ import {
 	SEARCH_DEBOUNCE_MS,
 	SEARCH_RESULTS_LIMIT,
 } from "../constants";
-import { calculateTargetMg } from "../core/calculations";
+import { calculateTargetMg, proteinPerGram } from "../core/calculations";
 import { type Food, type OfcState, SourceType } from "../types";
 import { debounce } from "../utils";
 
@@ -212,14 +211,13 @@ export class AppState {
 		foodAmount: number,
 	) {
 		const safeFood = Math.max(0, foodAmount);
-		const proteinPerGram =
-			this.state.modalServingSize > 0
-				? new Decimal(this.state.modalGramsInServing).div(
-						new Decimal(this.state.modalServingSize),
-					)
-				: new Decimal(0);
-
-		const targetMgDecimal = calculateTargetMg(safeFood, proteinPerGram);
+		const targetMgDecimal = calculateTargetMg(
+			safeFood,
+			proteinPerGram(
+				this.state.modalGramsInServing,
+				this.state.modalServingSize,
+			),
+		);
 		const targetMg = targetMgDecimal.toDecimalPlaces(2).toNumber();
 
 		this.updateModalStep(practall, index, targetMg);
@@ -260,7 +258,6 @@ export class AppState {
 		const results = fuzzysort.go(debouncedSearchQuery, searchableFoods, {
 			key: "preparedKey",
 			limit: SEARCH_RESULTS_LIMIT,
-			threshold: -10000,
 		});
 
 		// Sort results with SourceType tie-breaker (similar to OIT search logic)
@@ -271,7 +268,8 @@ export class AppState {
 
 		mappedResults.sort((a, b) => {
 			const scoreDiff = b.score - a.score;
-			if (Math.abs(scoreDiff) <= 10) {
+			// fuzzysort 3 scores are 0..1, so "near tie" is a small fraction
+			if (Math.abs(scoreDiff) <= 0.05) {
 				const weightA = SourceWeight[a.obj.source] || 0;
 				const weightB = SourceWeight[b.obj.source] || 0;
 				if (weightA !== weightB) return weightB - weightA;

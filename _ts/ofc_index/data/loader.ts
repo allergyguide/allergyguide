@@ -1,22 +1,50 @@
 /**
  * Handles fetching and parsing of food data from both public assets and secure API endpoints
  */
-import { fetchSupaDocuments, type SupaDocument } from "../../core/data/db";
+import type { SupaDocument } from "../../core/data/db";
 import {
 	type Food,
 	type FoodData,
 	FoodDataSchema,
 	FoodType,
+	HttpError,
 	SourceType,
 	type UserLoadResult,
 } from "../types";
 import { fetchOFCBootstrap } from "./api";
 
 /**
+ * Validates raw food entries and converts them to the internal shape
+ * Invalid entries are skipped (and logged); inactive and capsule foods are dropped (this tool doesn't handle capsules)
+ *
+ * @param raws - Raw food entries from any source
+ * @param source - Source to stamp on every food; if omitted, the entry's own `source` is kept
+ * @returns {Food[]} Valid, active, non-capsule foods
+ */
+export function toFoods(raws: unknown[], source?: SourceType): Food[] {
+	const foods: Food[] = [];
+	for (const raw of raws) {
+		const result = FoodDataSchema.safeParse(raw);
+		if (!result.success) {
+			console.error("Skipping invalid food entry:", raw, result.error);
+			continue;
+		}
+		const f = result.data;
+		if (!(f.is_active ?? true) || f.type === FoodType.CAPSULE) continue;
+		foods.push({
+			...f,
+			group: f.group || "Unknown",
+			source: source ?? f.source,
+		});
+	}
+	return foods;
+}
+
+/**
  * Loads the public food database from the Canadian Nutrient File (CNF) asset
  *
  * @returns {Promise<Food[]>} A promise resolving to an array of validated food items
- * @throws {Error} If the asset fails to load or contains invalid data
+ * @throws {Error} If the asset fails to load or is not an array
  */
 export async function loadPublicFoods(): Promise<Food[]> {
 	const response = await fetch("/tool_assets/cnf_foods.json");
@@ -29,110 +57,34 @@ export async function loadPublicFoods(): Promise<Food[]> {
 		throw new Error("Invalid CNF data: expected an array");
 	}
 
-	// skip items that don't fail the zod schema and flag in console
-	return raw
-		.map((item: unknown) => {
-			try {
-				const parsed = FoodDataSchema.parse(item);
-				return {
-					...parsed,
-					group: parsed.group || "Unknown",
-					source: SourceType.GENERIC,
-				} as Food;
-			} catch (e) {
-				console.error("Skipping invalid public food entry:", item, e);
-				return null;
-			}
-		})
-		.filter((f): f is Food => f !== null);
+	return toFoods(raw, SourceType.GENERIC);
 }
 
 /**
- * Orchestrates the loading of user-specific provisioned data and authentication status
+ * Loads the user's provisioned foods and email. Call only when a Supabase session exists
  *
- * @returns {Promise<UserLoadResult>} A promise resolving to the user's data and status
+ * @returns {Promise<UserLoadResult>} The user's provisioned foods and email
+ * @throws {HttpError} 401 if there is no session, 403 if the account lacks access, other codes on server errors
  */
 export async function handleUserLoad(): Promise<UserLoadResult> {
-	try {
-		const userData = await fetchOFCBootstrap();
-		if (userData) {
-			const provisionedFoods: Food[] = (userData.provisioned_foods || [])
-				.map((f: unknown) => {
-					try {
-						const parsed = FoodDataSchema.parse(f);
-
-						// if is_active is absent (ie in CNF foods) default true
-						// then filter out inactive foods
-						const is_active = parsed.is_active ?? true;
-
-						// similarly, it doesn't make sense for this tool to handle capsule foods
-						const is_capsule = parsed.type === FoodType.CAPSULE;
-
-						if (is_active && !is_capsule) {
-							return {
-								...parsed,
-								group: parsed.group || "Unknown",
-								source: parsed.source || SourceType.PROVISIONED, // provisioned by default, but hopefully this never runs
-							} as Food;
-						} else return null;
-					} catch (e) {
-						console.error("Invalid provisioned food data:", f, e);
-						return null;
-					}
-				})
-				.filter((f: unknown): f is Food => f !== null);
-
-			return {
-				foods: provisionedFoods,
-				email: userData.email,
-				isLoggedIn: true,
-			};
-		}
-	} catch (e) {
-		console.error("Failed to load user data", e);
+	const userData = await fetchOFCBootstrap();
+	if (!userData) {
+		throw new HttpError("No active session", 401);
 	}
 	return {
-		foods: [],
-		email: null,
-		isLoggedIn: false,
+		foods: toFoods(userData.provisioned_foods || []),
+		email: userData.email,
 	};
 }
 
 /**
- * Loads custom user foods from the database
+ * Converts decrypted custom-food documents into foods
  *
- * @param preDecryptedDocs - Optional array of pre-decrypted documents to use instead of fetching
+ * @param docs - Decrypted `custom_food` documents
  */
-export async function loadCustomFoods(
-	preDecryptedDocs?: SupaDocument<FoodData>[],
-): Promise<Food[]> {
-	try {
-		const customDocs =
-			preDecryptedDocs ?? (await fetchSupaDocuments<FoodData>("custom_food")); // if preDecryptedDocs is not null or undefined, use it; otherwise, call fetchSupaDocuments
-
-		return customDocs
-			.map((doc) => {
-				try {
-					const parsed = FoodDataSchema.parse(doc.data);
-					const is_active = parsed.is_active ?? true;
-					const is_capsule = parsed.type === FoodType.CAPSULE;
-
-					if (is_active && !is_capsule) {
-						return {
-							...parsed,
-							group: parsed.group || "Unknown",
-							source: SourceType.USER,
-						} as Food;
-					}
-					return null;
-				} catch (e) {
-					console.error("Invalid custom food data:", doc.data, e);
-					return null;
-				}
-			})
-			.filter((f): f is Food => f !== null);
-	} catch (e) {
-		console.error("Failed to load custom user foods:", e);
-		return [];
-	}
+export function loadCustomFoods(docs: SupaDocument<FoodData>[]): Food[] {
+	return toFoods(
+		docs.map((doc) => doc.data),
+		SourceType.USER,
+	);
 }

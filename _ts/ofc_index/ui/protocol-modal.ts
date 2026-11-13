@@ -1,10 +1,13 @@
 /**
  * UI component for the food challenge protocol modal
  */
-import Decimal from "decimal.js";
 import { html, nothing, type TemplateResult } from "lit-html";
 import { live } from "lit-html/directives/live.js";
-import { calculateSteps, type DosingStep } from "../core/calculations";
+import {
+	calculateSteps,
+	type DosingStep,
+	proteinPerGram,
+} from "../core/calculations";
 import { appState } from "../state/state";
 import { type Food, type OfcState, SourceType } from "../types";
 import { getMeasuringUnit } from "../utils";
@@ -26,16 +29,15 @@ export const protocolModalTemplate = (
 	const food = state.selectedFood;
 
 	// Calculate protein per gram for the core calculation engine
-	const proteinPerGram = new Decimal(state.modalServingSize).gt(0)
-		? new Decimal(state.modalGramsInServing).div(
-				new Decimal(state.modalServingSize),
-			)
-		: new Decimal(0);
+	const ratio = proteinPerGram(
+		state.modalGramsInServing,
+		state.modalServingSize,
+	);
 
 	const unit = getMeasuringUnit(food);
 
-	const steps5 = calculateSteps(state.modalSteps5, proteinPerGram, unit);
-	const steps7 = calculateSteps(state.modalSteps7, proteinPerGram, unit);
+	const steps5 = calculateSteps(state.modalSteps5, ratio, unit);
+	const steps7 = calculateSteps(state.modalSteps7, ratio, unit);
 
 	const isExceeding = state.modalGramsInServing > state.modalServingSize;
 	const isZero = state.modalGramsInServing <= 0;
@@ -74,20 +76,30 @@ export const protocolModalTemplate = (
                     <div class="ofc-modal-controls ${isInvalid ? "ofc-input-error" : ""}">
                         <label>
                             <input 
+                                id="ofc-modal-protein"
                                 type="number" 
                                 step="0.01"
                                 min="0"
-                                .value=${live(state.modalGramsInServing.toString())}
+                                .value=${live(displayValue("ofc-modal-protein", state.modalGramsInServing.toString()))}
                                 @input=${(e: InputEvent) => appState.setModalGramsInServing(parseFloat((e.target as HTMLInputElement).value) || 0)}
+                                @blur=${(e: Event) => {
+																	(e.target as HTMLInputElement).value =
+																		state.modalGramsInServing.toString();
+																}}
                             />
                             (g) protein per
                         </label>
                         <label>
                             <input 
+                                id="ofc-modal-serving"
                                 type="number"
                                 min="1"
-                                .value=${live(state.modalServingSize.toString())}
+                                .value=${live(displayValue("ofc-modal-serving", state.modalServingSize.toString()))}
                                 @input=${(e: InputEvent) => appState.setModalServingSize(parseFloat((e.target as HTMLInputElement).value) || 1)}
+                                @blur=${(e: Event) => {
+																	(e.target as HTMLInputElement).value =
+																		state.modalServingSize.toString();
+																}}
                             />
                             (${unit}) serving
                         </label>
@@ -117,24 +129,15 @@ export const protocolModalTemplate = (
 };
 
 /**
- * Active element helper to prevent typing clobbering while keeping reactivity across columns
+ * Keeps what the user is typing in the focused input (e.g. an empty box) instead of overwriting it with the
+ * normalised state value; other inputs get the formatted value so they stay reactive
  */
-const getStepFoodDisplay = (foodGrams: Decimal, inputId: string): string => {
-	const active =
-		typeof document !== "undefined" ? document.activeElement : null;
+export const displayValue = (inputId: string, formatted: string): string => {
+	const active = document.activeElement;
 	if (active && active.id === inputId) {
 		return (active as HTMLInputElement).value;
 	}
-	return foodGrams.toFixed(2);
-};
-
-const getStepProteinDisplay = (targetMg: Decimal, inputId: string): string => {
-	const active =
-		typeof document !== "undefined" ? document.activeElement : null;
-	if (active && active.id === inputId) {
-		return (active as HTMLInputElement).value;
-	}
-	return targetMg.toString();
+	return formatted;
 };
 
 /**
@@ -158,7 +161,15 @@ const protocolTableTemplate = (
     <div class="ofc-protocol-wrapper">
         <div class="ofc-table-header">
             <span>${practall === "5" ? "PRACTALL-5" : "PRACTALL-7"}</span>
-            <button class="ofc-copy-btn" @click=${() => copyToClipboard(food, steps, state)}>Copy</button>
+            <button class="ofc-copy-btn" @click=${async (e: Event) => {
+							const btn = e.currentTarget as HTMLButtonElement;
+							btn.textContent = (await copyToClipboard(food, steps, state))
+								? "Copied"
+								: "Copy failed";
+							setTimeout(() => {
+								btn.textContent = "Copy";
+							}, 1500);
+						}}>Copy</button>
         </div>
         <div class="ofc-table-scroll">
             <table class="ofc-protocol-table">
@@ -185,7 +196,7 @@ const protocolTableTemplate = (
                                     step="any"
                                     min="0"
                                     aria-label="Step ${step.step} food amount in ${unit}"
-                                    .value=${live(getStepFoodDisplay(step.foodGrams, foodInputId))}
+                                    .value=${live(displayValue(foodInputId, step.foodGrams.toFixed(2)))}
                                     @input=${(e: InputEvent) => {
 																			const raw = (e.target as HTMLInputElement)
 																				.value;
@@ -210,7 +221,7 @@ const protocolTableTemplate = (
                                     step="any"
                                     min="0"
                                     aria-label="Step ${step.step} protein in mg"
-                                    .value=${live(getStepProteinDisplay(step.targetMg, proteinInputId))}
+                                    .value=${live(displayValue(proteinInputId, step.targetMg.toString()))}
                                     @input=${(e: InputEvent) => {
 																			const raw = (e.target as HTMLInputElement)
 																				.value;
@@ -245,12 +256,13 @@ const protocolTableTemplate = (
  * @param food - The selected food item
  * @param steps - Calculated dosing steps
  * @param state - Current application state
+ * @returns {Promise<boolean>} Whether the copy succeeded
  */
 async function copyToClipboard(
 	food: Food,
 	steps: DosingStep[],
 	state: OfcState,
-) {
+): Promise<boolean> {
 	let text = `Food challenge: ${food.name} (${state.modalGramsInServing} g per ${state.modalServingSize} ${getMeasuringUnit(food)})\n---\n`;
 	steps.forEach((s) => {
 		text += `Step ${s.step}: ${s.foodGrams.toFixed(2)} ${s.unit} (${s.targetMg.toFixed(1)} mg protein; ${s.cumulativeMg.toFixed(1)} mg total)\n`;
@@ -258,7 +270,9 @@ async function copyToClipboard(
 
 	try {
 		await navigator.clipboard.writeText(text);
+		return true;
 	} catch (err) {
 		console.error("Failed to copy: ", err);
+		return false;
 	}
 }
