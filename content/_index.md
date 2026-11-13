@@ -10,7 +10,7 @@ in_search_index = true
 
 <div class="hero">
   <h1>Practical Clinical Allergy & Immunology</h1>
-  <p class="lead">Free, open-source, high-yield content and clinical tools designed for medical professionals.</p>
+  <p class="lead">Free, open-source, high-yield content and clinical tools for medical professionals.</p>
   <div class="hero-actions">
     <a href="/topics" class="button button-primary">Explore Topics</a>
     <a href="/oit" class="button button-secondary">OIT Calculator</a>
