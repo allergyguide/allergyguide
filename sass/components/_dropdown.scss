@@ -6,7 +6,8 @@
   display: block;
   /* Ensures the dropdown is a block element */
 
-  details {
+  // child combinators: don't restyle <details> nested in the content (e.g. med card accordions)
+  > details {
     width: 100%;
     border: 1px solid color-mix(in oklch, var(--core-primary) 25%, var(--core-border));
     border-radius: 0.5rem;
@@ -16,7 +17,7 @@
     position: relative;
     /* For proper stacking context */
 
-    summary {
+    > summary {
       padding: 1rem;
       background-color: color-mix(in oklch, var(--core-primary) 6%, var(--core-surface));
       color: var(--core-ink);
@@ -55,17 +56,17 @@
     }
 
     // Rotate to point up when expanded.
-    &[open] summary::before {
+    &[open] > summary::before {
       transform: rotate(-135deg);
     }
 
     // Add a separator line between the summary and content when expanded
-    &[open] summary {
+    &[open] > summary {
       border-bottom: 1px solid color-mix(in oklch, var(--core-primary) 25%, var(--core-border));
     }
   }
 
-  .dropdown-content {
+  > details > .dropdown-content {
     padding: 0.5rem;
     padding-right: 2.25rem; // equilvalent to 1 + 0.75 (from the chevron) + 0.5 from baseline padding
     background-color: var(--core-bg);

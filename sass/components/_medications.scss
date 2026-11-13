@@ -46,8 +46,9 @@
       left: 50%;
       right: auto;
       transform: translate(-50%, -0.25rem);
-      background: v.$core-color-ink;
-      color: v.$core-color-surface;
+      background: color-mix(in oklab, v.$core-color-surface, v.$core-color-ink 6%);
+      color: v.$core-color-ink;
+      border: 0.0625rem solid color-mix(in oklab, v.$core-color-border, v.$core-color-ink 15%);
       padding: v.$core-space-2xs v.$core-space-sm;
       border-radius: 0.25rem;
       font-size: 0.85rem;
@@ -60,7 +61,7 @@
       transition: all 0.2s ease-in-out;
       pointer-events: none;
       z-index: 50;
-      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
     }
   }
 
@@ -858,7 +859,12 @@
     }
   }
 
-  // --- Shared Table & Coverage Classes ---
+}
+
+// --- Shared Table & Coverage Classes ---
+// also under .med-card: standalone cards (popups, topic pages) have no .med-index ancestor
+.med-card,
+.med-index {
   .coverage-tables {
     position: relative;
 
@@ -887,14 +893,15 @@
     position: absolute;
     top: 2.25rem;
     left: 50%;
-    background: v.$core-color-ink;
-    color: v.$core-color-surface;
+    background: color-mix(in oklab, v.$core-color-surface, v.$core-color-ink 6%);
+    color: v.$core-color-ink;
+    border: 0.0625rem solid color-mix(in oklab, v.$core-color-border, v.$core-color-ink 15%);
     padding: v.$core-space-sm;
     border-radius: 0.25rem;
     font-size: 0.85rem;
     line-height: 1.4;
     z-index: 50;
-    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
     opacity: 0;
     visibility: hidden;
     transform: translate(-50%, -0.25rem);
