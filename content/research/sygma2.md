@@ -9,12 +9,9 @@ tags = ["Research","Asthma"]
 [extra]
 keywords = "Asthma"
 toc = true
-authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
+authors = ["Author: Joshua Yu", "Staff: TBD"]
 +++
 
-<table style="margin:0rem">
-  <tr>
-    <td>
 {% <admonition type="info" icon="info" title="Trial metadata"> %}
 
 - Published: 2018
@@ -22,27 +19,6 @@ authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
 - Funded by: AstraZeneca
 
 {% </admonition> %}
-
-</td>
-<td>
-
-{% <admonition type="note" icon="info" title="Contributors"> %}
-
-<div class="contributor-group">
-<i class="fas fa-pen-nib"></i>  Primary Author: Resident Lead</div>
-  <div class="contributor-group">
-</div>
-<i class="fas fa-user-edit"></i> Editor: Resident Reviewer
-  <div class="contributor-group">
-<i class="fas fa-star"></i>  Staff Reviewer: TBD
-</div>
-
-{% </admonition> %}
-
-</td>
-
-</tr>
-</table>
 
 {{ <research_card paper="sygma2" show_title={true} /> }}
 
@@ -216,8 +192,6 @@ In total, 8.5% of the budesonide-formoterol group compared to 8.8% in the budeso
 - A change of 0.5 is considered the minimal clinically important difference
 
 {% </admonition> %}
-
-<br>
 
 {% <two_columns> %}
 

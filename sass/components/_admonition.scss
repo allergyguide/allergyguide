@@ -97,6 +97,7 @@
   align-items: start;
   border-radius: 0.5rem;
   padding: 0.8rem 1rem;
+  margin-block: 1rem;
   font-family: var(--sans-serif-font);
   border: 0; // Explicitly override any global resets that might apply borders
   box-shadow: none;
@@ -129,6 +130,12 @@
       margin: 0;
       margin-left: 0.2rem;
       color: inherit;
+    }
+
+    // space between blocks (paragraph, list, ...) so content needs no <br> spacers;
+    // :not() outranks the margin resets above
+    > :not(:first-child) {
+      margin-top: 0.75rem;
     }
   }
 

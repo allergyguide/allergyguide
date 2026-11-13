@@ -14,20 +14,13 @@ authors = ["Joshua Yu", "Staff: TBD"]
 status="ready" # options include not-started, wip, or ready
 +++
 
-<div style="padding-top:1rem;">
-</div>
-
 {% <admonition type="info" icon="info" title="THE BOTTOM LINE"> %}
 
 CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with two major subtypes: CRSsNP, CRSwNP. **Diagnosis requires _both_ objective structural evidence of sinus inflammation** (CT or endoscopy) and **≥2 cardinal symptoms for ≥12 weeks** (nasal congestion, facial pain or pressure, nasal drainage, and absent or reduced smell). Preliminary workup involves aeroallergen testing with other ad-hoc tests. **First-line management includes trigger avoidance, saline rinses, and INCS; involve your ENT colleagues**. Various biologics such as dupilumab are effective for CRSwNP.
 
-<br>
-
 [Patient Resource](/handouts/chronic-rhinosinusitis/)
 
 {% </admonition> %}
-
-<br>
 
 {{ <load_macro topic_name="chronic_rhinosinusitis" /> }}
 
@@ -67,9 +60,6 @@ CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with t
 
 Requires <span class="hl-yellow">both ≥2 key symptoms for ≥12 weeks AND objective structural evidence of sinus inflammation:</span> <span class="references">orlandi_international_2021, hamilos_chronic_2011</span>
 
-<div style="padding-top:1rem">
-</div>
-
 {% <two_columns> %}
 
 {% <admonition type="info" icon="info" title="Key symptoms - at least 2 for at least 12 weeks"> %}
@@ -100,9 +90,6 @@ This is done through either:
 
 Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective finding on endoscopy or CT scan: <span class="references">desrosiers_canadian_2011</span>
 
-<div style="padding-top:1rem">
-</div>
-
 {% <admonition type="info" icon="info" title="Key symptoms"> %}
 
 - Facial congestion/fullness
@@ -117,9 +104,6 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 <!-- CONTENT -->
 
 ≥2 key symptoms for ≥12 weeks (at least one from a 'major' criteria) and at least 1 objective finding on endoscopy or CT scan: <span class="references">fokkens_european_2020</span>
-
-<div style="padding-top:1rem">
-</div>
 
 {% <two_columns> %}
 
@@ -145,9 +129,6 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 <!-- CONTENT -->
 
 ≥2 key symptoms for ≥12 weeks and at least 1 objective finding on endoscopy or CT scan: <span class="references">rosenfeld_clinical_2015</span>
-
-<div style="padding-top:1rem">
-</div>
 
 {% <admonition type="info" icon="info" title="Key symptoms"> %}
 
@@ -291,9 +272,6 @@ Note that not all guidelines / position statements use this classification.
 {% <admonition type="tip" icon="tip" title="Goal of treatment is usually NOT curative"> %}
 Goals are symptom control through reduction of inflammation and improvement of sinus patency.
 {% </admonition> %}
-
-<div style="padding-top:1rem">
-</div>
 
 {% <admonition type="danger" icon="info" title="THE BRASS TACKS"> %}
 
@@ -470,15 +448,10 @@ Dymista 1 spray EN BID {% <popup> %}
 
 While technically imaging or endoscopy is needed to formally diagnose CRS, if the clinical history is otherwise consistent, empiric first-line treatments are often trialed for a few months first before those tests (unless you suspect AFRS or CRSwNP).
 
-<br>
-
 <b>Oral steroids for quick temporary relief</b>
 
 You may see oral corticosteroids used up-front for severely symptomatic cases, but more commonly for CRSwNP and AFRS.
 {% </admonition> %}
-
-<div style="padding-top:1rem">
-</div>
 
 {% <admonition type="tip" icon="tip" title="How is treatment monitored?"> %}
 In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-20 (higher score = worse QoL). However, it is not uncommon to see mainly gestalt (and therefore variable) assessments of symptom control.
@@ -624,6 +597,3 @@ For CRSsNP and CRSwNP, FESS is usually considered if medical therapy has failed 
 <h1>Contributors</h1>
 
 {{ <contributors authors={["Joshua Yu"]} editors={[]} staff_reviewers={["TBD"]} /> }}
-
-<script src="/js/tabs.js"></script>
-<script src="/js/popup.js"></script>

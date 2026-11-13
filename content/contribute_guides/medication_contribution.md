@@ -111,5 +111,3 @@ _Please list provincial coverage details below. (Copy and paste for multiple pro
 - **Coverage Details & Requirements:**
   `[Provide criteria, EAP requirements, or links to forms here]`
   `[Provide specific criteria here, for example: lab requirements, need for failed therapies (e.g., 'failed 3 months of topical steroids'), LU codes, or links to SA/EAP forms.]`
-
-<script src="/js/popup.js"></script>

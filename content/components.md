@@ -484,19 +484,11 @@ flag
 popup
 ```
 
-To be interactive/work, this component requires one script tag to be placed at the bottom of the page:
-
-```html
-<script src="/js/popup.js"></script>
-```
-
 ExRx: Blexten 10mg OD to QID {% <popup icon="rx"> %}
 
 {{ <med_card id="bilastine" /> }}
 
 {% </popup> %}
-
-<script src="/js/popup.js"></script>
 
 ## wip
 
@@ -775,12 +767,6 @@ This is a danger admonition with a danger icon.
 {% endraw %}
 ```
 
-Requires a script to be placed in the bottom of the page:
-
-```html
-<script src="/js/tabs.js"></script>
-```
-
 {% <tabs> %}
 
 <!-- TAB -->Overview
@@ -805,5 +791,3 @@ This is a danger admonition with a danger icon.
 <p>Starting at <em>$9.99/month</em>.</p>
 
 {% </tabs> %}
-
-<script src="/js/tabs.js"></script>

@@ -105,7 +105,6 @@ IUIS classification, ESID criteria, guidelines, review articles, etc.
 {% <dropdown header="DEEP-DIVE: Efficacy of INCS in CRSwNP"> %}
 
 Here you would put the evidence behind a study (ideally a systematic review or meta-analysis) that contains <b>data relevant to patients</b><span class='references'>2</span>
-<br>
 
 <ul>
 <li> What's the bottom line of the research?</li>
@@ -113,8 +112,6 @@ Here you would put the evidence behind a study (ideally a systematic review or m
 <li> What are relevant concrete data points?</li>
 <li> Is this evidence "strong"? This is a very nuanced point (and there are frameworks such as GRADE for this). You shouldn't spend a LOT of time on this up-front; while interpretation of complex research is crucial, it's not the main point of this project</li>
 </ul>
-
-<br>
 
 {% </dropdown> %}
 
@@ -159,7 +156,7 @@ Within a topic page, there are many ways to customize the text: in particular, *
 
 - See [this link](https://www.writethedocs.org/guide/writing/markdown/) for a great introduction to the Markdown format
 - For your purposes, **you do not have to know Markdown itself very well** -- it is more important you know that the website renders Markdown. This means that you are able to use _italics_, **bolded words**, ~~strike-through-text~~, and links such as the one before. Lists and bullet points will also render as you expect. Different title headers can be achieved with [# signs](https://www.writethedocs.org/guide/writing/markdown/#headers)
-- Make good use of <span class='hl'>highlights as well</span>
+- Highlights are available too: <span class="hl-yellow">like this</span>. See the emphasis rules below
 - You can also make tables in Markdown, though they do not look the best and cannot be too complicated:
 
   | Name   | Comment                                                                 |
@@ -170,6 +167,22 @@ Within a topic page, there are many ways to customize the text: in particular, *
 
   - This doesn't mean we can't accommodate more complex tables (ie with nesting), but it does mean editors need to manually code it in
 
+### Emphasis and spacing
+
+Each kind of emphasis has one job. If everything is emphasized, nothing stands out.
+
+| Style | Use it for |
+| :---- | :--------- |
+| **Bold** | The key term or fact in a bullet (about one per bullet at most) |
+| <span class="hl-yellow">Highlight</span> | "If you remember one thing from this section". Aim for 2–4 per article |
+| _Italics_ | Organism names, Latin, study titles, ExRx lines |
+| Underline | Never (it looks like a link) |
+| ALL CAPS | Admonition titles only |
+
+- Use `hl-yellow` for highlights. The other colours are kept only for older content
+- Don't add spacing by hand (`<br>`, empty `<div style="padding...">`, inline `style=`). Components already space themselves. If something looks too cramped or too loose, tell an editor so it can be fixed in the stylesheet for every page
+- Components such as tabs and popups load their own scripts. You don't need `<script>` tags
+
 ### Components
 
 - Components are custom pieces of styled HTML (and sometimes JavaScript). You can use any of the components below as you like for a topic
@@ -178,7 +191,19 @@ Within a topic page, there are many ways to customize the text: in particular, *
 
 #### Admonitions
 
-Admonitions are boxes that are intended to **highlight an important fact for the reader**. There are a variety of styles and icons that can be used. Options for type/icon: note, tip, info, warning, danger, and pearl. These can be mixed and matched. The title of each admonition can be changed to any text.
+Admonitions are boxes that are intended to **highlight an important fact for the reader**. There are a variety of styles and icons that can be used. Options for type/icon: note, tip, info, warning, danger, and pearl. The title of each admonition can be changed to any text.
+
+Keep the type consistent with its purpose so readers learn what each colour means:
+
+| Purpose | type / icon |
+| :------ | :---------- |
+| The bottom line (top of the page) | info / info |
+| Practical approach ("brass tacks") | danger / info |
+| Red flags | danger / flag |
+| Pearls | pearl / pearl |
+| Tips, "why should we care?" | tip / tip or question |
+| Pitfalls, cautions | warning / warning |
+| Definitions, side notes | note / note |
 
 {% <admonition type="danger" icon="danger" title="DANGER"> %}
 This is a danger admonition with a danger icon, and the title DANGER.
@@ -254,8 +279,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 This is helpful if there's something you really want to call someone's attention too!
 {% </admonition> %}
 
-<br>
-
 {% <admonition type="pearl" icon="pearl" title="A rare clinical pearl"> %}
 Benadryl is not a fantastic antihistamine to use :)
 {% </admonition> %}
@@ -322,5 +345,3 @@ This is a danger admonition with a danger icon.
 {% </admonition> %}
 
 {% </dropdown> %}
-
-<script src="/js/popup.js"></script>

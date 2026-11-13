@@ -1,80 +1,38 @@
-// Highlight class for spans
+// Highlight spans: a soft marker tint behind the text; text keeps the page ink colour for contrast.
+// .hl-yellow (and legacy .hl) is the house highlight; the other colours are kept for existing content.
 
-:root {
-  /* Dark mode */
-  --hl-yellow-bg: #665e00;
-  --hl-yellow-text: #fff2a8;
+// name: (hue, light-mode chroma)
+$hl-hues: (
+  "yellow": (95, 0.13),
+  "red": (25, 0.07),
+  "green": (145, 0.07),
+  "blue": (245, 0.07),
+  "pink": (340, 0.07),
+);
 
-  --hl-red-bg: #6e1212;
-  --hl-red-text: #ffb6b6;
+@each $name, $spec in $hl-hues {
+  $hue: nth($spec, 1);
+  :root {
+    /* Dark mode: translucent tint over the dark surface */
+    --hl-#{$name}-bg: oklch(85% 0.15 #{$hue} / 0.22);
+  }
 
-  --hl-green-bg: #0a5d0a;
-  --hl-green-text: #b6ffb6;
+  :root.switch {
+    /* Light mode */
+    --hl-#{$name}-bg: oklch(93% #{nth($spec, 2)} #{$hue});
+  }
 
-  --hl-blue-bg: #0a3b6e;
-  --hl-blue-text: #b6d9ff;
-
-  --hl-pink-bg: #6e0a5d;
-  --hl-pink-text: #ffb6f8;
+  .hl-#{$name} {
+    background-color: var(--hl-#{$name}-bg);
+    color: inherit;
+    padding: 0.05em 0.2em;
+    border-radius: 0.2em;
+    // keep padding/rounding on every line when a highlight wraps
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
 }
 
-:root.switch {
-  /* Light mode */
-  --hl-yellow-bg: #fff2a8;
-  --hl-yellow-text: #665e00;
-
-  --hl-red-bg: #ffb6b6;
-  --hl-red-text: #6e1212;
-
-  --hl-green-bg: #b6ffb6;
-  --hl-green-text: #0a5d0a;
-
-  --hl-blue-bg: #b6d9ff;
-  --hl-blue-text: #0a3b6e;
-
-  --hl-pink-bg: #ffb6f8;
-  --hl-pink-text: #6e0a5d;
-}
-
-/* Base highlight class with shared styles */
-@mixin hl-padding {
-  padding: 0.1rem 0.2rem;
-  border-radius: 0.1rem;
-}
-
-
-/* Default highlight (yellow) */
-.hl-yellow {
-  @include hl-padding;
-  background-color: var(--hl-yellow-bg);
-  color: var(--hl-yellow-text);
-}
-
-/* Red highlight */
-.hl-red {
-  @include hl-padding;
-  background-color: var(--hl-red-bg);
-  color: var(--hl-red-text);
-}
-
-/* Green highlight */
-
-.hl-green {
-  @include hl-padding;
-  background-color: var(--hl-green-bg);
-  color: var(--hl-green-text);
-}
-
-/* Blue highlight */
-.hl-blue {
-  @include hl-padding;
-  background-color: var(--hl-blue-bg);
-  color: var(--hl-blue-text);
-}
-
-/* Pink highlight */
-.hl-pink {
-  @include hl-padding;
-  background-color: var(--hl-pink-bg);
-  color: var(--hl-pink-text);
+.hl {
+  @extend .hl-yellow;
 }

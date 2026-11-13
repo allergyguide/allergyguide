@@ -44,5 +44,5 @@
 	</div>
 </dialog>
 {%- endset -%}
-{{ popup_html | replace(from="\n", to="") | safe }}
+{{ popup_html | replace(from="\n", to="") | safe }}<script src="/js/popup.js" defer></script>
 {% endcomponent popup %}
