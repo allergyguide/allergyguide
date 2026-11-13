@@ -38,6 +38,9 @@ describe("protocol modal serving size input", () => {
 		expect(input.value).toBe("");
 		expect(appState.getState().modalServingSize).toBe(0);
 		expect(container.textContent).toContain("Serving size must be above zero.");
+		for (const btn of container.querySelectorAll(".ofc-copy-btn")) {
+			expect((btn as HTMLButtonElement).disabled).toBe(true);
+		}
 
 		input.value = "250";
 		input.dispatchEvent(new Event("input"));

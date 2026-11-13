@@ -115,8 +115,8 @@ export const protocolModalTemplate = (
                 </div>
 
                 <div class="ofc-tables-container">
-                    ${protocolTableTemplate("5", food, steps5, state)}
-                    ${protocolTableTemplate("7", food, steps7, state)}
+                    ${protocolTableTemplate("5", food, steps5, state, isInvalid)}
+                    ${protocolTableTemplate("7", food, steps7, state, isInvalid)}
                 </div>
             </div>
         </div>
@@ -142,6 +142,7 @@ export const displayValue = (inputId: string, formatted: string): string => {
  * @param food - The selected food item
  * @param steps - Calculated dosing steps
  * @param state - Current application state
+ * @param isInvalid - Inputs are invalid, so copying is disabled
  * @returns {TemplateResult} The table template result
  */
 const protocolTableTemplate = (
@@ -149,6 +150,7 @@ const protocolTableTemplate = (
 	food: Food,
 	steps: DosingStep[],
 	state: OfcState,
+	isInvalid: boolean,
 ): TemplateResult => {
 	const unit = getMeasuringUnit(food);
 
@@ -156,7 +158,9 @@ const protocolTableTemplate = (
     <div class="ofc-protocol-wrapper">
         <div class="ofc-table-header">
             <span>${practall === "5" ? "PRACTALL-5" : "PRACTALL-7"}</span>
-            <button class="ofc-copy-btn" @click=${async (e: Event) => {
+            <button class="ofc-copy-btn" ?disabled=${isInvalid} @click=${async (
+							e: Event,
+						) => {
 							const btn = e.currentTarget as HTMLButtonElement;
 							btn.textContent = (await copyToClipboard(food, steps, state))
 								? "Copied"

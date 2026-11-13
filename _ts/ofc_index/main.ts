@@ -98,11 +98,17 @@ async function handleSuccessfulAuth() {
 			(e.statusCode === 401 || e.statusCode === 403)
 		) {
 			await lockAndSignOut(null);
+			appState.setAuthState(false, null);
+		} else {
+			// Still signed in: show that in the toolbar so it matches the session
+			const {
+				data: { session },
+			} = await supabase.auth.getSession();
+			appState.setAuthState(!!session, session?.user.email ?? null);
 		}
-		appState.setAuthState(false, null);
 
 		let userFacingMessage =
-			"An unexpected error occurred while loading your profile.";
+			"An unexpected error occurred while loading your profile. Reload the page to try again.";
 
 		if (e instanceof HttpError) {
 			if (e.statusCode === 401) {
@@ -115,7 +121,7 @@ async function handleSuccessfulAuth() {
 			} else if (e.statusCode >= 500) {
 				console.warn("User load failed (Server Error):", e);
 				userFacingMessage =
-					"Server error retrieving your profile. Please try again later.";
+					"Server error retrieving your profile. Reload the page to try again.";
 			} else {
 				console.warn(`User load failed (${e.statusCode}):`, e);
 			}
@@ -123,7 +129,7 @@ async function handleSuccessfulAuth() {
 			// Non-HTTP error (e.g., TypeError from JSON parsing, Network drop)
 			console.error("Undefined err in handleSuccessfulAuth: ", e);
 			userFacingMessage =
-				"Network or connection error. Please check your internet and try again.";
+				"Network or connection error. Check your internet and reload the page.";
 		}
 
 		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
