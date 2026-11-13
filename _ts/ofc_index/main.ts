@@ -6,6 +6,7 @@ import {
 	lockAndSignOut,
 	setSignedInHook,
 } from "../core/auth/login-client";
+import { handleProfileLoadError } from "../core/auth/profile-load-error";
 import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import {
@@ -14,12 +15,7 @@ import {
 	loadPublicFoods,
 } from "./data/loader";
 import { appState } from "./state/state";
-import {
-	type Food,
-	type FoodData,
-	HttpError,
-	type UserLoadResult,
-} from "./types";
+import type { Food, FoodData, UserLoadResult } from "./types";
 import { initApp } from "./ui/app";
 
 /** Build-time injected version string */
@@ -91,48 +87,12 @@ export async function handleSuccessfulAuth() {
 
 		loadCustomFoodsInBackground(encryptedDocs, userResult.foods);
 	} catch (e) {
-		// Sign out silently (null = no redirect) only when access is really gone
-		// but on network/server errors keep the session and key so a reload retries without a password
-		if (
-			e instanceof HttpError &&
-			(e.statusCode === 401 || e.statusCode === 403)
-		) {
-			await lockAndSignOut(null);
-			appState.setAuthState(false, null);
-		} else {
-			// Still signed in: show that in the toolbar so it matches the session
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-			appState.setAuthState(!!session, session?.user.email ?? null);
-		}
-
-		let userFacingMessage =
-			"An unexpected error occurred while loading your profile. Reload the page to try again.";
-
-		if (e instanceof HttpError) {
-			if (e.statusCode === 401) {
-				console.debug("No active session or token expired:", e);
-				userFacingMessage = "Your session has expired. Please log in again.";
-			} else if (e.statusCode === 403) {
-				console.debug("Failed to load user config (Not Provisioned):", e);
-				userFacingMessage =
-					"Login successful, but this account lacks access to this tool.";
-			} else if (e.statusCode >= 500) {
-				console.warn("User load failed (Server Error):", e);
-				userFacingMessage =
-					"Server error retrieving your profile. Reload the page to try again.";
-			} else {
-				console.warn(`User load failed (${e.statusCode}):`, e);
-			}
-		} else {
-			// Non-HTTP error (e.g., TypeError from JSON parsing, Network drop)
-			console.error("Undefined err in handleSuccessfulAuth: ", e);
-			userFacingMessage =
-				"Network or connection error. Check your internet and reload the page.";
-		}
-
-		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+		await handleProfileLoadError(
+			e,
+			"the OFC index",
+			(isLoggedIn, email) => appState.setAuthState(isLoggedIn, email),
+			handleSuccessfulAuth,
+		);
 	}
 }
 

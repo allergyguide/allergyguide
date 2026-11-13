@@ -19,6 +19,7 @@ import {
 	lockAndSignOut,
 	setSignedInHook,
 } from "../core/auth/login-client";
+import { handleProfileLoadError } from "../core/auth/profile-load-error";
 import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { runCrudTest } from "../core/data/test-crud";
 import { renderAuthUI } from "../core/ui/auth-modals";
@@ -26,12 +27,11 @@ import { VALIDATION_DEBOUNCE_MS } from "./constants";
 import { validateProtocol } from "./core/validator";
 import { loadPublicDatabases, loadUserConfiguration } from "./data/loader";
 import { appState, initializeAppState, workspace } from "./state/instances";
-import {
-	type FoodData,
-	HttpError,
-	type OITBootstrapResponse,
-	type ProtocolData,
-	type Warning,
+import type {
+	FoodData,
+	OITBootstrapResponse,
+	ProtocolData,
+	Warning,
 } from "./types";
 import {
 	renderFoodASettings,
@@ -135,49 +135,12 @@ export const handleSuccessfulAuth = async () => {
 				appState.setSyncStatus("error");
 			});
 	} catch (e) {
-		// Sign out silently (null = no redirect) only when access is really gone
-		// but on network/server errors keep the session and key so a reload retries without a password
-		if (
-			e instanceof HttpError &&
-			(e.statusCode === 401 || e.statusCode === 403)
-		) {
-			await lockAndSignOut(null);
-			appState.setAuthState(false, null);
-		} else {
-			// Still signed in: show that in the toolbar so it matches the session
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-			appState.setAuthState(!!session, session?.user.email ?? null);
-		}
-
-		let userFacingMessage =
-			"An unexpected error occurred while loading your profile.";
-
-		if (e instanceof HttpError) {
-			if (e.statusCode === 401) {
-				console.debug("No active session or token expired:", e);
-				userFacingMessage = "Your session has expired. Please log in again.";
-			} else if (e.statusCode === 403) {
-				console.debug("Failed to load user config (Not Provisioned):", e);
-				userFacingMessage =
-					"Login successful, but this account lacks access to the OIT Calculator.";
-			} else if (e.statusCode >= 500) {
-				console.warn("User load failed (Server Error):", e);
-				userFacingMessage =
-					"Server error retrieving your profile. Reload the page to try again.";
-			} else {
-				console.warn(`User load failed (${e.statusCode}):`, e);
-			}
-		} else {
-			// Non-HTTP error (e.g., TypeError from JSON parsing, Network drop)
-			console.error("Undefined err in handleSuccessfulAuth: ", e);
-			userFacingMessage =
-				"Network or connection error. Check your internet and reload the page.";
-		}
-
-		// Keep the modal open and show the error!
-		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
+		await handleProfileLoadError(
+			e,
+			"the OIT Calculator",
+			(isLoggedIn, email) => appState.setAuthState(isLoggedIn, email),
+			handleSuccessfulAuth,
+		);
 	} finally {
 		// Ensure the promise is cleared regardless of success or failure
 		// so subsequent auth changes (e.g. logout then login or retries) get fresh data
