@@ -26,6 +26,24 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.11.6] - 2026-11-12
+
+### Changed
+
+- Search results: custom and branded foods now appear first only when they match your search about as well as other foods. A closer match always ranks higher.
+- Serving size now accepts values below 1 (e.g. 0.5 ml).
+- The Copy button now shows "Copied" or "Copy failed", and is disabled while the protein or serving size is invalid.
+
+### Fixed
+
+- Fixed an issue where clearing the serving size box and retyping a value added a leading 1 (e.g. typing 250 gave 1250).
+- A blank or zero serving size now shows a warning ("Serving size must be above zero.") instead of silently using 1.
+- Accounts without access to the OFC Index now see a clear message after logging in, instead of appearing logged out.
+- A server or network error while loading your profile no longer logs you out. A message asks you to reload the page.
+- If the food database fails to load, the page now shows an error message instead of staying on the loading screen.
+
+---
+
 ## [0.11.3] - 2026-06-26
 
 ### Added

@@ -24,6 +24,25 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.17.6] - 2026-11-13
+
+### Added
+
+- Copy to Clipboard: the button now confirms with "Copied" (or "Copied N protocols" when several tabs are open) for 2 seconds
+- My Library: a food or protocol being deleted now fades with a moving highlight until the deletion is confirmed. Its buttons are disabled in the meantime, and the row comes back if the deletion fails
+
+### Changed
+
+- Search results: branded and custom foods now appear first only when they match your search about as well as other foods. A closer match always ranks higher
+- Performance: faster loading right after logging in
+- The "no warnings" message is easier to read and still reminds you that doses must be verified
+- Library delete buttons and food settings warnings now use icons instead of emoji
+- Light mode uses an updated (burnt orange) accent colour
+
+### Fixed
+
+- Copy to Clipboard no longer throws an error in browsers that block clipboard access
+
 ## [0.17.3] - 2026-11-08
 
 ### Added
