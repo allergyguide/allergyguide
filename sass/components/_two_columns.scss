@@ -11,6 +11,21 @@
 
   @media (orientation: portrait) {
     flex-direction: column;
-    gap: 0.5rem
+    // flex items don't collapse margins, so drop the gap and column 2's top margin to match normal text flow
+    gap: 0;
+
+    .column + .column > :first-child {
+      margin-top: 0;
+    }
+
+    // admonitions carry no outer margin, so space them off whatever column 1 ended with
+    .column + .column > .admonition:first-child {
+      margin-top: 1rem;
+    }
+
+    // list continuing into a list: join them so it reads as one list
+    .column:has(+ .column > :is(ul, ol):first-child) > :is(ul, ol):last-child {
+      margin-bottom: 0;
+    }
   }
 }
