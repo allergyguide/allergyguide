@@ -76,7 +76,7 @@ function loadCustomFoodsInBackground(
  * Shared callback for an unlocked vault (fresh login, unlock, or page load with a DEK)
  * Loads protected assets; on failure signs out silently and shows the login modal with the reason
  */
-async function handleSuccessfulAuth() {
+export async function handleSuccessfulAuth() {
 	const { bootstrap, encryptedDocs } = pendingFetches ?? startUserFetches();
 	pendingFetches = null; // consumed; the next login starts fresh fetches
 
@@ -168,10 +168,12 @@ async function initializeOFC() {
 
 	let publicFoods: Food[];
 	let vaultState: Awaited<typeof vaultStatePromise>;
+	let sessionEmail: string | null;
 	try {
 		const {
 			data: { session },
 		} = await supabase.auth.getSession();
+		sessionEmail = session?.user.email ?? null;
 		// start network fetch without waiting for DEK
 		if (session) startUserFetches();
 		// On fresh login, start them as soon as Supabase sign-in returns
@@ -191,23 +193,6 @@ async function initializeOFC() {
 	}
 	appState.setFoods(publicFoods, []);
 
-	if (vaultState === "UNAUTHENTICATED") {
-		// Public mode => publicFoods
-		const instructions = document.querySelector(
-			".ofc-instructions",
-		) as HTMLElement;
-		if (instructions?.dataset.originalHtml) {
-			instructions.innerHTML = instructions.dataset.originalHtml;
-		}
-		appState.setAuthState(false, null);
-	} else if (vaultState === "LOCKED") {
-		// Logged in to Supabase, but DEK missing: force unlock
-		renderAuthUI("UNLOCK", handleSuccessfulAuth);
-	} else if (vaultState === "UNLOCKED") {
-		// Fully authenticated and decrypted: load user data
-		await handleSuccessfulAuth();
-	}
-
 	const changelogLink =
 		(
 			document.querySelector(
@@ -215,7 +200,7 @@ async function initializeOFC() {
 			) as HTMLAnchorElement
 		)?.href || "#";
 
-	// init UI (removes skeleton)
+	// init UI (removes skeleton) before the profile loads, so public search works even if the edge function is slow
 	initApp(mountPoint, {
 		onLogin: () => renderAuthUI("LOGIN", handleSuccessfulAuth),
 		onLogout: async () => {
@@ -226,6 +211,18 @@ async function initializeOFC() {
 		version: __VERSION_OFC_INDEX__,
 		changelogUrl: changelogLink,
 	});
+
+	if (vaultState === "UNAUTHENTICATED") {
+		// Public mode => publicFoods
+		appState.setAuthState(false, null);
+	} else if (vaultState === "LOCKED") {
+		// Logged in to Supabase, but DEK missing: force unlock
+		renderAuthUI("UNLOCK", handleSuccessfulAuth);
+	} else if (vaultState === "UNLOCKED") {
+		// Show the signed-in toolbar now; provisioned foods appear when the profile loads
+		appState.setAuthState(true, sessionEmail);
+		void handleSuccessfulAuth();
+	}
 }
 
 // Initialize when DOM is ready

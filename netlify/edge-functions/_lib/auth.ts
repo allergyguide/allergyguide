@@ -1,5 +1,6 @@
 import type { Context } from "@netlify/edge-functions";
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
+import { isAuthRetryableFetchError } from "@supabase/supabase-js";
 import { HttpError } from "./utils.ts";
 
 export interface UserToken {
@@ -43,7 +44,8 @@ function getEnvVars(): { supabaseUrl: string; supabaseKey: string } {
  * @param context - The Netlify Edge Function context, used to write refreshed cookies back to the response
  * @returns {Promise<UserToken>} The decoded user token payload containing their UUID and email
  *
- * @throws {HttpError} 403 - If no valid session cookie is present, or if the token is expired or tampered with
+ * @throws {HttpError} 401 - If no valid session cookie is present, or if the token is expired or tampered with
+ * @throws {HttpError} 503 - If Supabase can't be reached to refresh or verify the token
  * @throws {HttpError} 500 - If an unexpected error occurs during verification
  */
 export async function authenticateUser(
@@ -106,9 +108,14 @@ export async function authenticateUser(
 		// Verify the JWT cryptographically (this will fetch JWKS if not cached internally)
 		const { data, error } = await ssrClient.auth.getClaims();
 
+		// Supabase unreachable (refresh or JWKS fetch failed): not the user's fault, so don't make clients sign out
+		if (isAuthRetryableFetchError(error)) {
+			console.error("Token verification unavailable:", error);
+			throw new HttpError("Auth service unavailable", 503);
+		}
 		if (error || !data?.claims) {
 			console.error("Token verification failed:", error);
-			throw new HttpError("Forbidden: Invalid token", 403);
+			throw new HttpError("Unauthorized: Invalid token", 401);
 		}
 
 		return {

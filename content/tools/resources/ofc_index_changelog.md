@@ -26,6 +26,19 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.11.7] - 2026-11-13
+
+### Changed
+
+- The food search opens right away for signed-in users, without waiting for the profile to load. Your custom and branded foods appear as soon as it finishes.
+
+### Fixed
+
+- A brief outage of the login service no longer signs you out. Reload the page to try again.
+- An expired or invalid login now says "Your session has expired" instead of saying the account lacks access.
+
+---
+
 ## [0.11.6] - 2026-11-12
 
 ### Changed

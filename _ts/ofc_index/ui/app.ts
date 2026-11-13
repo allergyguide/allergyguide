@@ -66,7 +66,7 @@ export function initApp(mountPoint: HTMLElement, options: AppOptions) {
 	const doRender = () => {
 		const state = appState.getState();
 		const filteredFoods = appState.getFilteredFoods();
-		render(appTemplate(state, filteredFoods, options, mountPoint), mountPoint);
+		render(appTemplate(state, filteredFoods, options, doRender), mountPoint);
 
 		// Reset scroll to top if search query changed
 		if (state.debouncedSearchQuery !== lastSearchQuery) {
@@ -106,21 +106,18 @@ export function initApp(mountPoint: HTMLElement, options: AppOptions) {
  * @param state - Current application state
  * @param filteredFoods - Array of foods filtered by the search query
  * @param options - Configuration options and callbacks
+ * @param rerender - Re-renders the whole app (used by the tab bar)
  * @returns {TemplateResult} The lit-html template result
  */
 const appTemplate = (
 	state: OfcState,
 	filteredFoods: Food[],
 	options: AppOptions,
-	mountPoint: HTMLElement,
+	rerender: () => void,
 ): TemplateResult => html`
     <div class="ofc-container">
         <!-- Tab Bar -->
-        ${tabBarTemplate(() => {
-					const s = appState.getState();
-					const ff = appState.getFilteredFoods();
-					render(appTemplate(s, ff, options, mountPoint), mountPoint);
-				})}
+        ${tabBarTemplate(rerender)}
 
         ${
 					activeTab === "calculator"
