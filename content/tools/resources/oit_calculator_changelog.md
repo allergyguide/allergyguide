@@ -24,6 +24,16 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.17.7] - 2026-11-13
+
+### Fixed
+
+- A brief outage of the login service or a network drop no longer signs you out. Reload the page to try again.
+- An expired or invalid login now says "Your session has expired" instead of saying the account lacks access.
+- If your profile fails to load when you open the page, you now see a message explaining why instead of the calculator silently staying in public mode.
+
+---
+
 ## [0.17.6] - 2026-11-13
 
 ### Added

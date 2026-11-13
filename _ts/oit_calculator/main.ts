@@ -135,8 +135,21 @@ export const handleSuccessfulAuth = async () => {
 				appState.setSyncStatus("error");
 			});
 	} catch (e) {
-		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
-		await lockAndSignOut(null);
+		// Sign out silently (null = no redirect) only when access is really gone
+		// but on network/server errors keep the session and key so a reload retries without a password
+		if (
+			e instanceof HttpError &&
+			(e.statusCode === 401 || e.statusCode === 403)
+		) {
+			await lockAndSignOut(null);
+			appState.setAuthState(false, null);
+		} else {
+			// Still signed in: show that in the toolbar so it matches the session
+			const {
+				data: { session },
+			} = await supabase.auth.getSession();
+			appState.setAuthState(!!session, session?.user.email ?? null);
+		}
 
 		let userFacingMessage =
 			"An unexpected error occurred while loading your profile.";
@@ -152,7 +165,7 @@ export const handleSuccessfulAuth = async () => {
 			} else if (e.statusCode >= 500) {
 				console.warn("User load failed (Server Error):", e);
 				userFacingMessage =
-					"Server error retrieving your profile. Please try again later.";
+					"Server error retrieving your profile. Reload the page to try again.";
 			} else {
 				console.warn(`User load failed (${e.statusCode}):`, e);
 			}
@@ -160,7 +173,7 @@ export const handleSuccessfulAuth = async () => {
 			// Non-HTTP error (e.g., TypeError from JSON parsing, Network drop)
 			console.error("Undefined err in handleSuccessfulAuth: ", e);
 			userFacingMessage =
-				"Network or connection error. Please check your internet and try again.";
+				"Network or connection error. Check your internet and reload the page.";
 		}
 
 		// Keep the modal open and show the error!
@@ -281,64 +294,7 @@ async function initializeCalculator(): Promise<void> {
 		renderAuthUI("UNLOCK", handleSuccessfulAuth);
 	} else if (vaultState === "UNLOCKED") {
 		// 3. Fully Authenticated and Decrypted! Load the user data.
-		renderAuthUI("HIDDEN");
-
-		try {
-			if (!bootstrapPromise) {
-				// Fallback just in case (e.g. session was briefly false but vault unlocked, edge case)
-				bootstrapPromise = loadUserConfiguration();
-			}
-
-			const userData = await bootstrapPromise;
-
-			appState.addProvisionedData(
-				userData.provisioned_foods,
-				userData.provisioned_protocols,
-				userData.handouts,
-			);
-
-			appState.setAuthState(true, userData.email);
-
-			// Start background processing of custom assets
-			appState.setSyncStatus("loading");
-			const dek = getActiveDEK();
-
-			if (!encryptedDocsPromise) {
-				encryptedDocsPromise = fetchAllEncryptedDocuments([
-					"custom_food",
-					"custom_protocol",
-				]);
-			}
-
-			encryptedDocsPromise
-				.then(async (encryptedRows) => {
-					const [customFoods, customProtocols] = await Promise.all([
-						decryptDocuments<FoodData>(encryptedRows, dek, "custom_food"),
-						decryptDocuments<ProtocolData>(
-							encryptedRows,
-							dek,
-							"custom_protocol",
-						),
-					]);
-					appState.setUserData(
-						customFoods.map((doc) => doc.data),
-						customProtocols.map((doc) => doc.data),
-					);
-					appState.setSyncStatus("success");
-				})
-				.catch((err) => {
-					console.error("Failed to load custom assets:", err);
-					appState.setSyncStatus("error");
-				});
-		} catch {
-			console.error(
-				"Failed to load provisioned assets. User may not have access.",
-			);
-			// Optionally handle 403s here
-		} finally {
-			bootstrapPromise = null; // Clear it for subsequent re-auths
-			encryptedDocsPromise = null;
-		}
+		await handleSuccessfulAuth();
 	}
 
 	// Initialize global delegated events (settings, table, dosing, misc)
