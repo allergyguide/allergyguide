@@ -113,12 +113,12 @@ describe("AppState", () => {
 		expect(appState.getState().selectedFood?.name).toBe("Modified Name");
 	});
 
-	it("should enforce minimum serving size of 1", () => {
-		appState.setModalServingSize(0);
-		expect(appState.getState().modalServingSize).toBe(1);
+	it("should keep fractional serving sizes and floor negatives at 0", () => {
+		appState.setModalServingSize(0.5);
+		expect(appState.getState().modalServingSize).toBe(0.5);
 
 		appState.setModalServingSize(-10);
-		expect(appState.getState().modalServingSize).toBe(1);
+		expect(appState.getState().modalServingSize).toBe(0);
 	});
 
 	it("should update auth state", () => {

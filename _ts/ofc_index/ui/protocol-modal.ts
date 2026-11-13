@@ -39,12 +39,14 @@ export const protocolModalTemplate = (
 	const steps5 = calculateSteps(state.modalSteps5, ratio, unit);
 	const steps7 = calculateSteps(state.modalSteps7, ratio, unit);
 
+	const isServingZero = state.modalServingSize <= 0;
 	const isExceeding = state.modalGramsInServing > state.modalServingSize;
 	const isZero = state.modalGramsInServing <= 0;
-	const isInvalid = isExceeding || isZero;
+	const isInvalid = isServingZero || isExceeding || isZero;
 
 	let warningMsg = "";
-	if (isExceeding) warningMsg = "Protein exceeds serving size.";
+	if (isServingZero) warningMsg = "Serving size must be above zero.";
+	else if (isExceeding) warningMsg = "Protein exceeds serving size.";
 	else if (isZero) warningMsg = "Protein content is zero.";
 
 	return html`
@@ -82,10 +84,6 @@ export const protocolModalTemplate = (
                                 min="0"
                                 .value=${live(displayValue("ofc-modal-protein", state.modalGramsInServing.toString()))}
                                 @input=${(e: InputEvent) => appState.setModalGramsInServing(parseFloat((e.target as HTMLInputElement).value) || 0)}
-                                @blur=${(e: Event) => {
-																	(e.target as HTMLInputElement).value =
-																		state.modalGramsInServing.toString();
-																}}
                             />
                             (g) protein per
                         </label>
@@ -93,13 +91,10 @@ export const protocolModalTemplate = (
                             <input 
                                 id="ofc-modal-serving"
                                 type="number"
-                                min="1"
+                                step="any"
+                                min="0"
                                 .value=${live(displayValue("ofc-modal-serving", state.modalServingSize.toString()))}
-                                @input=${(e: InputEvent) => appState.setModalServingSize(parseFloat((e.target as HTMLInputElement).value) || 1)}
-                                @blur=${(e: Event) => {
-																	(e.target as HTMLInputElement).value =
-																		state.modalServingSize.toString();
-																}}
+                                @input=${(e: InputEvent) => appState.setModalServingSize(parseFloat((e.target as HTMLInputElement).value) || 0)}
                             />
                             (${unit}) serving
                         </label>

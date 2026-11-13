@@ -168,10 +168,10 @@ export class AppState {
 
 	/**
 	 * Updates the serving size used for dose calculations in the modal
-	 * Enforces a minimum of 1 to avoid division by zero
+	 * Stores the real value (0 if blank or negative) so the UI can flag it; proteinPerGram() guards division by zero
 	 */
 	setModalServingSize(val: number) {
-		const safeVal = Math.max(1, val);
+		const safeVal = Math.max(0, val);
 		this.state.modalServingSize = safeVal;
 		this.notify();
 	}

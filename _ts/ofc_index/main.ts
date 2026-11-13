@@ -91,8 +91,14 @@ async function handleSuccessfulAuth() {
 
 		loadCustomFoodsInBackground(encryptedDocs, userResult.foods);
 	} catch (e) {
-		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
-		await lockAndSignOut(null);
+		// Sign out silently (null = no redirect) only when access is really gone
+		// but on network/server errors keep the session and key so a reload retries without a password
+		if (
+			e instanceof HttpError &&
+			(e.statusCode === 401 || e.statusCode === 403)
+		) {
+			await lockAndSignOut(null);
+		}
 		appState.setAuthState(false, null);
 
 		let userFacingMessage =
