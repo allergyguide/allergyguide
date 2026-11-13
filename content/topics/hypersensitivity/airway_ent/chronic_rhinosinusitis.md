@@ -2,6 +2,7 @@
 title = "Chronic rhinosinusitis"
 description = "An approach to chronic rhinosinusitis"
 date = 2025-04-20
+updated = 2026-11-13
 draft = false
 weight =2
 [taxonomies]
@@ -9,7 +10,7 @@ tags = ["hypersensitivity","airway and ent"]
 [extra]
 toc = true
 series = "airway and ent"
-authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
+authors = ["Joshua Yu", "Staff: TBD"]
 status="ready" # options include not-started, wip, or ready
 +++
 
@@ -18,7 +19,7 @@ status="ready" # options include not-started, wip, or ready
 
 {% <admonition type="info" icon="info" title="THE BOTTOM LINE"> %}
 
-CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with three major subtypes: CRSsNP, CRSwNP, and AFRS. **Diagnosis requires _both_ objective structural evidence of sinus inflammation** (CT or endoscopy) and **≥2 cardinal symptoms for ≥12 weeks** (nasal congestion, facial pain or pressure, nasal drainage, and absent or reduced smell). Preliminary workup involves aeroallergen testing with other ad-hoc tests. **First-line management includes trigger avoidance, saline rinses, and INCS; failure of medical therapy may need ENT surgery**. Biologics such as dupilumab are very effective for CRSwNP, and are indicated for refractory/severe presentations.
+CRS is a complex inflammatory syndrome of the nose and paranasal sinuses, with two major subtypes: CRSsNP, CRSwNP. **Diagnosis requires _both_ objective structural evidence of sinus inflammation** (CT or endoscopy) and **≥2 cardinal symptoms for ≥12 weeks** (nasal congestion, facial pain or pressure, nasal drainage, and absent or reduced smell). Preliminary workup involves aeroallergen testing with other ad-hoc tests. **First-line management includes trigger avoidance, saline rinses, and INCS; involve your ENT colleagues**. Various biologics such as dupilumab are effective for CRSwNP.
 
 <br>
 
@@ -159,14 +160,14 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 
 {% </tabs> %}
 
-# Epidemiology and classifications
+# Epidemiology
 
-- Overall epidemiology
-  - Canadian prevalence ~2-15% <span class="references">chin_diagnosis_2025</span>; CRSsNP > CRSwNP >> AFRS
-  - Adults and pediatrics affected, mean diagnosis age ~39, females slightly > males <span class="references">chin_diagnosis_2025, lee_acaai_2024</span>
-  - Associated with increased healthcare costs + decreased QoL
+- Canadian prevalence ~2-15% <span class="references">chin_diagnosis_2025</span>; CRSsNP > CRSwNP >> AFRS
+- Adults and pediatrics affected, mean diagnosis age ~39, females slightly > males <span class="references">chin_diagnosis_2025, lee_acaai_2024</span>
 - Often symptoms are long-standing before presenting to medical attention, given low-grade severity
 - Other non-specific symptoms include ear fullness, headache, fatigue, altered taste, cough
+
+{% <dropdown header="Specifics about subtype epidemiology"> %}
 
 ### CRSsNP
 
@@ -189,15 +190,17 @@ Requires both ≥2 key symptoms for ≥8-12 weeks and at least 1 objective findi
 - Specific criteria: ALL of
   - CRS symptoms, Type 1 hypersensitivity to fungi confirmed by history, skin test, or serology, typical CT findings, Eosinophilic mucin with non-invasive fungal hyphae, absence of immunodeficiency, uncontrolled diabetes <span class="references">lee_acaai_2024</span>
 
-{% <dropdown header="FYI: A new classification system?"> %}
+{% </dropdown> %}
+
+<hr class="topic">
+
+# Classification:
 
 In 2020 a new classification system beyond sNP/wNP/AFRS was proposed based on primary vs secondary causes, and localization/type of inflammation (local vs diffuse; TH2 skewed vs non-TH2). <span class="references">grayson_contemporary_2020</span>
 
-Note that not all guidelines / position statements use this classification. Read the referenced JAMA article if you’re interested in learning more :)
+Note that not all guidelines / position statements use this classification.
 
 <img src="https://assets.allergyguide.ca/images/crs-classification.png" alt="Proposed classification of Chronic Rhinosinusitis" style="max-height: 60vh; display: block; margin: 1.5rem auto; border-radius: 4px;" loading="lazy" />
-
-{% </dropdown> %}
 
 <hr class="topic">
 
@@ -248,7 +251,7 @@ Note that not all guidelines / position statements use this classification. Read
 
 {% </text_image> %}
 
-<h3>Predisposing conditions/risk factors to assess for ALL CRS</h3>
+<h3>Predisposing conditions/risk factors</h3>
 
 {% <two_columns> %}
 
@@ -304,7 +307,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
 
 ### First line treatment
 
-- **Treat any underlying risk factors (who knew?)**
+- **Manage underlying risk factors**
 - **Lifestyle**
   - Avoidance of environmental triggers/insults/allergens
   - _High volume_ nasal saline rinses/irrigation (OTC, rinses > sprays), at least 200 mL per side <span class="references">chong_saline_2016</span>. Can improve penetration/efficacy of other topicals if used beforehand
@@ -547,12 +550,11 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
     - All overall have excellent side effect profile
     - Cost/insurance prohibitive
     - Unclear on: long-term side effects, duration of treatment, predictive patient factors for most benefit
-    - <em>ExRx: Dupilumab 300mg SC q2w {% <popup> %}
+    - <em>ExRx: Dupilumab 300mg SC q2w</em> {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="dupilumab" /> }}
 
-{% </popup> %}
-. S/E profile similar to placebo but classically conjunctivitis, eosinophilia, injection site reactions</em>
+{% </popup> %}<em>. S/E profile similar to placebo but classically conjunctivitis, eosinophilia, injection site reactions</em>
 
 {% <dropdown header="DEEP-DIVE: Biologics in CRSwNP"> %}
 
@@ -575,7 +577,7 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
 
 - **ASA desensitization** for coexisting NERD
   - Anecdotally, less commonly used with biologics available; logistically also difficult
-  - Involves surprisingly high doses of ASA (ie. 325 mg BID is maintenance\!\!)
+  - Involves surprisingly high doses of ASA (ie. 325 mg BID is maintenance\!)
   - Reference [this practice parameter](https://www.jacionline.org/article/S0091-6749(22)01484-1/fulltext#app-1) if you want to deep dive
 - **Leukotriene receptor antagonists** (LTRA) in the setting of NERD
   - Note: generally **recommended against** for CRSwNP in EPOS 2020, noting poor quality evidence of benefit <span class="references">fokkens_european_2020</span>
@@ -595,7 +597,7 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
 
 ### Surgery / FESS
 
-For CRSsNP and CRSwNP, FESS is considered if medical therapy has failed. Excellent symptomatic relief but with surgical risks.
+For CRSsNP and CRSwNP, FESS is usually considered if medical therapy has failed or severe baseline disease. Excellent symptomatic relief but with surgical risks.
 
 - <span class="hl-yellow">By itself, surgery does not cure CRS; recurrence can occur</span>
 - Post-surgery, it is important to maintain remission with ongoing medical therapy
@@ -621,7 +623,7 @@ For CRSsNP and CRSwNP, FESS is considered if medical therapy has failed. Excelle
 
 <h1>Contributors</h1>
 
-{{ <contributors authors={["Resident lead"]} editors={["Resident reviewer"]} staff_reviewers={["TBD"]} /> }}
+{{ <contributors authors={["Joshua Yu"]} editors={[]} staff_reviewers={["TBD"]} /> }}
 
 <script src="/js/tabs.js"></script>
 <script src="/js/popup.js"></script>
