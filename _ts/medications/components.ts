@@ -142,7 +142,9 @@ export function medCardTemplate(
 	onIndicationChange?: (ind: string) => void,
 	isStandalone: boolean = false,
 ): TemplateResult {
-	const indications = Array.from(new Set(med.doses.map((d) => d.indication)));
+	const indications = Array.from(
+		new Set(med.doses.flatMap((d) => d.indication)),
+	);
 	const showPills = indications.length >= 4;
 	return html`
 		<div class="med-card">
@@ -204,7 +206,7 @@ export function medCardTemplate(
 			}
 
 			<div class="med-doses">
-				${renderDoses(med, indications, showPills ? selectedIndication : "All")}
+				${renderDoses(med, showPills ? selectedIndication : "All")}
 			</div>
 
 			${
@@ -261,6 +263,7 @@ export function medCardTemplate(
 					med.coverage.length > 0
 						? renderCoverageTable(
 								med.coverage,
+								indications,
 								selectedProvince,
 								onProvinceChange,
 								isStandalone,
@@ -309,6 +312,18 @@ function renderFooter(med: Medication): TemplateResult | typeof nothing {
 	return html`<div class="med-footer">${parts.map((p, i) => html`<span>${i > 0 ? " | " : ""}${p}</span>`)}</div>`;
 }
 
+/**
+ * Whether an element tagged with `data-indications` (a JSON list) shows under the selected pill.
+ * Exact match; an empty list means "applies to all indications"
+ */
+const showsForIndication = (el: Element, ind: string) => {
+	if (ind === "All") return true;
+	const inds: string[] = JSON.parse(
+		el.getAttribute("data-indications") ?? "[]",
+	);
+	return inds.length === 0 || inds.includes(ind);
+};
+
 /** `<option>` list for a province select: "All Provinces" followed by each province */
 const provinceOptions = (selected: string) =>
 	["All", ...PROVINCES].map(
@@ -316,8 +331,35 @@ const provinceOptions = (selected: string) =>
 			html`<option value="${p}" ?selected=${p === selected}>${p === "All" ? "All Provinces" : p}</option>`,
 	);
 
+/**
+ * Coverage rules that apply in one province. A rule without `province` applies everywhere, but a
+ * province-specific rule overrides it for the indications it names (no `indication` = all indications).
+ * A general rule stays visible if it still applies to at least one indication the specific rules don't cover.
+ */
+export function filterCoverageForProvince(
+	coverage: MedicationCoverage[],
+	indications: string[],
+	province: string,
+): MedicationCoverage[] {
+	const applies = coverage.filter(
+		(c) => !c.province || (c.province as string[]).includes(province),
+	);
+	const specific = applies.filter((c) => c.province);
+	if (specific.length === 0) return applies;
+	const coversAll = specific.some((c) => !c.indication);
+	const covered = new Set(specific.flatMap((c) => c.indication ?? []));
+	return applies.filter(
+		(c) =>
+			c.province ||
+			!(
+				coversAll || (c.indication ?? indications).every((i) => covered.has(i))
+			),
+	);
+}
+
 function renderCoverageTable(
 	coverage: MedicationCoverage[],
+	indications: string[],
 	selectedProvince: string,
 	onProvinceChange?: (p: string) => void,
 	isStandalone: boolean = false,
@@ -325,10 +367,7 @@ function renderCoverageTable(
 	const filtered =
 		selectedProvince === "All"
 			? coverage
-			: coverage.filter(
-					(c: MedicationCoverage) =>
-						!c.province || (c.province as string[]).includes(selectedProvince),
-				);
+			: filterCoverageForProvince(coverage, indications, selectedProvince);
 
 	const handleProvChange = (e: Event) => {
 		const val = (e.target as HTMLSelectElement).value;
@@ -435,8 +474,7 @@ function renderCoverageTable(
 /**
  * Derive the subset of canonical indication strings (from doses) that have at least one matching adverse-event rate entry. Used to build AE filter pills
  *
- * Matching is done via String.includes() — AE rate labels are freeform sub-labels
- * (e.g. "Asthma (200mg q2w)") that must contain the canonical string.
+ * Exact match on the rate's `indication` list. Rates without an indication apply to all and don't create pills.
  *
  * @param med - The Medication data object
  * @param indications - Canonical indication strings, in dose order
@@ -445,7 +483,7 @@ function renderCoverageTable(
 function getAEIndications(med: Medication, indications: string[]): string[] {
 	return indications.filter((ind) =>
 		med.side_effects.some((se) =>
-			se.rates.some((rate) => rate.indication.includes(ind)),
+			se.rates.some((rate) => rate.indication?.includes(ind)),
 		),
 	);
 }
@@ -480,19 +518,17 @@ function renderAEContent(
 		});
 		btn.classList.add("active");
 
-		// Filter AE rows using includes() matching per symptom group
+		// Filter AE rows per symptom group (exact match; rows for all indications always show)
 		content
 			.querySelectorAll(".ae-table tbody.ae-symptom-group")
 			.forEach((tbody) => {
 				const rows = Array.from(
-					tbody.querySelectorAll("tr[data-indication]"),
+					tbody.querySelectorAll("tr[data-indications]"),
 				) as HTMLElement[];
 
 				// Show/hide rows based on filter
 				rows.forEach((row) => {
-					const rowInd = row.getAttribute("data-indication") ?? "";
-					row.style.display =
-						ind === "All" || rowInd.includes(ind) ? "" : "none";
+					row.style.display = showsForIndication(row, ind) ? "" : "none";
 				});
 
 				// Identify visible rows in this symptom group
@@ -567,14 +603,14 @@ function renderAEContent(
 									.join(" ");
 
 								return html`
-									<tr data-indication="${rate.indication}" class="${trClass}">
+									<tr data-indications=${JSON.stringify(rate.indication ?? [])} class="${trClass}">
 										<td class="${cellClasses}">
 											<div class="ae-symptom-content">
 												<strong>${se.symptom}</strong>
 												${se.notes ? html`<br><span class="text-muted ae-notes">${renderMarkdown(se.notes)}</span>` : nothing}
 											</div>
 										</td>
-										<td>${rate.indication}</td>
+										<td>${rate.label ?? rate.indication?.join(", ") ?? "All"}</td>
 										<td>${rate.drug}</td>
 										<td>${rate.comparator ? (mixedComparators ? `${rate.comparator} (${comparatorOf(se)})` : rate.comparator) : "-"}</td>
 									</tr>
@@ -625,9 +661,9 @@ function renderIndicationPills(
 		// Filter dose indication groups only.
 		// AE filtering is handled independently by the pills inside the AE accordion.
 		card.querySelectorAll(".med-indication-group").forEach((g) => {
-			const groupInd = g.getAttribute("data-indication");
-			(g as HTMLElement).style.display =
-				ind === "All" || groupInd === ind ? "" : "none";
+			(g as HTMLElement).style.display = showsForIndication(g, ind)
+				? ""
+				: "none";
 		});
 
 		if (onIndicationChange) onIndicationChange(ind);
@@ -656,16 +692,26 @@ function renderIndicationPills(
  * Pills are now rendered at card level; this function only handles the dose content.
  *
  * @param med - The Medication data object
- * @param indications - Canonical indication strings, in dose order
  * @param selectedIndication - The active indication filter ('All' or a canonical string).
  *   Used to set initial visibility when the card first renders.
  * @returns {TemplateResult} The rendered doses template
  */
 function renderDoses(
 	med: Medication,
-	indications: string[],
 	selectedIndication: string = "All",
 ): TemplateResult {
+	// Doses sharing the same indication list form one group; a group shows under each of its indications' pills
+	const groups = new Map<string, { indications: string[]; doses: Dose[] }>();
+	for (const dose of med.doses) {
+		const key = dose.indication.join(", ");
+		const group = groups.get(key) ?? {
+			indications: dose.indication,
+			doses: [],
+		};
+		group.doses.push(dose);
+		groups.set(key, group);
+	}
+
 	return html`
 		${
 			med.available_forms.length > 0
@@ -673,18 +719,18 @@ function renderDoses(
 				: nothing
 		}
 
-		${indications.map((ind) => {
-			const dosesForInd = med.doses.filter((d) => d.indication === ind);
+		${Array.from(groups, ([label, group]) => {
 			const isHidden =
-				selectedIndication !== "All" && selectedIndication !== ind;
+				selectedIndication !== "All" &&
+				!group.indications.includes(selectedIndication);
 			return html`
 				<div
 					class="med-indication-group"
-					data-indication="${ind}"
+					data-indications=${JSON.stringify(group.indications)}
 					style=${isHidden ? "display:none" : ""}
 				>
-					<h4>${ind}</h4>
-					${dosesForInd.length === 1 ? renderSingleDose(dosesForInd[0]) : renderDoseTable(dosesForInd)}
+					<h4>${label}</h4>
+					${group.doses.length === 1 ? renderSingleDose(group.doses[0]) : renderDoseTable(group.doses)}
 				</div>
 			`;
 		})}

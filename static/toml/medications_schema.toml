@@ -9,11 +9,13 @@
 # similarly, [fluticasone-furoate_inhaler] - note the hyphenation used between the drug combos.
 
 display_name = "What you want the reader to see" # [REQUIRED] ie. Mometasone (Topical)
-otc = "yes"                                      # [REQUIRED] only 'yes', 'no', or 'both' allowed
-draft = true                                     # [OPTIONAL] if true, the medication card will be rendered with a WIP sign (default: false)
-categories = ["inhaler"]                         # [OPTIONAL] index filter buttons. One of: antihistamine, biologic, inhaler, topical (add new ones in _ts/medications/schema.ts)
-abbreviations = ""                               # [OPTIONAL] ie: "AR-allergic rhinitis; CRS-chronic rhinosinusitis" (renders in tooltip)
-brand_names = ["BrandNameA", "BrandNameB"]       # [OPTIONAL]
+otc = "yes" # [REQUIRED] only 'yes', 'no', or 'both' allowed
+draft = true # [OPTIONAL] if true, the medication card will be rendered with a WIP sign (default: false)
+categories = [
+  "inhaler",
+] # [OPTIONAL] index filter buttons. One of: antihistamine, biologic, inhaler, topical (add new ones in _ts/medications/schema.ts)
+abbreviations = "" # [OPTIONAL] ie: "AR-allergic rhinitis; CRS-chronic rhinosinusitis" (renders in tooltip)
+brand_names = ["BrandNameA", "BrandNameB"] # [OPTIONAL]
 
 # [OPTIONAL] Author credits
 authors.primary = "TBD"
@@ -40,12 +42,12 @@ contraindications = "Insert absolute/relative" # Highlights at top right of card
 # [OPTIONAL] Arrays
 available_forms = ["0.1% Cream", "10/20mg tab; 2.5mg/ml liq"]
 interactions_summary = "None of clinical significance."
-severe_interactions = """
+severe_interactions = """ 
 ```text
 CYP3A4 Inhibitors (e.g., ketoconazole)
 Grapefruit
 ```
-"""
+""" # In here, may include a copy-paste of the monograph's interactions 
 pearls = [
   "**Important:** Insert clinical pearl here",
   "Each element in the array is a bullet point",
@@ -65,15 +67,18 @@ monograph_links = ["/monographs/example-2025-01.pdf"]
 #
 # CANONICAL INDICATION STRINGS
 # ─────────────────────────────
-# The `indication` string used in [[doses]] is the canonical label for that indication.
-# It MUST be used verbatim in:
-#   - coverage `indication` arrays (so the coverage table maps correctly)
-#   - side_effects.rates `indication` fields (so the AE filter can match via .includes())
+# The `indication` used in [[doses]] is the canonical label for that indication.
+# A dose shared by several indications lists them all: indication = ["CSU", "AR"]
+# (it shows once under "CSU, AR", and under both the CSU and AR filter pills).
 #
-# AE rate labels may be more specific (e.g. "Asthma (200mg q2w)") but MUST contain the canonical indication string as a substring.
+# Coverage and side_effects.rates `indication` values MUST match a dose indication exactly;
+# the build fails otherwise. Omit `indication` there to mean "all indications".
+#
+# For AE rows that need more detail than the canonical name, keep `indication` canonical and
+# put the display text in `label`, e.g. indication = "Asthma", label = "Asthma (200mg q2w)".
 
 [[template_med.doses]]
-indication = "Atopic Dermatitis" # [REQUIRED]
+indication = "Atopic Dermatitis" # [REQUIRED] string, or array if the dose is shared by several indications
 patient_age = "≥12 yrs"          # [REQUIRED] 
 dose = "0.1% ointment, BID"      # [REQUIRED] dose, form/route, frequency
 
@@ -92,6 +97,11 @@ dose = "Apply OD instead of BID"
 condition = "Hepatic (Child-Pugh C)"
 dose = "Avoid use"
 
+[[template_med.doses]]
+indication = "Asthma"   # every indication used in coverage or side_effects below needs a dose like this
+patient_age = "≥12 yrs"
+dose = "200 mg SC Q2W"
+
 
 # =====================================================================
 # ADVERSE EVENTS (TRIAL DATA)
@@ -105,12 +115,13 @@ notes = "More frequent in AD than Asthma" # [OPTIONAL] Supports markdown
 
 # Multiple rates allowed per symptom
 [[template_med.side_effects.rates]]
-indication = "Atopic Dermatitis" # [REQUIRED] Can use 'All' or specific indication
+indication = "Atopic Dermatitis" # [OPTIONAL] exact dose indication(s); omit if the rate applies to all indications
 drug = "10%"                     # [REQUIRED] Rate/HR/RR in drug group
 comparator = "2%"                # [OPTIONAL] Rate/HR/RR in comparator group
 
 [[template_med.side_effects.rates]]
 indication = "Asthma"
+label = "Asthma (200mg q2w)" # [OPTIONAL] display text for the Indication column
 drug = "<1%"
 comparator = "<1%"
 
@@ -123,12 +134,12 @@ comparator = "<1%"
 indication = [
   "Atopic Dermatitis",
   "Asthma",
-] # [OPTIONAL] Omit if it applies to all indications
+] # [OPTIONAL] Exact dose indication(s). Omit if it applies to all indications
 province = [
   "BC",
   "AB",
   "SK",
-] # [OPTIONAL] No province or indication specified = applies universally
+] # [OPTIONAL] No province = applies everywhere. When a province is selected, a rule naming that province overrides a no-province rule for the same indications
 status = "Restricted" # [REQUIRED] Must be: 'Open', 'Restricted', 'Age-Restricted', or 'Not Covered'
 tips = "Requires baseline endoscopy." # [OPTIONAL] Supports markdown for forms/links.
 

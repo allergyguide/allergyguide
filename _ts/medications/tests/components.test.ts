@@ -1,6 +1,6 @@
 import { render } from "lit-html";
 import { describe, expect, it } from "vitest";
-import { medCardTemplate } from "../components";
+import { filterCoverageForProvince, medCardTemplate } from "../components";
 import { type Medication, MedicationSchema } from "../schema";
 
 // Parse through the real schema so defaults and transforms match what the build ships
@@ -110,11 +110,12 @@ describe("coverage table", () => {
 		]);
 	});
 
-	it("keeps matching and province-less rules for one province", () => {
-		expect(rowsFor("ON")).toEqual([
-			["ON", "Restricted"],
-			["All", "Not Covered"],
-		]);
+	it("lets a province rule override the general rule for one province", () => {
+		expect(rowsFor("ON")).toEqual([["ON", "Restricted"]]);
+	});
+
+	it("keeps the general rule where no province rule exists", () => {
+		expect(rowsFor("AB")).toEqual([["All", "Not Covered"]]);
 	});
 });
 
@@ -189,7 +190,7 @@ describe("adverse event comparator", () => {
 		Array.from(el.querySelectorAll(".ae-table tbody tr")).map((tr) =>
 			text(tr.querySelectorAll("td")[3]),
 		);
-	const rate = { indication: "AD", drug: "10%", comparator: "2%" };
+	const rate = { drug: "10%", comparator: "2%" };
 
 	it("uses the shared comparator as the column header", () => {
 		const el = renderCard(
@@ -258,5 +259,130 @@ describe("schema", () => {
 				updated: "2025-05",
 			}).success,
 		).toBe(true);
+	});
+});
+
+describe("coverage override by indication", () => {
+	const med = makeMed({
+		doses: [
+			{ indication: "Asthma", patient_age: "≥12y", dose: "x" },
+			{ indication: "CSU", patient_age: "≥12y", dose: "y" },
+		],
+		coverage: [
+			{ status: "Not Covered" },
+			{ province: "BC", indication: "Asthma", status: "Restricted" },
+		],
+	});
+	const statuses = (province: string) =>
+		filterCoverageForProvince(med.coverage, ["Asthma", "CSU"], province).map(
+			(c) => c.status,
+		);
+
+	it("keeps the general rule when the province rule covers only some indications", () => {
+		// BC overrides Asthma only; the general rule still applies to CSU
+		expect(statuses("BC")).toEqual(["Not Covered", "Restricted"]);
+	});
+
+	it("drops the general rule once every indication it covers is overridden", () => {
+		const full = [
+			...med.coverage,
+			{
+				province: ["BC" as const],
+				indication: ["CSU"],
+				status: "Open" as const,
+			},
+		];
+		expect(
+			filterCoverageForProvince(full, ["Asthma", "CSU"], "BC").map(
+				(c) => c.status,
+			),
+		).toEqual(["Restricted", "Open"]);
+	});
+});
+
+describe("multi-indication doses", () => {
+	const med = makeMed({
+		doses: [
+			{ indication: ["CSU", "AR"], patient_age: "≥12y", dose: "10 mg OD" },
+			{ indication: "Asthma", patient_age: "≥12y", dose: "A" },
+			{ indication: "EoE", patient_age: "≥12y", dose: "E" },
+		],
+		side_effects: [
+			{
+				symptom: "Headache",
+				rates: [
+					{ indication: "CSU", label: "CSU (high dose)", drug: "5%" },
+					{ indication: "AR", drug: "2%" },
+					{ indication: ["Asthma", "EoE"], drug: "3%" },
+					{ drug: "1%" },
+				],
+			},
+		],
+	});
+
+	it("shows a shared dose once, under a combined heading", () => {
+		const headings = Array.from(
+			renderCard(med).querySelectorAll(".med-indication-group h4"),
+		).map(text);
+		expect(headings).toEqual(["CSU, AR", "Asthma", "EoE"]);
+	});
+
+	it("shows the shared dose under each of its indication pills", () => {
+		const el = renderCard(med);
+		document.body.appendChild(el);
+		const visibleGroups = () =>
+			Array.from(el.querySelectorAll<HTMLElement>(".med-indication-group"))
+				.filter((g) => g.style.display !== "none")
+				.map((g) => text(g.querySelector("h4")));
+		const pill = (label: string) =>
+			Array.from(
+				el.querySelectorAll<HTMLButtonElement>(".med-sticky-pills .pill"),
+			).find((b) => text(b) === label);
+
+		pill("AR")?.click();
+		expect(visibleGroups()).toEqual(["CSU, AR"]);
+		pill("Asthma")?.click();
+		expect(visibleGroups()).toEqual(["Asthma"]);
+		el.remove();
+	});
+
+	it("matches AE rows exactly, labels them, and always shows rows for all indications", () => {
+		const el = renderCard(med);
+		document.body.appendChild(el);
+		const rows = () =>
+			Array.from(el.querySelectorAll<HTMLElement>(".ae-table tbody tr"))
+				.filter((r) => r.style.display !== "none")
+				.map((r) => text(r.querySelectorAll("td")[1]));
+		const aePill = (label: string) =>
+			Array.from(
+				el.querySelectorAll<HTMLButtonElement>(".ae-filter-pills .pill"),
+			).find((b) => text(b) === label);
+
+		expect(rows()).toEqual(["CSU (high dose)", "AR", "Asthma, EoE", "All"]);
+		aePill("EoE")?.click();
+		expect(rows()).toEqual(["Asthma, EoE", "All"]);
+		aePill("CSU")?.click();
+		expect(rows()).toEqual(["CSU (high dose)", "All"]);
+		el.remove();
+	});
+
+	it("rejects coverage or AE indications that no dose uses", () => {
+		const result = MedicationSchema.safeParse({
+			display_name: "X",
+			otc: "no",
+			moa: "x",
+			pregnancy: "x",
+			side_effects_summary: "x",
+			doses: [{ indication: "CSU", patient_age: "any", dose: "x" }],
+			coverage: [{ indication: "Urticaria", status: "Open" }],
+			side_effects: [
+				{ symptom: "s", rates: [{ indication: "csu", drug: "1%" }] },
+			],
+		});
+		expect(result.success).toBe(false);
+		expect(result.error?.issues.map((i) => i.path.join("."))).toEqual([
+			"coverage.0.indication",
+			"side_effects.0.rates.0.indication",
+		]);
 	});
 });
