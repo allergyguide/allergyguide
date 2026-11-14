@@ -151,14 +151,33 @@ describe("markdown rendering", () => {
 });
 
 describe("monograph links", () => {
+	const labels = (...links: string[]) =>
+		Array.from(
+			renderCard(makeMed({ monograph_links: links })).querySelectorAll(
+				".pharm-item a",
+			),
+		).map(text);
+
 	it("labels a monograph by its date", () => {
-		const el = renderCard(
-			makeMed({
-				monograph_links: [
-					"https://assets.allergyguide.ca/monographs/cetirizine-2025-03.pdf",
-				],
-			}),
-		);
-		expect(text(el.querySelector(".pharm-item a"))).toBe("2025-03");
+		expect(
+			labels(
+				"https://assets.allergyguide.ca/monographs/cetirizine-2025-03.pdf",
+				"https://assets.allergyguide.ca/monographs/cetirizine-2025-12-v2.pdf",
+			),
+		).toEqual(["2025-03", "2025-12 (v2)"]);
+	});
+
+	it("handles drug names that contain hyphens", () => {
+		expect(
+			labels(
+				"https://assets.allergyguide.ca/monographs/sodium-cromoglycate-2024-01.pdf",
+			),
+		).toEqual(["2024-01"]);
+	});
+
+	it("falls back to the file name when there is no date", () => {
+		expect(
+			labels("https://assets.allergyguide.ca/monographs/epipen.pdf"),
+		).toEqual(["epipen"]);
 	});
 });

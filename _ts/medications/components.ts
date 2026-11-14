@@ -1,6 +1,6 @@
 import DOMPurify from "dompurify";
 import fuzzysort from "fuzzysort";
-import { html, nothing, type TemplateResult } from "lit-html";
+import { html, nothing, render, type TemplateResult } from "lit-html";
 import { repeat } from "lit-html/directives/repeat.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { marked } from "marked";
@@ -111,34 +111,16 @@ function renderMarkdownBlock(
 
 /**
  * Format a raw monograph URL into a clean, human-readable date string
- * Expected format: [drugname]-[YYYY]-[MM].pdf or [drugname]-[YYYY]-[MM]-[suffix].pdf
+ * Expected format: [drugname]-[YYYY]-[MM].pdf or [drugname]-[YYYY]-[MM]-[suffix].pdf (drug names may contain hyphens)
  *
  * @param url - The path to the monograph PDF
- * @returns {string} Formatted date (e.g. "2025-01" or "2025-01 (v2)")
+ * @returns {string} Formatted date (e.g. "2025-01" or "2025-01 (v2)"), or the file name if it doesn't match
  */
 function formatMonographName(url: string): string {
-	try {
-		const filename = url.substring(url.lastIndexOf("/") + 1);
-		const basename = filename.split(".")[0] || filename;
-
-		const parts = basename.split("-");
-
-		// If it matches our expected [drug]-[YYYY]-[MM] format
-		if (parts.length >= 3) {
-			const year = parts[1];
-			const month = parts[2];
-
-			// Handle the rare case of a suffix (e.g., v2)
-			const suffix = parts.length > 3 ? ` (${parts.slice(3).join("-")})` : "";
-
-			return `${year}-${month}${suffix}`;
-		}
-
-		// Fallback if the name doesn't match the standard
-		return basename;
-	} catch (_e) {
-		return "Monograph Link";
-	}
+	const filename = url.substring(url.lastIndexOf("/") + 1);
+	const match = filename.match(/-(\d{4}-\d{2})(?:-([^.]+))?\.pdf$/i);
+	if (!match) return filename.replace(/\.pdf$/i, "");
+	return match[2] ? `${match[1]} (${match[2]})` : match[1];
 }
 
 /**
@@ -222,17 +204,17 @@ export function medCardTemplate(
 			}
 
 			<div class="med-doses">
-				${renderDoses(med, showPills ? selectedIndication : "All")}
+				${renderDoses(med, indications, showPills ? selectedIndication : "All")}
 			</div>
 
 			${
-				(med.pearls && med.pearls.length > 0) || med.ix_before || med.ix_ongoing
+				med.pearls.length > 0 || med.ix_before || med.ix_ongoing
 					? html`
 				<div class="med-pearls">
-					<div class="pearls-title"><strong>${med.pearls && med.pearls.length > 0 ? (med.ix_before || med.ix_ongoing ? "Clinical Pearls & Monitoring" : "Clinical Pearls") : "Monitoring"}</strong></div>
+					<div class="pearls-title"><strong>${med.pearls.length > 0 ? (med.ix_before || med.ix_ongoing ? "Clinical Pearls & Monitoring" : "Clinical Pearls") : "Monitoring"}</strong></div>
 					
 					${
-						med.pearls && med.pearls.length > 0
+						med.pearls.length > 0
 							? html`
 						<ul class="pearls-list">
 							${med.pearls.map((p) => html`<li>${renderMarkdown(p)}</li>`)}
@@ -261,7 +243,7 @@ export function medCardTemplate(
 					"Adverse Events",
 					renderMarkdown(med.side_effects_summary),
 					med.severe_side_effects || med.side_effects.length > 0
-						? renderAEContent(med)
+						? renderAEContent(med, indications)
 						: undefined,
 				)}
 
@@ -290,7 +272,7 @@ export function medCardTemplate(
 					med.pregnancy ||
 					med.half_life ||
 					med.abbreviations ||
-					(med.monograph_links && med.monograph_links.length > 0)
+					med.monograph_links.length > 0
 						? Accordion(
 								"Misc",
 								html`
@@ -298,7 +280,7 @@ export function medCardTemplate(
 						${med.pregnancy ? html`<div class="pharm-item"><strong>Pregnancy:</strong> ${renderMarkdown(med.pregnancy)}</div>` : nothing}
 						${med.half_life ? html`<div class="pharm-item"><strong>Half-life:</strong> ${renderMarkdown(med.half_life)}</div>` : nothing}
 						${
-							med.monograph_links && med.monograph_links.length > 0
+							med.monograph_links.length > 0
 								? html`<div class="pharm-item"><strong>Monographs:</strong> 
 							${med.monograph_links.map((link, idx) => html`<a href="${link}" target="_blank" rel="noopener noreferrer">${formatMonographName(link)}</a>${idx < med.monograph_links.length - 1 ? " | " : ""}`)}
 						</div>`
@@ -452,12 +434,12 @@ function renderCoverageTable(
  * (e.g. "Asthma (200mg q2w)") that must contain the canonical string.
  *
  * @param med - The Medication data object
+ * @param indications - Canonical indication strings, in dose order
  * @returns Ordered array of canonical indication strings that have AE data
  */
-function getAEIndications(med: Medication): string[] {
-	const canonical = Array.from(new Set(med.doses.map((d) => d.indication)));
-	return canonical.filter((ind) =>
-		(med.side_effects ?? []).some((se) =>
+function getAEIndications(med: Medication, indications: string[]): string[] {
+	return indications.filter((ind) =>
+		med.side_effects.some((se) =>
 			se.rates.some((rate) => rate.indication.includes(ind)),
 		),
 	);
@@ -467,10 +449,14 @@ function getAEIndications(med: Medication): string[] {
  * Render the full Adverse Events accordion content, including optional indication filter pills when the drug has ≥4 canonical indications with AE data
  *
  * @param med - The Medication data object
+ * @param indications - Canonical indication strings, in dose order
  * @returns {TemplateResult} The AE accordion body
  */
-function renderAEContent(med: Medication): TemplateResult {
-	const aeIndications = getAEIndications(med);
+function renderAEContent(
+	med: Medication,
+	indications: string[],
+): TemplateResult {
+	const aeIndications = getAEIndications(med, indications);
 	const showAEPills = aeIndications.length >= 4;
 
 	const handleAEFilter = (e: Event, ind: string) => {
@@ -544,7 +530,7 @@ function renderAEContent(med: Medication): TemplateResult {
 		}
 
 		${
-			med.side_effects && med.side_effects.length > 0
+			med.side_effects.length > 0
 				? html`
 				<div class="table-responsive-wrapper">
 				<table class="med-dose-table ae-table">
@@ -660,19 +646,19 @@ function renderIndicationPills(
  * Pills are now rendered at card level; this function only handles the dose content.
  *
  * @param med - The Medication data object
+ * @param indications - Canonical indication strings, in dose order
  * @param selectedIndication - The active indication filter ('All' or a canonical string).
  *   Used to set initial visibility when the card first renders.
  * @returns {TemplateResult} The rendered doses template
  */
 function renderDoses(
 	med: Medication,
+	indications: string[],
 	selectedIndication: string = "All",
 ): TemplateResult {
-	const indications = Array.from(new Set(med.doses.map((d) => d.indication)));
-
 	return html`
 		${
-			med.available_forms && med.available_forms.length > 0
+			med.available_forms.length > 0
 				? html`<div class="med-forms"><strong>Available Forms:</strong> ${med.available_forms.join(", ")}</div>`
 				: nothing
 		}
@@ -685,7 +671,6 @@ function renderDoses(
 				<div
 					class="med-indication-group"
 					data-indication="${ind}"
-					id="dose-${ind.replace(/\s+/g, "-")}"
 					style=${isHidden ? "display:none" : ""}
 				>
 					<h4>${ind}</h4>
@@ -876,7 +861,7 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
 	const preparedSearchTargets = Object.entries(db).map(([id, med]) => {
 		const textToSearch = [
 			med.display_name,
-			...(med.brand_names || []),
+			...med.brand_names,
 			med.abbreviations || "",
 		].join(" ");
 
@@ -888,18 +873,15 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
 	});
 
 	const update = () => {
-		import("lit-html").then(({ render }) => {
-			render(
-				medIndexTemplate(
-					db,
-					state,
-					allCategories,
-					preparedSearchTargets,
-					updateState,
-				),
-				container,
-			);
-		});
+		render(
+			medIndexTemplate(
+				state,
+				allCategories,
+				preparedSearchTargets,
+				updateState,
+			),
+			container,
+		);
 	};
 
 	const updateState = (newState: Partial<typeof state>) => {
@@ -918,7 +900,6 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
 /**
  * Render the full Medication Index App (Search, Categories, and Results)
  *
- * @param _db - The full MedicationDatabase object
  * @param state - The current state containing query and category
  * @param categories - Array of unique category names
  * @param preparedSearchTargets - Fuzzysort prepared targets for optimized searching
@@ -926,7 +907,6 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
  * @returns {TemplateResult} The medication index template
  */
 export function medIndexTemplate(
-	_db: MedicationDatabase,
 	state: { query: string; category: string; province: string },
 	categories: string[],
 	preparedSearchTargets: {
