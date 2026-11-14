@@ -3,25 +3,16 @@ import { medCardTemplate, mountMedIndex } from "./components";
 import { type MedicationDatabase, MedicationSchema } from "./schema";
 
 /**
- * Initializes the medications app by parsing JSON data and mounting lit-html components
+ * Initializes the medications app by fetching the JSON database once and mounting lit-html components
  */
-function initMedications() {
-	// Locate the script tag containing the JSON database
-	const scriptEl = document.getElementById(
-		"med-database-json",
-	) as HTMLScriptElement;
-	if (!scriptEl) {
-		console.log("Medication database template not found on page.");
-		return;
-	}
-
-	const jsonStr =
-		scriptEl.getAttribute("data-json") || scriptEl.textContent || "";
+async function initMedications() {
 	let rawData: unknown;
 	try {
-		rawData = JSON.parse(jsonStr);
+		const res = await fetch("/toml/medications.json");
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+		rawData = await res.json();
 	} catch (e) {
-		console.error("Failed to parse medication JSON data", e);
+		console.error("Failed to load medication JSON data", e);
 		return;
 	}
 
