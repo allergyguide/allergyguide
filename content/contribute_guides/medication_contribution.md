@@ -14,7 +14,7 @@ Medications can be found in this [page here](/medications/) and are also accessi
 
 {% </popup> %}
 
-- The goal is cards that are succinct and relevant, not a deep dive – the user can look at the monograph if needed for more detail.
+- Cards are a quick reference for use at the point of care. The goal is cards that are succinct and relevant, not a deep dive – the user can look at the monograph if needed for more detail.
   - What do you think would be useful to see as a quick reference? What's helpful for counseling patients?
 - As such, there's a relatively standardized structure/format for medications.
   - Monographs will be statically hosted and linked. Include a link for the Health Canada monograph in your draft file.
@@ -41,12 +41,13 @@ Copy the form below into a Word document, Google Doc, etc., fill it out with the
 - **Generic Name (Display Name):** `[e.g., Dupilumab]`
 - **Brand Name(s):** `[e.g., Dupixent]`
 - **Available OTC?** `[Yes / No / Both]`
-- **Drug Categories:** `[e.g., Biologic, Topical, Inhaler (something very broad)]`
+- **Drug Categories:** `[One or more of: Antihistamine, Biologic, Inhaler, Topical. If none fit, suggest a new one and the editorial team will add it]`
 - **Common Abbreviations:** `[e.g., AD = Atopic Dermatitis]`
 - **Available Forms/Strengths:**
   - `[e.g., 300mg/2mL syringe]`
   - `[e.g., 200mg/1.14mL pen]`
 - **Author Credits (Primary / Editor / Faculty Reviewer):** `[Optional]`
+- **Health Canada Monograph:** `[Link to the product monograph, and its date, e.g. "2025-01"]`
 
 ## 2. Clinical Pharmacology
 
@@ -57,7 +58,8 @@ Copy the form below into a Word document, Google Doc, etc., fill it out with the
 ## 3. Safety & Monitoring
 
 - **Contraindications:** `[List absolute/relative contraindications. If there are none, write "None beyond hypersensitivity" rather than leaving it blank]`
-- **Severe Interactions:** `[Optional - e.g., CYP3A4 inhibitors]`
+- **Interactions Summary:** `[Optional - one line, e.g., "Avoid strong CYP3A4 inhibitors"]`
+- **Interaction Details:** `[Optional - paste the relevant interactions section from the monograph]`
 - **Investigations (Before Starting):** `[Optional - e.g., Baseline CBC]`
 - **Investigations (Ongoing):** `[Optional - e.g., LFTs q3 months]`
 
@@ -71,14 +73,17 @@ _(Optional) Specific Clinical Trial Data:_
 If you wish to provide specific rates from trials, list them. You don't have to do _EVERY_ one; just the clinically relevant. What do you want to know when counseling the patient?
 
 - **Symptom:** `[e.g., Conjunctivitis]`
-  - **Indication:** `[e.g., Atopic Dermatitis]`
+  - **Comparator:** `[e.g., Placebo, Vehicle]`
+  - **Indication:** `[e.g., AD. Use the same name as in Dosing. Leave blank if the rate applies to all indications]`
   - **Drug Rate:** `[e.g., 10%]`
-  - **Placebo Rate:** `[e.g., 2%]`
+  - **Comparator Rate:** `[e.g., 2%]`
   - **Notes:** `[Optional]`
 
 ## 5. Dosing
 
 _Please copy and paste the block below for each different indication/dose._
+
+Pick one short name per indication (e.g., AD, CSU, Asthma) and use exactly that name everywhere: Dosing, Adverse Events, and Coverage. If one dose applies to several indications, list them all on one block (e.g., "CSU, AR") instead of repeating it.
 
 **Indication:** `[e.g., Asthma]`
 
@@ -93,12 +98,10 @@ _Please copy and paste the block below for each different indication/dose._
 
 ## 6. Clinical Pearls
 
-_Please list any high-yield clinical pearls, tips, or tricks for this medication:_
+_Please list any high-yield clinical pearls, tips, or tricks for this medication, e.g., need to eat with food, no need for hepatic/renal adjustment:_
 
 - `[Pearl 1]`
 - `[Pearl 2]`
-
-May consider things like: need to eat with food, no need for hepatic/renal adjustment, etc.
 
 ## 7. Coverage & Cost (Canada)
 
@@ -106,8 +109,9 @@ May consider things like: need to eat with food, no need for hepatic/renal adjus
 
 _Please list provincial coverage details below. (Copy and paste for multiple provinces, or insurers)_ You don't have to be exhaustive here - what's clinically going to be relevant for you? Medical coverage is complicated, and may also involve things like Private Insurance / Patient Support Programs.
 
-- **Province/Insurer:** `[e.g., BC, ON, Non-Insured Health Benefits (NIHB)]`
-- **Status:** `[Choose one: Covered / Special Authority / Not Covered / Mixed]`
+- **Province/Insurer:** `[e.g., BC, ON, Non-Insured Health Benefits (NIHB). Group provinces with the same rule (e.g., BC, AB). Leave blank if the rule applies everywhere]`
+- **Indication:** `[Optional - e.g., Asthma. Use the same names as in Dosing. Leave blank if the rule applies to all indications]`
+- **Status:** `[Choose one: Open / Restricted / Age-Restricted / Not Covered. If coverage differs by indication, add one rule per indication]`
 - **Coverage Details & Requirements:**
   `[Provide criteria, EAP requirements, or links to forms here]`
   `[Provide specific criteria here, for example: lab requirements, need for failed therapies (e.g., 'failed 3 months of topical steroids'), LU codes, or links to SA/EAP forms.]`
