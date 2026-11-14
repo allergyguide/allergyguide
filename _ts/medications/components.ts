@@ -4,7 +4,12 @@ import { html, nothing, type TemplateResult } from "lit-html";
 import { repeat } from "lit-html/directives/repeat.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { marked } from "marked";
-import { PROVINCES, STATUS_CSS_MAP } from "./constants";
+import {
+	getSavedProvince,
+	PROVINCES,
+	STATUS_CSS_MAP,
+	saveProvince,
+} from "./constants";
 import type {
 	Dose,
 	DoseAdjustment,
@@ -861,7 +866,7 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
 	let state = {
 		query: "",
 		category: "All",
-		province: localStorage.getItem("med-province") || "All",
+		province: getSavedProvince(),
 	};
 
 	const categories = new Set<string>();
@@ -980,7 +985,7 @@ export function medIndexTemplate(
 				/>
 				<select class="med-province-select" @change=${(e: Event) => {
 					const p = (e.target as HTMLSelectElement).value;
-					localStorage.setItem("med-province", p);
+					saveProvince(p);
 					// Dispatch event for islands
 					document.dispatchEvent(
 						new CustomEvent("med-province-changed", { detail: p }),
@@ -1016,7 +1021,7 @@ export function medIndexTemplate(
 										(p) => {
 											// Update index state directly (avoids a re-render via the event listener, which guards against state.province === p)
 											// Event is still dispatched to sync any standalone islands on the page
-											localStorage.setItem("med-province", p);
+											saveProvince(p);
 											document.dispatchEvent(
 												new CustomEvent("med-province-changed", { detail: p }),
 											);

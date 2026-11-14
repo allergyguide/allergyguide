@@ -1,5 +1,6 @@
 import { render } from "lit-html";
 import { medCardTemplate, mountMedIndex } from "./components";
+import { getSavedProvince, saveProvince } from "./constants";
 import type { MedicationDatabase } from "./schema";
 
 /**
@@ -30,7 +31,7 @@ async function initMedications() {
 		const drugId = mount.getAttribute("data-drug-id");
 		if (drugId && db[drugId]) {
 			console.log(`Mounting Med Card for ${drugId}`);
-			let currentProv = localStorage.getItem("med-province") || "All";
+			let currentProv = getSavedProvince();
 			let currentIndication = "All";
 
 			const renderIsland = () => {
@@ -40,7 +41,7 @@ async function initMedications() {
 						currentProv,
 						(newProv) => {
 							currentProv = newProv;
-							localStorage.setItem("med-province", newProv);
+							saveProvince(newProv);
 							document.dispatchEvent(
 								new CustomEvent("med-province-changed", { detail: newProv }),
 							);
