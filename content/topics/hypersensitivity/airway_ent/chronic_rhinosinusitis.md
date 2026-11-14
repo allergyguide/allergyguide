@@ -525,7 +525,7 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
     - Unclear on: long-term side effects, duration of treatment, predictive patient factors for most benefit
     - <em>ExRx: Dupilumab 300mg SC q2w</em> {% <popup> %}
 
-{{ <med_card id="dupilumab" /> }}
+{{ <med_card id="dupilumab" indication="CRSwNP" /> }}
 
 {% </popup> %}<em>. S/E profile similar to placebo but classically conjunctivitis, eosinophilia, injection site reactions</em>
 

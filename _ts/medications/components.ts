@@ -132,6 +132,7 @@ function formatMonographName(url: string): string {
  * @param selectedIndication - The currently selected indication filter ('All' or a canonical indication string)
  * @param onIndicationChange - Callback fired when indication selection changes
  * @param isStandalone - Whether the card is rendered as a standalone island
+ * @param initialAEIndication - Indication the AE pills start on. Fixed for the card's life, so re-renders never undo the reader's AE choice
  * @returns {TemplateResult} The complete medication card template
  */
 export function medCardTemplate(
@@ -141,6 +142,7 @@ export function medCardTemplate(
 	selectedIndication: string = "All",
 	onIndicationChange?: (ind: string) => void,
 	isStandalone: boolean = false,
+	initialAEIndication: string = "All",
 ): TemplateResult {
 	const indications = Array.from(
 		new Set(med.doses.flatMap((d) => d.indication)),
@@ -245,7 +247,7 @@ export function medCardTemplate(
 					"Adverse Events",
 					renderMarkdown(med.side_effects_summary),
 					med.severe_side_effects || med.side_effects.length > 0
-						? renderAEContent(med, indications)
+						? renderAEContent(med, indications, initialAEIndication)
 						: undefined,
 				)}
 
@@ -316,13 +318,28 @@ function renderFooter(med: Medication): TemplateResult | typeof nothing {
  * Whether an element tagged with `data-indications` (a JSON list) shows under the selected pill.
  * Exact match; an empty list means "applies to all indications"
  */
-const showsForIndication = (el: Element, ind: string) => {
-	if (ind === "All") return true;
-	const inds: string[] = JSON.parse(
-		el.getAttribute("data-indications") ?? "[]",
+const showsForIndication = (el: Element, ind: string) =>
+	appliesTo(JSON.parse(el.getAttribute("data-indications") ?? "[]"), ind);
+
+/** Same rule for data: an empty or missing list applies to every indication */
+const appliesTo = (inds: string[] | undefined, ind: string) =>
+	ind === "All" || !inds?.length || inds.includes(ind);
+
+/**
+ * The indication a card starts on, from the page's `indication` argument.
+ * Must exactly match one of the drug's dose indications; anything else falls back to "All" so a typo never hides doses
+ */
+export function startingIndication(
+	med: Medication,
+	requested?: string | null,
+): string {
+	if (!requested) return "All";
+	if (med.doses.some((d) => d.indication.includes(requested))) return requested;
+	console.warn(
+		`Unknown indication "${requested}" for ${med.display_name}; showing All`,
 	);
-	return inds.length === 0 || inds.includes(ind);
-};
+	return "All";
+}
 
 /** `<option>` list for a province select: "All Provinces" followed by each province */
 const provinceOptions = (selected: string) =>
@@ -498,6 +515,7 @@ function getAEIndications(med: Medication, indications: string[]): string[] {
 function renderAEContent(
 	med: Medication,
 	indications: string[],
+	initialIndication: string,
 ): TemplateResult {
 	// comparator_name is set per symptom; if symptoms use different comparators, label each value instead of trusting one header
 	const comparatorOf = (se: Medication["side_effects"][number]) =>
@@ -506,6 +524,11 @@ function renderAEContent(
 	const mixedComparators = comparatorNames.size > 1;
 	const aeIndications = getAEIndications(med, indications);
 	const showAEPills = aeIndications.length >= 4;
+	// Start on the card's indication only when it has its own AE pill; otherwise all rows show
+	const startAE =
+		showAEPills && aeIndications.includes(initialIndication)
+			? initialIndication
+			: "All";
 
 	const handleAEFilter = (e: Event, ind: string) => {
 		const btn = e.currentTarget as HTMLElement;
@@ -565,10 +588,10 @@ function renderAEContent(
 			showAEPills
 				? html`
 				<div class="ae-filter-pills">
-					<button class="pill active" @click=${(e: Event) => handleAEFilter(e, "All")}>All</button>
+					<button class="pill ${startAE === "All" ? "active" : ""}" @click=${(e: Event) => handleAEFilter(e, "All")}>All</button>
 					${aeIndications.map(
 						(ind) =>
-							html`<button class="pill" @click=${(e: Event) => handleAEFilter(e, ind)}>${ind}</button>`,
+							html`<button class="pill ${startAE === ind ? "active" : ""}" @click=${(e: Event) => handleAEFilter(e, ind)}>${ind}</button>`,
 					)}
 				</div>
 			`
@@ -592,18 +615,23 @@ function renderAEContent(
 						(se) => html`
 						<tbody class="ae-symptom-group">
 							${se.rates.map((rate, idx) => {
-								const isLast = idx === se.rates.length - 1;
+								// Same symptom-cell rules as handleAEFilter, applied to the rows visible at start
+								const shown = se.rates.map((r) =>
+									appliesTo(r.indication, startAE),
+								);
+								const pos = shown.slice(0, idx).filter(Boolean).length;
+								const visibleCount = shown.filter(Boolean).length;
 								const trClass = idx === 0 ? "ae-row-first" : "ae-row-cont";
 								const cellClasses = [
 									"ae-sym-cell",
-									idx > 0 ? "ae-hide-symptom" : "",
-									!isLast ? "ae-no-border" : "",
+									pos > 0 ? "ae-hide-symptom" : "",
+									pos < visibleCount - 1 ? "ae-no-border" : "",
 								]
 									.filter(Boolean)
 									.join(" ");
 
 								return html`
-									<tr data-indications=${JSON.stringify(rate.indication ?? [])} class="${trClass}">
+									<tr data-indications=${JSON.stringify(rate.indication ?? [])} class="${trClass}" style=${shown[idx] ? "" : "display: none"}>
 										<td class="${cellClasses}">
 											<div class="ae-symptom-content">
 												<strong>${se.symptom}</strong>

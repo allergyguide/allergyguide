@@ -1,5 +1,9 @@
 import { render } from "lit-html";
-import { medCardTemplate, mountMedIndex } from "./components";
+import {
+	medCardTemplate,
+	mountMedIndex,
+	startingIndication,
+} from "./components";
 import { getSavedProvince, PROVINCE_EVENT, setProvince } from "./constants";
 import type { MedicationDatabase } from "./schema";
 
@@ -32,7 +36,12 @@ async function initMedications() {
 		if (drugId && db[drugId]) {
 			console.log(`Mounting Med Card for ${drugId}`);
 			let currentProv = getSavedProvince();
-			let currentIndication = "All";
+			// Popups can start on the page's indication, e.g. the CRSwNP page opens dupilumab on CRSwNP
+			const startInd = startingIndication(
+				db[drugId],
+				mount.getAttribute("data-indication"),
+			);
+			let currentIndication = startInd;
 
 			const renderIsland = () => {
 				render(
@@ -46,6 +55,7 @@ async function initMedications() {
 							// This callback exists solely to keep currentIndication in sync
 						},
 						true,
+						startInd,
 					),
 					mount as HTMLElement,
 				);

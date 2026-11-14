@@ -1,9 +1,9 @@
-{%- component med_card(id) -%}
+{%- component med_card(id, indication="") -%}
 {#- Data is fetched once by the script; the browser runs a repeated module script only once. -#}
 {%- set med_html -%}
 {%- set tools = load_data(path="static/js/tools_versioning.json") -%}
 <script type="module" src="/js/{{ tools.medications.file }}"></script>
-<div class="med-card-mount" data-drug-id="{{ id }}"></div>
+<div class="med-card-mount" data-drug-id="{{ id }}"{% if indication %} data-indication="{{ indication }}"{% endif %}></div>
 {%- endset -%}
 {{- med_html | replace(from="\n", to="") | safe -}}
 {%- endcomponent med_card -%}

@@ -1,6 +1,10 @@
 import { render } from "lit-html";
-import { describe, expect, it } from "vitest";
-import { filterCoverageForProvince, medCardTemplate } from "../components";
+import { describe, expect, it, vi } from "vitest";
+import {
+	filterCoverageForProvince,
+	medCardTemplate,
+	startingIndication,
+} from "../components";
 import { type Medication, MedicationSchema } from "../schema";
 
 // Parse through the real schema so defaults and transforms match what the build ships
@@ -384,5 +388,44 @@ describe("multi-indication doses", () => {
 			"coverage.0.indication",
 			"side_effects.0.rates.0.indication",
 		]);
+	});
+
+	it("starts a popup on the page's indication, for doses and AEs", () => {
+		const start = startingIndication(med, "EoE");
+		const el = document.createElement("div");
+		render(
+			medCardTemplate(med, "All", undefined, start, undefined, true, start),
+			el,
+		);
+		const shown = (sel: string) =>
+			Array.from(el.querySelectorAll<HTMLElement>(sel)).filter(
+				(e) => e.style.display !== "none",
+			);
+		expect(
+			shown(".med-indication-group").map((g) => text(g.querySelector("h4"))),
+		).toEqual(["EoE"]);
+		expect(text(el.querySelector(".med-sticky-pills .pill.active"))).toBe(
+			"EoE",
+		);
+		expect(text(el.querySelector(".ae-filter-pills .pill.active"))).toBe("EoE");
+		const aeRows = shown(".ae-table tbody tr");
+		expect(aeRows.map((r) => text(r.querySelectorAll("td")[1]))).toEqual([
+			"Asthma, EoE",
+			"All",
+		]);
+		// The first visible row carries the symptom name; the last one closes the border
+		const cell = (r: HTMLElement) =>
+			r.querySelector(".ae-sym-cell") as HTMLElement;
+		expect(cell(aeRows[0]).classList.contains("ae-hide-symptom")).toBe(false);
+		expect(cell(aeRows[0]).classList.contains("ae-no-border")).toBe(true);
+		expect(cell(aeRows[1]).classList.contains("ae-no-border")).toBe(false);
+	});
+
+	it("falls back to All for an indication the drug does not have", () => {
+		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+		expect(startingIndication(med, "eoe")).toBe("All");
+		expect(warn).toHaveBeenCalledOnce();
+		expect(startingIndication(med, null)).toBe("All");
+		expect(startingIndication(med, "AR")).toBe("AR");
 	});
 });
