@@ -12,7 +12,7 @@ Please fill out the fields below. You can leave `[Optional]` fields blank. Feel 
 - **Available Forms/Strengths:**
   - `[e.g., 300mg/2mL syringe]`
   - `[e.g., 200mg/1.14mL pen]`
-- **Author Credits (Primary / Editor):** `[Optional]`
+- **Author Credits (Primary / Editor / Faculty Reviewer):** `[Optional]`
 - **Reference Monograph**: [Optional - Provide a link to the source monograph]
 
 ## 2. Clinical Pharmacology
@@ -23,7 +23,7 @@ Please fill out the fields below. You can leave `[Optional]` fields blank. Feel 
 
 ## 3. Safety & Monitoring
 
-- **Contraindications:** `[Optional - List absolute/relative contraindications]`
+- **Contraindications:** `[List absolute/relative contraindications. If there are none, write "None beyond hypersensitivity" rather than leaving it blank]`
 - **Severe Interactions:** `[Optional - e.g., CYP3A4 inhibitors]`
 - **Investigations (Before Starting):** `[Optional - e.g., Baseline CBC]`
 - **Investigations (Ongoing):** `[Optional - e.g., LFTs q3 months]`

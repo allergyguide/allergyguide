@@ -69,10 +69,23 @@ export const CoverageSchema = z.object({
 export type MedicationCoverage = z.infer<typeof CoverageSchema>;
 export type CoverageStatus = z.infer<typeof CoverageStatusEnum>;
 
+/** Index filter buttons. Add a value here to create a new category; a typo fails the build instead of creating a stray button */
+export const MedicationCategoryEnum = z.enum([
+	"antihistamine",
+	"biologic",
+	"inhaler",
+	"topical",
+]);
+
 export const MedicationSchema = z.object({
 	draft: z.boolean().default(false),
 	display_name: z.string(),
-	categories: z.array(z.string()).default([]),
+	categories: z.array(MedicationCategoryEnum).default([]),
+	// When the card content was last updated; shown in the card footer
+	updated: z
+		.string()
+		.regex(/^\d{4}-\d{2}(-\d{2})?$/, "Use YYYY-MM or YYYY-MM-DD")
+		.optional(),
 	otc: z.enum(["yes", "no", "both"]),
 	abbreviations: z.string().optional(),
 	authors: z

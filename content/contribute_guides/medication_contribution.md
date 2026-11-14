@@ -46,7 +46,7 @@ Copy the form below into a Word document, Google Doc, etc., fill it out with the
 - **Available Forms/Strengths:**
   - `[e.g., 300mg/2mL syringe]`
   - `[e.g., 200mg/1.14mL pen]`
-- **Author Credits (Primary / Editor):** `[Optional]`
+- **Author Credits (Primary / Editor / Faculty Reviewer):** `[Optional]`
 
 ## 2. Clinical Pharmacology
 
@@ -56,7 +56,7 @@ Copy the form below into a Word document, Google Doc, etc., fill it out with the
 
 ## 3. Safety & Monitoring
 
-- **Contraindications:** `[Optional - List absolute/relative contraindications]`
+- **Contraindications:** `[List absolute/relative contraindications. If there are none, write "None beyond hypersensitivity" rather than leaving it blank]`
 - **Severe Interactions:** `[Optional - e.g., CYP3A4 inhibitors]`
 - **Investigations (Before Starting):** `[Optional - e.g., Baseline CBC]`
 - **Investigations (Ongoing):** `[Optional - e.g., LFTs q3 months]`

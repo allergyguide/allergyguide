@@ -181,3 +181,82 @@ describe("monograph links", () => {
 		).toEqual(["epipen"]);
 	});
 });
+
+describe("adverse event comparator", () => {
+	const header = (el: Element) =>
+		text(el.querySelectorAll(".ae-table thead th")[3]);
+	const comparatorCells = (el: Element) =>
+		Array.from(el.querySelectorAll(".ae-table tbody tr")).map((tr) =>
+			text(tr.querySelectorAll("td")[3]),
+		);
+	const rate = { indication: "AD", drug: "10%", comparator: "2%" };
+
+	it("uses the shared comparator as the column header", () => {
+		const el = renderCard(
+			makeMed({
+				side_effects: [
+					{ symptom: "A", comparator_name: "Vehicle", rates: [rate] },
+					{ symptom: "B", comparator_name: "Vehicle", rates: [rate] },
+				],
+			}),
+		);
+		expect(header(el)).toBe("Vehicle");
+		expect(comparatorCells(el)).toEqual(["2%", "2%"]);
+	});
+
+	it("labels each value when symptoms use different comparators", () => {
+		const el = renderCard(
+			makeMed({
+				side_effects: [
+					{ symptom: "A", rates: [rate] },
+					{ symptom: "B", comparator_name: "Vehicle", rates: [rate] },
+				],
+			}),
+		);
+		expect(header(el)).toBe("Comparator");
+		expect(comparatorCells(el)).toEqual(["2% (Placebo)", "2% (Vehicle)"]);
+	});
+});
+
+describe("footer", () => {
+	const footer = (overrides: Record<string, unknown>) =>
+		text(renderCard(makeMed(overrides)).querySelector(".med-footer"));
+
+	it("shows reviewer and last-updated date when present", () => {
+		expect(
+			footer({
+				authors: { primary: "JY", staff: "Dr. X" },
+				updated: "2025-05",
+			}),
+		).toBe("Updated by: JY | Reviewed by: Dr. X | Last updated: 2025-05");
+	});
+
+	it("renders nothing without credits or date", () => {
+		expect(footer({})).toBe("");
+	});
+});
+
+describe("schema", () => {
+	it("rejects an unknown category and a malformed updated date", () => {
+		const base = {
+			display_name: "X",
+			otc: "no",
+			moa: "x",
+			pregnancy: "x",
+			side_effects_summary: "x",
+		};
+		expect(
+			MedicationSchema.safeParse({ ...base, categories: ["Biologic"] }).success,
+		).toBe(false);
+		expect(
+			MedicationSchema.safeParse({ ...base, updated: "May 2025" }).success,
+		).toBe(false);
+		expect(
+			MedicationSchema.safeParse({
+				...base,
+				categories: ["biologic"],
+				updated: "2025-05",
+			}).success,
+		).toBe(true);
+	});
+});

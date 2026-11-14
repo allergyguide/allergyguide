@@ -11,14 +11,15 @@
 display_name = "What you want the reader to see" # [REQUIRED] ie. Mometasone (Topical)
 otc = "yes"                                      # [REQUIRED] only 'yes', 'no', or 'both' allowed
 draft = true                                     # [OPTIONAL] if true, the medication card will be rendered with a WIP sign (default: false)
-categories = ["inhaler"]                         # [OPTIONAL] used for filter button functionality
+categories = ["inhaler"]                         # [OPTIONAL] index filter buttons. One of: antihistamine, biologic, inhaler, topical (add new ones in _ts/medications/schema.ts)
 abbreviations = ""                               # [OPTIONAL] ie: "AR-allergic rhinitis; CRS-chronic rhinosinusitis" (renders in tooltip)
 brand_names = ["BrandNameA", "BrandNameB"]       # [OPTIONAL]
 
 # [OPTIONAL] Author credits
 authors.primary = "TBD"
 authors.editors = "TBD"
-authors.staff = "TBD"
+authors.staff = "TBD"   # faculty reviewer; shown as "Reviewed by"
+updated = "2025-05"     # [OPTIONAL] YYYY-MM or YYYY-MM-DD; shown as "Last updated" in the card footer
 
 # =====================================================================
 # CORE CLINICAL INFO
@@ -34,7 +35,7 @@ half_life = "~X hours"                        # Pharmacokinetics
 # [OPTIONAL] All fields below support Markdown (*italics*, **bold**, [links](url))
 ix_before = "LFTs, CBC, CXR, TBST, HBV, HCV"   # Monitoring required before starting
 ix_ongoing = "LFT, CBC repeat at 1 month"      # Ongoing monitoring requirements
-contraindications = "Insert absolute/relative" # Highlights at top right of card. Should be brief.
+contraindications = "Insert absolute/relative" # Highlights at top right of card. Should be brief. If none, write "None beyond hypersensitivity" (blank hides the section, which reads as "not filled in").
 
 # [OPTIONAL] Arrays
 available_forms = ["0.1% Cream", "10/20mg tab; 2.5mg/ml liq"]

@@ -292,16 +292,21 @@ export function medCardTemplate(
 						: nothing
 				}
 			</div>
-			${
-				med.authors
-					? html`<div class="med-footer">
-						${med.authors.primary ? html`<span>Updated by: ${med.authors.primary}</span>` : nothing}
-						${med.authors.editors ? html`<span> | Ed: ${med.authors.editors}</span>` : nothing}
-					</div>`
-					: nothing
-			}
+			${renderFooter(med)}
 		</div>
 	`;
+}
+
+/** Credits and last-updated date; each part shows only when present */
+function renderFooter(med: Medication): TemplateResult | typeof nothing {
+	const parts = [
+		med.authors?.primary && `Updated by: ${med.authors.primary}`,
+		med.authors?.editors && `Ed: ${med.authors.editors}`,
+		med.authors?.staff && `Reviewed by: ${med.authors.staff}`,
+		med.updated && `Last updated: ${med.updated}`,
+	].filter((p): p is string => !!p);
+	if (parts.length === 0) return nothing;
+	return html`<div class="med-footer">${parts.map((p, i) => html`<span>${i > 0 ? " | " : ""}${p}</span>`)}</div>`;
 }
 
 /** `<option>` list for a province select: "All Provinces" followed by each province */
@@ -456,6 +461,11 @@ function renderAEContent(
 	med: Medication,
 	indications: string[],
 ): TemplateResult {
+	// comparator_name is set per symptom; if symptoms use different comparators, label each value instead of trusting one header
+	const comparatorOf = (se: Medication["side_effects"][number]) =>
+		se.comparator_name || "Placebo";
+	const comparatorNames = new Set(med.side_effects.map(comparatorOf));
+	const mixedComparators = comparatorNames.size > 1;
 	const aeIndications = getAEIndications(med, indications);
 	const showAEPills = aeIndications.length >= 4;
 
@@ -539,7 +549,7 @@ function renderAEContent(
 							<th>Symptom</th>
 							<th>Indication</th>
 							<th>Drug</th>
-							<th>${med.side_effects[0]?.comparator_name || "Placebo"}</th>
+							<th>${mixedComparators ? "Comparator" : (comparatorNames.values().next().value ?? "Placebo")}</th>
 						</tr>
 					</thead>
 					${med.side_effects.map(
@@ -566,7 +576,7 @@ function renderAEContent(
 										</td>
 										<td>${rate.indication}</td>
 										<td>${rate.drug}</td>
-										<td>${rate.comparator || "-"}</td>
+										<td>${rate.comparator ? (mixedComparators ? `${rate.comparator} (${comparatorOf(se)})` : rate.comparator) : "-"}</td>
 									</tr>
 								`;
 							})}
@@ -929,7 +939,7 @@ export function medIndexTemplate(
 	const filteredTargets = preparedSearchTargets.filter((target) => {
 		if (
 			state.category !== "All" &&
-			!target.med.categories.includes(state.category)
+			!target.med.categories.some((c) => c === state.category)
 		)
 			return false;
 		return true;
