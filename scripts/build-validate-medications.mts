@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { MedicationSchema } from "../_ts/medications/schema";
 
 export function validateMedications() {
@@ -6,6 +6,7 @@ export function validateMedications() {
 	try {
 		const jsonData = readFileSync("./static/toml/medications.json", "utf-8");
 		const parsed = JSON.parse(jsonData);
+		const output: Record<string, unknown> = {};
 		let hasError = false;
 
 		if (typeof parsed !== "object" || parsed === null) {
@@ -15,7 +16,9 @@ export function validateMedications() {
 
 		for (const [key, val] of Object.entries(parsed)) {
 			const result = MedicationSchema.safeParse(val);
-			if (!result.success) {
+			if (result.success) {
+				output[key] = result.data;
+			} else {
 				console.error(`\nValidation failed for medication [${key}]:`);
 				result.error.issues.forEach((issue) => {
 					console.error(
@@ -30,6 +33,11 @@ export function validateMedications() {
 			console.error("\nBuild failed due to invalid medication JSON data.\n");
 			process.exit(1);
 		}
+		// The browser trusts this file as-is (no zod on the client), so ship the parsed output with defaults and transforms applied
+		writeFileSync(
+			"./static/toml/medications.json",
+			JSON.stringify(output, null, 2),
+		);
 		console.log("All medications passed Zod validation!");
 	} catch (e) {
 		console.error("Failed to parse JSON file", e);

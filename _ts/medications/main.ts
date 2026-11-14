@@ -1,35 +1,20 @@
 import { render } from "lit-html";
 import { medCardTemplate, mountMedIndex } from "./components";
-import { type MedicationDatabase, MedicationSchema } from "./schema";
+import type { MedicationDatabase } from "./schema";
 
 /**
  * Initializes the medications app by fetching the JSON database once and mounting lit-html components
  */
 async function initMedications() {
-	let rawData: unknown;
+	// Already parsed by zod at build time (build-validate-medications.mts writes the parsed output), so no client-side validation
+	let db: MedicationDatabase;
 	try {
 		const res = await fetch("/toml/medications.json");
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
-		rawData = await res.json();
+		db = await res.json();
 	} catch (e) {
 		console.error("Failed to load medication JSON data", e);
 		return;
-	}
-
-	if (typeof rawData !== "object" || rawData === null) {
-		console.error("Parsed medication JSON is not an object.");
-		return;
-	}
-
-	// Validate database
-	const db: MedicationDatabase = {};
-	for (const [key, val] of Object.entries(rawData as Record<string, unknown>)) {
-		const result = MedicationSchema.safeParse(val);
-		if (result.success) {
-			db[key] = result.data;
-		} else {
-			console.error(`Validation failed for medication: ${key}`, result.error);
-		}
 	}
 
 	// Check for the full Index App mount

@@ -4,14 +4,13 @@ import { html, nothing, type TemplateResult } from "lit-html";
 import { repeat } from "lit-html/directives/repeat.js";
 import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { marked } from "marked";
-import {
-	type Dose,
-	type DoseAdjustment,
-	type Medication,
-	type MedicationCoverage,
-	type MedicationDatabase,
-	ProvinceEnum,
-	STATUS_CSS_MAP,
+import { PROVINCES, STATUS_CSS_MAP } from "./constants";
+import type {
+	Dose,
+	DoseAdjustment,
+	Medication,
+	MedicationCoverage,
+	MedicationDatabase,
 } from "./schema";
 
 /**
@@ -342,7 +341,7 @@ function renderCoverageTable(
 						!c.province || (c.province as string[]).includes(selectedProvince),
 				);
 
-	const provOptions = ["All", ...ProvinceEnum.options];
+	const provOptions = ["All", ...PROVINCES];
 
 	const handleProvChange = (e: Event) => {
 		const val = (e.target as HTMLSelectElement).value;
@@ -988,7 +987,7 @@ export function medIndexTemplate(
 					);
 					updateState({ province: p });
 				}} .value=${state.province}>
-					${["All", ...ProvinceEnum.options].map((p) => html`<option value="${p}" ?selected=${p === state.province}>${p === "All" ? "All Provinces" : p}</option>`)}
+					${["All", ...PROVINCES].map((p) => html`<option value="${p}" ?selected=${p === state.province}>${p === "All" ? "All Provinces" : p}</option>`)}
 				</select>
 			</div>
 			<div class="med-categories">
