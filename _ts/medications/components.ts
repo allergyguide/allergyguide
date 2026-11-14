@@ -6,9 +6,10 @@ import { unsafeHTML } from "lit-html/directives/unsafe-html.js";
 import { marked } from "marked";
 import {
 	getSavedProvince,
+	PROVINCE_EVENT,
 	PROVINCES,
 	STATUS_CSS_MAP,
-	saveProvince,
+	setProvince,
 } from "./constants";
 import type {
 	Dose,
@@ -40,13 +41,40 @@ const Accordion = (
 	</details>
 `;
 
+/**
+ * Render a titled card section: an accordion when there is a body, a static row when there is only a summary, nothing otherwise
+ *
+ * @param title - Section title
+ * @param summary - Inline summary shown after the title (pass rendered markdown or a plain string)
+ * @param body - Accordion content; omit for a static row
+ */
+const Section = (
+	title: string,
+	summary: string | TemplateResult | typeof nothing | undefined,
+	body?: TemplateResult,
+) => {
+	const hasSummary = !!summary && summary !== nothing;
+	const label = html`${title}${hasSummary ? html` <span class="ae-inline-summary">— ${summary}</span>` : nothing}`;
+	if (body) return Accordion(label, body);
+	if (!hasSummary) return nothing;
+	return html`
+		<div class="med-accordion no-content">
+			<div class="summary-static">
+				<span class="title">${label}</span>
+			</div>
+		</div>
+	`;
+};
+
 // Configure marked to render all links with target="_blank" and rel="noopener noreferrer"
 marked.use({
 	renderer: {
-		link({ href, title, text }) {
+		link({ href, title, tokens }) {
+			// Render the link text from its tokens: `text` is raw markdown, so `[**x**](url)` would show the asterisks
+			const inner = this.parser.parseInline(tokens);
 			const cleanHref = href || "";
 			const titleAttr = title ? ` title="${title}"` : "";
-			return `<a href="${cleanHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${text}</a>`;
+			return `<a href="${cleanHref}" target="_blank" rel="noopener noreferrer"${titleAttr}>${inner}</a>`;
 		},
 	},
 });
@@ -229,72 +257,34 @@ export function medCardTemplate(
 			}
 
 			<div class="med-accordions">
-				${
-					med.severe_side_effects ||
-					(med.side_effects && med.side_effects.length > 0)
-						? Accordion(
-								html`Adverse Events <span class="ae-inline-summary">— ${renderMarkdown(med.side_effects_summary) || "See details"}</span>`,
-								renderAEContent(med),
-							)
-						: med.side_effects_summary
-							? html`
-					<div class="med-accordion no-content">
-						<div class="summary-static">
-							<span class="title">Adverse Events <span class="ae-inline-summary">— ${med.side_effects_summary}</span></span>
-						</div>
-					</div>
-				`
-							: nothing
-				}
+				${Section(
+					"Adverse Events",
+					renderMarkdown(med.side_effects_summary),
+					med.severe_side_effects || med.side_effects.length > 0
+						? renderAEContent(med)
+						: undefined,
+				)}
 
-				${
+				${Section(
+					"Severe Interactions",
+					med.interactions_summary,
 					med.severe_interactions
-						? Accordion(
-								med.interactions_summary
-									? html`Severe Interactions <span class="ae-inline-summary">— ${med.interactions_summary}</span>`
-									: "Severe Interactions",
-								html`
-					<div class="markdown-body">
-						${renderMarkdownBlock(med.severe_interactions)}
-					</div>
-				`,
+						? html`<div class="markdown-body">${renderMarkdownBlock(med.severe_interactions)}</div>`
+						: undefined,
+				)}
+
+				${Section(
+					"Coverage/Pricing",
+					med.estimated_cost,
+					med.coverage.length > 0
+						? renderCoverageTable(
+								med.coverage,
+								selectedProvince,
+								onProvinceChange,
+								isStandalone,
 							)
-						: med.interactions_summary
-							? html`
-					<div class="med-accordion no-content">
-						<div class="summary-static">
-							<span class="title">Severe Interactions <span class="ae-inline-summary">— ${med.interactions_summary}</span></span>
-						</div>
-					</div>
-				`
-							: nothing
-				}
-
-
-
-				${
-					med.coverage && med.coverage.length > 0
-						? Accordion(
-								med.estimated_cost
-									? html`Coverage/Pricing <span class="ae-inline-summary">— ${med.estimated_cost}</span>`
-									: "Coverage/Pricing",
-								renderCoverageTable(
-									med.coverage,
-									selectedProvince,
-									onProvinceChange,
-									isStandalone,
-								),
-							)
-						: med.estimated_cost
-							? html`
-					<div class="med-accordion no-content">
-						<div class="summary-static">
-							<span class="title">Coverage/Pricing <span class="ae-inline-summary">— ${med.estimated_cost}</span></span>
-						</div>
-					</div>
-				`
-							: nothing
-				}
+						: undefined,
+				)}
 
 				${
 					med.pregnancy ||
@@ -332,6 +322,13 @@ export function medCardTemplate(
 	`;
 }
 
+/** `<option>` list for a province select: "All Provinces" followed by each province */
+const provinceOptions = (selected: string) =>
+	["All", ...PROVINCES].map(
+		(p) =>
+			html`<option value="${p}" ?selected=${p === selected}>${p === "All" ? "All Provinces" : p}</option>`,
+	);
+
 function renderCoverageTable(
 	coverage: MedicationCoverage[],
 	selectedProvince: string,
@@ -345,8 +342,6 @@ function renderCoverageTable(
 					(c: MedicationCoverage) =>
 						!c.province || (c.province as string[]).includes(selectedProvince),
 				);
-
-	const provOptions = ["All", ...PROVINCES];
 
 	const handleProvChange = (e: Event) => {
 		const val = (e.target as HTMLSelectElement).value;
@@ -364,7 +359,7 @@ function renderCoverageTable(
 		<div class="coverage-controls">
 			<label><strong>Province:</strong>
 				<select @change=${handleProvChange} .value=${selectedProvince}>
-					${provOptions.map((p) => html`<option value="${p}" ?selected=${p === selectedProvince}>${p === "All" ? "All Provinces" : p}</option>`)}
+					${provinceOptions(selectedProvince)}
 				</select>
 			</label>
 		</div>`
@@ -912,12 +907,9 @@ export function mountMedIndex(db: MedicationDatabase, container: HTMLElement) {
 		update();
 	};
 
-	// Listen for province changes broadcast by standalone med-card islands (main.ts) or by individual med cards inside this index (medIndexTemplate callback below). The guard prevents a double re-render
-	document.addEventListener("med-province-changed", (e: Event) => {
-		const p = (e as CustomEvent).detail;
-		if (state.province !== p) {
-			updateState({ province: p });
-		}
+	// Single path for province changes, whether from the index bar or a standalone island (main.ts)
+	document.addEventListener(PROVINCE_EVENT, (e: Event) => {
+		updateState({ province: (e as CustomEvent<string>).detail });
 	});
 
 	update();
@@ -984,15 +976,9 @@ export function medIndexTemplate(
 					@input=${handleInput}
 				/>
 				<select class="med-province-select" @change=${(e: Event) => {
-					const p = (e.target as HTMLSelectElement).value;
-					saveProvince(p);
-					// Dispatch event for islands
-					document.dispatchEvent(
-						new CustomEvent("med-province-changed", { detail: p }),
-					);
-					updateState({ province: p });
+					setProvince((e.target as HTMLSelectElement).value);
 				}} .value=${state.province}>
-					${["All", ...PROVINCES].map((p) => html`<option value="${p}" ?selected=${p === state.province}>${p === "All" ? "All Provinces" : p}</option>`)}
+					${provinceOptions(state.province)}
 				</select>
 			</div>
 			<div class="med-categories">
@@ -1018,15 +1004,7 @@ export function medIndexTemplate(
 									html`<div class="med-card-wrapper">${medCardTemplate(
 										m.med,
 										state.province,
-										(p) => {
-											// Update index state directly (avoids a re-render via the event listener, which guards against state.province === p)
-											// Event is still dispatched to sync any standalone islands on the page
-											saveProvince(p);
-											document.dispatchEvent(
-												new CustomEvent("med-province-changed", { detail: p }),
-											);
-											updateState({ province: p });
-										},
+										undefined, // index cards have no province select; the index bar owns it
 										"All",
 										undefined,
 										false,

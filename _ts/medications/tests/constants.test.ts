@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getSavedProvince, saveProvince } from "../constants";
+import {
+	getSavedProvince,
+	PROVINCE_EVENT,
+	saveProvince,
+	setProvince,
+} from "../constants";
 
 describe("province storage", () => {
 	afterEach(() => {
@@ -26,5 +31,15 @@ describe("province storage", () => {
 		});
 		expect(getSavedProvince()).toBe("All");
 		expect(() => saveProvince("BC")).not.toThrow();
+	});
+
+	it("setProvince saves and notifies listeners exactly once", () => {
+		const seen: string[] = [];
+		const listener = (e: Event) => seen.push((e as CustomEvent<string>).detail);
+		document.addEventListener(PROVINCE_EVENT, listener);
+		setProvince("QC");
+		document.removeEventListener(PROVINCE_EVENT, listener);
+		expect(seen).toEqual(["QC"]);
+		expect(getSavedProvince()).toBe("QC");
 	});
 });

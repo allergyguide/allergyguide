@@ -1,6 +1,6 @@
 import { render } from "lit-html";
 import { medCardTemplate, mountMedIndex } from "./components";
-import { getSavedProvince, saveProvince } from "./constants";
+import { getSavedProvince, PROVINCE_EVENT, setProvince } from "./constants";
 import type { MedicationDatabase } from "./schema";
 
 /**
@@ -39,13 +39,7 @@ async function initMedications() {
 					medCardTemplate(
 						db[drugId],
 						currentProv,
-						(newProv) => {
-							currentProv = newProv;
-							saveProvince(newProv);
-							document.dispatchEvent(
-								new CustomEvent("med-province-changed", { detail: newProv }),
-							);
-						},
+						setProvince, // the listener below updates currentProv and re-renders
 						currentIndication,
 						(newInd) => {
 							currentIndication = newInd;
@@ -57,8 +51,8 @@ async function initMedications() {
 				);
 			};
 
-			document.addEventListener("med-province-changed", (e: Event) => {
-				currentProv = (e as CustomEvent).detail;
+			document.addEventListener(PROVINCE_EVENT, (e: Event) => {
+				currentProv = (e as CustomEvent<string>).detail;
 				renderIsland();
 			});
 

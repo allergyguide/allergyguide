@@ -44,6 +44,19 @@ export function getSavedProvince(): string {
 	}
 }
 
+/** Event sent on `document` whenever the province filter changes; every index and island listens for it */
+export const PROVINCE_EVENT = "med-province-changed";
+
+/**
+ * Change the province filter everywhere on the page: saves it, then notifies every listener (index and islands), which re-render
+ */
+export function setProvince(province: string): void {
+	saveProvince(province);
+	document.dispatchEvent(
+		new CustomEvent<string>(PROVINCE_EVENT, { detail: province }),
+	);
+}
+
 /**
  * Save the province filter; a blocked storage only loses the preference, never the render
  */
