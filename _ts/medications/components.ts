@@ -1080,3 +1080,13 @@ export function medIndexTemplate(
 		</div>
 	`;
 }
+
+/** Shown in place of a card that hasn't been written yet, so the popup is never empty */
+export function placeholderCardTemplate(): TemplateResult {
+	return html`
+		<div class="med-card med-card-placeholder">
+			<strong>Medication card coming soon.</strong>
+			<a href="/contribute_guides/medication-contribution/">Help write one</a>
+		</div>
+	`;
+}

@@ -2,6 +2,7 @@ import { render } from "lit-html";
 import {
 	medCardTemplate,
 	mountMedIndex,
+	placeholderCardTemplate,
 	startingIndication,
 } from "./components";
 import { getSavedProvince, PROVINCE_EVENT, setProvince } from "./constants";
@@ -68,7 +69,10 @@ async function initMedications() {
 
 			renderIsland();
 		} else if (drugId) {
-			console.warn(`Drug ID ${drugId} not found in database.`);
+			// "placeholder" marks a card not written yet; any other missing ID is likely a typo
+			if (drugId !== "placeholder")
+				console.warn(`Drug ID ${drugId} not found in database.`);
+			render(placeholderCardTemplate(), mount as HTMLElement);
 		}
 	});
 }

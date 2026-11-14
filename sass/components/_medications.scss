@@ -1021,3 +1021,9 @@
     }
   }
 }
+.med-card-placeholder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: v.$core-space-sm;
+  padding: v.$core-space-md;
+}

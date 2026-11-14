@@ -295,7 +295,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
   - Takes **8-12 weeks** to have maximal effect
   - Minimal concern for long-term side effects, ie. adrenal insufficiency
   - _ExRx: Nasonex 2 sprays BID_ {% <popup> %}
-    {{ <med_card id="bilastine" /> }}
+    {{ <med_card id="placeholder" /> }}
     {% </popup> %}
 
 {% <dropdown header="INCS Rx examples and potency"> %}
@@ -304,7 +304,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
   <li>
     Nasonex (mometasone furoate 50 mcg) 2 sprays EN BID {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
@@ -312,7 +312,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
   <li>
     Avamys (fluticasone furoate 27.5 mcg) 2 sprays EN daily {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
@@ -320,7 +320,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
   <li>
     Omnaris 2 sprays EN daily {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
@@ -328,7 +328,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
   <li>
     Flonase 2 sprays EN daily {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
@@ -336,7 +336,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
   <li>
     Budesonide impregnated saline rinses (ie. Pulmicort, 0.5 mg respule per bottle of saline) BID {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
@@ -347,7 +347,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
       <li>
         Ryaltris 2 sprays each nostril BID {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
@@ -355,7 +355,7 @@ Goals are symptom control through reduction of inflammation and improvement of s
 <li>
 Dymista 1 spray EN BID {% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
@@ -556,7 +556,7 @@ In an ideal world, with regular use of validated scores such as SNOT-22 or SNOT-
   - Note: generally **recommended against** for CRSwNP in EPOS 2020, noting poor quality evidence of benefit <span class="references">fokkens_european_2020</span>
   - _ExRx: Montelukast 10mg PO OD (adult dose)_{% <popup> %}
 
-{{ <med_card id="bilastine" /> }}
+{{ <med_card id="placeholder" /> }}
 
 {% </popup> %}
 
