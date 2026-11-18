@@ -4,6 +4,7 @@
  */
 import { html, nothing, type TemplateResult } from "lit-html";
 import { live } from "lit-html/directives/live.js";
+import { CLOSE_ICON } from "./icons";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -142,6 +143,7 @@ export function portionTableTemplate(): TemplateResult {
 						type="text"
 						class="ofc-search-input"
 						placeholder="Filter by allergen or food…"
+						aria-label="Filter portion reference by allergen or food"
 						.value=${live(filterQuery)}
 						@input=${(e: InputEvent) =>
 							setFilter((e.target as HTMLInputElement).value)}
@@ -151,9 +153,12 @@ export function portionTableTemplate(): TemplateResult {
 						filterQuery
 							? html`<button
 								class="ofc-clear-btn"
-								@click=${() => setFilter("")}
+								@click=${() => {
+									setFilter("");
+									document.getElementById("ofc-portion-filter-input")?.focus();
+								}}
 								aria-label="Clear filter"
-							>×</button>`
+							>${CLOSE_ICON}</button>`
 							: nothing
 					}
 				</div>
@@ -183,6 +188,15 @@ export function portionTableTemplate(): TemplateResult {
 									const isNewGroup = row.allergen !== lastAllergen;
 									lastAllergen = row.allergen;
 									return html`
+										${
+											isNewGroup
+												? html`<tr class="ofc-group-row">
+													<td colspan=${3 + AGE_COLUMNS.length}>
+														<span class="ofc-allergen-badge">${allergenLabel(row.allergen)}</span>
+													</td>
+												</tr>`
+												: nothing
+										}
 										<tr class="ofc-portion-row ${isNewGroup ? "ofc-group-start" : ""}">
 											<td class="col-allergen">
 												${
@@ -191,7 +205,7 @@ export function portionTableTemplate(): TemplateResult {
 														: nothing
 												}
 											</td>
-											<td class="col-food">${row.food}</td>
+											<th class="col-food" scope="row">${row.food}</th>
 											<td class="col-protein">${cellValue(row.protein)}</td>
 											${AGE_COLUMNS.map(
 												(col) =>

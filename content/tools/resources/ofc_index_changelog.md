@@ -26,6 +26,22 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.12.0] - 2026-11-17
+
+### Changed
+
+- On phones, each protein amount in the search results now shows its serving size underneath (for example "per 100.00 g").
+- On phones, the Portion Reference table groups rows under allergen headings and keeps the food name in view while you scroll across the age columns.
+- The protocol window, search box, tabs, and Copy buttons can be fully used with a keyboard and screen reader. Escape closes the protocol window and returns you to the food you opened.
+- Colors in dark mode follow the site theme, and text, buttons, error messages, and the dose input borders are easier to read.
+- Animations are reduced when your device asks for reduced motion.
+
+### Fixed
+
+- Copied protocols now use the same numbers shown on screen. Previously an edited dose such as 2.75 mg was copied as 2.8 mg.
+
+---
+
 ## [0.11.7] - 2026-11-13
 
 ### Changed

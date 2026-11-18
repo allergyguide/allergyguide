@@ -11,7 +11,7 @@ import {
 import { appState } from "../state/state";
 import { type Food, type OfcState, SourceType } from "../types";
 import { getMeasuringUnit } from "../utils";
-import { BRAND_ICON, USER_ICON } from "./results-table";
+import { BRAND_ICON, CLOSE_ICON, EXTERNAL_ICON, USER_ICON } from "./icons";
 
 /**
  * Main template for the protocol generation modal
@@ -50,10 +50,28 @@ export const protocolModalTemplate = (
 	else if (isZero) warningMsg = "Protein content is zero.";
 
 	return html`
-        <div class="ofc-modal-backdrop">
-            <div class="ofc-modal" @click=${(e: Event) => e.stopPropagation()}>
-                <button class="ofc-modal-close" @click=${() => appState.setSelectedFood(null)}>×</button>
-                
+        <div
+            class="ofc-modal-backdrop"
+            @mousedown=${(e: MouseEvent) => {
+							// Keep focus inside the dialog so Escape and the focus trap keep working
+							if (e.target === e.currentTarget) e.preventDefault();
+						}}
+        >
+            <div
+                class="ofc-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Challenge protocol for ${food.name}"
+                tabindex="-1"
+                @click=${(e: Event) => e.stopPropagation()}
+                @keydown=${handleModalKeydown}
+            >
+                <button
+                    class="ofc-modal-close"
+                    aria-label="Close protocol"
+                    @click=${() => appState.setSelectedFood(null)}
+                >${CLOSE_ICON}</button>
+
                 <div class="ofc-modal-header">
                     <h3 class="ofc-editable-name">
                         ${food.source === SourceType.BRAND ? BRAND_ICON : ""}
@@ -63,12 +81,13 @@ export const protocolModalTemplate = (
                             .value=${live(food.name)}
                             @input=${(e: InputEvent) => appState.updateSelectedFoodName((e.target as HTMLInputElement).value)}
                             class="ofc-name-edit-input"
+                            aria-label="Food name"
                         />
                     </h3>
                     ${
 											food.source_url
 												? html`
-                        <a href="${food.source_url}" target="_blank" class="ofc-source-link">Verify Nutrition Facts ↗</a>
+                        <a href="${food.source_url}" target="_blank" rel="noopener noreferrer" class="ofc-source-link">Verify Nutrition Facts ${EXTERNAL_ICON}<span class="ofc-sr-only"> (opens in a new tab)</span></a>
                     `
 												: nothing
 										}
@@ -79,6 +98,8 @@ export const protocolModalTemplate = (
                         <label>
                             <input 
                                 id="ofc-modal-protein"
+                                aria-invalid=${isInvalid ? "true" : "false"}
+                                aria-describedby=${isInvalid ? "ofc-modal-warning" : "ofc-modal-disclaimer"}
                                 type="number" 
                                 step="0.01"
                                 min="0"
@@ -90,6 +111,8 @@ export const protocolModalTemplate = (
                         <label>
                             <input 
                                 id="ofc-modal-serving"
+                                aria-invalid=${isInvalid ? "true" : "false"}
+                                aria-describedby=${isInvalid ? "ofc-modal-warning" : "ofc-modal-disclaimer"}
                                 type="number"
                                 step="any"
                                 min="0"
@@ -102,12 +125,12 @@ export const protocolModalTemplate = (
                     ${
 											isInvalid
 												? html`
-                        <p class="ofc-warning-text">
+                        <p class="ofc-warning-text" id="ofc-modal-warning" role="alert">
                             ${warningMsg}
                         </p>
                     `
 												: html`
-                        <p class="ofc-disclaimer">
+                        <p class="ofc-disclaimer" id="ofc-modal-disclaimer">
                             <i><strong>Calculation aid only</strong>. Verify protein concentration with labels.</i>
                         </p>
                     `
@@ -157,21 +180,31 @@ const protocolTableTemplate = (
 	return html`
     <div class="ofc-protocol-wrapper">
         <div class="ofc-table-header">
-            <span>${practall === "5" ? "PRACTALL-5" : "PRACTALL-7"}</span>
-            <button class="ofc-copy-btn" ?disabled=${isInvalid} @click=${async (
-							e: Event,
-						) => {
-							const btn = e.currentTarget as HTMLButtonElement;
-							btn.textContent = (await copyToClipboard(food, steps, state))
-								? "Copied"
-								: "Copy failed";
-							setTimeout(() => {
-								btn.textContent = "Copy";
-							}, 1500);
-						}}>Copy</button>
+            <span id="ofc-protocol-title-${practall}">PRACTALL-${practall}</span>
+            <button
+                class="ofc-copy-btn"
+                aria-label="Copy PRACTALL-${practall} protocol"
+                ?disabled=${isInvalid}
+                @click=${async (e: Event) => {
+									const btn = e.currentTarget as HTMLButtonElement;
+									const status = btn.nextElementSibling;
+									const ok = await copyToClipboard(food, steps, state);
+									btn.textContent = ok ? "Copied" : "Copy failed";
+									if (status) {
+										status.textContent = ok
+											? `PRACTALL-${practall} protocol copied to clipboard`
+											: "Copy failed. Select the table and copy it manually.";
+									}
+									setTimeout(() => {
+										btn.textContent = "Copy";
+										if (status) status.textContent = "";
+									}, 1500);
+								}}
+            >Copy</button>
+            <span class="ofc-sr-only" role="status"></span>
         </div>
         <div class="ofc-table-scroll">
-            <table class="ofc-protocol-table">
+            <table class="ofc-protocol-table" aria-labelledby="ofc-protocol-title-${practall}">
                 <thead>
                     <tr>
                         <th>Step</th>
@@ -250,6 +283,62 @@ const protocolTableTemplate = (
 };
 
 /**
+ * Plain-text protocol for pasting into a clinical note
+ * Numbers use the same precision as the on-screen table so the note matches what was reviewed:
+ * food amount and cumulative dose to 2 dp, per-step protein exactly as entered
+ *
+ * @param food - The selected food item
+ * @param steps - Calculated dosing steps
+ * @param gramsInServing - Protein (g) per serving, as entered
+ * @param servingSize - Serving size, as entered
+ * @returns {string} Protocol text
+ */
+export function formatProtocolText(
+	food: Food,
+	steps: DosingStep[],
+	gramsInServing: number,
+	servingSize: number,
+): string {
+	let text = `Food challenge: ${food.name} (${gramsInServing} g per ${servingSize} ${getMeasuringUnit(food)})\n---\n`;
+	for (const s of steps) {
+		text += `Step ${s.step}: ${s.foodGrams.toFixed(2)} ${s.unit} (${s.targetMg.toString()} mg protein; ${s.cumulativeMg.toFixed(2)} mg total)\n`;
+	}
+	return text;
+}
+
+/**
+ * Focus trap and Escape handling for the protocol dialog
+ * Tab and Shift+Tab cycle within the dialog; Escape closes it (focus return is handled by the app)
+ */
+function handleModalKeydown(e: KeyboardEvent): void {
+	if (e.key === "Escape") {
+		e.preventDefault();
+		appState.setSelectedFood(null);
+		return;
+	}
+	if (e.key !== "Tab") return;
+
+	const modal = e.currentTarget as HTMLElement;
+	const focusable = Array.from(
+		modal.querySelectorAll<HTMLElement>(
+			'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+		),
+	);
+	if (focusable.length === 0) return;
+	const first = focusable[0];
+	const last = focusable[focusable.length - 1];
+	const active = document.activeElement;
+
+	if (e.shiftKey && (active === first || active === modal)) {
+		e.preventDefault();
+		last.focus();
+	} else if (!e.shiftKey && active === last) {
+		e.preventDefault();
+		first.focus();
+	}
+}
+
+/**
  * Generates an ASCII representation of the protocol and copies it to the system clipboard
  *
  * @param food - The selected food item
@@ -262,10 +351,12 @@ async function copyToClipboard(
 	steps: DosingStep[],
 	state: OfcState,
 ): Promise<boolean> {
-	let text = `Food challenge: ${food.name} (${state.modalGramsInServing} g per ${state.modalServingSize} ${getMeasuringUnit(food)})\n---\n`;
-	steps.forEach((s) => {
-		text += `Step ${s.step}: ${s.foodGrams.toFixed(2)} ${s.unit} (${s.targetMg.toFixed(1)} mg protein; ${s.cumulativeMg.toFixed(1)} mg total)\n`;
-	});
+	const text = formatProtocolText(
+		food,
+		steps,
+		state.modalGramsInServing,
+		state.modalServingSize,
+	);
 
 	try {
 		await navigator.clipboard.writeText(text);

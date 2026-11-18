@@ -1,6 +1,7 @@
 {% component ofc_index() %}
 {% set tools = load_data(path="/js/tools_versioning.json") %}
 {% set tool_info = tools.ofc_index %}
+{% set public_food_count = load_data(path="/tool_assets/cnf_foods.json") | length %}
 <!-- Open the Supabase TLS connection while JS loads (auth, encrypted docs) -->
 <link rel="preconnect" href="https://xkaoewokysgfukntktaz.supabase.co" crossorigin>
 <div class="ofc_index ofc-loading">
@@ -9,8 +10,8 @@
 <!-- Static Skeleton (visible during initial load) -->
 <div class="ofc-skeleton-container">
 <div class="ofc-tab-bar" role="tablist" aria-label="OFC tool sections">
-<button role="tab" class="ofc-tab ofc-tab--active" aria-selected="true">OFC Index</button>
-<button role="tab" class="ofc-tab" aria-selected="false">Portion Reference</button>
+<button role="tab" class="ofc-tab ofc-tab--active" aria-selected="true" tabindex="0">OFC Index</button>
+<button role="tab" class="ofc-tab" aria-selected="false" tabindex="-1">Portion Reference</button>
 </div>
 <div class="core-toolbar">
 <div class="core-version-auth">
@@ -34,13 +35,13 @@
 <div class="ofc-skeleton">
 <div class="ofc-header">
 <div class="search-box">
-<input type="text" placeholder="Search for foods..." class="ofc-search-input" readonly>
+<input type="text" placeholder="Search for foods..." aria-label="Search foods" class="ofc-search-input" readonly>
 </div>
 </div>
 <div class="ofc-instructions">
 <p>Start typing to look through the database!</p>
 <p>Search through
-<strong id="static-ofc-food-count">5496</strong>
+<strong id="static-ofc-food-count">{{ public_food_count }}</strong>
 foods to find their protein content and generate a
 <a href="https://pubmed.ncbi.nlm.nih.gov/39560049/" target="_blank" rel="noopener noreferrer" class="changelog-link">PRACTALL</a>
 challenge protocol.</p>

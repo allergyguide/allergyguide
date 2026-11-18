@@ -113,12 +113,7 @@ async function initializeOFC() {
 		}
 	});
 
-	// Global key listener for Escape
-	window.addEventListener("keydown", (e) => {
-		if (e.key === "Escape") {
-			appState.setSelectedFood(null);
-		}
-	});
+	// Escape is handled inside the protocol dialog so it never closes it from behind the auth or feedback modals
 
 	// --- AUTHENTICATION AND DATA LOAD ---
 

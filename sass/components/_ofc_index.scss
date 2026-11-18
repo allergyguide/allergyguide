@@ -1,23 +1,28 @@
 .ofc_index {
-  --ofc-accent: var(--a1d, #f90);
-  --ofc-accent-hover: var(--a2d, #fb0);
-  --ofc-bg-surface: var(--c2d, #222);
-  --ofc-bg-primary: var(--c1d, #111);
-  --ofc-border: var(--c3d, #333);
-  --ofc-text-primary: var(--f1d, #ccc);
-  --ofc-text-muted: var(--c4d, #777);
+  /* Theme variables switch per mode at :root (abridge switcher), so these follow light/dark automatically */
+  --ofc-accent: var(--a1, #f90);
+  --ofc-bg-surface: var(--c2, #222);
+  --ofc-bg-primary: var(--c1, #111);
+  --ofc-border: var(--c3, #333);
+  --ofc-text-primary: var(--f1, #ccc);
+  /* Theme c4 (#888) is 4.49:1 on the dark surface; #999 clears AA on both dark backgrounds */
+  --ofc-text-muted: #999;
+  /* Form-control edges need 3:1 against their surroundings (WCAG 1.4.11) */
+  --ofc-input-border: #777;
+  /* Text on accent fills: dark text on the bright dark-mode orange */
+  --ofc-on-accent: var(--c1, #111);
+  --ofc-accent-hover: oklch(from var(--ofc-accent) calc(l - 0.06) c h);
 
   /* Relative Color Syntax (OKLCH) */
   --ofc-row-hover: oklch(from var(--ofc-accent) l c h / 0.08);
   --ofc-row-alt: oklch(from var(--ofc-text-primary) l c h / 0.02);
 
-  --ofc-error: oklch(0.55 0.18 29);
+  --ofc-error: #f66; /* 6.6:1 on #111, 5.6:1 on #222 */
   --ofc-error-bg: oklch(from var(--ofc-error) l c h / 0.08);
   --ofc-success: oklch(0.61 0.13 145);
 
   --ofc-shadow-sm: 0 0.25rem 0.75rem oklch(0 0 0 / 0.15);
   --ofc-shadow-lg: 0 1.25rem 3.125rem oklch(0 0 0 / 0.4);
-  --ofc-focus-ring: 0 0 0 0.1875rem oklch(from var(--ofc-accent) l c h / 0.2);
 
   --ofc-max-width: 75rem;
   --ofc-radius: 0.5rem;
@@ -37,6 +42,29 @@
     border-bottom: 0.075rem solid var(--core-border);
   }
 
+  /* --- Focus --- */
+
+  :is(button, a, input, [tabindex]):focus-visible {
+    outline: 0.125rem solid var(--ofc-accent);
+    outline-offset: 0.125rem;
+  }
+
+  .ofc-num {
+    text-align: right;
+  }
+
+  .ofc-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
   /* --- Search --- */
 
   .ofc-header {
@@ -53,7 +81,7 @@
 
     .ofc-search-input {
       width: 100%;
-      padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+      padding: 0.625rem 3rem 0.625rem 0.75rem;
       background: var(--ofc-bg-surface);
       border: 2px solid var(--ofc-border);
       border-radius: 0.375rem;
@@ -61,10 +89,9 @@
       font-size: 1rem;
       transition: border-color 0.2s, box-shadow 0.2s;
 
-      &:focus {
-        outline: none;
+      &:focus-visible {
         border-color: var(--ofc-accent);
-        box-shadow: var(--ofc-focus-ring);
+        outline-offset: 0.0625rem;
       }
 
       &::placeholder {
@@ -74,16 +101,24 @@
 
     .ofc-clear-btn {
       position: absolute;
-      right: 0.5rem;
+      right: 0.125rem;
       top: 50%;
       transform: translateY(-50%);
+      width: 2.75rem;
+      height: 2.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: none;
       border: none;
+      border-radius: 0.375rem;
       color: var(--ofc-text-muted);
-      font-size: 1.25rem;
       cursor: pointer;
-      padding: 0.25rem;
-      line-height: 1;
+      padding: 0;
+
+      &:focus-visible {
+        outline-offset: -0.25rem;
+      }
 
       &:hover {
         color: var(--ofc-text-primary);
@@ -93,6 +128,11 @@
 
   .ofc-results-info {
     padding: 0 1rem 0.5rem;
+
+    &:empty {
+      padding: 0;
+    }
+
     font-size: 0.8125rem;
     color: var(--ofc-text-muted);
     font-weight: 500;
@@ -196,6 +236,13 @@
     }
   }
 
+  .ofc-per-serving {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--ofc-text-muted);
+    white-space: nowrap;
+  }
+
   .food-name-cell {
     font-weight: 500;
     line-height: 1.4;
@@ -220,6 +267,11 @@
       &:hover {
         color: var(--ofc-accent);
         text-decoration: underline;
+      }
+
+      /* the cell clips overflow, so draw the ring inside */
+      &:focus-visible {
+        outline-offset: -0.125rem;
       }
     }
 
@@ -270,7 +322,9 @@
     width: 100%;
     max-width: 68.75rem;
     min-height: 70vh;
+    min-height: 70dvh;
     max-height: 90vh;
+    max-height: 90dvh;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -290,17 +344,21 @@
     }
   }
 
+  .ofc-modal:focus {
+    outline: none;
+  }
+
   .ofc-modal-close {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 2rem;
-    height: 2rem;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     background: var(--ofc-bg-surface);
     border: 1px solid var(--ofc-border);
     color: var(--ofc-text-primary);
-    font-size: 1.5rem;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -328,6 +386,9 @@
     }
 
     .ofc-source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
       font-size: 0.8125rem;
       color: var(--ofc-accent);
       text-decoration: none;
@@ -353,7 +414,7 @@
 
   .ofc-disclaimer {
     margin: 0;
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     color: var(--ofc-text-muted);
     max-width: 25rem;
   }
@@ -403,7 +464,7 @@
       box-shadow: 0 0 0 1px oklch(from var(--ofc-error) l c h / 0.3);
 
       input {
-        border-color: oklch(from var(--ofc-error) l c h / 0.5);
+        border-color: var(--ofc-error);
       }
     }
 
@@ -417,18 +478,18 @@
 
     input {
       width: 5rem;
+      min-height: 2rem;
       padding: 0.375rem 0.5rem;
       background: var(--ofc-bg-primary);
-      border: 1px solid var(--ofc-border);
+      border: 1px solid var(--ofc-input-border);
       border-radius: 0.25rem;
       color: var(--ofc-text-primary);
       font-weight: 600;
       text-align: center;
 
-      &:focus {
-        outline: none;
+      &:focus-visible {
         border-color: var(--ofc-accent);
-        box-shadow: 0 0 0 0.125rem oklch(from var(--ofc-accent) l c h / 0.15);
+        outline-offset: 0.0625rem;
       }
     }
   }
@@ -466,9 +527,10 @@
   }
 
   .ofc-copy-btn {
-    padding: 0.25rem 0.75rem;
+    min-height: 2rem;
+    padding: 0.375rem 0.875rem;
     background: var(--ofc-accent);
-    color: white;
+    color: var(--ofc-on-accent);
     border: none;
     border-radius: 0.25rem;
     font-size: 0.75rem;
@@ -476,11 +538,11 @@
     cursor: pointer;
     transition: background 0.2s;
 
-    &:hover {
-      background: var(--ofc-accent);
+    &:hover:not(:disabled) {
+      background: var(--ofc-accent-hover);
     }
 
-    &:active {
+    &:active:not(:disabled) {
       transform: translateY(1px);
     }
 
@@ -528,18 +590,19 @@
 
       input {
         width: 4.375rem;
+        min-height: 2rem;
         padding: 0.25rem;
         background: var(--ofc-bg-surface);
-        border: 1px solid var(--ofc-border);
+        border: 1px solid var(--ofc-input-border);
         border-radius: 0.25rem;
         color: var(--ofc-text-primary);
         text-align: right;
         font-family: inherit;
         font-weight: 600;
 
-        &:focus {
-          outline: none;
+        &:focus-visible {
           border-color: var(--ofc-accent);
+          outline-offset: 0.0625rem;
         }
       }
     }
@@ -580,6 +643,10 @@
 
     &.ofc-tab--active {
       color: var(--ofc-accent);
+    }
+
+    &:focus-visible {
+      outline-offset: -0.25rem;
     }
   }
 
@@ -687,17 +754,38 @@
         background: var(--ofc-row-hover);
       }
 
-      td {
+      td,
+      th {
         padding: 0.5rem 0.75rem;
         border-bottom: 1px solid var(--ofc-border);
         vertical-align: middle;
         line-height: 1.4;
       }
 
-      &.ofc-group-start td {
+      th {
+        font-weight: 500;
+        text-align: left;
+      }
+
+      &.ofc-group-start :is(td, th) {
         border-top: 1px solid var(--ofc-border);
         padding-top: 0.625rem;
       }
+    }
+  }
+
+  /* Allergen group header rows replace the allergen column on narrow screens */
+  .ofc-group-row {
+    display: none;
+
+    td {
+      padding: 0.75rem 0.75rem 0.25rem;
+      border-top: 1px solid var(--ofc-border);
+    }
+
+    .ofc-allergen-badge {
+      position: sticky;
+      left: 0.75rem;
     }
   }
 
@@ -791,14 +879,14 @@
       transition: background 0.2s, border-color 0.2s;
 
       &:hover,
-      &:focus {
+      &:focus-visible {
         background: var(--ofc-bg-surface);
-        border-color: var(--ofc-border);
-        outline: none;
+        border-color: var(--ofc-input-border);
       }
 
-      &:focus {
+      &:focus-visible {
         border-color: var(--ofc-accent);
+        outline-offset: 0.0625rem;
       }
     }
   }
@@ -831,31 +919,104 @@
 
     .ofc-modal {
       border-radius: 0;
+      min-height: 0;
       max-height: 100%;
       height: 100%;
     }
 
-    .ofc-table thead th:nth-child(3),
-    .ofc-table tbody td:nth-child(3) {
+    /* Serving size column folds into the protein cell so grams never lose their basis */
+    .ofc-table .ofc-col-serving {
       display: none;
+    }
+
+    .ofc-per-serving {
+      display: block;
+    }
+
+    .ofc-table thead th:nth-child(2) {
+      width: 7rem;
+    }
+
+    /* Portion table: allergen becomes a group header, the food name stays pinned while ages scroll */
+    .ofc-portion-table {
+      min-width: 40rem;
+
+      .col-allergen {
+        display: none;
+      }
+
+      .col-food {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        width: 9rem;
+        min-width: 9rem;
+        background: var(--ofc-bg-primary);
+        box-shadow: inset -1px 0 0 var(--ofc-border);
+      }
+
+      thead .col-food {
+        z-index: 11;
+        background: var(--ofc-bg-surface);
+      }
+
+      .ofc-portion-row:nth-child(even) .col-food {
+        background-image: linear-gradient(var(--ofc-row-alt), var(--ofc-row-alt));
+      }
+    }
+
+    .ofc-group-row {
+      display: table-row;
+    }
+  }
+
+  /* Coarse pointers get 44px targets */
+  @media (pointer: coarse) {
+    .ofc-copy-btn,
+    .ofc-modal-close,
+    .ofc-protocol-table td input,
+    .ofc-modal-controls input {
+      min-height: 2.75rem;
+    }
+
+    .ofc-modal-close {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+  }
+
+  /* Reduced motion: keep the fade (state change) but drop travel, shake, and pulsing */
+  @media (prefers-reduced-motion: reduce) {
+    .ofc-modal {
+      animation: ofc-fade-in 0.15s ease-out;
+    }
+
+    .ofc-warning-text {
+      animation: none;
+    }
+
+    .ofc-skeleton div:not(.ofc-header):not(.search-box) {
+      animation: none;
+    }
+
+    .ofc-modal-close:hover {
+      transform: none;
+    }
+
+    .ofc-row,
+    .ofc-portion-row,
+    .ofc-tab,
+    .ofc-search-input {
+      transition: none;
     }
   }
 }
 
-/* Light Mode Overrides */
+/* Light Mode Overrides (base colours already follow the theme variables) */
 :root.switch .ofc_index {
-  --ofc-accent: var(--a1, #c40);
-  --ofc-accent-hover: var(--a2, #e60);
-  --ofc-bg-surface: var(--c2, #eee);
-  --ofc-bg-primary: var(--c1, #fff);
-  --ofc-border: var(--c3, #ddd);
-  --ofc-text-primary: var(--f1, #333);
   --ofc-text-muted: var(--c4, #555);
+  --ofc-input-border: #7a7a7a;
+  --ofc-on-accent: #fff;
+  --ofc-error: #c22; /* 5.6:1 on #fff, 4.7:1 on #eee */
   --ofc-row-hover: oklch(from var(--ofc-accent) l c h / 0.05);
-  --ofc-row-alt: oklch(from var(--ofc-text-primary) l c h / 0.02);
-}
-
-/* Utility Helpers */
-.text-right {
-  text-align: right !important;
 }

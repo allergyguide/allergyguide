@@ -5,24 +5,7 @@ import { html, type TemplateResult } from "lit-html";
 import { appState } from "../state/state";
 import { type Food, SourceType } from "../types";
 import { getMeasuringUnit } from "../utils";
-
-/**
- * SVG icon representing a verified brand or provisioned food source
- */
-export const BRAND_ICON = html`
-    <svg class="icon icon-brand" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-    </svg>
-`;
-
-/**
- * SVG icon representing a custom user food source
- */
-export const USER_ICON = html`
-    <svg class="icon icon-user" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-    </svg>
-`;
+import { BRAND_ICON, USER_ICON } from "./icons";
 
 /**
  * Template for the results table. Displays food name, protein content, and serving size
@@ -39,8 +22,8 @@ export const resultsTableTemplate = (
             <thead>
                 <tr>
                     <th>Food Name</th>
-                    <th class="text-right">Protein (g)</th>
-                    <th class="text-right">Serving Size</th>
+                    <th class="ofc-num">Protein (g)</th>
+                    <th class="ofc-num ofc-col-serving">Serving Size</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,8 +42,11 @@ export const resultsTableTemplate = (
                                 ${food.name}
                             </button>
                         </td>
-                        <td class="text-right">${food.gramsInServing.toFixed(2)}</td>
-                        <td class="text-right">${food.servingSize.toFixed(2)} ${getMeasuringUnit(food)}</td>
+                        <td class="ofc-num">
+                            ${food.gramsInServing.toFixed(2)}
+                            <span class="ofc-per-serving">per ${food.servingSize.toFixed(2)} ${getMeasuringUnit(food)}</span>
+                        </td>
+                        <td class="ofc-num ofc-col-serving">${food.servingSize.toFixed(2)} ${getMeasuringUnit(food)}</td>
                     </tr>
                 `,
 								)}
