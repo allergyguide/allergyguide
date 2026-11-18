@@ -48,18 +48,16 @@ describe("performSearch with Metadata and Weighting", () => {
         expect(results.foods.some(r => r.data.name === "Peanut")).toBe(true);
     });
 
-    it("should apply source weighting as a tie-breaker (USER > BRAND > GENERIC)", () => {
-        // Query "Peanut" should match all three.
-        // Scores should be identical or very close.
+    it("should apply source weighting only as a tie-breaker between near-equal matches", () => {
+        // "My Peanut" (USER) and "Peanut" (GENERIC) score almost the same, so USER wins the tie.
+        // "Bamba" only has "Peanut" as a keyword: a clearly weaker match, so BRAND weight doesn't lift it.
         const results = performSearch("Peanut", "food", mockFoods as any, []);
-        
-        expect(results.foods.length).toBeGreaterThanOrEqual(2);
-        const first = results.foods[0].data;
-        const second = results.foods[1].data;
-        
-        // Assert on FoodData directly (cast if needed to resolve narrowing)
-        expect((first as any).source).toBe(SourceType.USER);
-        expect((second as any).source).toBe(SourceType.BRAND);
+
+        expect(results.foods.map((r) => (r.data as any).source)).toEqual([
+            SourceType.USER,
+            SourceType.GENERIC,
+            SourceType.BRAND,
+        ]);
     });
 
     it("should cap protocols and foods independently", () => {

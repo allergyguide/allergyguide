@@ -7,6 +7,7 @@ import {
 	getActiveDEK,
 	lockAndSignOut,
 	loginAndUnlock,
+	setSignedInHook,
 	unlockVault,
 } from "../auth/login-client";
 import { requestDekFromTabs } from "../auth/tab-sync";
@@ -218,7 +219,15 @@ describe("Auth Module: Login Client", () => {
 			const mockSelect = vi.fn(() => ({ eq: mockEq }));
 			(supabase.from as any).mockReturnValue({ select: mockSelect });
 
+			// Hook must fire after sign-in but before the DEK fetch
+			const hook = vi.fn(() => {
+				expect(supabase.auth.signInWithPassword).toHaveBeenCalled();
+				expect(supabase.from).not.toHaveBeenCalled();
+			});
+			setSignedInHook(hook);
+
 			await loginAndUnlock(email, password, captchaToken);
+			expect(hook).toHaveBeenCalledTimes(1);
 
 			expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
 				email,
@@ -239,9 +248,13 @@ describe("Auth Module: Login Client", () => {
 				error: { message: "Invalid credentials" },
 			});
 
+			const hook = vi.fn();
+			setSignedInHook(hook);
+
 			await expect(loginAndUnlock("e", "p", "c")).rejects.toThrow(
 				"Invalid credentials",
 			);
+			expect(hook).not.toHaveBeenCalled();
 			expect(supabase.auth.signOut).toHaveBeenCalled();
 		});
 	});

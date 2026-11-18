@@ -26,6 +26,69 @@ authors = ["Joshua Yu"]
 
 ---
 
+## [0.12.0] - 2026-11-17
+
+### Changed
+
+- On phones, each protein amount in the search results now shows its serving size underneath (for example "per 100.00 g").
+- On phones, the Portion Reference table groups rows under allergen headings and keeps the food name in view while you scroll across the age columns.
+- The protocol window, search box, tabs, and Copy buttons can be fully used with a keyboard and screen reader. Escape closes the protocol window and returns you to the food you opened.
+- Colors in dark mode follow the site theme, and text, buttons, error messages, and the dose input borders are easier to read.
+- Animations are reduced when your device asks for reduced motion.
+
+### Fixed
+
+- Copied protocols now use the same numbers shown on screen. Previously an edited dose such as 2.75 mg was copied as 2.8 mg.
+
+---
+
+## [0.11.7] - 2026-11-13
+
+### Changed
+
+- The food search opens right away for signed-in users, without waiting for the profile to load. Your custom and branded foods appear as soon as it finishes.
+
+### Fixed
+
+- A brief outage of the login service no longer signs you out. Reload the page to try again.
+- An expired or invalid login now says "Your session has expired" instead of saying the account lacks access.
+
+---
+
+## [0.11.6] - 2026-11-12
+
+### Changed
+
+- Search results: custom and branded foods now appear first only when they match your search about as well as other foods. A closer match always ranks higher.
+- Serving size now accepts values below 1 (e.g. 0.5 ml).
+- The Copy button now shows "Copied" or "Copy failed", and is disabled while the protein or serving size is invalid.
+
+### Fixed
+
+- Fixed an issue where clearing the serving size box and retyping a value added a leading 1 (e.g. typing 250 gave 1250).
+- A blank or zero serving size now shows a warning ("Serving size must be above zero.") instead of silently using 1.
+- Accounts without access to the OFC Index now see a clear message after logging in, instead of appearing logged out.
+- A server or network error while loading your profile no longer logs you out. A message asks you to reload the page.
+- If the food database fails to load, the page now shows an error message instead of staying on the loading screen.
+
+---
+
+## [0.11.3] - 2026-06-26
+
+### Added
+
+- Improved search results so that custom foods and branded foods appear first.
+
+### Changed
+
+- Changed the food protocol popup from closing when tapping or clicking outside of it.
+
+### Fixed
+
+- Fixed an issue where the top of the protocol popup was inaccessible or squished on mobile screens.
+
+---
+
 ## [0.11.1] - 2026-06-14
 
 ### Changed

@@ -95,4 +95,50 @@ describe("SaveModals: showSaveFoodModal", () => {
 		const errorDiv = mount.querySelector(".oit-error-message");
 		expect(errorDiv).toBeNull(); // Should be valid
 	});
+
+	it("should display warning if saving a custom food that matches a standard food with different protein", async () => {
+		// Provide a standard food in publicFoods
+		initializeAppState(
+			{
+				foods: [
+					{
+						name: "Peanut Butter",
+						type: FoodType.SOLID,
+						gramsInServing: 25,
+						servingSize: 100, // 250 mg/g
+						source: SourceType.GENERIC,
+					},
+				],
+				protocols: [],
+			},
+			"https://example.com",
+		);
+
+		const customFood = {
+			name: "Peanut Butter",
+			type: FoodType.SOLID,
+			gramsInServing: new Decimal(35), // 350 mg/g
+			servingSize: new Decimal(100),
+			source: SourceType.USER,
+			getMgPerUnit: () => new Decimal(350),
+		};
+
+		showSaveFoodModal({
+			food: customFood as any,
+			saveAsNew: true,
+			onSave: vi.fn(),
+			onCancel: vi.fn(),
+		});
+
+		const input = document.getElementById("save-food-name-input") as HTMLInputElement;
+		input.value = "Peanut Butter";
+		input.dispatchEvent(new Event("input"));
+
+		const warningDiv = mount.querySelector(".oit-warning-message");
+		expect(warningDiv?.textContent).toContain("different protein content");
+
+		// Crucially, Save button should NOT be disabled
+		const saveBtn = mount.querySelector(".core-btn-primary") as HTMLButtonElement;
+		expect(saveBtn.disabled).toBe(false);
+	});
 });

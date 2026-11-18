@@ -19,6 +19,6 @@ A severe cutaneous adverse drug reaction includes Stevens-Johnson syndrome, toxi
 </br>
 </br>
 
-{{ widget_penfast() }}
+{{ <widget_penfast /> }}
 
 Source: Trubiano JA, Vogrin S, Chua KYL et al. [Development and Validation of a Penicillin Allergy Clinical Decision Rule](https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2762878). JAMA Internal Med. Published March 16, 2020. doi:10.1001/jamainternmed.2020.0403

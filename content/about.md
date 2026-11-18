@@ -10,7 +10,7 @@ in_search_index = false
 
 To create a comprehensive cross-Canada resident-led and faculty reviewed website for **high-yield and pragmatic** information about clinical allergy & immunology. It is meant for **practical use by residents/fellows, or other non-allergist physicians looking to learn**.
 
-{% admonition(type="danger", icon="tip", title="MAIN GOALS") %}
+{% <admonition type="danger" icon="tip" title="MAIN GOALS"> %}
 
 1. Guides for major conditions, including copy-pasteable macros, practical pearls, dealing with common/uncommon scenarios
 2. Guides for therapies and quick common medication references
@@ -18,7 +18,7 @@ To create a comprehensive cross-Canada resident-led and faculty reviewed website
 4. Patient resources (a one stop shop for handouts!)
 5. Critical appraisal of research
 
-{% end %}
+{% </admonition> %}
 
 #### Secondary goals (if time permits)
 
@@ -40,8 +40,8 @@ This project is open-source and built using the excellent static website generat
 
 See [full terms of use here](/termsofuse).
 
-{% important(header = "PLEASE NOTE:") %}
+{% <important header="PLEASE NOTE:"> %}
 **This information is for educational and informational purposes only and does not replace professional medical advice.** The content is not meant to be complete or exhaustive or to be applicable to any specific individual's medical condition. Always consult a licensed healthcare provider for concerns about your health - the content of this website is not a substitute for professional medical advice, diagnosis, or treatment.
 
 We assume no legal duty to correct or update the website nor to resolve or clarify any inconsistent information that might be a part of the website.
-{% end %}
+{% </important> %}

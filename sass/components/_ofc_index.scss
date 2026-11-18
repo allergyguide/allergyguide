@@ -1,0 +1,1022 @@
+.ofc_index {
+  /* Theme variables switch per mode at :root (abridge switcher), so these follow light/dark automatically */
+  --ofc-accent: var(--a1, #f90);
+  --ofc-bg-surface: var(--c2, #222);
+  --ofc-bg-primary: var(--c1, #111);
+  --ofc-border: var(--c3, #333);
+  --ofc-text-primary: var(--f1, #ccc);
+  /* Theme c4 (#888) is 4.49:1 on the dark surface; #999 clears AA on both dark backgrounds */
+  --ofc-text-muted: #999;
+  /* Form-control edges need 3:1 against their surroundings (WCAG 1.4.11) */
+  --ofc-input-border: #777;
+  /* Text on accent fills: dark text on the bright dark-mode orange */
+  --ofc-on-accent: var(--c1, #111);
+  --ofc-accent-hover: oklch(from var(--ofc-accent) calc(l - 0.06) c h);
+
+  /* Relative Color Syntax (OKLCH) */
+  --ofc-row-hover: oklch(from var(--ofc-accent) l c h / 0.08);
+  --ofc-row-alt: oklch(from var(--ofc-text-primary) l c h / 0.02);
+
+  --ofc-error: #f66; /* 6.6:1 on #111, 5.6:1 on #222 */
+  --ofc-error-bg: oklch(from var(--ofc-error) l c h / 0.08);
+  --ofc-success: oklch(0.61 0.13 145);
+
+  --ofc-shadow-sm: 0 0.25rem 0.75rem oklch(0 0 0 / 0.15);
+  --ofc-shadow-lg: 0 1.25rem 3.125rem oklch(0 0 0 / 0.4);
+
+  --ofc-max-width: 75rem;
+  --ofc-radius: 0.5rem;
+
+  max-width: var(--ofc-max-width);
+  margin: 0 auto;
+  font-family: var(--font, system-ui, -apple-system, sans-serif);
+  color: var(--ofc-text-primary);
+  background: var(--ofc-bg-primary);
+  border: 1px solid var(--ofc-border);
+  border-radius: var(--ofc-radius);
+  overflow: hidden;
+
+  /* --- Auth override --- */
+  .core-toolbar {
+    background: var(--core-surface);
+    border-bottom: 0.075rem solid var(--core-border);
+  }
+
+  /* --- Focus --- */
+
+  :is(button, a, input, [tabindex]):focus-visible {
+    outline: 0.125rem solid var(--ofc-accent);
+    outline-offset: 0.125rem;
+  }
+
+  .ofc-num {
+    text-align: right;
+  }
+
+  .ofc-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* --- Search --- */
+
+  .ofc-header {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: var(--ofc-bg-primary);
+  }
+
+  .search-box {
+    position: relative;
+    width: 100%;
+
+    .ofc-search-input {
+      width: 100%;
+      padding: 0.625rem 3rem 0.625rem 0.75rem;
+      background: var(--ofc-bg-surface);
+      border: 2px solid var(--ofc-border);
+      border-radius: 0.375rem;
+      color: var(--ofc-text-primary);
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:focus-visible {
+        border-color: var(--ofc-accent);
+        outline-offset: 0.0625rem;
+      }
+
+      &::placeholder {
+        color: var(--ofc-text-muted);
+      }
+    }
+
+    .ofc-clear-btn {
+      position: absolute;
+      right: 0.125rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2.75rem;
+      height: 2.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      border-radius: 0.375rem;
+      color: var(--ofc-text-muted);
+      cursor: pointer;
+      padding: 0;
+
+      &:focus-visible {
+        outline-offset: -0.25rem;
+      }
+
+      &:hover {
+        color: var(--ofc-text-primary);
+      }
+    }
+  }
+
+  .ofc-results-info {
+    padding: 0 1rem 0.5rem;
+
+    &:empty {
+      padding: 0;
+    }
+
+    font-size: 0.8125rem;
+    color: var(--ofc-text-muted);
+    font-weight: 500;
+  }
+
+  .ofc-instructions {
+    padding: 2.5rem 1.25rem;
+    text-align: center;
+    color: var(--ofc-text-muted);
+    background: var(--ofc-bg-primary);
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    strong {
+      color: var(--ofc-accent);
+    }
+  }
+
+  /* --- Data Table --- */
+
+  .ofc-table-wrapper {
+    overflow-x: auto;
+    max-height: 60vh;
+    border-top: 1px solid var(--ofc-border);
+  }
+
+  .ofc-table {
+    width: 100%;
+    table-layout: fixed;
+    /* Crucial: ensures the table obeys 100% width and doesn't expand */
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    text-align: left;
+    margin-top: 0;
+    font-variant-numeric: tabular-nums;
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--ofc-bg-surface);
+
+      th {
+        padding: 0.75rem;
+        font-weight: 600;
+        color: var(--ofc-accent);
+        border-bottom: 2px solid var(--ofc-border);
+        white-space: nowrap;
+
+        /* Define widths in thead so table-layout: fixed can calculate them */
+        &:nth-child(1) {
+          width: 100%;
+          /* Take remaining space */
+        }
+
+        &:nth-child(2) {
+          width: 7.5rem;
+        }
+
+        &:nth-child(3) {
+          width: 9.5rem;
+          padding-right: 2rem;
+        }
+      }
+    }
+
+    &[hidden] {
+      display: none;
+    }
+
+    .ofc-row {
+      cursor: pointer;
+      transition: background-color 0.15s;
+
+      &:nth-child(even) {
+        background: var(--ofc-row-alt);
+      }
+
+      &:hover {
+        background: var(--ofc-row-hover);
+      }
+
+      td {
+        padding: 0;
+        /* Padding moved to inner elements for better click coverage */
+        border-bottom: 1px solid var(--ofc-border);
+        vertical-align: middle;
+
+        &:not(.food-name-cell) {
+          padding: 0.625rem 0.75rem;
+        }
+
+        &:nth-child(3) {
+          padding-right: 2rem;
+        }
+      }
+    }
+  }
+
+  .ofc-per-serving {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--ofc-text-muted);
+    white-space: nowrap;
+  }
+
+  .food-name-cell {
+    font-weight: 500;
+    line-height: 1.4;
+    overflow: hidden;
+
+    .ofc-food-select-btn {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0.625rem 0.75rem;
+      margin: 0;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      white-space: normal;
+      /* Overrides button's default nowrap */
+      overflow-wrap: anywhere;
+      /* Ensures wrapping for very long strings */
+
+      &:hover {
+        color: var(--ofc-accent);
+        text-decoration: underline;
+      }
+
+      /* the cell clips overflow, so draw the ring inside */
+      &:focus-visible {
+        outline-offset: -0.125rem;
+      }
+    }
+
+    .icon-brand {
+      color: var(--ofc-accent);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 0.25rem;
+      margin-top: -0.125rem;
+      flex-shrink: 0;
+    }
+  }
+
+  .ofc-no-results {
+    padding: 2.5rem;
+    text-align: center;
+    color: var(--ofc-text-muted);
+    font-style: italic;
+  }
+
+  .ofc-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: oklch(0 0 0 / 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1.25rem;
+    animation: ofc-fade-in 0.2s ease-out;
+  }
+
+  @keyframes ofc-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .ofc-modal {
+    background: var(--ofc-bg-primary);
+    border: 1px solid var(--ofc-border);
+    border-radius: 0.75rem;
+    width: 100%;
+    max-width: 68.75rem;
+    min-height: 70vh;
+    min-height: 70dvh;
+    max-height: 90vh;
+    max-height: 90dvh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--ofc-shadow-lg);
+    animation: ofc-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+
+  @keyframes ofc-slide-up {
+    from {
+      transform: translateY(1.25rem);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .ofc-modal:focus {
+    outline: none;
+  }
+
+  .ofc-modal-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--ofc-bg-surface);
+    border: 1px solid var(--ofc-border);
+    color: var(--ofc-text-primary);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.1s;
+
+    &:hover {
+      color: var(--ofc-accent);
+      transform: scale(1.1);
+    }
+  }
+
+  .ofc-modal-header {
+    padding: 1rem 1.5rem 0.5rem;
+    flex: 0 0 auto;
+
+    h3 {
+      margin: 0 0 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      font-size: 1.3rem;
+      color: var(--ofc-accent);
+    }
+
+    .ofc-source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.8125rem;
+      color: var(--ofc-accent);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--ofc-accent);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .ofc-inputs-container {
+    padding: 0.75rem 1.5rem;
+    background: var(--ofc-bg-surface);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    border: 0;
+    flex: 0 0 auto;
+  }
+
+  .ofc-disclaimer {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--ofc-text-muted);
+    max-width: 25rem;
+  }
+
+  .ofc-warning-text {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--ofc-error);
+    animation: ofc-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  @keyframes ofc-shake {
+
+    10%,
+    90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+      transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+      transform: translate3d(4px, 0, 0);
+    }
+  }
+
+  .ofc-modal-controls {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s, box-shadow 0.2s;
+
+    &.ofc-input-error {
+      background: var(--ofc-error-bg);
+      box-shadow: 0 0 0 1px oklch(from var(--ofc-error) l c h / 0.3);
+
+      input {
+        border-color: var(--ofc-error);
+      }
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    input {
+      width: 5rem;
+      min-height: 2rem;
+      padding: 0.375rem 0.5rem;
+      background: var(--ofc-bg-primary);
+      border: 1px solid var(--ofc-input-border);
+      border-radius: 0.25rem;
+      color: var(--ofc-text-primary);
+      font-weight: 600;
+      text-align: center;
+
+      &:focus-visible {
+        border-color: var(--ofc-accent);
+        outline-offset: 0.0625rem;
+      }
+    }
+  }
+
+  .ofc-tables-container {
+    padding: 1rem 1.5rem 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(28.125rem, 1fr));
+    gap: 1.25rem;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    align-items: start;
+  }
+
+  .ofc-protocol-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .ofc-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--ofc-text-primary);
+    padding-bottom: 0.375rem;
+
+    span {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  .ofc-copy-btn {
+    min-height: 2rem;
+    padding: 0.375rem 0.875rem;
+    background: var(--ofc-accent);
+    color: var(--ofc-on-accent);
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover:not(:disabled) {
+      background: var(--ofc-accent-hover);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  .ofc-protocol-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    padding-top: 0;
+    margin-top: 0;
+    font-variant-numeric: tabular-nums;
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    th {
+      background: var(--ofc-bg-surface);
+      padding: 0.5rem 0.75rem;
+      text-align: right;
+      border-bottom: 1px solid var(--ofc-border);
+
+      &:first-child {
+        text-align: center;
+      }
+    }
+
+    td {
+      padding: 0.5rem 0.75rem;
+      text-align: right;
+      border-bottom: 1px solid var(--ofc-border);
+      background: var(--ofc-bg-primary);
+
+      &:first-child {
+        text-align: center;
+      }
+
+      input {
+        width: 4.375rem;
+        min-height: 2rem;
+        padding: 0.25rem;
+        background: var(--ofc-bg-surface);
+        border: 1px solid var(--ofc-input-border);
+        border-radius: 0.25rem;
+        color: var(--ofc-text-primary);
+        text-align: right;
+        font-family: inherit;
+        font-weight: 600;
+
+        &:focus-visible {
+          border-color: var(--ofc-accent);
+          outline-offset: 0.0625rem;
+        }
+      }
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  /* --- Tab Bar --- */
+
+  .ofc-tab-bar {
+    display: flex;
+    border-bottom: 2px solid var(--ofc-border);
+    background: var(--ofc-bg-primary);
+    padding: 0 0.5rem;
+    gap: 0;
+  }
+
+  .ofc-tab {
+    position: relative;
+    padding: 0.75rem 1.25rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    color: var(--ofc-text-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--ofc-text-primary);
+    }
+
+    &.ofc-tab--active {
+      color: var(--ofc-accent);
+    }
+
+    &:focus-visible {
+      outline-offset: -0.25rem;
+    }
+  }
+
+  /* --- Portion Reference Section --- */
+
+  .ofc-portion-section {
+    /* Normal block formatting to avoid flex-child overflow issues */
+    position: relative;
+    width: 100%;
+  }
+
+  .ofc-portion-header {
+    padding: 1rem 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    background: var(--ofc-bg-primary);
+  }
+
+  .ofc-portion-intro {
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--ofc-text-muted);
+      line-height: 1.6;
+    }
+  }
+
+  .ofc-portion-citation-link {
+    color: var(--ofc-accent);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .ofc-portion-filter {
+    /* Reuses .search-box layout */
+    width: 100%;
+  }
+
+  .ofc-portion-table-wrapper {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 70vh;
+    border-top: 0;
+    width: 100%;
+  }
+
+  .ofc-portion-table {
+    width: 100%;
+    min-width: 52rem; // ensure all age columns always visible
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--ofc-bg-surface);
+
+      th {
+        padding: 0.625rem 0.75rem;
+        font-weight: 600;
+        color: var(--ofc-accent);
+        border-bottom: 2px solid var(--ofc-border);
+        white-space: nowrap;
+      }
+    }
+
+    .col-allergen {
+      width: 8rem;
+      min-width: 7rem;
+    }
+
+    .col-food {
+      width: 14rem;
+      min-width: 11rem;
+    }
+
+    .col-protein {
+      width: 12rem;
+      min-width: 9rem;
+    }
+
+    .col-age {
+      width: 7rem;
+      min-width: 5.5rem;
+      text-align: center;
+    }
+
+    .ofc-portion-row {
+      transition: background-color 0.12s;
+
+      &:nth-child(even) {
+        background: var(--ofc-row-alt);
+      }
+
+      &:hover {
+        background: var(--ofc-row-hover);
+      }
+
+      td,
+      th {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--ofc-border);
+        vertical-align: middle;
+        line-height: 1.4;
+      }
+
+      th {
+        font-weight: 500;
+        text-align: left;
+      }
+
+      &.ofc-group-start :is(td, th) {
+        border-top: 1px solid var(--ofc-border);
+        padding-top: 0.625rem;
+      }
+    }
+  }
+
+  /* Allergen group header rows replace the allergen column on narrow screens */
+  .ofc-group-row {
+    display: none;
+
+    td {
+      padding: 0.75rem 0.75rem 0.25rem;
+      border-top: 1px solid var(--ofc-border);
+    }
+
+    .ofc-allergen-badge {
+      position: sticky;
+      left: 0.75rem;
+    }
+  }
+
+  .ofc-allergen-badge {
+    display: inline-block;
+    padding: 0.2em 0.55em;
+    background: oklch(from var(--ofc-accent) l c h / 0.12);
+    color: var(--ofc-accent);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  /* --- Skeleton Loading --- */
+
+  .ofc-skeleton {
+    max-width: 100%;
+    margin: 0;
+
+    .ofc-header {
+
+      /* Uses same padding as main header */
+      .ofc-search-input {
+        background: var(--ofc-bg-surface);
+        opacity: 0.6;
+        cursor: wait;
+      }
+    }
+
+    .ofc-instructions {
+      /* Shared with main app to prevent jitter */
+      text-align: center;
+      padding: 2.5rem 1.25rem;
+      color: var(--ofc-text-muted);
+
+      p {
+        margin: 0.5rem 0;
+        font-size: 1.1rem;
+        line-height: 1.5;
+      }
+
+      strong,
+      #ofc-food-count {
+        font-weight: 700;
+        color: var(--ofc-accent);
+      }
+    }
+
+    div:not(.ofc-header):not(.search-box) {
+      animation: ofc-pulse 1.5s infinite ease-in-out;
+    }
+  }
+
+  @keyframes ofc-pulse {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  &:not(.ofc-loading) .ofc-skeleton {
+    display: none;
+  }
+
+  .ofc-editable-name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-right: 2.5rem;
+    border-bottom: 2px solid var(--ofc-border);
+    padding-bottom: 0.25rem;
+
+    .ofc-name-edit-input {
+      background: transparent;
+      border: 1px solid transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 700;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      flex: 1;
+      transition: background 0.2s, border-color 0.2s;
+
+      &:hover,
+      &:focus-visible {
+        background: var(--ofc-bg-surface);
+        border-color: var(--ofc-input-border);
+      }
+
+      &:focus-visible {
+        border-color: var(--ofc-accent);
+        outline-offset: 0.0625rem;
+      }
+    }
+  }
+
+  /* --- Mobile Adaptations --- */
+  @media (max-width: 48rem) {
+
+    /* 768px */
+    .ofc-tables-container {
+      grid-template-columns: 1fr;
+      row-gap: 2.5rem;
+    }
+
+    .ofc-inputs-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .ofc-modal-controls {
+      justify-content: space-between;
+    }
+  }
+
+  @media (max-width: 30rem) {
+
+    /* 480px */
+    .ofc-modal-backdrop {
+      padding: 0;
+    }
+
+    .ofc-modal {
+      border-radius: 0;
+      min-height: 0;
+      max-height: 100%;
+      height: 100%;
+    }
+
+    /* Serving size column folds into the protein cell so grams never lose their basis */
+    .ofc-table .ofc-col-serving {
+      display: none;
+    }
+
+    .ofc-per-serving {
+      display: block;
+    }
+
+    .ofc-table thead th:nth-child(2) {
+      width: 7rem;
+    }
+
+    /* Portion table: allergen becomes a group header, the food name stays pinned while ages scroll */
+    .ofc-portion-table {
+      min-width: 40rem;
+
+      .col-allergen {
+        display: none;
+      }
+
+      .col-food {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        width: 9rem;
+        min-width: 9rem;
+        background: var(--ofc-bg-primary);
+        box-shadow: inset -1px 0 0 var(--ofc-border);
+      }
+
+      thead .col-food {
+        z-index: 11;
+        background: var(--ofc-bg-surface);
+      }
+
+      .ofc-portion-row:nth-child(even) .col-food {
+        background-image: linear-gradient(var(--ofc-row-alt), var(--ofc-row-alt));
+      }
+    }
+
+    .ofc-group-row {
+      display: table-row;
+    }
+  }
+
+  /* Coarse pointers get 44px targets */
+  @media (pointer: coarse) {
+    .ofc-copy-btn,
+    .ofc-modal-close,
+    .ofc-protocol-table td input,
+    .ofc-modal-controls input {
+      min-height: 2.75rem;
+    }
+
+    .ofc-modal-close {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+  }
+
+  /* Reduced motion: keep the fade (state change) but drop travel, shake, and pulsing */
+  @media (prefers-reduced-motion: reduce) {
+    .ofc-modal {
+      animation: ofc-fade-in 0.15s ease-out;
+    }
+
+    .ofc-warning-text {
+      animation: none;
+    }
+
+    .ofc-skeleton div:not(.ofc-header):not(.search-box) {
+      animation: none;
+    }
+
+    .ofc-modal-close:hover {
+      transform: none;
+    }
+
+    .ofc-row,
+    .ofc-portion-row,
+    .ofc-tab,
+    .ofc-search-input {
+      transition: none;
+    }
+  }
+}
+
+/* Light Mode Overrides (base colours already follow the theme variables) */
+:root.switch .ofc_index {
+  --ofc-text-muted: var(--c4, #555);
+  --ofc-input-border: #7a7a7a;
+  --ofc-on-accent: #fff;
+  --ofc-error: #c22; /* 5.6:1 on #fff, 4.7:1 on #eee */
+  --ofc-row-hover: oklch(from var(--ofc-accent) l c h / 0.05);
+}

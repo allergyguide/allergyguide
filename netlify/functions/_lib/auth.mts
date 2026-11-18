@@ -18,7 +18,7 @@ const supabase = createClient(
 /**
  * Authenticates a user by extracting and verifying their Supabase access token.
  *
- * Parses the `nf_jwt` cookie from the incoming event headers and verifies it against the server's `JWT_SECRET`. If successful, it returns the decoded user payload.
+ * Reads the `Authorization: Bearer <token>` header and verifies the token with Supabase `getClaims`. If successful, it returns the decoded user payload.
  *
  * @param event - The serverless event object containing the request headers.
  * @returns {Promise<UserToken>} The decoded user token payload their UUID.

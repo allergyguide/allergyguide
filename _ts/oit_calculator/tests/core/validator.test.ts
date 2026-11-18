@@ -2,8 +2,11 @@ import Decimal from "decimal.js";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CONFIG } from "../../constants";
 import { generateDefaultProtocol } from "../../core/calculator";
-import { validateProtocol } from "../../core/validator";
-import type { Food } from "../../types";
+import {
+	validateCustomFoodAgainstStandard,
+	validateProtocol,
+} from "../../core/validator";
+import type { Food, FoodData } from "../../types";
 import { FoodType, Method, SourceType, WarningCode } from "../../types";
 
 const createFood = (type: FoodType = FoodType.SOLID): Food => ({
@@ -419,5 +422,245 @@ describe("Core: Validator", () => {
 				warnings.some((w) => w.code === WarningCode.Yellow.BELOW_RESOLUTION),
 			).toBe(true);
 		});
+	});
+
+	describe("Standard Food Collisions against Custom Foods", () => {
+		const standardFoods: FoodData[] = [
+			{
+				name: "Peanut Butter",
+				type: FoodType.SOLID,
+				gramsInServing: 25,
+				servingSize: 100, // 250 mg/g
+				source: SourceType.GENERIC,
+			},
+			{
+				name: "Whole Milk",
+				type: FoodType.LIQUID,
+				gramsInServing: 3.3,
+				servingSize: 100, // 33 mg/ml
+				source: SourceType.GENERIC,
+			},
+			{
+				name: "Deprecated Food",
+				type: FoodType.SOLID,
+				gramsInServing: 10,
+				servingSize: 100,
+				source: SourceType.BRAND,
+				id: "deprecated-1",
+				source_url: "https://example.com",
+				last_updated: "2024-01-01",
+				is_active: false,
+			},
+		];
+
+		const createCustomFood = (overrides: Partial<Food> = {}): Food => ({
+			name: "Peanut Butter",
+			type: FoodType.SOLID,
+			gramsInServing: new Decimal(25),
+			servingSize: new Decimal(100),
+			source: SourceType.USER,
+			getMgPerUnit() {
+				return this.gramsInServing.times(1000).dividedBy(this.servingSize);
+			},
+			...overrides,
+		});
+
+		it("should emit NO warning if exact same name, same form, and same protein concentration", () => {
+			const customFood = createCustomFood(); // 250 mg/g, Solid
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings).toHaveLength(0);
+		});
+
+		it("should emit NO warning if different serving sizes but identical protein concentration", () => {
+			const customFood = createCustomFood({
+				gramsInServing: new Decimal(12.5),
+				servingSize: new Decimal(50), // 12.5 / 50 = 250 mg/g
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings).toHaveLength(0);
+		});
+
+		it("should flag STANDARD_FOOD_PROTEIN_MISMATCH if same name & form but different protein", () => {
+			const customFood = createCustomFood({
+				gramsInServing: new Decimal(35), // 350 mg/g instead of 250 mg/g
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings).toHaveLength(1);
+			expect(warnings[0].code).toBe(
+				WarningCode.Yellow.STANDARD_FOOD_PROTEIN_MISMATCH,
+			);
+			expect(warnings[0].severity).toBe("yellow");
+			expect(warnings[0].message).toBe(
+				"A standard library food has the same name, but different protein content (35 g/100 g vs 25 g/100 g).",
+			);
+		});
+
+		it("should treat protein within 0.5 mg/g of the standard as the same (1-decimal rounding)", () => {
+			const standard: FoodData[] = [
+				{
+					name: "Cheese souffle",
+					type: FoodType.SOLID,
+					gramsInServing: 9.54,
+					servingSize: 100,
+					source: SourceType.GENERIC,
+				},
+			];
+			const rounded = createCustomFood({
+				name: "Cheese souffle",
+				gramsInServing: new Decimal(9.5), // 95 vs 95.4 mg/g
+			});
+			expect(validateCustomFoodAgainstStandard(rounded, standard)).toHaveLength(0);
+
+			const different = createCustomFood({
+				name: "Cheese souffle",
+				gramsInServing: new Decimal(9.6), // 96 vs 95.4 mg/g
+			});
+			expect(validateCustomFoodAgainstStandard(different, standard)[0].code).toBe(
+				WarningCode.Yellow.STANDARD_FOOD_PROTEIN_MISMATCH,
+			);
+		});
+
+		it("should show protein as entered (g per serving), without rounding", () => {
+			const customFood = createCustomFood({
+				gramsInServing: new Decimal(12.55),
+				servingSize: new Decimal(50), // 251 mg/g vs 250 mg/g
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings[0].message).toBe(
+				"A standard library food has the same name, but different protein content (12.55 g/50 g vs 25 g/100 g).",
+			);
+		});
+
+		it("should flag STANDARD_FOOD_FORM_MISMATCH if same name & protein but different form", () => {
+			const customFood = createCustomFood({
+				type: FoodType.LIQUID,
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings).toHaveLength(1);
+			expect(warnings[0].code).toBe(
+				WarningCode.Yellow.STANDARD_FOOD_FORM_MISMATCH,
+			);
+			expect(warnings[0].message).toBe(
+				"A standard library food has the same name, but different form (Liquid vs Solid).",
+			);
+		});
+
+		it("should combine into a single consolidated warning when both form and protein differ", () => {
+			const customFood = createCustomFood({
+				type: FoodType.LIQUID,
+				gramsInServing: new Decimal(50),
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings).toHaveLength(1);
+			expect(warnings[0].code).toBe(
+				WarningCode.Yellow.STANDARD_FOOD_COLLISION,
+			);
+			expect(warnings[0].message).toBe(
+				"A standard library food has the same name, but different protein content (50 g/100 ml vs 25 g/100 g) and form (Liquid vs Solid).",
+			);
+		});
+
+		it("should be case-insensitive and trim whitespace", () => {
+			const customFood = createCustomFood({
+				name: "  peanut butter  ",
+				gramsInServing: new Decimal(30),
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(
+				warnings.some(
+					(w) => w.code === WarningCode.Yellow.STANDARD_FOOD_PROTEIN_MISMATCH,
+				),
+			).toBe(true);
+		});
+
+		it("should ignore standard foods that are deprecated (is_active === false)", () => {
+			const customFood = createCustomFood({
+				name: "Deprecated Food",
+				gramsInServing: new Decimal(99),
+			});
+			const warnings = validateCustomFoodAgainstStandard(customFood, standardFoods);
+			expect(warnings).toHaveLength(0);
+		});
+
+		it("should ignore non-custom foods (source !== USER)", () => {
+			const genericFood = createCustomFood({
+				source: SourceType.GENERIC,
+				gramsInServing: new Decimal(99),
+			});
+			const warnings = validateCustomFoodAgainstStandard(genericFood, standardFoods);
+			expect(warnings).toHaveLength(0);
+		});
+
+		it("should integrate with validateProtocol", () => {
+			const customFood = createCustomFood({
+				gramsInServing: new Decimal(35),
+			});
+			const protocol = generateDefaultProtocol(customFood, DEFAULT_CONFIG);
+			const warnings = validateProtocol(protocol, standardFoods);
+			expect(
+				warnings.some(
+					(w) => w.code === WarningCode.Yellow.STANDARD_FOOD_PROTEIN_MISMATCH,
+				),
+			).toBe(true);
+		});
+	});
+});
+
+describe("Validator: invalid dilution values", () => {
+	it("returns a red warning instead of throwing when dilution values are NaN", () => {
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		const i = protocol.steps.findIndex((s) => s.method === Method.DILUTE);
+		// 0 mg target with 0 g mix food => 0/0 servings and water
+		protocol.steps[i] = {
+			...protocol.steps[i],
+			targetMg: new Decimal(0),
+			mixFoodAmount: new Decimal(0),
+			servings: new Decimal(Number.NaN),
+			mixWaterAmount: new Decimal(Number.NaN),
+		};
+		const warnings = validateProtocol(protocol);
+		expect(
+			warnings.some(
+				(w) =>
+					w.code === WarningCode.Red.INVALID_DILUTION_STEP_VALUES &&
+					w.stepIndex === i + 1,
+			),
+		).toBe(true);
+	});
+});
+
+describe("Validator: food names in messages", () => {
+	it("keeps special characters unescaped (lit escapes on render)", () => {
+		const food = { ...createFood(), name: "Ben & Jerry's", gramsInServing: new Decimal(0) };
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		const warnings = validateProtocol({ ...protocol, foodA: food });
+		const w = warnings.find((w) => w.code === WarningCode.Red.INVALID_CONCENTRATION);
+		expect(w?.message).toContain("Ben & Jerry's");
+	});
+});
+
+describe("Validator: never throws", () => {
+	it("returns VALIDATION_FAILED instead of throwing", () => {
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		// a Food B step with no Food B makes validateAllSteps throw
+		protocol.steps[0] = { ...protocol.steps[0], food: "B" };
+		const warnings = validateProtocol(protocol);
+		expect(warnings.map((w) => w.code)).toEqual([
+			WarningCode.Red.VALIDATION_FAILED,
+		]);
+	});
+
+	it("handles a NaN direct amount (0 mg target, 0 protein food)", () => {
+		const food = { ...createFood(), gramsInServing: new Decimal(0), getMgPerUnit: () => new Decimal(0) };
+		const protocol = generateDefaultProtocol(createFood(), DEFAULT_CONFIG);
+		const i = protocol.steps.findIndex((s) => s.method === Method.DIRECT);
+		protocol.steps[i] = {
+			...protocol.steps[i],
+			targetMg: new Decimal(0),
+			dailyAmount: new Decimal(Number.NaN),
+		};
+		const codes = validateProtocol({ ...protocol, foodA: food }).map((w) => w.code);
+		expect(codes).not.toContain(WarningCode.Red.VALIDATION_FAILED);
+		expect(codes).toContain(WarningCode.Red.INVALID_TARGET);
 	});
 });

@@ -12,9 +12,10 @@ import type { Food, Protocol, Step, Unit } from "../types";
 import { FoodAStrategy, FoodType, Method, type NumberLike } from "../types";
 import { generateUniqueId, getMeasuringUnit } from "../utils";
 import {
+	findDilutionCandidates,
 	findRoundedDirectAmount,
 	findRoundedMixWaterAmount,
-	generateStepForTarget,
+	generateStepOrDirectFallback,
 } from "./calculator";
 
 /**
@@ -79,23 +80,15 @@ export function updateFoodBAndRecalculate(
 	protocol: Protocol,
 	updates: Partial<Food>,
 ): Protocol {
-	// Update the food object and create shallow copy of protocol
-	let newProtocol = updateFoodDetails(protocol, "B", updates);
+	const newProtocol = updateFoodDetails(protocol, "B", updates);
 
-	// If we have a threshold, must re-calculate the transition because a change in Protein/Serving size changes WHERE the transition happens
+	// A change in protein/serving size moves the transition point; addFoodBToProtocol re-finds it while keeping existing targets
 	if (newProtocol.foodB && newProtocol.foodBThreshold) {
-		const tempFoodB = newProtocol.foodB;
-		const tempThreshold = newProtocol.foodBThreshold;
-
-		// Reset Food B state to force clean recalculation of Food A steps
-		newProtocol.foodB = undefined;
-		newProtocol.foodBThreshold = undefined;
-
-		// Recalculate Food A steps
-		newProtocol = recalculateProtocol(newProtocol);
-
-		// Re-add B (This finds the new transition index)
-		newProtocol = addFoodBToProtocol(newProtocol, tempFoodB, tempThreshold);
+		return addFoodBToProtocol(
+			newProtocol,
+			newProtocol.foodB,
+			newProtocol.foodBThreshold,
+		);
 	}
 
 	return newProtocol;
@@ -112,27 +105,11 @@ export function updateFoodBThreshold(
 	protocol: Protocol,
 	newAmount: Decimal,
 ): Protocol {
-	// Create shallow copy
-	let newProtocol = { ...protocol };
-
-	// verify Food B exists to update ... though it should always ...
-	if (newProtocol.foodB && newProtocol.foodBThreshold) {
-		const tempFoodB = newProtocol.foodB;
-
-		// Create new temp threshold object with the updated amount
-		const newThreshold = {
-			...newProtocol.foodBThreshold,
-			amount: newAmount,
-		};
-
-		// Reset Food B state to force clean recalculation of Food A steps then add Food A
-		newProtocol.foodB = undefined;
-		newProtocol.foodBThreshold = undefined;
-
-		newProtocol = recalculateProtocol(newProtocol);
-		newProtocol = addFoodBToProtocol(newProtocol, tempFoodB, newThreshold);
-	}
-	return newProtocol;
+	if (!protocol.foodB || !protocol.foodBThreshold) return protocol;
+	return addFoodBToProtocol(protocol, protocol.foodB, {
+		...protocol.foodBThreshold,
+		amount: newAmount,
+	});
 }
 
 /**
@@ -182,38 +159,22 @@ export function addFoodBToProtocol(
 	}
 
 	// Normalize all existing steps to be valid Food A steps
-	// => if the transition point moves "later" (ie. another food B is chosen), steps before it which might have been Food B previously are correctly recalculated as Food A using `generateStepForTarget`
-	const normalizedSteps: Step[] = [];
-	for (const existingStep of cleanedSourceSteps) {
-		const step = generateStepForTarget(
-			existingStep.targetMg,
-			existingStep.stepIndex,
-			newProtocol.foodA,
-			"A",
-			newProtocol.foodAStrategy,
-			newProtocol.diThreshold,
-			newProtocol.config,
-		);
-
-		if (step) {
-			normalizedSteps.push(step);
-		} else {
-			// Fallback DIRECT if dilution generation fails
-			const P = existingStep.targetMg;
-			const neatMass = P.dividedBy(newProtocol.foodA.getMgPerUnit());
-			const unit: Unit = newProtocol.foodA.type === FoodType.SOLID ? "g" : "ml";
-			normalizedSteps.push({
-				id: generateUniqueId(),
-				stepIndex: existingStep.stepIndex,
-				targetMg: P,
-				method: Method.DIRECT,
-				dailyAmount: neatMass,
-				dailyAmountUnit: unit,
-				food: "A",
-			});
-		}
-	}
-	newProtocol.steps = normalizedSteps;
+	// Food A steps are kept as-is (preserving manual mix/daily edits and ids); only former Food B steps are recalculated as Food A
+	// Copies are required: the reindex loop below mutates stepIndex, and the originals live in undo history
+	newProtocol.steps = cleanedSourceSteps.map((existingStep) =>
+		existingStep.food === "A"
+			? { ...existingStep }
+			: generateStepOrDirectFallback(
+					existingStep.targetMg,
+					existingStep.stepIndex,
+					newProtocol.foodA,
+					"A",
+					newProtocol.foodAStrategy,
+					newProtocol.diThreshold,
+					newProtocol.config,
+					existingStep.id,
+				),
+	);
 
 	// Calculate foodBmgThreshold
 	const foodBmgThreshold = threshold.amount.times(foodB.getMgPerUnit());
@@ -253,26 +214,38 @@ export function addFoodBToProtocol(
 
 	// First Food B step uses same target as last Food A step
 	const firstBTargetMg = transitionTargetMg;
-	const firstBNeatMass = firstBTargetMg.dividedBy(foodB.getMgPerUnit());
+	const firstBPreciseMass = firstBTargetMg.dividedBy(foodB.getMgPerUnit());
+	const firstBSnappedMass = findRoundedDirectAmount(
+		firstBTargetMg,
+		foodB,
+		firstBPreciseMass,
+		newProtocol.config,
+	);
 	foodBSteps.push({
 		id: generateUniqueId(),
 		stepIndex: transitionIndex + 2, // Will be reindexed later
 		targetMg: firstBTargetMg,
 		method: Method.DIRECT,
-		dailyAmount: firstBNeatMass,
+		dailyAmount: firstBSnappedMass,
 		dailyAmountUnit: foodBUnit,
 		food: "B",
 	});
 
 	// Remaining Food B steps
 	for (const targetMg of originalTargets) {
-		const neatMass = targetMg.dividedBy(foodB.getMgPerUnit());
+		const preciseMass = targetMg.dividedBy(foodB.getMgPerUnit());
+		const snappedMass = findRoundedDirectAmount(
+			targetMg,
+			foodB,
+			preciseMass,
+			newProtocol.config,
+		);
 		foodBSteps.push({
 			id: generateUniqueId(),
 			stepIndex: 0, // Will be reindexed
 			targetMg,
 			method: Method.DIRECT,
-			dailyAmount: neatMass,
+			dailyAmount: snappedMass,
 			dailyAmountUnit: foodBUnit,
 			food: "B",
 		});
@@ -305,26 +278,19 @@ export function addFoodBToProtocol(
 export function recalculateProtocol(oldProtocol: Protocol): Protocol {
 	const newProtocol = { ...oldProtocol };
 
-	const targetProteins = DOSING_STRATEGIES[newProtocol.dosingStrategy];
-	const steps: Step[] = [];
-
 	// Regenerate Food A steps
-	for (let i = 0; i < targetProteins.length; i++) {
-		const step = generateStepForTarget(
-			targetProteins[i],
-			i + 1,
-			newProtocol.foodA,
-			"A",
-			newProtocol.foodAStrategy,
-			newProtocol.diThreshold,
-			newProtocol.config,
-		);
-		if (step) {
-			steps.push(step);
-		}
-	}
-
-	newProtocol.steps = steps;
+	newProtocol.steps = DOSING_STRATEGIES[newProtocol.dosingStrategy].map(
+		(target, i) =>
+			generateStepOrDirectFallback(
+				target,
+				i + 1,
+				newProtocol.foodA,
+				"A",
+				newProtocol.foodAStrategy,
+				newProtocol.diThreshold,
+				newProtocol.config,
+			),
+	);
 
 	// Re-add Food B if it exists
 	if (newProtocol.foodB && newProtocol.foodBThreshold) {
@@ -368,21 +334,18 @@ export function recalculateStepMethods(oldProtocol: Protocol): Protocol {
 				`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${i + 1}`,
 			);
 		}
-		const step = generateStepForTarget(
-			targetMg,
-			i + 1,
-			food,
-			preservedFoods[i],
-			foodAStrategy,
-			newProtocol.diThreshold,
-			newProtocol.config,
-			newProtocol.steps[i].id,
+		steps.push(
+			generateStepOrDirectFallback(
+				targetMg,
+				i + 1,
+				food,
+				preservedFoods[i],
+				foodAStrategy,
+				newProtocol.diThreshold,
+				newProtocol.config,
+				newProtocol.steps[i].id,
+			),
 		);
-
-		if (step) {
-			step.food = preservedFoods[i]; // Preserve the original food property
-			steps.push(step);
-		}
 	}
 
 	newProtocol.steps = steps;
@@ -447,30 +410,7 @@ export function updateStepTargetMg(
 		);
 	} else if (step.method === Method.DILUTE) {
 		// DILUTE - keep mixFoodAmount and dailyAmount, recalculate servings and water
-		if (!step.mixFoodAmount) {
-			throw new Error(`Step ${stepIndex} is DILUTE but missing mixFoodAmount`);
-		}
-		const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
-		step.servings = totalMixProtein.dividedBy(step.targetMg);
-		const mixTotalVolume = step.dailyAmount.times(step.servings);
-
-		if (food.type === FoodType.SOLID) {
-			const idealWaterAmount = mixTotalVolume;
-			updateStepWaterWithRounding(
-				step,
-				food,
-				idealWaterAmount,
-				oldProtocol.config.PROTEIN_TOLERANCE,
-			);
-		} else {
-			const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
-			updateStepWaterWithRounding(
-				step,
-				food,
-				idealWaterAmount,
-				oldProtocol.config.PROTEIN_TOLERANCE,
-			);
-		}
+		recalcDilutionWater(step, food, oldProtocol.config.PROTEIN_TOLERANCE);
 	}
 
 	newSteps[stepIndex - 1] = step;
@@ -520,30 +460,7 @@ export function updateStepDailyAmount(
 		step.targetMg = step.dailyAmount.times(food.getMgPerUnit());
 	} else if (step.method === Method.DILUTE) {
 		// DILUTE - keep mixFoodAmount fixed, recalculate water
-		if (!step.mixFoodAmount) {
-			throw new Error(`Step ${stepIndex} is DILUTE but missing mixFoodAmount`);
-		}
-		const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
-		step.servings = totalMixProtein.dividedBy(step.targetMg);
-
-		const mixTotalVolume = step.dailyAmount.times(step.servings);
-		if (food.type === FoodType.SOLID) {
-			const idealWaterAmount = mixTotalVolume;
-			updateStepWaterWithRounding(
-				step,
-				food,
-				idealWaterAmount,
-				oldProtocol.config.PROTEIN_TOLERANCE,
-			);
-		} else {
-			const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
-			updateStepWaterWithRounding(
-				step,
-				food,
-				idealWaterAmount,
-				oldProtocol.config.PROTEIN_TOLERANCE,
-			);
-		}
+		recalcDilutionWater(step, food, oldProtocol.config.PROTEIN_TOLERANCE);
 	}
 
 	newSteps[stepIndex - 1] = step;
@@ -588,27 +505,7 @@ export function updateStepMixFoodAmount(
 	}
 
 	// Recalculate water to keep P and dailyAmount unchanged
-	const totalMixProtein = step.mixFoodAmount.times(food.getMgPerUnit());
-	step.servings = totalMixProtein.dividedBy(step.targetMg);
-
-	const mixTotalVolume = step.dailyAmount.times(step.servings);
-	if (food.type === FoodType.SOLID) {
-		const idealWaterAmount = mixTotalVolume;
-		updateStepWaterWithRounding(
-			step,
-			food,
-			idealWaterAmount,
-			oldProtocol.config.PROTEIN_TOLERANCE,
-		);
-	} else {
-		const idealWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
-		updateStepWaterWithRounding(
-			step,
-			food,
-			idealWaterAmount,
-			oldProtocol.config.PROTEIN_TOLERANCE,
-		);
-	}
+	recalcDilutionWater(step, food, oldProtocol.config.PROTEIN_TOLERANCE);
 
 	newSteps[stepIndex - 1] = step;
 	return { ...oldProtocol, steps: newSteps };
@@ -763,34 +660,16 @@ export function toggleFoodType(
 			}
 
 			// If switching FROM Capsule (to Solid or Liquid)
-			const newStep = generateStepForTarget(
+			return generateStepOrDirectFallback(
 				originalStep.targetMg,
 				originalStep.stepIndex,
 				newFood,
-				isFoodB ? "B" : "A",
+				originalStep.food,
 				stepIsFoodB ? FoodAStrategy.DILUTE_NONE : newProtocol.foodAStrategy, // Food B always Dilute None
 				newProtocol.diThreshold,
 				newProtocol.config,
+				originalStep.id,
 			);
-
-			if (newStep) {
-				// Restore the food property ("A" or "B")
-				newStep.food = originalStep.food;
-				return newStep;
-			} else {
-				// Fallback DIRECT if generation fails
-				const unit = targetType === FoodType.SOLID ? "g" : "ml";
-				return {
-					...originalStep,
-					id: originalStep.id || generateUniqueId(),
-					method: Method.DIRECT,
-					dailyAmount: originalStep.targetMg.dividedBy(newFood.getMgPerUnit()),
-					dailyAmountUnit: unit,
-					mixFoodAmount: undefined,
-					mixWaterAmount: undefined,
-					servings: undefined,
-				};
-			}
 		}
 
 		// CASE 2: SOLID <-> LIQUID (Form Change)
@@ -804,25 +683,7 @@ export function toggleFoodType(
 
 			// Recalculate servings and water based on new food type
 			// Note: getMgPerUnit() hasn't changed, so Total Protein is same. Servings usually same.
-			if (!step.mixFoodAmount) {
-				throw new Error(
-					`Step ${step.stepIndex} is DILUTE but missing mixFoodAmount during form toggle`,
-				);
-			}
-			const totalMixProtein = step.mixFoodAmount.times(newFood.getMgPerUnit());
-			step.servings = totalMixProtein.dividedBy(step.targetMg);
-
-			if (newFood.type === FoodType.SOLID) {
-				// Switched to solid (was liquid)
-				// For solid: water = total volume (solid volume negligible)
-				const mixTotalVolume = step.dailyAmount.times(step.servings);
-				step.mixWaterAmount = mixTotalVolume;
-			} else {
-				// Switched to liquid (was solid)
-				// For liquid: water = total - food
-				const mixTotalVolume = step.dailyAmount.times(step.servings);
-				step.mixWaterAmount = mixTotalVolume.minus(step.mixFoodAmount);
-			}
+			recalcDilutionWater(step, newFood, newProtocol.config.PROTEIN_TOLERANCE);
 		} else {
 			// DIRECT - just update unit
 			step.dailyAmountUnit = newFood.type === FoodType.SOLID ? "g" : "ml";
@@ -834,22 +695,119 @@ export function toggleFoodType(
 }
 
 /**
- * Internal helper to update a step's mix water amount by attempting to find a rounded measurement that remains within protein tolerance.
- * Calls findRoundedMixWaterAmount() to check if water amounts in standard increments (defined by DILUTION_WATER_STEP_RESOLUTION) satisfy the target protein delivery. If no suitable rounded value is found, it falls back to the provided ideal (precise) water amount.
- * @param step - The protocol step to update
- * @param food - The food definition (A or B) associated with this step
- * @param idealWater - The mathematically precise water amount required for the target dose
- * @param protein_tolerance - The allowable percentage deviation from the target protein (e.g., 0.05 for 5%)
- * @sideeffect This function mutates the `step.mixWaterAmount` property directly
+ * Toggle a single step between DIRECT and DILUTE methods.
+ *
+ * - DIRECT → DILUTE: finds the best dilution candidate for the step's target.
+ *   Returns the original protocol unchanged if no valid candidate exists
+ *   (caller should surface this to the user via the warning system).
+ * - DILUTE → DIRECT: recomputes dailyAmount as a rounded neat dose.
+ * - CAPSULE steps are always returned unchanged (no-op).
+ *
+ * @param oldProtocol Protocol to update
+ * @param stepIndex 1-based index of the step to toggle
+ * @returns New Protocol with the toggled step, or the original protocol if toggling is not feasible
  */
-function updateStepWaterWithRounding(
+export function toggleStepMethod(
+	oldProtocol: Protocol,
+	stepIndex: number,
+): Protocol {
+	if (!oldProtocol) return oldProtocol;
+
+	const newSteps = [...oldProtocol.steps];
+	const originalStep = newSteps[stepIndex - 1];
+	if (!originalStep) return oldProtocol;
+
+	// CAPSULE steps cannot be toggled
+	if (originalStep.method === Method.CAPSULE) return oldProtocol;
+
+	const isStepFoodB = originalStep.food === "B";
+	const food = isStepFoodB ? oldProtocol.foodB : oldProtocol.foodA;
+
+	if (!food) {
+		throw new Error(
+			`Protocol is missing Food ${isStepFoodB ? "B" : "A"} for step ${stepIndex}`,
+		);
+	}
+
+	if (originalStep.method === Method.DILUTE) {
+		// DILUTE → DIRECT
+		const P = originalStep.targetMg;
+		const neatMass = P.dividedBy(food.getMgPerUnit());
+		const dailyAmount = findRoundedDirectAmount(
+			P,
+			food,
+			neatMass,
+			oldProtocol.config,
+		);
+		const dailyAmountUnit = getMeasuringUnit(food);
+
+		const updatedStep: Step = {
+			id: originalStep.id,
+			stepIndex: originalStep.stepIndex,
+			targetMg: P,
+			method: Method.DIRECT,
+			dailyAmount,
+			dailyAmountUnit,
+			food: originalStep.food,
+		};
+
+		newSteps[stepIndex - 1] = updatedStep;
+		return { ...oldProtocol, steps: newSteps };
+	} else {
+		// DIRECT → DILUTE
+		const candidates = findDilutionCandidates(
+			originalStep.targetMg,
+			food,
+			oldProtocol.config,
+		);
+
+		if (candidates.length === 0) {
+			// No feasible dilution — return unchanged so warnings catch it
+			return oldProtocol;
+		}
+
+		const best = candidates[0];
+		const updatedStep: Step = {
+			id: originalStep.id,
+			stepIndex: originalStep.stepIndex,
+			targetMg: originalStep.targetMg,
+			method: Method.DILUTE,
+			dailyAmount: best.dailyAmount,
+			dailyAmountUnit: "ml",
+			mixFoodAmount: best.mixFoodAmount,
+			mixWaterAmount: best.mixWaterAmount,
+			servings: best.servings,
+			food: originalStep.food,
+		};
+
+		newSteps[stepIndex - 1] = updatedStep;
+		return { ...oldProtocol, steps: newSteps };
+	}
+}
+
+/**
+ * Recalculate a dilution step's servings and mix water so the target protein and daily amount stay the same.
+ * Prefers a water amount rounded to DILUTION_WATER_STEP_RESOLUTION if it stays within protein tolerance, else uses the precise amount.
+ * SOLID foods are assumed not to add volume; LIQUID volumes are additive.
+ * @sideeffect Mutates `step.servings` and `step.mixWaterAmount`
+ */
+function recalcDilutionWater(
 	step: Step,
 	food: Food,
-	idealWater: Decimal,
 	protein_tolerance: Decimal,
 ) {
 	if (!step.mixFoodAmount)
-		throw new Error("step.mixFoodAmount is undefined, which is impossible");
+		throw new Error(
+			`Step ${step.stepIndex} is DILUTE but missing mixFoodAmount`,
+		);
+	step.servings = step.mixFoodAmount
+		.times(food.getMgPerUnit())
+		.dividedBy(step.targetMg);
+	const mixTotalVolume = step.dailyAmount.times(step.servings);
+	const idealWater =
+		food.type === FoodType.SOLID
+			? mixTotalVolume
+			: mixTotalVolume.minus(step.mixFoodAmount);
 	const rounded = findRoundedMixWaterAmount(
 		step.targetMg,
 		food,
@@ -858,5 +816,5 @@ function updateStepWaterWithRounding(
 		step.dailyAmount,
 		protein_tolerance,
 	);
-	step.mixWaterAmount = rounded !== null ? rounded : idealWater;
+	step.mixWaterAmount = rounded ?? idealWater;
 }

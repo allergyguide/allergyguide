@@ -7,8 +7,15 @@ import { formatDate, getMeasuringUnit } from "../../utils";
 import { selectFoodA, selectProtocol } from "../actions";
 import { deleteUserDocument } from "../actions/vaultActions";
 
+// Bootstrap Icons "trash"
+const trashIcon = html`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" aria-hidden="true">
+	<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+	<path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+</svg>`;
+
 let searchQuery = "";
 let confirmDeleteId: string | null = null;
+const deletingIds = new Set<string>(); // rows waiting on the database delete
 let searchTimeout: number | null = null; // for search debounce
 
 /**
@@ -155,23 +162,15 @@ const renderProtocolRow = (p: ProtocolData) => {
 	const isConfirming = confirmDeleteId === p.id;
 
 	return html`
-		<div class="oit-library-item">
+		<div class="oit-library-item ${p.id && deletingIds.has(p.id) ? "is-deleting" : ""}">
 			<div class="item-info">
 				<span class="item-name" title="${p.name}">${p.name}</span>
 				<span class="item-date">Updated: ${formatDate(p.last_updated)}</span>
 			</div>
 			<div class="item-actions">
 				${
-					isConfirming
-						? html`
-					<div class="action-group">
-						<button class="cancel-btn" @click=${() => {
-							confirmDeleteId = null;
-							renderLibraryModal();
-						}}>Cancel</button>
-						<button class="confirm-btn" @click=${() => p.id && handleDelete(p.id, "custom_protocol")}>Delete</button>
-					</div>
-				`
+					isConfirming && p.id
+						? confirmDeleteGroup(p.id, "custom_protocol")
 						: html`
 					<div class="action-group">
 						${
@@ -185,12 +184,12 @@ const renderProtocolRow = (p: ProtocolData) => {
 							}}>Open</button>
 						`
 						}
-						<button class="delete-btn" title="Delete Protocol" @click=${() => {
+						<button class="delete-btn" title="Delete Protocol" aria-label="Delete protocol" @click=${() => {
 							if (p.id) {
 								confirmDeleteId = p.id;
 								renderLibraryModal();
 							}
-						}}>🗑️</button>
+						}}>${trashIcon}</button>
 					</div>
 				`
 				}
@@ -203,10 +202,11 @@ const renderProtocolRow = (p: ProtocolData) => {
  * Template for a single Food row
  */
 const renderFoodRow = (f: FoodData) => {
-	const isConfirming = confirmDeleteId === (f as { id?: string }).id;
+	const fid = (f as { id?: string }).id;
+	const isConfirming = confirmDeleteId === fid;
 
 	return html`
-		<div class="oit-library-item">
+		<div class="oit-library-item ${fid && deletingIds.has(fid) ? "is-deleting" : ""}">
 			<div class="item-info">
 				<span class="item-name" title="${f.name}">${f.name}</span>
 				<div class="item-metadata-row">
@@ -222,19 +222,8 @@ const renderFoodRow = (f: FoodData) => {
 			</div>
 			<div class="item-actions">
 				${
-					isConfirming
-						? html`
-					<div class="action-group">
-						<button class="cancel-btn" @click=${() => {
-							confirmDeleteId = null;
-							renderLibraryModal();
-						}}>Cancel</button>
-						<button class="confirm-btn" @click=${() => {
-							const fid = (f as { id?: string }).id;
-							if (fid) handleDelete(fid, "custom_food");
-						}}>Delete</button>
-					</div>
-				`
+					isConfirming && fid
+						? confirmDeleteGroup(fid, "custom_food")
 						: html`
 					<div class="action-group">
 						<button class="open-btn" @click=${() => {
@@ -242,13 +231,12 @@ const renderFoodRow = (f: FoodData) => {
 							selectFoodA(f);
 							hideLibraryModal();
 						}}>Load</button>
-						<button class="delete-btn" title="Delete Food" @click=${() => {
-							const fid = (f as { id?: string }).id;
+						<button class="delete-btn" title="Delete Food" aria-label="Delete food" @click=${() => {
 							if (fid) {
 								confirmDeleteId = fid;
 								renderLibraryModal();
 							}
-						}}>🗑️</button>
+						}}>${trashIcon}</button>
 					</div>
 				`
 				}
@@ -257,16 +245,42 @@ const renderFoodRow = (f: FoodData) => {
 	`;
 };
 
+/**
+ * Cancel / Delete buttons shown after the trash icon is clicked.
+ * While the delete is in flight both are disabled and the row shimmers (`.is-deleting`)
+ */
+const confirmDeleteGroup = (
+	id: string,
+	type: "custom_food" | "custom_protocol",
+) => {
+	const isDeleting = deletingIds.has(id);
+	return html`
+		<div class="action-group">
+			<button class="cancel-btn" ?disabled=${isDeleting} @click=${() => {
+				confirmDeleteId = null;
+				renderLibraryModal();
+			}}>Cancel</button>
+			<button class="confirm-btn" ?disabled=${isDeleting} @click=${() => handleDelete(id, type)}>
+				${isDeleting ? "Deleting…" : "Delete"}
+			</button>
+		</div>
+	`;
+};
+
 async function handleDelete(
 	id: string,
 	type: "custom_food" | "custom_protocol",
 ) {
+	deletingIds.add(id);
+	renderLibraryModal();
 	try {
 		await deleteUserDocument(id, type);
-		confirmDeleteId = null;
-		renderLibraryModal();
+		if (confirmDeleteId === id) confirmDeleteId = null;
 	} catch (err) {
 		console.error(err);
 		alert(`Failed to delete ${type === "custom_food" ? "food" : "protocol"}.`);
+	} finally {
+		deletingIds.delete(id);
+		renderLibraryModal();
 	}
 }

@@ -1,0 +1,39 @@
+{% component references(path, showBib) %}
+{# Load .bib file with same name as the file #}
+{% set data = load_data(path=path, format="bibtex") %}
+{% set references = data.bibliographies %}
+{% set unique_ids = [] %}
+{% for ref in references %}
+{% if ref.citation_key in unique_ids %}
+{{ throw(message="Ref ID: " ~ ref.citation_key ~ " has been duplicated. R/a the .bib file.") }}
+{% endif %}
+{% set unique_ids = [...unique_ids, ref.citation_key] %}
+{% endfor %}
+
+{% set showBib = showBib | default(value=false) %}
+
+{% if showBib %}
+<div class="ref-bib">
+{% for ref in references %}
+<div class="item">
+{{loop.index}}. 
+<span id="cite-data-{{ ref.citation_key }}">{{ <bib_ref bibliography={ref} /> }}</span>
+{% if ref.tags.abstract %}
+<div id="cite-abstract-{{ ref.citation_key }}" style="display: none;">{{ ref.tags.abstract }}</div>
+{% endif %}
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div style="display: none;">
+{% for ref in references %}
+<div id="cite-data-{{ ref.citation_key }}">{{ <bib_ref bibliography={ref} /> }}</div>
+{% if ref.tags.abstract %}
+<div id="cite-abstract-{{ ref.citation_key }}">{{ ref.tags.abstract }}</div>
+{% endif %}
+{% endfor %}
+</div>
+{% endif %}
+
+<script src="/js/references.js"></script>
+{% endcomponent references %}

@@ -1,0 +1,19 @@
+{% component text_image(src, alt, caption = none, height = none, class:string = "", text_position = none) %}
+<div class="text_image {% if text_position %}text_position_{{ text_position }}{% endif %}">
+<div class="text-content">
+<figure class="text-image-figure">
+<a href="{{ src }}" target="_blank" rel="noopener noreferrer">
+<img src="{{ src }}" alt="{{ alt }}" loading="lazy" decoding="async" {% if height %} style="max-height:{{height}};" {% endif %} {% if class %} class="{{class}}" {% endif %}>
+</a>
+{% if caption %}
+<figcaption class="caption">
+{{ caption | markdown | safe }}
+</figcaption>
+{% endif %}
+</figure>
+
+{{ body | markdown | safe }}
+</div>
+</div>
+
+{% endcomponent text_image %}

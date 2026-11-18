@@ -12,13 +12,13 @@ toc = true
 authors = ["Author: Resident Lead", "Editor: Resident reviewer", "Staff: TBD"]
 +++
 
-{% text_image(src="/topic_assets/chronic_rhinosinusitis/normal_sinus.png", alt="Picture of a normal sinus from the front", caption = "Normal sinus structure. Image adapted from Servier Medical Art, https://smart.servier.com, licensed under CC BY 4.0.") %}
+{% <text_image src="/topic_assets/chronic_rhinosinusitis/normal_sinus.png" alt="Picture of a normal sinus from the front" caption="Normal sinus structure. Image adapted from Servier Medical Art, https://smart.servier.com, licensed under CC BY 4.0."> %}
 
 ## What are the sinuses?
 
 Sinuses are small air-filled spaces behind your cheeks, forehead, and eyes. They connect to your nose through tiny openings. Each sinus has a thin lining that makes mucus. This mucus helps keep the sinuses moist and clean. Your sinuses remain healthy when the openings stay open, which allows the mucus to drain.
 
-{% end %}
+{% </text_image> %}
 
 ## What is chronic rhinosinusitis (CRS), and how is it diagnosed?
 
@@ -26,33 +26,33 @@ Chronic rhinosinusitis (CRS) happens when the lining of your sinuses stays swoll
 
 <span class="hl-yellow">To be diagnosed with CRS, you need to have both at least 2 key ongoing symptoms and clear signs of swelling or inflammation inside the sinuses:</span>
 
-{% two_columns() %}
+{% <two_columns> %}
 
-{% admonition(type="info", icon="info", title="Key symptoms - at least 2 for at least 3 months") %}
+{% <admonition type="info" icon="info" title="Key symptoms - at least 2 for at least 3 months"> %}
 
 - nasal congestion/fullness,
 - facial pain, pressure, or fullness
 - liquid dripping from the nostrils or the back of the throat
 - decreased sense of smell
 
-{% end %}
+{% </admonition> %}
 
 <!-- split -->
 
-{% admonition(type="info", icon="info", title="Objective sinus inflammation") %}
+{% <admonition type="info" icon="info" title="Objective sinus inflammation"> %}
 
 This is done through either:
 
 1. A _computed tomography_ (CT) scan of the sinuses, OR
 2. _Nasal endoscopy_: an office procedure where a thin camera is used to directly see the sinuses
 
-{% end %}
+{% </admonition> %}
 
-{% end %}
+{% </two_columns> %}
 
 Sometimes, these symptoms are not quickly brought to medical attention due to being relatively mild and long-standing. You may also experience ear fullness, headache, fatigue, altered taste, and or cough, _though these are not always present and are non-specific_.
 
-{% admonition(type="warning", icon="warning", title="Atypical symptoms you should watch out for?") %}
+{% <admonition type="warning" icon="warning" title="Atypical symptoms you should watch out for?"> %}
 If you have any of the following, you should let your doctor know: these may suggest something else going on aside from CRS.
 
 - new numbness or tingling
@@ -61,13 +61,13 @@ If you have any of the following, you should let your doctor know: these may sug
 - double vision
 - unexplained weight loss, recurrent fevers, night sweats
 
-{% end %}
+{% </admonition> %}
 
 ## What are the types of CRS?
 
 There are three main types of CRS. They are grouped based on what’s causing the problem in the sinuses.
 
-{% two_columns() %}
+{% <two_columns> %}
 
 **CRS without nasal polyps:**
 
@@ -83,7 +83,7 @@ In this type, soft, non-cancerous growths called polyps form in the nose or sinu
 
 There is normally a small amount of fungi in the air we breathe. Most people breathe them in without problems. But in rare cases, the body has an allergic reaction to these fungi. This leads to thick mucus and strong sinus inflammation. Special tests, mucus samples, and sinus scans are used to diagnose this condition. It’s quite uncommon and happens more often in the US.
 
-{% end %}
+{% </two_columns> %}
 
 [include image of sinuses with nasal polyps -- likely image to the right of the above text]
 
@@ -91,7 +91,7 @@ There is normally a small amount of fungi in the air we breathe. Most people bre
 
 There are a variety of possible risk factors for CRS. Often, more than one is involved:
 
-{% two_columns() %}
+{% <two_columns> %}
 
 **Allergies**:
 If you're often around things you’re allergic to (like dust mites, pet dander, or mold), your sinuses can stay inflamed. This can lead to CRS or make it worse.
@@ -110,7 +110,7 @@ People with very weak immune systems are more likely to get repeated sinus infec
 **Pre-existing structural problems**:
 Some people are born with narrow or blocked sinus passages. For example, a deviated septum. By themselves, these issues don’t usually cause CRS but may make it more likely if other factors are present.
 
-{% end %}
+{% </two_columns> %}
 
 ## What tests might be done after CRS is diagnosed?
 
@@ -128,7 +128,7 @@ CRS is usually a long-term condition. It may not fully go away, but most people 
 
 These are the main treatments that most people with CRS start with. Your doctor may suggest using a combination of them together:
 
-{% json_to_table()%}
+{% <json_to_table> %}
 [
 {
 "Treatment": "Lifestyle",
@@ -151,19 +151,19 @@ These are the main treatments that most people with CRS start with. Your doctor 
 "Examples": "Amoxicillin-clavulanate for 10 days. Moxifloxacin may be used if you’re allergic to penicillin"
 }
 ]
-{% end %}
+{% </json_to_table> %}
 
-{% admonition(type="danger", icon="danger", title="CONSISTENCY IS KEY") %}
+{% <admonition type="danger" icon="danger" title="CONSISTENCY IS KEY"> %}
 
 These treatments don’t work overnight. Most need to be used every day for weeks before you feel real improvement.
 
-{% end %}
+{% </admonition> %}
 
 ### Additional Treatments for CRS with Nasal Polyps
 
 If you have nasal polyps, your doctor may suggest more advanced treatments along with first-line therapy:
 
-{% json_to_table()%}
+{% <json_to_table> %}
 [
 {
 "Treatment": "Biologic therapies",
@@ -176,7 +176,7 @@ If you have nasal polyps, your doctor may suggest more advanced treatments along
 "Examples": "Prednisone, 30mg per day for 7 days"
 }
 ]
-{% end %}
+{% </json_to_table> %}
 
 ### What about surgery?
 

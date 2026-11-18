@@ -6,14 +6,23 @@ import {
 	addFoodBToProtocol,
 	addStepAfter,
 	recalculateProtocol,
+	recalculateStepMethods,
 	removeStep,
 	toggleFoodType,
+	updateFoodBAndRecalculate,
+	updateFoodBThreshold,
 	updateStepDailyAmount,
 	updateStepMixFoodAmount,
 	updateStepTargetMg,
 } from "../../core/protocol";
 import type { Food, Protocol } from "../../types";
-import { DosingStrategy, FoodType, Method, SourceType } from "../../types";
+import {
+	DosingStrategy,
+	FoodAStrategy,
+	FoodType,
+	Method,
+	SourceType,
+} from "../../types";
 
 const createFood = (name: string, type: FoodType = FoodType.SOLID): Food => ({
 	name,
@@ -85,6 +94,39 @@ describe("Core: Protocol Manipulation", () => {
 			// Check if steps still transition
 			const hasB = newProto.steps.some((s) => s.food === "B");
 			expect(hasB).toBe(true);
+		});
+	});
+
+	describe("Infeasible dilutions never drop steps", () => {
+		// 5 mg protein/g: high targets (80-300 mg) cannot be diluted within limits
+		const lowProteinFood: Food = {
+			...createFood("Low protein"),
+			gramsInServing: new Decimal(0.5),
+		};
+		const targets = (p: Protocol) => p.steps.map((s) => s.targetMg.toNumber());
+
+		it("recalculateStepMethods keeps every step, falling back to DIRECT", () => {
+			const base = generateDefaultProtocol(lowProteinFood, DEFAULT_CONFIG);
+			const updated = recalculateStepMethods({
+				...base,
+				foodAStrategy: FoodAStrategy.DILUTE_ALL,
+			});
+
+			expect(targets(updated)).toEqual(targets(base));
+			expect(updated.steps.map((s) => s.stepIndex)).toEqual(
+				base.steps.map((_, i) => i + 1),
+			);
+			expect(updated.steps.at(-1)?.method).toBe(Method.DIRECT);
+		});
+
+		it("recalculateProtocol keeps every step of the dosing strategy", () => {
+			const base = generateDefaultProtocol(lowProteinFood, DEFAULT_CONFIG);
+			const updated = recalculateProtocol({
+				...base,
+				foodAStrategy: FoodAStrategy.DILUTE_ALL,
+			});
+
+			expect(targets(updated)).toEqual(targets(base));
 		});
 	});
 
@@ -252,5 +294,100 @@ describe("Core: Protocol Manipulation", () => {
 				}
 			});
 		});
+	});
+});
+
+describe("Food B edits keep custom step targets", () => {
+	const foodA = createFood("Food A", FoodType.SOLID);
+	const foodB = createFood("Food B", FoodType.SOLID);
+	const targets = (p: Protocol) => p.steps.map((s) => s.targetMg.toString());
+
+	const customised = () => {
+		const p = addFoodBToProtocol(
+			generateDefaultProtocol(foodA, DEFAULT_CONFIG),
+			foodB,
+			{ unit: "g", amount: new Decimal(1) },
+		);
+		return updateStepTargetMg(p, 3, 7); // default step 3 is 5 mg
+	};
+
+	it("updateFoodBThreshold", () => {
+		const updated = updateFoodBThreshold(customised(), new Decimal(1.5));
+		expect(updated.steps[2].targetMg.toString()).toBe("7");
+		expect(updated.steps.find((s) => s.food === "B")?.targetMg.toString()).toBe(
+			"160",
+		);
+	});
+
+	it("updateFoodBAndRecalculate", () => {
+		const before = customised();
+		const updated = updateFoodBAndRecalculate(before, {
+			gramsInServing: new Decimal(10),
+		});
+		expect(targets(updated)).toEqual(targets(before));
+	});
+
+	it("keeps manual Food A recipe edits and step ids", () => {
+		const before = customised();
+		const i = before.steps.findIndex((s) => s.method === Method.DILUTE);
+		const edited = updateStepMixFoodAmount(before, i + 1, 0.5);
+		const prevIndexes = edited.steps.map((s) => s.stepIndex);
+
+		const updated = updateFoodBThreshold(edited, new Decimal(1.5));
+
+		expect(updated.steps[i].mixFoodAmount?.toString()).toBe("0.5");
+		expect(updated.steps[i].mixWaterAmount?.toString()).toBe(
+			edited.steps[i].mixWaterAmount?.toString(),
+		);
+		expect(updated.steps[i].id).toBe(edited.steps[i].id);
+		// the input protocol (held in undo history) is not mutated
+		expect(edited.steps.map((s) => s.stepIndex)).toEqual(prevIndexes);
+	});
+});
+
+describe("toggleFoodType rounds dilution water", () => {
+	it("SOLID -> LIQUID snaps water to 0.5 ml and stays within tolerance", () => {
+		const solid = createFood("Food A", FoodType.SOLID); // 100 mg/unit
+		const p = generateDefaultProtocol(solid, DEFAULT_CONFIG);
+		const q = toggleFoodType(p, false, FoodType.LIQUID);
+
+		// step 1: 0.2 of food, 0.5 ml daily, 1 mg target; precise water would be 9.8 ml
+		expect(q.steps[0].method).toBe(Method.DILUTE);
+		expect(q.steps[0].mixWaterAmount?.toString()).toBe("10");
+
+		for (const s of q.steps.filter((s) => s.method === Method.DILUTE)) {
+			const mix = s.mixFoodAmount as Decimal;
+			const delivered = mix
+				.times(100)
+				.times(s.dailyAmount)
+				.dividedBy(mix.plus(s.mixWaterAmount as Decimal)); // liquid: volumes add
+			expect(
+				delivered.dividedBy(s.targetMg).minus(1).abs().toNumber(),
+			).toBeLessThanOrEqual(DEFAULT_CONFIG.PROTEIN_TOLERANCE.toNumber());
+		}
+	});
+});
+
+describe("Food B threshold moves later", () => {
+	it("turns former Food B steps back into Food A steps", () => {
+		const solidA = createFood("Food A", FoodType.SOLID);
+		const liquidB = createFood("Food B", FoodType.LIQUID); // 100 mg/ml
+		const p = addFoodBToProtocol(
+			generateDefaultProtocol(solidA, DEFAULT_CONFIG),
+			liquidB,
+			{ unit: "ml", amount: new Decimal(1) }, // 100 mg => first B step at 120 mg
+		);
+
+		const later = updateFoodBThreshold(p, new Decimal(2.5)); // 250 mg => first B step at 300 mg
+
+		const step120 = later.steps.find(
+			(s) => s.targetMg.equals(120) && s.food === "A",
+		);
+		expect(step120?.dailyAmountUnit).toBe("g");
+		expect(later.steps.filter((s) => s.food === "B").map((s) => s.targetMg.toNumber())).toEqual([300]);
+		expect(later.steps.map((s) => s.stepIndex)).toEqual(
+			later.steps.map((_, i) => i + 1),
+		);
+		expect(new Set(later.steps.map((s) => s.id)).size).toBe(later.steps.length);
 	});
 });

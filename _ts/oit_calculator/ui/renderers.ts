@@ -11,7 +11,7 @@ import {
 	coreToolbarTemplate,
 } from "../../core/ui/toolbar";
 import { validateProtocol } from "../core/validator";
-import { workspace } from "../state/instances";
+import { appState, workspace } from "../state/instances";
 import type {
 	Protocol,
 	ReadableHistoryPayload,
@@ -107,7 +107,9 @@ export function renderToolbar(props: CoreToolbarProps): void {
 		);
 
 		// Hide skeleton on first successful render
-		const skeleton = document.getElementById("oit-toolbar-skeleton");
+		const skeleton =
+			document.getElementById("app-toolbar-skeleton") ||
+			document.getElementById("oit-toolbar-skeleton");
 		if (skeleton) {
 			skeleton.style.display = "none";
 		}
@@ -226,7 +228,7 @@ export function renderTabs(tabs: Tab[], activeId: string): void {
 		const protocol = tab.state.getProtocol();
 		if (protocol) {
 			// Internal validation check for the status dot
-			const warnings = validateProtocol(protocol);
+			const warnings = validateProtocol(protocol, appState?.getStandardFoods());
 			if (warnings.some((w: Warning) => w.severity === "red")) {
 				statusClass = "status-red";
 				statusTitle = "Critical Warnings";
@@ -385,6 +387,15 @@ export function renderProtocolTable(
 export function updateBottomSection(customNote: string) {
 	const bottomSection = document.querySelector(".bottom-section");
 	if (!bottomSection) return;
+
+	const activeState = workspace.getActive();
+	const activeProtocol = activeState?.getProtocol();
+
+	// If there is no active protocol loaded in the current tab, keep the bottom section hidden
+	if (!activeProtocol) {
+		bottomSection.classList.add("oit-hidden-on-init");
+		return;
+	}
 
 	// Ensure the section is visible (handles the oit-hidden-on-init class removal)
 	bottomSection.classList.remove("oit-hidden-on-init");

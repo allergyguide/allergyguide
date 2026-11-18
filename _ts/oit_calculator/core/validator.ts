@@ -8,16 +8,12 @@ import {
 	DEFAULT_CONFIG,
 	LIQUID_RESOLUTION,
 	SOLID_RESOLUTION,
+	STANDARD_FOOD_PROTEIN_TOLERANCE_MG,
 } from "../constants";
 
-import type { Food, Protocol, Step, Warning } from "../types";
-import { FoodType, Method, WarningCode } from "../types";
-import {
-	escapeHtml,
-	formatAmount,
-	formatNumber,
-	getMeasuringUnit,
-} from "../utils";
+import type { Food, FoodData, Protocol, Step, Warning } from "../types";
+import { FoodType, Method, SourceType, WarningCode } from "../types";
+import { formatAmount, formatNumber, getMeasuringUnit } from "../utils";
 
 /**
  * Validate protocol-level and per-step constraints, yielding warnings.
@@ -33,15 +29,30 @@ import {
  *
  * @remarks Validation should act on the ROUNDED VALUES PRESENTED TO THE USER, not the internally calculated ones.
  * @param protocol Protocol to validate
+ * @param standardFoods Optional list of standard foods to validate custom foods against
  * @returns Array of warnings, possibly empty
  */
-export function validateProtocol(protocol: Protocol): Warning[] {
-	let warnings: Warning[] = [];
-
-	warnings = [...validateSettings(protocol)];
-	warnings = [...warnings, ...validateAllSteps(protocol)];
-
-	return warnings;
+export function validateProtocol(
+	protocol: Protocol,
+	standardFoods?: FoodData[],
+): Warning[] {
+	try {
+		return [
+			...validateSettings(protocol, standardFoods),
+			...validateAllSteps(protocol),
+		];
+	} catch (err) {
+		// a throw would leave the previous (possibly clean) warnings on screen
+		console.error("Validation failed:", err);
+		return [
+			{
+				severity: "red",
+				code: WarningCode.Red.VALIDATION_FAILED,
+				message:
+					"This protocol could not be checked for problems. Review every step carefully before using it.",
+			},
+		];
+	}
 }
 
 // ============================================
@@ -53,8 +64,12 @@ export function validateProtocol(protocol: Protocol): Warning[] {
  * - if TOO_FEW_STEPS
  * - if food B exists and there's no valid transition point
  * - if food A or B has invalid settings
+ * - if custom food has duplicate name with different protein/form against standard foods
  */
-function validateSettings(protocol: Protocol): Warning[] {
+function validateSettings(
+	protocol: Protocol,
+	standardFoods?: FoodData[],
+): Warning[] {
 	const warnings: Warning[] = [];
 
 	// TOO_FEW_STEPS: Too few steps
@@ -73,6 +88,18 @@ function validateSettings(protocol: Protocol): Warning[] {
 		warnings.push(...validateFoodConfig(protocol.foodB));
 	}
 
+	// Standard food collision checks for custom foods
+	if (standardFoods && standardFoods.length > 0) {
+		warnings.push(
+			...validateCustomFoodAgainstStandard(protocol.foodA, standardFoods),
+		);
+		if (protocol.foodB) {
+			warnings.push(
+				...validateCustomFoodAgainstStandard(protocol.foodB, standardFoods),
+			);
+		}
+	}
+
 	// NO_TRANSITION_POINT: No transition point found for food B if it exists. That means the transition threshold is too high.
 	if (protocol.foodB) {
 		let foodBinSteps: boolean = false;
@@ -85,7 +112,7 @@ function validateSettings(protocol: Protocol): Warning[] {
 			warnings.push({
 				severity: "yellow",
 				code: WarningCode.Yellow.NO_TRANSITION_POINT,
-				message: `${escapeHtml(protocol.foodB.name)} has no transition point. Decrease the threshold if you want to transition.`,
+				message: `${protocol.foodB.name} has no transition point. Decrease the threshold if you want to transition.`,
 			});
 		}
 	}
@@ -108,7 +135,7 @@ function validateFoodConfig(food: Food): Warning[] {
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.INVALID_CONCENTRATION,
-			message: `${escapeHtml(food.name)} protein concentration must be > 0 to be considered for OIT`,
+			message: `${food.name} protein concentration must be > 0 to be considered for OIT`,
 		});
 	}
 	if (
@@ -118,10 +145,136 @@ function validateFoodConfig(food: Food): Warning[] {
 		warnings.push({
 			severity: "red",
 			code: WarningCode.Red.INVALID_CONCENTRATION,
-			message: `${escapeHtml(food.name)} protein amount cannot be greater than a serving size of ${formatAmount(food.servingSize, getMeasuringUnit(food))}`,
+			message: `${food.name} protein amount cannot be greater than a serving size of ${formatAmount(food.servingSize, getMeasuringUnit(food))}`,
 		});
 	}
 	return warnings;
+}
+
+/**
+ * Helper to validate a custom food against standard library foods.
+ * Emits yellow warnings if a custom food shares the exact same name (case-insensitive, trimmed) with a standard food but has different protein concentration or form.
+ * If both form and protein match, no warning is emitted.
+ *
+ * @param food Custom food to check
+ * @param standardFoods Standard foods from library (CNF + provisioned branded)
+ * @returns Array of warnings
+ */
+export function validateCustomFoodAgainstStandard(
+	food: Food,
+	standardFoods: FoodData[],
+): Warning[] {
+	if (food.source !== SourceType.USER) return [];
+	const trimmedName = food.name.trim().toLowerCase();
+	if (!trimmedName) return [];
+
+	const matchingStandards = standardFoods.filter(
+		(sf) =>
+			(!("is_active" in sf) || sf.is_active !== false) &&
+			sf.name.trim().toLowerCase() === trimmedName,
+	);
+
+	if (matchingStandards.length === 0) return [];
+
+	// Check if there is an exact match for both form and protein
+	const hasExactMatch = matchingStandards.some((sf) => {
+		const formsMatch = food.type === sf.type;
+		if (!formsMatch) return false;
+
+		if (food.type === FoodType.CAPSULE || sf.type === FoodType.CAPSULE) {
+			return new Decimal(food.gramsInServing).equals(
+				new Decimal(sf.gramsInServing),
+			);
+		}
+
+		const standardMg = new Decimal(sf.gramsInServing)
+			.times(1000)
+			.dividedBy(sf.servingSize);
+		return food
+			.getMgPerUnit()
+			.minus(standardMg)
+			.abs()
+			.lessThanOrEqualTo(STANDARD_FOOD_PROTEIN_TOLERANCE_MG);
+	});
+
+	if (hasExactMatch) return [];
+
+	const ref = matchingStandards[0];
+
+	// Form mismatch check
+	const formMatchesAny = matchingStandards.some((sf) => food.type === sf.type);
+	const customForm =
+		food.type.charAt(0).toUpperCase() + food.type.slice(1).toLowerCase();
+	const refForm =
+		ref.type.charAt(0).toUpperCase() + ref.type.slice(1).toLowerCase();
+
+	// Protein mismatch check
+	let isProteinMismatch = false;
+	let proteinDetail = "";
+
+	if (food.type !== FoodType.CAPSULE && ref.type !== FoodType.CAPSULE) {
+		const customMg = food.getMgPerUnit();
+
+		const proteinMatchesAny = matchingStandards.some((sf) => {
+			if (sf.type === FoodType.CAPSULE) return false;
+			const sfMg = new Decimal(sf.gramsInServing)
+				.times(1000)
+				.dividedBy(sf.servingSize);
+			return customMg
+				.minus(sfMg)
+				.abs()
+				.lessThanOrEqualTo(STANDARD_FOOD_PROTEIN_TOLERANCE_MG);
+		});
+
+		if (!proteinMatchesAny) {
+			isProteinMismatch = true;
+			// Show protein as entered (g per serving), not internal mg/unit; toString avoids rounding away small differences
+			const asEntered = (f: Food | FoodData) =>
+				`${new Decimal(f.gramsInServing).toString()} g/${new Decimal(f.servingSize).toString()} ${getMeasuringUnit(f)}`;
+			proteinDetail = `${asEntered(food)} vs ${asEntered(ref)}`;
+		}
+	} else if (
+		food.type === FoodType.CAPSULE &&
+		ref.type === FoodType.CAPSULE &&
+		!new Decimal(food.gramsInServing).equals(new Decimal(ref.gramsInServing))
+	) {
+		isProteinMismatch = true;
+		proteinDetail = `${formatNumber(food.gramsInServing, 2)} g vs ${formatNumber(ref.gramsInServing, 2)} g per capsule`;
+	}
+
+	const isFormMismatch = !formMatchesAny;
+
+	if (isProteinMismatch && isFormMismatch) {
+		return [
+			{
+				severity: "yellow",
+				code: WarningCode.Yellow.STANDARD_FOOD_COLLISION,
+				message: `A standard library food has the same name, but different protein content (${proteinDetail}) and form (${customForm} vs ${refForm}).`,
+			},
+		];
+	}
+
+	if (isProteinMismatch) {
+		return [
+			{
+				severity: "yellow",
+				code: WarningCode.Yellow.STANDARD_FOOD_PROTEIN_MISMATCH,
+				message: `A standard library food has the same name, but different protein content (${proteinDetail}).`,
+			},
+		];
+	}
+
+	if (isFormMismatch) {
+		return [
+			{
+				severity: "yellow",
+				code: WarningCode.Yellow.STANDARD_FOOD_FORM_MISMATCH,
+				message: `A standard library food has the same name, but different form (${customForm} vs ${refForm}).`,
+			},
+		];
+	}
+
+	return [];
 }
 
 // ============================================
@@ -190,15 +343,23 @@ function checkMeasurability({
 	// FOR DILUTION STEPS (need to handle mix food and mix water amounts)
 	if (step.method === Method.DILUTE) {
 		// GET ROUNDED AMOUNTS - USER FACING
-		const roundedMixFoodAmount = new Decimal(
-			formatAmount(step.mixFoodAmount, getMeasuringUnit(food)),
-		);
-		const roundedMixWaterAmount = new Decimal(
-			formatAmount(step.mixWaterAmount, "ml"),
-		);
-		const roundedDailyAmount = new Decimal(
-			formatAmount(step.dailyAmount, "ml"),
-		);
+		const mixFoodStr = formatAmount(step.mixFoodAmount, getMeasuringUnit(food));
+		const mixWaterStr = formatAmount(step.mixWaterAmount, "ml");
+		const dailyAmountStr = formatAmount(step.dailyAmount, "ml");
+		// "" means missing or NaN (e.g. 0 mg target with 0 g mix): new Decimal("") would throw
+		if (!mixFoodStr || !mixWaterStr || !dailyAmountStr) {
+			return [
+				{
+					severity: "red",
+					code: WarningCode.Red.INVALID_DILUTION_STEP_VALUES,
+					message: `Step ${step.stepIndex}: Dilution amounts cannot be calculated. Check the target protein and amount of food to mix.`,
+					stepIndex: step.stepIndex,
+				},
+			];
+		}
+		const roundedMixFoodAmount = new Decimal(mixFoodStr);
+		const roundedMixWaterAmount = new Decimal(mixWaterStr);
+		const roundedDailyAmount = new Decimal(dailyAmountStr);
 
 		// Mix Food Amount Resolution
 		if (
@@ -246,10 +407,10 @@ function checkMeasurability({
 	} else {
 		// DIRECT Method
 		// GET ROUNDED AMOUNTS
-		const dailyAmountUnit = step.dailyAmountUnit;
-		const roundedDailyAmount = new Decimal(
-			formatAmount(step.dailyAmount, dailyAmountUnit),
-		);
+		const dailyAmountStr = formatAmount(step.dailyAmount, step.dailyAmountUnit);
+		// "" means NaN (e.g. 0 mg target with a 0-protein food); INVALID_TARGET already flags it
+		if (!dailyAmountStr) return [];
+		const roundedDailyAmount = new Decimal(dailyAmountStr);
 
 		if (
 			food.type === FoodType.SOLID &&

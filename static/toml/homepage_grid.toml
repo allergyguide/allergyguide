@@ -1,4 +1,4 @@
-# Used in the card_grid.html shortcode to display on the homepage
+# Used in the card_grid.html component to display on the homepage
 # the actual [] content doesn't matter much
 # add dark_invert = true if you want the image to invert on dark mode
 # 

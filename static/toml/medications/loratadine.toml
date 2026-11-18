@@ -1,0 +1,125 @@
+[loratadine]
+
+# =====================================================================
+# METADATA & HEADER
+# =====================================================================
+
+display_name = "Loratadine"
+otc = "yes"
+draft = true
+categories = ["antihistamine"]
+abbreviations = "AR-allergic rhinitis; CU-chronic urticaria; ODT-orally disintegrating tablet"
+brand_names = ["Claritin"]
+
+authors.primary = "JY"
+updated = "2026-11"
+
+# =====================================================================
+# CORE CLINICAL INFO
+# =====================================================================
+
+moa = "Long-acting selective peripheral H1 receptor antagonist"
+pregnancy = "Safe in pregnancy"
+side_effects_summary = "Well tolerated. Sedation similar to placebo. No QT-prolongation."
+severe_side_effects = "Rare reports (post-marketing): alopecia, abnormal hepatic function, dizziness, palpitations, tachycardia, convulsions/seizures."
+side_effects_source = "Monograph Table 1 (adults, 10mg OD vs placebo) and Table 3 (pediatric, oral solution)."
+half_life = "Loratadine 7.8-11 hrs; active metabolite 17-24 hrs"
+
+contraindications = "None beyond hypersensitivity"
+
+available_forms = ["10mg tab", "10mg or 5mg ODT", "1mg/mL oral solution"]
+estimated_cost = "~$32 / 30 tabs (generic, BC formulary price)"
+interactions_summary = "No clinically significant drug interactions have been found."
+severe_interactions = ""
+pearls = [
+  "ODT: take on an empty stomach",
+  "No renal dose adjustments",
+  "Off-label can increase dose to 4x the regular daily dose",
+]
+
+monograph_links = [
+  "https://assets.allergyguide.ca/monographs/loratadine-2020-04.pdf",
+]
+
+# =====================================================================
+# DOSES
+# =====================================================================
+
+[[loratadine.doses]]
+indication = ["AR", "CU"]
+patient_age = "≥12 yrs"
+dose = "10mg PO OD to QID"
+[[loratadine.doses.adjustments]]
+condition = "Severe hepatic impairment"
+dose = "Start 5mg OD or 10mg every other day"
+
+[[loratadine.doses]]
+indication = ["AR", "CU"]
+patient_age = "≥10 yrs"
+patient_weight = ">30 kg"
+dose = "10mg PO OD (liq or ODT)"
+[[loratadine.doses.adjustments]]
+condition = "Severe hepatic impairment"
+dose = "Start 5mg OD or 10mg every other day"
+
+[[loratadine.doses]]
+indication = ["AR", "CU"]
+patient_age = "2-9 yrs"
+patient_weight = "≤30 kg"
+dose = "5mg PO OD (liq or ODT)"
+[[loratadine.doses.adjustments]]
+condition = "Severe hepatic impairment"
+dose = "5mg every other day"
+
+# =====================================================================
+# ADVERSE EVENTS (TRIAL DATA)
+# =====================================================================
+
+[[loratadine.side_effects]]
+symptom = "Sedation"
+notes = "Somnolence, drowsiness, lethargy, 'drugged feeling'"
+[[loratadine.side_effects.rates]]
+label = "Adults (10mg)"
+drug = "8%"
+comparator = "6%"
+[[loratadine.side_effects.rates]]
+label = "Peds (10mg)"
+drug = "4%"
+comparator = "5%"
+
+[[loratadine.side_effects]]
+symptom = "Headache"
+[[loratadine.side_effects.rates]]
+label = "Adults (10mg)"
+drug = "8%"
+comparator = "6%"
+
+[[loratadine.side_effects]]
+symptom = "Dry mouth"
+[[loratadine.side_effects.rates]]
+label = "Adults (10mg)"
+drug = "4%"
+comparator = "2%"
+
+[[loratadine.side_effects]]
+symptom = "Fatigue"
+[[loratadine.side_effects.rates]]
+label = "Adults (10mg)"
+drug = "4%"
+comparator = "4%"
+
+[[loratadine.side_effects]]
+symptom = "Nervousness"
+[[loratadine.side_effects.rates]]
+label = "Peds (10mg)"
+drug = "4%"
+comparator = "1%"
+
+# =====================================================================
+# COVERAGE & COST
+# =====================================================================
+
+[[loratadine.coverage]]
+province = "BC"
+status = "Restricted"                                                                            # TODO(review): mapped from "fully covered for plan W only"
+tips = "Only Pharmacare Plan W (First Nations) covers the 10mg tab (generic and Claritin brand)"

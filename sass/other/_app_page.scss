@@ -1,0 +1,307 @@
+/* Widescreen container overrides when rendering inside an app template */
+body:has(.clinical-app-container) {
+  overflow-x: hidden;
+
+  header.clinical-app-header,
+  footer.clinical-app-footer {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  main#main {
+    width: 100% !important;
+    max-width: 1380px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+    box-sizing: border-box;
+    display: block !important;
+    padding-top: 0.5rem !important; // breathing room below top bar
+    padding-bottom: 2rem !important;
+    min-height: calc(100vh - 120px);
+  }
+}
+
+/* non-sticky, full-bleed border */
+.clinical-app-header {
+  margin: 0;
+  padding: 0;
+  background-color: var(--core-bg);
+  border-bottom: 1px solid var(--core-border);
+  position: relative;
+  z-index: 10;
+  width: 100%;
+
+  .clinical-app-header-inner {
+    max-width: 1380px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0.45rem 1.25rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .clinical-app-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .clinical-home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--core-ink);
+    font-weight: 600;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.8;
+      text-decoration: none;
+    }
+  }
+
+  .clinical-brand-logo {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .clinical-breadcrumb-separator {
+    color: var(--core-ink-muted);
+    opacity: 0.5;
+    font-size: 0.9rem;
+  }
+
+  .clinical-app-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--core-ink);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .clinical-app-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+
+    .core-toolbar,
+    #app-toolbar-skeleton {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: auto !important;
+      background: transparent !important;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .core-toolbar-extra {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .core-version-auth {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.825rem;
+    }
+  }
+
+  .clinical-theme-toggle {
+    background: transparent;
+    border: 1px solid var(--core-border);
+    border-radius: 4px;
+    padding: 0.3rem 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--core-ink);
+    transition: all 0.15s ease;
+    line-height: 1;
+
+    &:hover {
+      background-color: var(--core-surface);
+      border-color: var(--core-ink-muted);
+    }
+
+    i {
+      font-style: normal;
+      line-height: 1;
+      display: inline-flex;
+      pointer-events: none; // Ensures click event targets the button itself
+    }
+  }
+}
+
+/* App Viewport Container */
+.clinical-app-container {
+  width: 100%;
+
+  /* Prose and documentation sections */
+  .clinical-app-prose {
+    box-sizing: border-box;
+    margin-top: 0rem;
+
+    @media (max-width: 768px) {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    h2 {
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--core-ink);
+    }
+
+    p {
+      line-height: 1.6;
+      color: var(--core-ink);
+      margin-bottom: 1rem;
+    }
+
+    .ref-bib {
+      margin-top: 1rem;
+    }
+  }
+}
+
+/* minimal footer */
+.clinical-app-footer {
+  border-top: 1px solid var(--core-border);
+  margin-top: 0rem;
+  padding: 1rem 0 1rem 0;
+  background-color: var(--core-bg);
+  font-size: 0.875rem;
+  color: var(--core-ink-muted);
+  width: 100%;
+
+  .clinical-app-footer-inner {
+    max-width: 1380px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1.25rem;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.25rem 2rem;
+  }
+
+  .clinical-footer-legal {
+    display: flex;
+    align-items: center;
+    max-width: 65ch;
+  }
+
+  .clinical-disclaimer-text {
+    line-height: 1.2;
+    font-size: 0.85rem;
+    color: var(--core-ink-muted);
+  }
+
+  .clinical-footer-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+
+    a {
+      color: var(--core-ink-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: var(--core-primary);
+        text-decoration: underline;
+      }
+    }
+
+    .clinical-footer-sep {
+      opacity: 0.4;
+    }
+  }
+}
+
+/* mobile + portrait phone layout optimization (max-width: 768px) */
+@media (max-width: 768px) {
+  body:has(.clinical-app-container) {
+    main#main {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      padding-top: 0.25rem !important;
+    }
+  }
+
+  .clinical-app-header {
+    .clinical-app-header-inner {
+      padding: 0.4rem 1rem;
+      gap: 0.5rem;
+    }
+
+    .clinical-app-title {
+      font-size: 0.925rem;
+    }
+
+    .clinical-app-actions {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      gap: 0.5rem;
+      padding-bottom: 0.25rem;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .core-toolbar,
+      #app-toolbar-skeleton {
+        flex-shrink: 0;
+      }
+
+      .clinical-theme-toggle {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .clinical-app-footer {
+    padding: 1rem 0 1rem 0;
+
+    .clinical-app-footer-inner {
+      padding: 0 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.25rem;
+    }
+
+    .clinical-footer-meta {
+      flex-wrap: wrap;
+      gap: 0.5rem 0.75rem;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+.two_columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 1rem;
+
+  .column {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  @media (orientation: portrait) {
+    flex-direction: column;
+    // flex items don't collapse margins, so drop the gap and column 2's top margin to match normal text flow
+    gap: 0;
+
+    .column + .column > :first-child {
+      margin-top: 0;
+    }
+
+    // list continuing into a list: join them so it reads as one list
+    .column:has(+ .column > :is(ul, ol):first-child) > :is(ul, ol):last-child {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -70,6 +70,7 @@ export const WarningCode = {
 		INVALID_CONCENTRATION: "INVALID_CONCENTRATION",
 		INVALID_TARGET: "INVALID_TARGET",
 		INVALID_DILUTION_STEP_VALUES: "INVALID_DILUTION_STEP_VALUES",
+		VALIDATION_FAILED: "VALIDATION_FAILED",
 	},
 	Yellow: {
 		LOW_SERVINGS: "LOW_SERVINGS",
@@ -81,6 +82,9 @@ export const WarningCode = {
 		HIGH_DAILY_AMOUNT: "HIGH_DAILY_AMOUNT",
 		HIGH_MIX_WATER: "HIGH_MIX_WATER",
 		RAPID_ESCALATION: "RAPID_ESCALATION",
+		STANDARD_FOOD_COLLISION: "STANDARD_FOOD_COLLISION",
+		STANDARD_FOOD_PROTEIN_MISMATCH: "STANDARD_FOOD_PROTEIN_MISMATCH",
+		STANDARD_FOOD_FORM_MISMATCH: "STANDARD_FOOD_FORM_MISMATCH",
 	},
 } as const;
 
@@ -526,6 +530,16 @@ export interface ProtocolExportData {
 	protocol: Protocol;
 	customNote: string;
 	history: HistoryItem[];
+}
+
+/**
+ * Represents a user's selection for a single-protocol handout:
+ * which tab, which protocol snapshot, and which step to feature.
+ */
+export interface HandoutSelection {
+	tabId: string;
+	protocol: Protocol;
+	stepIndex: number;
 }
 
 // ============================================

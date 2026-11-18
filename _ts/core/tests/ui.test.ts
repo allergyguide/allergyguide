@@ -1,5 +1,3 @@
-// _ts/core/tests/ui.test.ts
-
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { supabase } from "../api/supabase";
 import {
@@ -15,6 +13,7 @@ vi.mock("../api/supabase", () => ({
 		auth: {
 			getSession: vi.fn(),
 		},
+		rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
 	},
 }));
 
@@ -23,6 +22,7 @@ vi.mock("../auth/login-client", () => ({
 	loginAndUnlock: vi.fn(),
 	unlockVault: vi.fn(),
 	lockAndSignOut: vi.fn(),
+	prefetchSalts: vi.fn(),
 }));
 
 describe("UI Module: Auth Modals", () => {
@@ -129,7 +129,7 @@ describe("UI Module: Auth Modals", () => {
 		await vi.waitFor(() => expect(onSuccess).toHaveBeenCalled());
 	});
 
-	it("login form submission should show error on failure and reset turnstile", async () => {
+	it("login form submission should show error on failure and re-render turnstile", async () => {
 		renderAuthUI("LOGIN", async () => {});
 		await vi.waitFor(() =>
 			expect((globalThis as any).turnstile.render).toHaveBeenCalled(),
@@ -146,7 +146,7 @@ describe("UI Module: Auth Modals", () => {
 			expect(
 				document.querySelector(".core-auth-error-message")?.textContent,
 			).toBe("Network Error");
-			expect((globalThis as any).turnstile.reset).toHaveBeenCalledWith(
+			expect((globalThis as any).turnstile.remove).toHaveBeenCalledWith(
 				"widget-id",
 			);
 		});

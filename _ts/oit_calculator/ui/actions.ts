@@ -7,10 +7,10 @@ import Decimal from "decimal.js";
 import { DEFAULT_CONFIG } from "../constants";
 import {
 	generateDefaultProtocol,
-	generateStepForTarget,
+	generateStepOrDirectFallback,
 } from "../core/calculator";
 import { addFoodBToProtocol } from "../core/protocol";
-import { workspace } from "../state/instances";
+import { appState, workspace } from "../state/instances";
 import type {
 	Food,
 	FoodData,
@@ -26,7 +26,7 @@ import {
 	Method,
 	SourceType,
 } from "../types";
-import { generateUniqueId, hydrateFoodData } from "../utils";
+import { generateUniqueId, getMeasuringUnit, hydrateFoodData } from "../utils";
 
 /**
  * Select Food A from database entry and initialize a default protocol.
@@ -99,8 +99,19 @@ export function selectFoodB(foodData: FoodData): void {
  * @returns void
  */
 export function selectCustomFood(name: string, inputId: string): void {
+	const trimmedName = (name || "Custom Food").trim();
+	const existingCustom = appState
+		?.getUserFoods()
+		.find((f) => f.name.trim().toLowerCase() === trimmedName.toLowerCase());
+	if (existingCustom) {
+		alert(
+			`A custom food named "${trimmedName}" already exists in your library. Please use a unique name or select the existing food.`,
+		);
+		return;
+	}
+
 	const food: Food = {
-		name: name || "Custom Food",
+		name: trimmedName,
 		type: FoodType.SOLID,
 		gramsInServing: new Decimal(10),
 		servingSize: new Decimal(100),
@@ -148,6 +159,9 @@ export function selectCustomFood(name: string, inputId: string): void {
  */
 export function selectProtocol(protocolData: ProtocolData): void {
 	const foodA: Food = hydrateFoodData(protocolData.food_a);
+	const foodB: Food | undefined = protocolData.food_b
+		? hydrateFoodData(protocolData.food_b)
+		: undefined;
 
 	const protocol: Protocol = {
 		id: protocolData.id,
@@ -167,9 +181,9 @@ export function selectProtocol(protocolData: ProtocolData): void {
 	};
 	const activeTab = workspace.getActive();
 
-	if (protocolData.custom_note) {
-		activeTab.setCustomNote(protocolData.custom_note);
-	}
+	// always overwrite, so a note from the tab's previous protocol can't carry over
+	// skipRender: setProtocol below renders
+	activeTab.setCustomNote(protocolData.custom_note ?? "", { skipRender: true });
 
 	// load steps
 	const tableToLoad = protocolData.table;
@@ -202,11 +216,8 @@ export function selectProtocol(protocolData: ProtocolData): void {
 				dailyAmountUnit = "ml";
 			} else {
 				// DIRECT
-				const isFoodA = row.food === "A";
-				const foodType = isFoodA
-					? foodA.type
-					: (protocolData.food_b?.type as FoodType);
-				dailyAmountUnit = foodType === FoodType.SOLID ? "g" : "ml";
+				const rowFood = row.food === "B" && foodB ? foodB : foodA;
+				dailyAmountUnit = getMeasuringUnit(rowFood);
 			}
 		}
 
@@ -225,12 +236,9 @@ export function selectProtocol(protocolData: ProtocolData): void {
 			step.mixFoodAmount = new Decimal(row.mix_amount);
 			step.mixWaterAmount = new Decimal(row.water_amount);
 			// Calculate servings
-			let mgPerUnit = foodA.getMgPerUnit();
-			if (row.food === "B" && protocolData.food_b) {
-				const fbGrams = new Decimal(protocolData.food_b.gramsInServing);
-				const fbServing = new Decimal(protocolData.food_b.servingSize);
-				mgPerUnit = fbGrams.times(1000).dividedBy(fbServing);
-			}
+			const mgPerUnit = (
+				row.food === "B" && foodB ? foodB : foodA
+			).getMgPerUnit();
 
 			const totalMixProtein = step.mixFoodAmount.times(mgPerUnit);
 			step.servings = totalMixProtein.dividedBy(step.targetMg);
@@ -240,11 +248,11 @@ export function selectProtocol(protocolData: ProtocolData): void {
 	}
 
 	// Load Food B if present
-	if (protocolData.food_b) {
-		protocol.foodB = hydrateFoodData(protocolData.food_b);
-		if (protocolData.food_b_threshold) {
+	if (foodB) {
+		protocol.foodB = foodB;
+		if (protocolData.food_b_threshold !== undefined) {
 			protocol.foodBThreshold = {
-				unit: protocol.foodB.type === FoodType.SOLID ? "g" : "ml",
+				unit: getMeasuringUnit(foodB),
 				amount: new Decimal(protocolData.food_b_threshold),
 			};
 		}
@@ -303,35 +311,17 @@ export function clearFoodB(): void {
 	// Iterate over filtered steps to preserve their targetMg
 	filteredSteps.forEach((step, i) => {
 		// generate a step for Food A for this target
-		const newStep = generateStepForTarget(
-			step.targetMg,
-			i + 1, // 1-based index
-			protocolWithoutB.foodA,
-			"A",
-			protocolWithoutB.foodAStrategy,
-			protocolWithoutB.diThreshold,
-			protocolWithoutB.config,
+		newSteps.push(
+			generateStepOrDirectFallback(
+				step.targetMg,
+				i + 1, // 1-based index
+				protocolWithoutB.foodA,
+				"A",
+				protocolWithoutB.foodAStrategy,
+				protocolWithoutB.diThreshold,
+				protocolWithoutB.config,
+			),
 		);
-
-		if (newStep) {
-			newSteps.push(newStep);
-		} else {
-			// Fallback if dilution fails (e.g. target too small for Food A config)
-			// force a DIRECT step so the data isn't lost
-			console.error("Unable to find new valid dilution for step:", step);
-			const unit = protocolWithoutB.foodA.type === FoodType.SOLID ? "g" : "ml";
-			newSteps.push({
-				id: generateUniqueId(),
-				stepIndex: i + 1,
-				targetMg: step.targetMg,
-				method: Method.DIRECT,
-				dailyAmount: step.targetMg.dividedBy(
-					protocolWithoutB.foodA.getMgPerUnit(),
-				),
-				dailyAmountUnit: unit,
-				food: "A",
-			});
-		}
 	});
 
 	protocolWithoutB.steps = newSteps;

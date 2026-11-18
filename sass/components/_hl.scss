@@ -1,0 +1,38 @@
+// Highlight spans: a soft marker tint behind the text; text keeps the page ink colour for contrast.
+// .hl-yellow (and legacy .hl) is the house highlight; the other colours are kept for existing content.
+
+// name: (hue, light-mode chroma)
+$hl-hues: (
+  "yellow": (95, 0.13),
+  "red": (25, 0.07),
+  "green": (145, 0.07),
+  "blue": (245, 0.07),
+  "pink": (340, 0.07),
+);
+
+@each $name, $spec in $hl-hues {
+  $hue: nth($spec, 1);
+  :root {
+    /* Dark mode: translucent tint over the dark surface */
+    --hl-#{$name}-bg: oklch(85% 0.15 #{$hue} / 0.22);
+  }
+
+  :root.switch {
+    /* Light mode */
+    --hl-#{$name}-bg: oklch(93% #{nth($spec, 2)} #{$hue});
+  }
+
+  .hl-#{$name} {
+    background-color: var(--hl-#{$name}-bg);
+    color: inherit;
+    padding: 0.05em 0.2em;
+    border-radius: 0.2em;
+    // keep padding/rounding on every line when a highlight wraps
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+}
+
+.hl {
+  @extend .hl-yellow;
+}

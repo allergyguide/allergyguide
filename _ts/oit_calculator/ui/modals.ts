@@ -16,8 +16,7 @@ let clickwrapModal: HTMLElement | null = null;
 let clickwrapCheckbox0: HTMLInputElement | null = null;
 let clickwrapCheckbox1: HTMLInputElement | null = null;
 let clickwrapCheckbox2: HTMLInputElement | null = null;
-let clickwrapCheckbox3: HTMLInputElement | null = null;
-let clickwrapCheckbox4: HTMLInputElement | null = null;
+
 let clickwrapGenerateBtn: HTMLButtonElement | null = null;
 let clickwrapCancelBtn: HTMLButtonElement | null = null;
 
@@ -67,8 +66,7 @@ export function hideClickwrapModal(): void {
 		if (clickwrapCheckbox0) clickwrapCheckbox0.checked = false;
 		if (clickwrapCheckbox1) clickwrapCheckbox1.checked = false;
 		if (clickwrapCheckbox2) clickwrapCheckbox2.checked = false;
-		if (clickwrapCheckbox3) clickwrapCheckbox3.checked = false;
-		if (clickwrapCheckbox4) clickwrapCheckbox4.checked = false;
+
 		if (clickwrapGenerateBtn) clickwrapGenerateBtn.disabled = true;
 	}
 }
@@ -89,12 +87,7 @@ export function attachClickwrapEventListeners(
 	clickwrapCheckbox2 = document.getElementById(
 		"clickwrap-checkbox-2",
 	) as HTMLInputElement;
-	clickwrapCheckbox3 = document.getElementById(
-		"clickwrap-checkbox-3",
-	) as HTMLInputElement;
-	clickwrapCheckbox4 = document.getElementById(
-		"clickwrap-checkbox-4",
-	) as HTMLInputElement;
+
 	clickwrapGenerateBtn = document.getElementById(
 		"clickwrap-generate-btn",
 	) as HTMLButtonElement;
@@ -108,8 +101,6 @@ export function attachClickwrapEventListeners(
 		!clickwrapCheckbox0 ||
 		!clickwrapCheckbox1 ||
 		!clickwrapCheckbox2 ||
-		!clickwrapCheckbox3 ||
-		!clickwrapCheckbox4 ||
 		!clickwrapGenerateBtn ||
 		!clickwrapCancelBtn
 	) {
@@ -122,9 +113,7 @@ export function attachClickwrapEventListeners(
 			clickwrapGenerateBtn.disabled = !(
 				clickwrapCheckbox0?.checked &&
 				clickwrapCheckbox1?.checked &&
-				clickwrapCheckbox2?.checked &&
-				clickwrapCheckbox3?.checked &&
-				clickwrapCheckbox4?.checked
+				clickwrapCheckbox2?.checked
 			);
 		}
 	};
@@ -132,8 +121,7 @@ export function attachClickwrapEventListeners(
 	clickwrapCheckbox0.addEventListener("change", validateCheckboxes);
 	clickwrapCheckbox1.addEventListener("change", validateCheckboxes);
 	clickwrapCheckbox2.addEventListener("change", validateCheckboxes);
-	clickwrapCheckbox3.addEventListener("change", validateCheckboxes);
-	clickwrapCheckbox4.addEventListener("change", validateCheckboxes);
+
 	clickwrapCancelBtn.addEventListener("click", hideClickwrapModal);
 
 	// allow ESC to get out of modal

@@ -1,0 +1,10 @@
+{% component dropdown(header) %}
+<div class="dropdown">
+<details>
+<summary>{{ header | safe }}</summary>
+<div class="dropdown-content">
+{{ body | markdown | safe }}
+</div>
+</details>
+</div>
+{% endcomponent dropdown %}

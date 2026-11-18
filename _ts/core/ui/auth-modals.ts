@@ -1,17 +1,15 @@
 // _ts/core/ui/auth-modals.ts
-import { html, nothing, render } from "lit-html";
+import { html, nothing, render, type TemplateResult } from "lit-html";
 import { supabase } from "../api/supabase";
 import {
 	lockAndSignOut,
 	loginAndUnlock,
+	prefetchSalts,
 	unlockVault,
 } from "../auth/login-client";
 
 // Turnstile helper
-// Official Cloudflare Testing Key (Always Passes)
-// https://developers.cloudflare.com/turnstile/troubleshooting/testing/
-
-const TURNSTILE_TEST_SITE_KEY = "1x00000000000000000000AA";
+// NOTE: The Cloudflare test site key (Always Passes) is intentionally not used because it doesn't play well with Supabase's cookie-based auth flow
 let turnstileWidgetId: string | null | undefined = null;
 
 function renderTurnstile() {
@@ -24,12 +22,30 @@ function renderTurnstile() {
 		}
 		turnstileWidgetId = null; // Clear the ID!
 	}
-	const sitekey = window.location.hostname.includes("netlify.app")
-		? TURNSTILE_TEST_SITE_KEY
-		: "0x4AAAAAACK7_weh_BsWxOhN";
+	const sitekey = "0x4AAAAAACK7_weh_BsWxOhN";
 
 	try {
-		turnstileWidgetId = turnstile.render("#turnstile-widget", { sitekey });
+		turnstileWidgetId = turnstile.render("#turnstile-widget", {
+			sitekey,
+			appearance: "always",
+			callback: () => {
+				const submitBtn = document.getElementById(
+					"btn-login-submit",
+				) as HTMLButtonElement;
+				if (submitBtn) {
+					submitBtn.disabled = false;
+					submitBtn.innerText = "Login";
+				}
+			},
+			"error-callback": () => {
+				const submitBtn = document.getElementById(
+					"btn-login-submit",
+				) as HTMLButtonElement;
+				if (submitBtn) {
+					submitBtn.innerText = "Security Check Failed";
+				}
+			},
+		});
 	} catch (err) {
 		console.error("Failed to render Turnstile:", err);
 	}
@@ -41,11 +57,14 @@ function renderTurnstile() {
 export const loginTemplate = (
 	onSuccess: () => Promise<void>,
 	errorMsg = "",
+	customTitle?: string,
+	customBody?: TemplateResult,
+	modalSizeClass = "core-modal-sm",
 ) => html`
 	<div class="core-modal-overlay core-auth-modal-overlay">
-		<div class="core-modal-content core-modal-sm core-auth-login-content">
-			<h2>Custom Access</h2>
-			<p class="login-instruction">Sign in to access provisioned & custom resources.</p>
+		<div class="core-modal-content ${modalSizeClass} core-auth-login-content">
+			<h2>${customTitle ? customTitle : "Custom Access"}</h2>
+			${customBody ? customBody : html`<p class="login-instruction">Access common brand foods, save custom foods and protocols, and perform multi-OIT.</p>`}
 			
 			<form @submit=${async (e: Event) => {
 				e.preventDefault();
@@ -70,10 +89,14 @@ export const loginTemplate = (
 						"LOGIN",
 						onSuccess,
 						"Please complete the Cloudflare Turnstile.",
+						customTitle,
+						customBody,
+						modalSizeClass,
 					);
 
 				// disable button on click to avoid doubling
 				submitBtn.disabled = true;
+				submitBtn.innerText = "Signing in...";
 
 				// Supabase Handles Auth + Turnstile together!
 				try {
@@ -81,13 +104,16 @@ export const loginTemplate = (
 					await loginAndUnlock(email, password, token);
 					await onSuccess(); // Reloads the page, and the user will bypass the Unlock modal!
 				} catch (err: unknown) {
-					if (turnstileWidgetId) turnstile.reset(turnstileWidgetId);
-					submitBtn.disabled = false;
+					// Lit-html does not overwrite manually mutated static text nodes, so we reset it manually:
+					submitBtn.innerText = "Verifying...";
 					pwdInput.value = "";
 					renderAuthUI(
 						"LOGIN",
 						onSuccess,
 						err instanceof Error ? err.message : "Authentication failed.",
+						customTitle,
+						customBody,
+						modalSizeClass,
 					);
 				}
 			}}>
@@ -103,7 +129,7 @@ export const loginTemplate = (
 				<div id="turnstile-widget"></div>
 				<div class="core-auth-modal-buttons">
 					<button type="button" class="core-btn core-btn-secondary" @click=${() => renderAuthUI("HIDDEN")}>Cancel</button>
-					<button type="submit" id="btn-login-submit" class="core-btn core-btn-primary">Login</button>
+					<button type="submit" id="btn-login-submit" class="core-btn core-btn-primary" disabled>Verifying...</button>
 				</div>
 			</form>
 		</div>
@@ -182,6 +208,9 @@ export function renderAuthUI(
 	state: "LOGIN" | "UNLOCK" | "HIDDEN",
 	onSuccess?: () => Promise<void>,
 	errorMsg = "",
+	customTitle?: string,
+	customBody?: TemplateResult,
+	modalSizeClass = "core-modal-sm",
 ) {
 	const mountNode = document.getElementById("auth-modal-mount");
 	if (!mountNode) return;
@@ -189,20 +218,68 @@ export function renderAuthUI(
 	// Update the module state so the ESC key knows what to do
 	currentModalState = state;
 
+	// Clean up Turnstile BEFORE Lit destroys the DOM
+	if (turnstileWidgetId) {
+		try {
+			turnstile.remove(turnstileWidgetId);
+		} catch {}
+		turnstileWidgetId = null;
+	}
+
 	if (state === "HIDDEN") {
 		document.body.style.overflow = ""; // Restore scrolling
 		render(nothing, mountNode);
 		return;
 	} else {
 		document.body.style.overflow = "hidden"; // Lock background scroll
+
+		// Fire a single warmup ping to establish TLS connections ahead of time; this will also work for other tools
+		fetch("/.netlify/functions/oit-bootstrap", {
+			headers: { "x-warmup": "true" },
+		}).catch(() => {});
+
+		// Warm up the Browser -> Supabase connection by invoking the RPC directly and letting it fail
+		Promise.resolve(supabase.rpc("get_user_salts", { user_email: "" })).catch(
+			() => {},
+		);
 	}
 
 	if (state === "LOGIN" && onSuccess) {
-		render(loginTemplate(onSuccess, errorMsg), mountNode);
+		render(
+			loginTemplate(
+				onSuccess,
+				errorMsg,
+				customTitle,
+				customBody,
+				modalSizeClass,
+			),
+			mountNode,
+		);
 		setTimeout(renderTurnstile, 0);
 		setTimeout(() => {
-			const emailInput = document.getElementById("login-email");
-			if (emailInput) emailInput.focus();
+			const emailInput = document.getElementById(
+				"login-email",
+			) as HTMLInputElement | null;
+			if (emailInput) {
+				emailInput.focus();
+
+				// Prefetch salts as early as possible to hide the ~1s cold RPC latency: fire on both debounced input and blur
+				const isValidEmail = (v: string) =>
+					/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+				let debounceTimer: ReturnType<typeof setTimeout>;
+				emailInput.addEventListener("input", () => {
+					clearTimeout(debounceTimer);
+					debounceTimer = setTimeout(() => {
+						if (isValidEmail(emailInput.value)) prefetchSalts(emailInput.value);
+					}, 400);
+				});
+
+				emailInput.addEventListener("blur", () => {
+					clearTimeout(debounceTimer);
+					if (isValidEmail(emailInput.value)) prefetchSalts(emailInput.value);
+				});
+			}
 		}, 0);
 	}
 
@@ -210,6 +287,8 @@ export function renderAuthUI(
 		supabase.auth.getSession().then(({ data }) => {
 			const email = data.session?.user.email || "User";
 			render(unlockTemplate(email, onSuccess, errorMsg), mountNode);
+			// We already know the email from the session
+			if (data.session?.user.email) prefetchSalts(data.session.user.email);
 		});
 	}
 }

@@ -10,8 +10,20 @@ import {
 	SEARCH_DEBOUNCE_MS,
 	SEARCH_RESULTS_LIMIT,
 } from "../constants";
-import type { Food, OfcState } from "../types";
+import { calculateTargetMg, proteinPerGram } from "../core/calculations";
+import { type Food, type OfcState, SourceType } from "../types";
 import { debounce } from "../utils";
+
+/**
+ * Maps each source type to a weight used in search scoring.
+ * In general, user-provided content (USER and PROVISIONED) should be scored higher than generic or brand content.
+ */
+const SourceWeight: Record<SourceType, number> = {
+	[SourceType.USER]: 4,
+	[SourceType.PROVISIONED]: 3,
+	[SourceType.BRAND]: 2,
+	[SourceType.GENERIC]: 1,
+};
 
 /**
  * Global application state store
@@ -72,6 +84,14 @@ export class AppState {
 	setAuthState(isLoggedIn: boolean, email: string | null) {
 		this.state.isLoggedIn = isLoggedIn;
 		this.state.email = email;
+		this.notify();
+	}
+
+	/**
+	 * Updates the background sync status for custom assets
+	 */
+	setSyncStatus(status: "loading" | "success" | "error") {
+		this.state.customAssetsSyncStatus = status;
 		this.notify();
 	}
 
@@ -148,10 +168,10 @@ export class AppState {
 
 	/**
 	 * Updates the serving size used for dose calculations in the modal
-	 * Enforces a minimum of 1 to avoid division by zero
+	 * Stores the real value (0 if blank or negative) so the UI can flag it; proteinPerGram() guards division by zero
 	 */
 	setModalServingSize(val: number) {
-		const safeVal = Math.max(1, val);
+		const safeVal = Math.max(0, val);
 		this.state.modalServingSize = safeVal;
 		this.notify();
 	}
@@ -175,6 +195,32 @@ export class AppState {
 			this.state.modalSteps7 = newSteps;
 		}
 		this.notify();
+	}
+
+	/**
+	 * Updates a protocol step based on a target food quantity (g or ml)
+	 * Automatically converts food quantity to target protein mg and updates state
+	 *
+	 * @param practall - The protocol type ("5" or "7")
+	 * @param index - The step index (0-based)
+	 * @param foodAmount - The food quantity in g or ml
+	 */
+	updateModalStepByFood(
+		practall: "5" | "7",
+		index: number,
+		foodAmount: number,
+	) {
+		const safeFood = Math.max(0, foodAmount);
+		const targetMgDecimal = calculateTargetMg(
+			safeFood,
+			proteinPerGram(
+				this.state.modalGramsInServing,
+				this.state.modalServingSize,
+			),
+		);
+		const targetMg = targetMgDecimal.toDecimalPlaces(2).toNumber();
+
+		this.updateModalStep(practall, index, targetMg);
 	}
 
 	/**
@@ -212,10 +258,26 @@ export class AppState {
 		const results = fuzzysort.go(debouncedSearchQuery, searchableFoods, {
 			key: "preparedKey",
 			limit: SEARCH_RESULTS_LIMIT,
-			threshold: -10000,
 		});
 
-		this.cachedResults = results.map((r) => r.obj as Food);
+		// Sort results with SourceType tie-breaker (similar to OIT search logic)
+		const mappedResults = results.map((r) => ({
+			score: r.score,
+			obj: r.obj as Food,
+		}));
+
+		mappedResults.sort((a, b) => {
+			const scoreDiff = b.score - a.score;
+			// fuzzysort 3 scores are 0..1, so "near tie" is a small fraction
+			if (Math.abs(scoreDiff) <= 0.05) {
+				const weightA = SourceWeight[a.obj.source] || 0;
+				const weightB = SourceWeight[b.obj.source] || 0;
+				if (weightA !== weightB) return weightB - weightA;
+			}
+			return scoreDiff;
+		});
+
+		this.cachedResults = mappedResults.map((r) => r.obj);
 		this.lastSearchQuery = debouncedSearchQuery;
 		this.lastSearchableFoods = searchableFoods;
 

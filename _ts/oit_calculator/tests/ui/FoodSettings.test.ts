@@ -1,10 +1,13 @@
 import Decimal from "decimal.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { DosingStrategy, FoodAStrategy, FoodType } from "../../types";
+import { DosingStrategy, FoodAStrategy, FoodType, SourceType } from "../../types";
 import {
 	renderFoodASettings,
 	renderFoodBSettings,
 } from "../../ui/components/FoodSettings";
+
+let mockStandardFoods: any[] = [];
+let mockUserFoods: any[] = [];
 
 // Mock appState
 vi.mock("../../state/instances", async () => {
@@ -12,7 +15,10 @@ vi.mock("../../state/instances", async () => {
 	return {
 		...actual,
 		appState: {
-			getUserFoods: () => [],
+			getUserFoods: () => mockUserFoods,
+			getStandardFoods: () => mockStandardFoods,
+			foodsById: new Map(),
+			isLoggedIn: false,
 		},
 	};
 });
@@ -121,5 +127,57 @@ describe("FoodSettings Component", () => {
 		expect(
 			mockWorkspace.getActive().setAdvancedSettingsOpen,
 		).toHaveBeenCalledWith(true);
+	});
+
+	it("should display standard food warning when custom food has different protein from standard library", () => {
+		mockStandardFoods = [
+			{
+				name: "Food A",
+				type: FoodType.SOLID,
+				gramsInServing: 10,
+				servingSize: 100, // 100 mg/g
+				source: SourceType.GENERIC,
+			},
+		];
+
+		mockProtocol.foodA = {
+			name: "Food A",
+			type: FoodType.SOLID,
+			gramsInServing: new Decimal(20), // 200 mg/g vs 100 mg/g
+			servingSize: new Decimal(100),
+			source: SourceType.USER,
+			getMgPerUnit: () => new Decimal(200),
+		};
+
+		renderFoodASettings(mockWorkspace, mount);
+		const warningDiv = mount.querySelector(".oit-warning-message");
+		expect(warningDiv).not.toBeNull();
+		expect(warningDiv?.textContent).toContain("different protein content");
+	});
+
+	it("should NOT flag duplicate error on standard foods even if a custom food shares the same name", () => {
+		mockUserFoods = [
+			{
+				id: "custom-1",
+				name: "Food A",
+				source: SourceType.USER,
+			},
+		];
+
+		mockProtocol.foodA = {
+			name: "Food A",
+			type: FoodType.SOLID,
+			gramsInServing: new Decimal(10),
+			servingSize: new Decimal(100),
+			source: SourceType.GENERIC, // Standard food
+			getMgPerUnit: () => new Decimal(100),
+		};
+
+		renderFoodASettings(mockWorkspace, mount);
+		const errorDiv = mount.querySelector(".oit-error-message");
+		expect(errorDiv).toBeNull();
+
+		const input = mount.querySelector("#food-a-name") as HTMLInputElement;
+		expect(input.classList.contains("oit-input-error")).toBe(false);
 	});
 });

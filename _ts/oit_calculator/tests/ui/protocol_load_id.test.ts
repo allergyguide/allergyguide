@@ -20,4 +20,15 @@ describe("Protocol Loading ID Injection", () => {
 			});
 		}
 	});
+
+	it("replaces the previous note and keeps a Food B threshold of 0", () => {
+		const tab = workspace.getActive();
+		tab.setCustomNote("old patient note");
+		const { custom_note: _, ...noNote } = SAMPLE_PROTOCOL;
+
+		selectProtocol({ ...noNote, food_b_threshold: 0 });
+
+		expect(tab.getCustomNote()).toBe("");
+		expect(tab.getProtocol()?.foodBThreshold?.amount.toString()).toBe("0");
+	});
 });

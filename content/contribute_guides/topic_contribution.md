@@ -11,7 +11,7 @@ Example of a finished topic page: [Chronic rhinosinusitis](/topics/hypersensitiv
 
 ## Rough topic structure
 
-{% two_columns() %}
+{% <two_columns> %}
 
 - Macro to c/p
 - Summary:
@@ -47,7 +47,44 @@ Example of a finished topic page: [Chronic rhinosinusitis](/topics/hypersensitiv
   - Editor: list
 - Conflicts of interest
 
-{% end %}
+{% </two_columns> %}
+
+## Immunology topics
+
+Immunology is too broad to cover every condition (the IUIS classification alone has 10 categories and hundreds of entities). Our focus is on **conceptual understanding, quick references, and practical approaches**, and links out to detailed references if required by the reader.
+
+The section is organized as:
+
+- **By presentation**: presentation-based approaches (e.g. recurrent infections, low immunoglobulins, abnormal newborn screen, infection with autoimmunity).
+- **By arm of immunity**: one conceptual page per arm (antibody, combined/T-cell, phagocyte, complement, immune dysregulation, secondary), with any high-yield conditions nested beneath.
+- **Quick reference**: short pages (e.g. interpreting immunoglobulins, vaccine responses, lymphocyte subsets and functional tests, genetic testing, table of list of genetic conditions and their presentations / labs).
+- **Management**: e.g. immunoglobulin replacement, infection prophylaxis, live vaccines and prophylaxis
+
+### Arm-of-immunity page skeleton
+
+```txt
+# The concept
+3–4 lines: what this arm normally does, and what goes wrong when it fails.
+Link to the relevant crash course section for background.
+
+# When to suspect it
+Infection pattern (organisms, sites), non-infectious features, red flags.
+
+# Key conditions
+| Condition | Defect | Hallmark features | Key test |
+|---|---|---|---|
+One row per entity. Link the condition name to its own page only if it has one;
+otherwise link to the detailed reference.
+
+# Workup
+First-line tests (in general), then specialist tests.
+
+# Management principles
+General principles for this arm; condition-specific management goes on the condition's own page.
+
+# Further reading
+IUIS classification, ESID criteria, guidelines, review articles, etc.
+```
 
 ## Other topic content specifics:
 
@@ -57,18 +94,17 @@ Example of a finished topic page: [Chronic rhinosinusitis](/topics/hypersensitiv
   - References should be in Vancouver format. If you are writing your rough draft in Google Docs, please use a citation manager -- **having the correct numbers for in-text citations makes it MUCH easier** to port the references to the website
   - If there are particular references that are very high yield, feel free to include a small blurb about them (it will show up in the reference icon, as such: <span class="references">2</span>)
 - If you need to list a specific prescription, format as "ExRx: Nasonex 2 sprays EN BID" (ExRx = Example Prescription)
-  - If possible, you can also list a 'med-popup' linking to a relevant medication card. For example: {% popup() %}
+  - If possible, you can also list a 'med-popup' linking to a relevant medication card. For example: {% <popup> %}
 
-{{ medications_toml_load(meds=["bilastine"])}}
+{{ <med_card id="bilastine" /> }}
 
-{% end %}
+{% </popup> %}
 
 - If possible for key management options, there should be a 'drop box' for a deeper dive into the evidence: specifically, any relevant point estimates that would be useful for patient counseling. For example:
 
-{% dropdown(header="DEEP-DIVE: Efficacy of INCS in CRSwNP") %}
+{% <dropdown header="DEEP-DIVE: Efficacy of INCS in CRSwNP"> %}
 
 Here you would put the evidence behind a study (ideally a systematic review or meta-analysis) that contains <b>data relevant to patients</b><span class='references'>2</span>
-<br>
 
 <ul>
 <li> What's the bottom line of the research?</li>
@@ -77,9 +113,7 @@ Here you would put the evidence behind a study (ideally a systematic review or m
 <li> Is this evidence "strong"? This is a very nuanced point (and there are frameworks such as GRADE for this). You shouldn't spend a LOT of time on this up-front; while interpretation of complex research is crucial, it's not the main point of this project</li>
 </ul>
 
-<br>
-
-{% end %}
+{% </dropdown> %}
 
 ## Macros
 
@@ -100,7 +134,7 @@ FORMAT:
 
 Example:
 
-{{ load_macro(topic_name = "chronic_rhinosinusitis") }}
+{{ <load_macro topic_name="chronic_rhinosinusitis" /> }}
 
 ## Patient handouts/resources
 
@@ -112,17 +146,17 @@ If applicable, each topic should have an accompanying printable patient resource
 
 ## Styling of topic pages
 
-{% admonition(type="danger", icon="info", title="Don't just use plain-text") %}
+{% <admonition type="danger" icon="info" title="Don't just use plain-text"> %}
 
-Within a topic page, there are many ways to customize the text: in particular, **Markdown** and **Shortcodes**.
+Within a topic page, there are many ways to customize the text: in particular, **Markdown** and **Components**.
 
-{% end %}
+{% </admonition> %}
 
 ### Markdown
 
 - See [this link](https://www.writethedocs.org/guide/writing/markdown/) for a great introduction to the Markdown format
 - For your purposes, **you do not have to know Markdown itself very well** -- it is more important you know that the website renders Markdown. This means that you are able to use _italics_, **bolded words**, ~~strike-through-text~~, and links such as the one before. Lists and bullet points will also render as you expect. Different title headers can be achieved with [# signs](https://www.writethedocs.org/guide/writing/markdown/#headers)
-- Make good use of <span class='hl'>highlights as well</span>
+- Highlights are available too: <span class="hl-yellow">like this</span>. See the emphasis rules below
 - You can also make tables in Markdown, though they do not look the best and cannot be too complicated:
 
   | Name   | Comment                                                                 |
@@ -133,97 +167,123 @@ Within a topic page, there are many ways to customize the text: in particular, *
 
   - This doesn't mean we can't accommodate more complex tables (ie with nesting), but it does mean editors need to manually code it in
 
-### Shortcodes
+### Emphasis and spacing
 
-- Shortcodes are custom pieces of styled HTML (and sometimes JavaScript). You can use any of the shortcodes below as you like for a topic
+Each kind of emphasis has one job. If everything is emphasized, nothing stands out.
+
+| Style | Use it for |
+| :---- | :--------- |
+| **Bold** | The key term or fact in a bullet (about one per bullet at most) |
+| <span class="hl-yellow">Highlight</span> | "If you remember one thing from this section". Aim for 2–4 per article |
+| _Italics_ | Organism names, Latin, study titles, ExRx lines |
+| Underline | Never (it looks like a link) |
+| ALL CAPS | Admonition titles only |
+
+- Use `hl-yellow` for highlights. The other colours are kept only for older content
+- Don't add spacing by hand (`<br>`, empty `<div style="padding...">`, inline `style=`). Components already space themselves. If something looks too cramped or too loose, tell an editor so it can be fixed in the stylesheet for every page
+- Components such as tabs and popups load their own scripts. You don't need `<script>` tags
+
+### Components
+
+- Components are custom pieces of styled HTML (and sometimes JavaScript). You can use any of the components below as you like for a topic
 - Each can serve a different purpose, and helps break up plain-text into more manageable sections
-- You don't have to know how to implement them -- one of the editors who knows how to code will do it for you. Just indicate in your draft document what shortcode you want, and the information you need in it. If you're interested in the actual code, [check out the GitHub](https://github.com/allergyguide/allergyguide/tree/main/templates/shortcodes)
+- You don't have to know how to implement them -- one of the editors who knows how to code will do it for you. Just indicate in your draft document what component you want, and the information you need in it. If you're interested in the actual code, [check out the GitHub](https://github.com/allergyguide/allergyguide/tree/main/templates/components)
 
 #### Admonitions
 
-Admonitions are boxes that are intended to **highlight an important fact for the reader**. There are a variety of styles and icons that can be used. Options for type/icon: note, tip, info, warning, danger, and pearl. These can be mixed and matched. The title of each admonition can be changed to any text.
+Admonitions are boxes that are intended to **highlight an important fact for the reader**. There are a variety of styles and icons that can be used. Options for type/icon: note, tip, info, warning, danger, and pearl. The title of each admonition can be changed to any text.
 
-{% admonition(type="danger", icon="danger", title="DANGER") %}
+Keep the type consistent with its purpose so readers learn what each colour means:
+
+| Purpose | type / icon |
+| :------ | :---------- |
+| The bottom line (top of the page) | info / info |
+| Practical approach ("brass tacks") | danger / info |
+| Red flags | danger / flag |
+| Pearls | pearl / pearl |
+| Tips, "why should we care?" | tip / tip or question |
+| Pitfalls, cautions | warning / warning |
+| Definitions, side notes | note / note |
+
+{% <admonition type="danger" icon="danger" title="DANGER"> %}
 This is a danger admonition with a danger icon, and the title DANGER.
-{% end %}
+{% </admonition> %}
 
-{% admonition(type="warning", icon="warning", title="WARNING") %}
+{% <admonition type="warning" icon="warning" title="WARNING"> %}
 This is a warning admonition with a warning icon, and the title WARNING.
-{% end %}
+{% </admonition> %}
 
-{% admonition(type="info", icon="info", title="INFO") %}
+{% <admonition type="info" icon="info" title="INFO"> %}
 And so forth.
-{% end %}
+{% </admonition> %}
 
-{% admonition(type="tip", icon="tip", title="TIP") %}
-And so forth.
-
-{% end %}
-
-{% admonition(type="note", icon="note", title="NOTE") %}
+{% <admonition type="tip" icon="tip" title="TIP"> %}
 And so forth.
 
-{% end %}
+{% </admonition> %}
 
-{% admonition(type="pearl", icon="pearl", title="PEARL") %}
+{% <admonition type="note" icon="note" title="NOTE"> %}
 And so forth.
 
-{% end %}
+{% </admonition> %}
 
-{% admonition(type="note", icon="question", title="MIXUP") %}
+{% <admonition type="pearl" icon="pearl" title="PEARL"> %}
+And so forth.
+
+{% </admonition> %}
+
+{% <admonition type="note" icon="question" title="MIXUP"> %}
 This is a note admonition with a question icon and the title MIXUP.
 
-{% end %}
+{% </admonition> %}
 
 #### Question
 
 Insert questions with hidden answers. Click the blurred section to reveal it.
 
-{% question(question="A 27 year old female presents to clinic with complaints of frequent infections. She has had 3 episodes of pneumonia confirmed by XR over the past 3 years as well as 2 episodes of sinusitis requiring a short course of antibiotics. She has no relevant family history and no symptoms of asthma or SOB. **What is the most appropriate test to consider?**<br><br>a) Serum immunoglobulins<br>b) Blood cultures") %}
+{% <question question="A 27 year old female presents to clinic with complaints of frequent infections. She has had 3 episodes of pneumonia confirmed by XR over the past 3 years as well as 2 episodes of sinusitis requiring a short course of antibiotics. She has no relevant family history and no symptoms of asthma or SOB. **What is the most appropriate test to consider?**<br><br>a) Serum immunoglobulins<br>b) Blood cultures"> %}
 Serum immunoglobulins is the correct answer. CVID is the most likely diagnosis from the stem, and it requires...
-{% end %}
+{% </question> %}
 
 #### text_image
 
 Sometimes you want to show an image and text to one side of it. You have two options:
 
-{% text_image(src="/images/example.png", alt="An image description", caption = "test caption") %}
+{% <text_image src="/images/example.png" alt="An image description" caption="test caption"> %}
 _Here is some text_ on the left.
 
-{% question(question="**Can you also add questions on the side?**") %}
+{% <question question="**Can you also add questions on the side?**"> %}
 Yes!
-{% end %}
+{% </question> %}
 
-{% end %}
+{% </text_image> %}
 
-{% text_image(text_position = "right", src="/images/example.png", alt="An image description", caption = "test caption") %}
+{% <text_image text_position="right" src="/images/example.png" alt="An image description" caption="test caption"> %}
 _Here is some text_ on the right.
 
-{% admonition(type="tip", icon="tip", title="You can add admonitions here too!") %}
+{% <admonition type="tip" icon="tip" title="You can add admonitions here too!"> %}
 This is helpful if there's something you really want to call someone's attention too!
-{% end %}
-{% end %}
+{% </admonition> %}
+{% </text_image> %}
 
 #### two_columns
 
 Sometimes you want two columns to place text in.
 
-{% two_columns() %}
+{% <two_columns> %}
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
 
 <!-- split -->
 
-{% admonition(type="tip", icon="tip", title="You can add admonitions here too!") %}
+{% <admonition type="tip" icon="tip" title="You can add admonitions here too!"> %}
 This is helpful if there's something you really want to call someone's attention too!
-{% end %}
+{% </admonition> %}
 
-<br>
-
-{% admonition(type="pearl", icon="pearl", title="A rare clinical pearl") %}
+{% <admonition type="pearl" icon="pearl" title="A rare clinical pearl"> %}
 Benadryl is not a fantastic antihistamine to use :)
-{% end %}
+{% </admonition> %}
 
-{% end %}
+{% </two_columns> %}
 
 #### references
 
@@ -233,31 +293,31 @@ This sentence needs two references <span class="references">yu_trends_2024, steh
 
 ... rest of document
 
-{{ references(showBib=true, path="content/example.bib") }}
+{{ <references showBib={true} path="content/example.bib" /> }}
 
 #### custom_macro
 
 You can create custom copy-paste macros if you need to.
 
-{% custom_macro() %}
+{% <custom_macro> %}
 Here is a custom macro copy paste section
-{% end %}
+{% </custom_macro> %}
 
 #### load_macro
 
 You can also load any macros from the offical macro 'repo' [here](https://github.com/allergyguide/allergyguide/blob/main/static/toml/topic_macros.toml)
 
-{{ load_macro(topic_name = "chronic_rhinosinusitis") }}
+{{ <load_macro topic_name="chronic_rhinosinusitis" /> }}
 
 #### contributors
 
 A small cut-out for contributors. This may be removed in the future.
 
-{{ contributors(authors=["Alice Smith", "Bob Johnson"], editors=["Charlie Brown"], staff_reviewers=["David Lee"]) }}
+{{ <contributors authors={["Alice Smith", "Bob Johnson"]} editors={["Charlie Brown"]} staff_reviewers={["David Lee"]} /> }}
 
 #### timeline
 
-{% timeline() %}
+{% <timeline> %}
 [{
 "title":"Lorem Ipsum Event",
 "body":"Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
@@ -268,55 +328,20 @@ A small cut-out for contributors. This may be removed in the future.
 "body":"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.",
 "date":"Jun-2022"
 }]
-{% end %}
+{% </timeline> %}
 
 #### dropdown
 
 Dropdowns are useful if you want to host information in more depth without taking up more space. For example, deep dives into the evidence behind a management option, listing the detailed options for a particular class of medication, etc.
 
-{% dropdown(header="this is what the user will click on to get more info") %}
+{% <dropdown header="this is what the user will click on to get more info"> %}
 This text will appear in the dropdown
 
 <a href="allergyguide.ca">link</a>
 
-{% admonition(type="danger", icon="danger", title="DANGER") %}
+{% <admonition type="danger" icon="danger" title="DANGER"> %}
 This is a danger admonition with a danger icon.
 
-{% end %}
+{% </admonition> %}
 
-{% end %}
-
-#### mermaid
-
-mermaid diagrams are interesting to use but not mandatory. If you want to explore and use these, check out their [documentation](https://mermaid.js.org/intro/).
-
-```md
-{%/* mermaid() */%}
-
-sequenceDiagram
-Alice ->> Bob: Hello Bob, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
-
-    Bob-->Alice: Checking with John...
-    Alice->John: Yes... John, how are you?
-
-{%/* end */%}
-```
-
-{% mermaid() %}
-sequenceDiagram
-Alice ->> Bob: Hello Bob, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
-
-    Bob-->Alice: Checking with John...
-    Alice->John: Yes... John, how are you?
-
-{% end %}
-
-<script src="/js/popup.js"></script>
+{% </dropdown> %}

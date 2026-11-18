@@ -1,0 +1,452 @@
+[
+	{
+		"allergen": "Egg",
+		"food": "French toast (1 egg per 1 slice of bread)*",
+		"protein": "6 g if made with 1 large egg",
+		"age4_11mo": "1/2-1 slice",
+		"age1_3y": "1/2-1 slice",
+		"age4_8y": "1 slice",
+		"age9_18y": "1-2 slices",
+		"age19plus": "1-2 slices"
+	},
+	{
+		"allergen": "Egg",
+		"food": "Hard-boiled or scrambled egg",
+		"protein": "6 g/1 large egg",
+		"age4_11mo": "1/2-1 egg",
+		"age1_3y": "1/2-1 egg",
+		"age4_8y": "1 egg",
+		"age9_18y": "1-2 eggs",
+		"age19plus": "1-2 eggs"
+	},
+	{
+		"allergen": "Fish",
+		"food": "Cooked fish†",
+		"protein": "6 g/1 oz",
+		"age4_11mo": "1/2-1 oz",
+		"age1_3y": "1 oz",
+		"age4_8y": "1 oz",
+		"age9_18y": "2-3 oz",
+		"age19plus": "3-4 oz"
+	},
+	{
+		"allergen": "Grains",
+		"food": "Cooked cereal",
+		"protein": "5 g per 1/4 cup dry (oatmeal or Cream of Wheat)",
+		"age4_11mo": "1/4 cup",
+		"age1_3y": "1/4 cup",
+		"age4_8y": "1/3-1/2 cup",
+		"age9_18y": "1/2-1 cup",
+		"age19plus": "1/2-1 cup"
+	},
+	{
+		"allergen": "Grains",
+		"food": "Cooked pasta*/rice",
+		"protein": "3 g per 1/2 cup",
+		"age4_11mo": "1/4 cup",
+		"age1_3y": "1/4 cup",
+		"age4_8y": "1/3-1/2 cup",
+		"age9_18y": "1/2-1 cup",
+		"age19plus": "1/2-1 cup"
+	},
+	{
+		"allergen": "Grains",
+		"food": "Infant cereal",
+		"protein": "1-2 g per 1/4 cup",
+		"age4_11mo": "1/4-1/2 cup",
+		"age1_3y": "1/4-1/2 cup",
+		"age4_8y": "",
+		"age9_18y": "",
+		"age19plus": ""
+	},
+	{
+		"allergen": "Grains",
+		"food": "Muffin or roll bread*",
+		"protein": "4-6 g/muffin or roll",
+		"age4_11mo": "1/4-1/2 piece",
+		"age1_3y": "1/2 piece",
+		"age4_8y": "1/2-1 piece",
+		"age9_18y": "1 piece",
+		"age19plus": "1 piece"
+	},
+	{
+		"allergen": "Grains",
+		"food": "Ready-to-eat cereal",
+		"protein": "2-6 g/1 cup",
+		"age4_11mo": "1/4-1/3 cup",
+		"age1_3y": "1/4-1/3 cup",
+		"age4_8y": "1/2-3/4 cup",
+		"age9_18y": "3/4-1 cup",
+		"age19plus": "3/4-1 cup"
+	},
+	{
+		"allergen": "Grains",
+		"food": "Slice bread",
+		"protein": "2-4 g/slice",
+		"age4_11mo": "1/4-1/2 slice",
+		"age1_3y": "1/2 slice",
+		"age4_8y": "1/2-1 slice",
+		"age9_18y": "1-2 slices",
+		"age19plus": "2 slices"
+	},
+	{
+		"allergen": "Milk",
+		"food": "Infant formula",
+		"protein": "2-3 g/5 oz",
+		"age4_11mo": "4-8 oz",
+		"age1_3y": "",
+		"age4_8y": "",
+		"age9_18y": "",
+		"age19plus": ""
+	},
+	{
+		"allergen": "Milk",
+		"food": "Milk",
+		"protein": "8 g/8 oz",
+		"age4_11mo": "",
+		"age1_3y": "4-8 oz",
+		"age4_8y": "4-8 oz",
+		"age9_18y": "8 oz",
+		"age19plus": "8 oz"
+	},
+	{
+		"allergen": "Milk",
+		"food": "Cottage cheese",
+		"protein": "10-14 g/4 oz",
+		"age4_11mo": "1/4-1/2 cup",
+		"age1_3y": "1/4-1/2 cup",
+		"age4_8y": "1/2-1 cup",
+		"age9_18y": "1/2-1 cup",
+		"age19plus": "1 cup"
+	},
+	{
+		"allergen": "Milk",
+		"food": "Hard cheese",
+		"protein": "6-8 g/1 oz",
+		"age4_11mo": "1/4-1/2 oz",
+		"age1_3y": "1/2 oz",
+		"age4_8y": "1 oz",
+		"age9_18y": "1 oz",
+		"age19plus": "1 1/2 oz"
+	},
+	{
+		"allergen": "Milk",
+		"food": "Yogurt (NOT Greek style)",
+		"protein": "8 g/8 oz",
+		"age4_11mo": "1/4-1/2 cup",
+		"age1_3y": "1/4-1/2 cup",
+		"age4_8y": "1/2-1 cup",
+		"age9_18y": "1/2-1 cup",
+		"age19plus": "1/2-1 cup"
+	},
+	{
+		"allergen": "Peanut",
+		"food": "Peanut (whole)",
+		"protein": "2 g/~8 peanuts",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "16 pieces",
+		"age9_18y": "16 pieces",
+		"age19plus": "16 pieces"
+	},
+	{
+		"allergen": "Peanut",
+		"food": "Peanut butter",
+		"protein": "3 g/1 tbsp",
+		"age4_11mo": "1 rounded tbsp",
+		"age1_3y": "1-2 tbsp",
+		"age4_8y": "1-2 tbsp",
+		"age9_18y": "2 tbsp",
+		"age19plus": "2 tbsp"
+	},
+	{
+		"allergen": "Peanut",
+		"food": "Peanut flour or peanut butter powder",
+		"protein": "3 g/1 tbsp original or 2.25 g/1 tbsp chocolate flavor",
+		"age4_11mo": "1 rounded tbsp",
+		"age1_3y": "1-2 tbsp",
+		"age4_8y": "1-2 tbsp",
+		"age9_18y": "2 tbsp",
+		"age19plus": "2 tbsp"
+	},
+	{
+		"allergen": "Peanut",
+		"food": "Peanut/chocolate candy cups (full-size)",
+		"protein": "0.875 g/1 cup",
+		"age4_11mo": "",
+		"age1_3y": "1-2 candy cups",
+		"age4_8y": "1-2 candy cups",
+		"age9_18y": "2-3 candy cups",
+		"age19plus": "2-3 candy cups"
+	},
+	{
+		"allergen": "Shellfish",
+		"food": "Shellfish§",
+		"protein": "5 g/1 oz",
+		"age4_11mo": "1/2-1 oz",
+		"age1_3y": "1 oz",
+		"age4_8y": "1 oz",
+		"age9_18y": "2-3 oz",
+		"age19plus": "3-4 oz"
+	},
+	{
+		"allergen": "Soy/legumes",
+		"food": "Infant formula",
+		"protein": "2-3.1 g/5 oz",
+		"age4_11mo": "4-8 oz",
+		"age1_3y": "",
+		"age4_8y": "",
+		"age9_18y": "",
+		"age19plus": ""
+	},
+	{
+		"allergen": "Soy/legumes",
+		"food": "Soy beverage",
+		"protein": "7 g/8 oz",
+		"age4_11mo": "",
+		"age1_3y": "4-8 oz",
+		"age4_8y": "4-8 oz",
+		"age9_18y": "8 oz",
+		"age19plus": "8 oz"
+	},
+	{
+		"allergen": "Soy/legumes",
+		"food": "Cooked beans (kidney, black, chickpeas, lentils)",
+		"protein": "7-9 g per 1/2 cup",
+		"age4_11mo": "1/8-1/4 cup",
+		"age1_3y": "1/4 cup",
+		"age4_8y": "1/3-1/2 cup",
+		"age9_18y": "1/2-1 cup",
+		"age19plus": "1 cup"
+	},
+	{
+		"allergen": "Soy/legumes",
+		"food": "Tofu",
+		"protein": "8 g/3 oz Firm tofu",
+		"age4_11mo": "1/2-1 oz",
+		"age1_3y": "1 oz",
+		"age4_8y": "1 oz",
+		"age9_18y": "2-3 oz",
+		"age19plus": "3-4 oz"
+	},
+	{
+		"allergen": "Soy/legumes",
+		"food": "Yogurt",
+		"protein": "5 g/6 oz",
+		"age4_11mo": "1/4-1/2 cup",
+		"age1_3y": "1/4-1/2 cup",
+		"age4_8y": "1/2-1 cup",
+		"age9_18y": "1 cup",
+		"age19plus": "1 cup"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Almond",
+		"protein": "3 g/11 whole nuts",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "11 pieces",
+		"age9_18y": "11 pieces",
+		"age19plus": "11 pieces"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Almond butter (Barney butter brand)",
+		"protein": "3 g/1 tbsp",
+		"age4_11mo": "1 tbsp‡",
+		"age1_3y": "1-2 tbsp",
+		"age4_8y": "1-2 tbsp",
+		"age9_18y": "1-2 tbsp",
+		"age19plus": "1-2 tbsp"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Brazil nut",
+		"protein": "3 g/4.5 nuts",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "4 1/2 pieces",
+		"age9_18y": "4 1/2 pieces",
+		"age19plus": "4 1/2 pieces"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Cashew",
+		"protein": "3 g/10 whole nuts",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "10 pieces",
+		"age9_18y": "10 pieces",
+		"age19plus": "10 pieces"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Coconut flour",
+		"protein": "3 g/1 tbsp",
+		"age4_11mo": "1 tbsp",
+		"age1_3y": "1-2 tbsp",
+		"age4_8y": "1-2 tbsp",
+		"age9_18y": "2-3 tbsp",
+		"age19plus": "2-3 tbsp"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Coconut milk",
+		"protein": "3 g/3 oz",
+		"age4_11mo": "",
+		"age1_3y": "3 oz",
+		"age4_8y": "3 oz",
+		"age9_18y": "4-8 oz",
+		"age19plus": "4-8 oz"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Hazelnut",
+		"protein": "3 g/3 tbsp hazelnuts or hazelnut meal",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "3 tbsp",
+		"age9_18y": "3 tbsp",
+		"age19plus": "3 tbsp"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Pecan (halves)",
+		"protein": "3 g/25 halves",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "10-25 halves",
+		"age9_18y": "25 halves",
+		"age19plus": "25 halves"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Pine nuts",
+		"protein": "3.5 g/3 tbsp pine nuts",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "3 tbsp",
+		"age9_18y": "3-4 tbsp",
+		"age19plus": "4 tbsp"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Pistachio",
+		"protein": "3 g/20 whole nuts",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "20 pieces",
+		"age9_18y": "20 pieces",
+		"age19plus": "20 pieces"
+	},
+	{
+		"allergen": "Tree nut",
+		"food": "Walnut (halves)",
+		"protein": "3 g/10 halves",
+		"age4_11mo": "",
+		"age1_3y": "",
+		"age4_8y": "10 halves",
+		"age9_18y": "10 halves",
+		"age19plus": "10 halves"
+	},
+	{
+		"allergen": "Seeds",
+		"food": "Seeds",
+		"protein": "",
+		"age4_11mo": "10-15 g = 1-2 tsp",
+		"age1_3y": "10-15 g = 1-2 tsp",
+		"age4_8y": "10-15 g = 1-2 tsp",
+		"age9_18y": "10-15 g = 1-2 tsp",
+		"age19plus": "10-15 g = 1-2 tsp"
+	},
+	{
+		"allergen": "Seeds",
+		"food": "Sunflower seed butter (Sun butter brand)",
+		"protein": "3 g/1 tbsp",
+		"age4_11mo": "1 tbsp‡",
+		"age1_3y": "1-2 tbsp",
+		"age4_8y": "1-2 tbsp",
+		"age9_18y": "1-2 tbsp",
+		"age19plus": "1-2 tbsp"
+	},
+	{
+		"allergen": "Seeds",
+		"food": "Tahini (sesame seed)",
+		"protein": "3 g/1 tbsp",
+		"age4_11mo": "1 tbsp",
+		"age1_3y": "1 tbsp",
+		"age4_8y": "1 tbsp",
+		"age9_18y": "1 tbsp",
+		"age19plus": "1 tbsp"
+	},
+	{
+		"allergen": "Meats",
+		"food": "Cooked lean meat or poultry",
+		"protein": "6 g/1 oz",
+		"age4_11mo": "1/2-1 oz",
+		"age1_3y": "1 oz",
+		"age4_8y": "1 oz",
+		"age9_18y": "2-3 oz",
+		"age19plus": "3-4 oz"
+	},
+	{
+		"allergen": "Fruits",
+		"food": "Raw fruit",
+		"protein": "",
+		"age4_11mo": "1/8-1/4 cup",
+		"age1_3y": "1/4 cup",
+		"age4_8y": "1/4-1/3 cup",
+		"age9_18y": "1/3-1 cup",
+		"age19plus": "1 cup"
+	},
+	{
+		"allergen": "Fruits",
+		"food": "Small apple/banana/orange/pear",
+		"protein": "",
+		"age4_11mo": "1/8-1/4 each",
+		"age1_3y": "1/4-1/2 each",
+		"age4_8y": "1/2-1 each",
+		"age9_18y": "1 each",
+		"age19plus": "1 each"
+	},
+	{
+		"allergen": "Vegetables",
+		"food": "Raw or cooked vegetable¶",
+		"protein": "0.5-2 g per 1/2 cup",
+		"age4_11mo": "1/8-1/4 cup",
+		"age1_3y": "1/4 cup",
+		"age4_8y": "1/4-1/2 cup",
+		"age9_18y": "1/2-1 cup",
+		"age19plus": "1/2-1 cup"
+	},
+	{
+		"allergen": "Vegetables",
+		"food": "French fries (white potato)",
+		"protein": "",
+		"age4_11mo": "1/8-1/4 cup",
+		"age1_3y": "1/4 cup",
+		"age4_8y": "1/4-1/2 cup",
+		"age9_18y": "1/2-1 cup",
+		"age19plus": "1/2-1 cup"
+	},
+	{
+		"allergen": "Vegetables",
+		"food": "Leafy raw vegetable",
+		"protein": "2-3 g per 1/2 cup",
+		"age4_11mo": "1/8-1/4 cup",
+		"age1_3y": "1/4 cup",
+		"age4_8y": "1/2-1 cup",
+		"age9_18y": "1-2 cup",
+		"age19plus": "1-2 cups"
+	},
+	{
+		"allergen": "Vegetables",
+		"food": "Small baked white or sweet potato",
+		"protein": "1-4 g/potato",
+		"age4_11mo": "1/8-1/4 each",
+		"age1_3y": "1/4-1/2 each",
+		"age4_8y": "1 each",
+		"age9_18y": "1 each",
+		"age19plus": "1 each"
+	}
+]

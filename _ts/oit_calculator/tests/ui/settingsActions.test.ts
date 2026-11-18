@@ -74,6 +74,35 @@ describe("Action Handlers", () => {
 		);
 	});
 
+	it("rounds typed protein and serving size to 1 decimal", () => {
+		handleFoodAProteinChange(mockActive, "12.55");
+		expect(mockActive.setProtocol).toHaveBeenLastCalledWith(
+			expect.objectContaining({
+				foodA: expect.objectContaining({ gramsInServing: new Decimal(12.6) }),
+			}),
+			expect.any(String),
+		);
+
+		handleFoodAServingSizeChange(mockActive, "99.94");
+		expect(mockActive.setProtocol).toHaveBeenLastCalledWith(
+			expect.objectContaining({
+				foodA: expect.objectContaining({ servingSize: new Decimal(99.9) }),
+			}),
+			expect.any(String),
+		);
+	});
+
+	it("serving size never rounds below a 2-decimal curated protein value", () => {
+		mockProtocol.foodA.gramsInServing = new Decimal(9.54);
+		handleFoodAServingSizeChange(mockActive, "9.5");
+		expect(mockActive.setProtocol).toHaveBeenLastCalledWith(
+			expect.objectContaining({
+				foodA: expect.objectContaining({ servingSize: new Decimal(9.54) }),
+			}),
+			expect.any(String),
+		);
+	});
+
 	it("handleFoodAServingSizeChange should clamp and update", () => {
 		// Less than protein (5) -> should clamp to 5
 		handleFoodAServingSizeChange(mockActive, "2");

@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { FOOD_INPUT_DECIMALS } from "../../constants";
 import {
 	recalculateStepMethods,
 	toggleFoodType,
@@ -79,7 +80,12 @@ export function handleFoodAProteinChange(
 	if (!current) return;
 
 	// new val cannot be <0, cannot be >serving size, and cannot be an invalid val such as a char or NaN
-	const val = parseSafeDecimal(valueStr, current.foodA.gramsInServing, 0);
+	const val = parseSafeDecimal(
+		valueStr,
+		current.foodA.gramsInServing,
+		0,
+		FOOD_INPUT_DECIMALS,
+	);
 	const servingSize = current.foodA.servingSize;
 	const clamped = val.greaterThan(servingSize) ? servingSize : val;
 
@@ -112,7 +118,12 @@ export function handleFoodAServingSizeChange(
 	// also doesn't make sense for a serving size to be grossly large (e.g. 1000 here)
 	// as default would prefer the min to be 1 (or the protein content)
 	const min = current.foodA.gramsInServing.toNumber();
-	const val = parseSafeDecimal(valueStr, current.foodA.servingSize, min);
+	const val = parseSafeDecimal(
+		valueStr,
+		current.foodA.servingSize,
+		min,
+		FOOD_INPUT_DECIMALS,
+	);
 	let finalVal = val;
 	if (finalVal.lessThanOrEqualTo(0)) finalVal = new Decimal(1); // makes sure serving size can't be <=0, in case of protein content being 0
 	if (finalVal.greaterThan(1000)) finalVal = new Decimal(1000);
@@ -225,7 +236,12 @@ export function handleFoodBProteinChange(
 	const current = state.getProtocol();
 	if (!current?.foodB) return;
 
-	const val = parseSafeDecimal(valueStr, current.foodB.gramsInServing, 0);
+	const val = parseSafeDecimal(
+		valueStr,
+		current.foodB.gramsInServing,
+		0,
+		FOOD_INPUT_DECIMALS,
+	);
 	const servingSize = current.foodB.servingSize;
 	const clamped = val.greaterThan(servingSize) ? servingSize : val;
 
@@ -258,7 +274,12 @@ export function handleFoodBServingSizeChange(
 	if (!current?.foodB) return;
 
 	const min = current.foodB.gramsInServing.toNumber();
-	const val = parseSafeDecimal(valueStr, current.foodB.servingSize, min);
+	const val = parseSafeDecimal(
+		valueStr,
+		current.foodB.servingSize,
+		min,
+		FOOD_INPUT_DECIMALS,
+	);
 
 	let finalVal = val;
 	if (finalVal.lessThanOrEqualTo(0)) finalVal = new Decimal(1);

@@ -59,4 +59,16 @@
     color: $core-color-ink-muted;
     margin-bottom: $core-space-lg;
   }
+
+  #turnstile-widget {
+    display: block;
+    /* min-height: 65px; */
+    /* margin: $core-space-sm 0 $core-space-md; */
+
+    div {
+      display: block !important;
+      /* min-height: 65px; */
+    }
+  }
+
 }

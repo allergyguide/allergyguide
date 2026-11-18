@@ -19,7 +19,7 @@ export const handler = schedule("0 0 */3 * *", async () => {
 	try {
 		// Perform a simple read on test table
 		const { data, error } = await supabase
-			.from("test")
+			.from("authorized_users")
 			.select("id")
 			.limit(1)
 			.single();
@@ -41,7 +41,7 @@ export const handler = schedule("0 0 */3 * *", async () => {
 		console.error("Unexpected error during keep-alive:", err);
 		return {
 			statusCode: 500,
-			body: JSON.stringify({ error: err.message }),
+			body: JSON.stringify({ err }),
 		};
 	}
 });

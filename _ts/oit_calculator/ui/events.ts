@@ -7,7 +7,9 @@
  * Slowly being chipped away to lit-html for high importance components
  */
 
+import { renderAuthUI } from "../../core/ui/auth-modals";
 import { recalculateProtocol } from "../core/protocol";
+import { handleSuccessfulAuth } from "../main";
 import { appState, workspace } from "../state/instances";
 import type { DosingStrategy } from "../types";
 import { clearFoodB } from "./actions";
@@ -204,10 +206,16 @@ function attachTabBarDelegation() {
 			if (target.classList.contains("oit-tab-add")) {
 				if (!appState.isLoggedIn) {
 					// Trigger login modal if public tries to add tab
-					const loginBtn = document.querySelector(
-						"#core-toolbar-mount .login-link-btn",
-					) as HTMLElement;
-					if (loginBtn) loginBtn.click();
+					renderAuthUI(
+						"LOGIN",
+						async () => {
+							await handleSuccessfulAuth();
+							workspace.addTab();
+							document.getElementById("food-a-search")?.focus();
+						},
+						"",
+						"Sign in to access more features",
+					);
 				} else {
 					workspace.addTab();
 					document.getElementById("food-a-search")?.focus();

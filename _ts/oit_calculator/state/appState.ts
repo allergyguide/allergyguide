@@ -31,6 +31,7 @@ export class AppState {
 	// FOR AUTH
 	public isLoggedIn: boolean = false;
 	public email: string | null = null;
+	public customAssetsSyncStatus?: "loading" | "success" | "error";
 	private authListeners: AuthListener[] = [];
 
 	constructor(
@@ -54,6 +55,11 @@ export class AppState {
 	public setAuthState(isLoggedIn: boolean, email: string | null) {
 		this.isLoggedIn = isLoggedIn;
 		this.email = email;
+		this.notifyAuthListeners();
+	}
+
+	public setSyncStatus(status: "loading" | "success" | "error") {
+		this.customAssetsSyncStatus = status;
 		this.notifyAuthListeners();
 	}
 
@@ -113,6 +119,15 @@ export class AppState {
 
 	public getUserFoods(): FoodData[] {
 		return [...this.userFoods];
+	}
+
+	/**
+	 * Returns active standard foods (public CNF + provisioned branded).
+	 */
+	public getStandardFoods(): FoodData[] {
+		return [...this.publicFoods, ...this.provisionedFoods].filter(
+			(f) => !("is_active" in f) || f.is_active !== false,
+		);
 	}
 
 	public upsertUserFood(food: FoodData) {

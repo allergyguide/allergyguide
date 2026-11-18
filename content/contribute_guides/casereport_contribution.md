@@ -8,4 +8,4 @@ toc = true
 authors = ["Allergyguide"]
 +++
 
-{{wip()}}
+{{ <wip /> }}

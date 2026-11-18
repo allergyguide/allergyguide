@@ -1,4 +1,5 @@
 +++
+weight = 1
 title = "IgE-mediated food allergy"
 description = "[description of md page]"
 date = 2025-01-01
@@ -12,8 +13,6 @@ series = "foods"
 authors = ["author 1", "author 2"]
 status="not-started"
 +++
-
-{{ wip() }}
 
 </br>
 </br>

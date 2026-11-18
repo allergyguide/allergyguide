@@ -2,18 +2,18 @@
 
 import { describe, expect, it, vi } from "vitest";
 
-// Mock @supabase/supabase-js
-vi.mock("@supabase/supabase-js", () => ({
-	createClient: vi.fn().mockReturnValue({ auth: {} }),
+// Mock @supabase/ssr
+vi.mock("@supabase/ssr", () => ({
+	createBrowserClient: vi.fn().mockReturnValue({ auth: {} }),
 }));
 
 describe("API Module: Supabase", () => {
 	it("should initialize supabase client", async () => {
 		const { supabase } = await import("../api/supabase");
-		const { createClient } = await import("@supabase/supabase-js");
+		const { createBrowserClient } = await import("@supabase/ssr");
 
 		expect(supabase).toBeDefined();
-		expect(createClient).toHaveBeenCalledWith(
+		expect(createBrowserClient).toHaveBeenCalledWith(
 			"https://mock-testing-url.supabase.co",
 			"mock-publishable-key",
 			expect.any(Object),

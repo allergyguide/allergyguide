@@ -32,7 +32,43 @@
   }
 
   .core-toolbar-extra {
+    position: relative;
     animation: authEntrySlide 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  .sync-status {
+    position: absolute;
+    right: 100%;
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: $core-color-ink-muted;
+    white-space: nowrap;
+
+    .sync-spinner {
+      width: 0.65rem;
+      height: 0.65rem;
+      border: 1.5px solid oklch(from var(--core-primary) l c h / 0.3);
+      border-top-color: $core-color-primary;
+      border-radius: 50%;
+      animation: coreSpin 1s linear infinite;
+    }
+
+    .sync-icon {
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    &.sync-status-error {
+      color: var(--core-color-danger);
+    }
+
+    &.sync-status-success {
+      color: var(--core-color-success, #2e7d32);
+      animation: fadeOutStatus 3s forwards;
+    }
   }
 
   .core-version-auth {
@@ -116,4 +152,14 @@
       cursor: progress;
     }
   }
+}
+
+@keyframes coreSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeOutStatus {
+  0% { opacity: 1; pointer-events: auto; }
+  60% { opacity: 1; pointer-events: auto; }
+  100% { opacity: 0; pointer-events: none; }
 }

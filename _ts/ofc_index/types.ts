@@ -78,10 +78,8 @@ export interface Food {
 export interface UserLoadResult {
 	/** Array of provisioned food items specific to user */
 	foods: Food[];
-	/** Email of logged-in user, or null if unauthenticated */
-	email: string | null;
-	/** Boolean flag indicating if user is currently logged in */
-	isLoggedIn: boolean;
+	/** Email of logged-in user */
+	email: string;
 }
 
 /**
@@ -108,6 +106,8 @@ export interface OfcState {
 	publicFoods: Food[];
 	/** List of securely provisioned food items for logged-in user */
 	provisionedFoods: Food[];
+	/** Status of background network sync for custom assets */
+	customAssetsSyncStatus?: "loading" | "success" | "error";
 	/** Consolidated list of all foods with search optimizations */
 	searchableFoods: Food[];
 	/** Current raw search query from input field */

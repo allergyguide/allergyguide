@@ -63,12 +63,12 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 | `PRIVATE_TOKEN`       | GitHub Personal Access Token to fetch private assets/tools.            |
 | `GITHUB_OWNER`        | Owner of the repo (e.g., `john-doe`).                                  |
 | `GITHUB_REPO`         | Repository name (e.g. `repo-name`).                                    |
-| `JWT_SECRET`          | Secret key used to sign Auth Cookies.                                  |
 | `SUPABASE_URL`        | URL of the Supabase project.                                           |
 | `SUPABASE_SECRET_KEY` | for backend access ONLY.                                               |
-| `SUPABASE_JWT_SECRET` | JWT Secret for signing client tokens (from Supabase Project Settings). |
-| `TOKEN_EXPIRY_HOURS`  | Duration of the user session in hours (Default: 24).                   |
-| `TURNSTILE_SECRET`    | Secret key from Cloudflare Turnstile for server-side verify            |
+| `SUPABASE_PUBLISHABLE_KEY` | Public Supabase key, injected into client bundles.                |
+| `RESEND_API_KEY`      | Resend API key for `submit-email`.                                     |
+| `NETLIFY_SITE_ID`     | Site ID for Netlify Blobs access during the build.                     |
+| `NETLIFY_AUTH_TOKEN`  | Netlify token for Netlify Blobs access during the build.               |
 
 ## Project structure
 
@@ -82,18 +82,17 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 │   ├── build-utils.mts            # Shared utility functions
 │   └── build-config.mts           # Environment variables and config
 ├── build-patch-sw.js          # Service Worker Patcher (Critical for Auth)
-├── config.toml                # Zola Configuration
+├── zola.toml                  # Zola Configuration
 ├── netlify.toml               # Netlify Configuration (Headers, Redirects)
 ├── package.json               # NPM Scripts & Dependencies
-├── tools/                     # Developer utilities (not part of site build)
-│   └── hash_password.ts       # Utility to generate bcrypt hashes
 │
 ├── content/                   # Markdown content
 │   ├── tools/
 │   ├── topics/
 │   └── etc.
 │
-├── netlify/functions/         # Serverless functions (Auth, Asset Proxy)
+├── netlify/edge-functions/    # Edge routers for low latency data fetching
+├── netlify/functions/         # Standard Serverless functions (Auth, API)
 │
 ├── _legacy_js/                 # Source for raw JS files (copied to static/js at build)
 ├── secure_assets/             # (GitIgnored) Downloaded private assets
@@ -111,27 +110,27 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 ├──  sass
 │   ├──  _extra.scss
 │   ├──  abridge.scss
-│   └──  shortcodes 
+│   └──  components 
 │
 ├── _ts/                       # Source TypeScript for client-side tools
 │   ├── tools_versioning.json  # Configuration: Maps tool names to versions
 │   ├── oit_calculator/        # Complex Tool (Folder-based)
 │   └── simple_script.ts       # Standalone script
 │
-└── templates/                 # HTML Templates & Shortcodes
+└── templates/                 # HTML Templates & Components
 ```
 
 ---
 
 ## Developing content
 
-### Simple shortcodes
+### Simple components
 
-- Create an HTML file in `templates/shortcodes/`.
-- For JS/SCSS: Place files in `_legacy_js/{name}.js` (if simple) or `sass/shortcodes/_{name}.scss`.
+- Create an HTML file in `templates/components/`.
+- For JS/SCSS: Place files in `_legacy_js/{name}.js` (if simple) or `sass/components/_{name}.scss`.
 - See Zola docs for syntax.
 
-### TypeScript shortcodes
+### TypeScript components
 
 - See [TS_TOOL_WORKFLOW.md](TS_TOOL_WORKFLOW.md) for details on adding more complex, versioned TypeScript applications.
 
@@ -150,14 +149,16 @@ These must be set in Netlify (Site Settings > Environment Variables) and locally
 
 ## Netlify Functions & Auth
 
-Some tools rely on Serverless Functions for authentication and data access.
+Some tools rely on Edge and Serverless Functions for authentication and data access.
 
 ### 1. Authentication Flow
 
 - **Identity:** Handled natively by Supabase Auth (`auth.users`).
 - **Zero-Knowledge Encryption:** The user's password never leaves the client. It is used to create an Auth Hash (sent to Supabase for login) and a Key Encryption Key (KEK) used to unwrap the local Data Encryption Key (DEK).
-- **Session:** Supabase issues an access token which is passed as a `Bearer` token to Netlify Functions.
-- **Logout:** Supabase handles session termination via `supabase.auth.signOut()`. Local encryption keys in memory and session storage are wiped.
+- **Session (Hybrid Architecture):**
+  - **Edge Functions (Reads):** Supabase injects HTTP cookies into the browser; Edge Functions can now verify JWTs natively at the edge with less latency.
+  - **Standard Functions (Mutations):** For POST requests (e.g., `submit-email`), the client manually extracts the JWT and passes it as an `Authorization: Bearer` header. Hopefully protects against CSRF vulnerabilities.
+- **Logout:** Supabase handles session termination via `supabase.auth.signOut()`. Local encryption keys in memory and session cookies are wiped.
 
 ### 2. Fetching Secure Assets
 
@@ -185,6 +186,10 @@ This application uses an invite-only onboarding process managed through Supabase
 
 Deploying to production requires coordination between Netlify (hosting), Cloudflare (CDN/Cache), and the browser's Service Worker. **Failure to follow these steps can result in "cache poisoning" where users are served stale CSP headers or broken Auth logic.**
 
+### Cloudflare R2 Bucket (assets.allergyguide.ca)
+
+Large public binary assets (e.g., PDFs, high-resolution images, slide decks; things that don't need strict version control) are manually managed and hosted on a external bucket, via the `assets.allergyguide.ca` subdomain.
+
 ### 1. The Cloudflare "Query String" Trap
 
 Cloudflare sits in front of Netlify and aggressively caches static assets (JS, CSS, SW).
@@ -206,7 +211,7 @@ If you add a new external service (Analytics, CDNs) or a new Netlify function:
 
 If you edit `build-patch-sw.js` or the theme's PWA logic:
 
-1. Open `config.toml` and increment the `pwa_VER` variable (e.g., `3.12.5` -> `3.12.6`).
+1. Open `zola.toml` and increment the `pwa_VER` variable (e.g., `3.12.5` -> `3.12.6`).
 2. Deploy to Netlify. (This forces Zola to update the HTML references, prompting the browser to download the new SW).
 3. **Purge Everything** in Cloudflare to ensure the new SW file isn't blocked by edge caching.
 
@@ -214,7 +219,7 @@ If you edit `build-patch-sw.js` or the theme's PWA logic:
 
 If Supabase or Netlify functions fail only in production:
 
-1. **Test in Incognito:** If it works in Incognito but fails in a normal window, the user's **local Service Worker** is stale. Solution: Bump `pwa_VER` in `config.toml`.
+1. **Test in Incognito:** If it works in Incognito but fails in a normal window, the user's **local Service Worker** is stale. Solution: Bump `pwa_VER` in `zola.toml`.
 2. **Check Headers:** If it fails in Incognito, the issue is at the **CDN/Hosting level**. Solution: Check `netlify.toml` for CSP errors or Purge Cloudflare.
 
 ---

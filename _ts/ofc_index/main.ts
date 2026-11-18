@@ -1,4 +1,13 @@
-import { determineVaultState, lockAndSignOut } from "../core/auth/login-client";
+import { html, render } from "lit-html";
+import { supabase } from "../core/api/supabase";
+import {
+	determineVaultState,
+	getActiveDEK,
+	lockAndSignOut,
+	setSignedInHook,
+} from "../core/auth/login-client";
+import { handleProfileLoadError } from "../core/auth/profile-load-error";
+import { decryptDocuments, fetchAllEncryptedDocuments } from "../core/data/db";
 import { renderAuthUI } from "../core/ui/auth-modals";
 import {
 	handleUserLoad,
@@ -6,75 +15,87 @@ import {
 	loadPublicFoods,
 } from "./data/loader";
 import { appState } from "./state/state";
-import { HttpError } from "./types";
+import type { Food, FoodData, UserLoadResult } from "./types";
 import { initApp } from "./ui/app";
 
 /** Build-time injected version string */
 declare const __VERSION_OFC_INDEX__: string;
 
-/**
- * Shared callback for successful authentication and vault unlock
- * Orchestrates loading of protected assets
- */
-async function handleSuccessfulAuth() {
-	try {
-		const [userResult, customFoods] = await Promise.all([
-			handleUserLoad(),
-			loadCustomFoods(),
-		]);
+interface UserFetches {
+	bootstrap: Promise<UserLoadResult>;
+	encryptedDocs: ReturnType<typeof fetchAllEncryptedDocuments>;
+}
 
-		const currentPublicFoods = appState.getState().publicFoods;
+/** Session-only fetches (no DEK needed), started early and consumed by handleSuccessfulAuth */
+let pendingFetches: UserFetches | null = null;
 
-		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(currentPublicFoods, [
-			...userResult.foods,
-			...customFoods,
-		]);
-
-		// Hide the modal on success
-		renderAuthUI("HIDDEN");
-	} catch (e) {
-		// Revert the local identity silently (pass null so it doesn't redirect) on any failure
-		await lockAndSignOut(null);
-
-		let userFacingMessage =
-			"An unexpected error occurred while loading your profile.";
-
-		if (e instanceof HttpError) {
-			if (e.statusCode === 401) {
-				console.debug("No active session or token expired:", e);
-				userFacingMessage = "Your session has expired. Please log in again.";
-			} else if (e.statusCode === 403) {
-				console.debug("Failed to load user config (Not Provisioned):", e);
-				userFacingMessage =
-					"Login successful, but this account lacks access to this tool.";
-			} else if (e.statusCode >= 500) {
-				console.warn("User load failed (Server Error):", e);
-				userFacingMessage =
-					"Server error retrieving your profile. Please try again later.";
-			} else {
-				console.warn(`User load failed (${e.statusCode}):`, e);
-			}
-		} else {
-			// Non-HTTP error (e.g., TypeError from JSON parsing, Network drop)
-			console.error("Undefined err in handleSuccessfulAuth: ", e);
-			userFacingMessage =
-				"Network or connection error. Please check your internet and try again.";
-		}
-
-		renderAuthUI("LOGIN", handleSuccessfulAuth, userFacingMessage);
-	}
+/** Starts session-only fetches. Overwrites any stale fetches from a previous session */
+function startUserFetches(): UserFetches {
+	const bootstrap = handleUserLoad();
+	bootstrap.catch(() => {});
+	const encryptedDocs = fetchAllEncryptedDocuments(["custom_food"]);
+	encryptedDocs.catch(() => {});
+	pendingFetches = { bootstrap, encryptedDocs };
+	return pendingFetches;
 }
 
 /**
- * Main initialization function
- *
- * 1. Finds mount point in DOM
- * 2. Sets up global state subscriptions
- * 3. Registers global keyboard shortcuts
- * 4. Determines identity and vault state
- * 5. Mounts Lit-html application
+ * Decrypts custom foods in the background and appends them after the provisioned foods
  */
+function loadCustomFoodsInBackground(
+	encryptedDocs: UserFetches["encryptedDocs"],
+	provisionedFoods: Food[],
+) {
+	appState.setSyncStatus("loading");
+	const dek = getActiveDEK();
+
+	encryptedDocs
+		.then(async (encryptedRows) => {
+			const customFoodDocs = await decryptDocuments<FoodData>(
+				encryptedRows,
+				dek,
+				"custom_food",
+			);
+			appState.setFoods(appState.getState().publicFoods, [
+				...provisionedFoods,
+				...loadCustomFoods(customFoodDocs),
+			]);
+			appState.setSyncStatus("success");
+		})
+		.catch((err) => {
+			console.error("Failed to load custom assets:", err);
+			appState.setSyncStatus("error");
+		});
+}
+
+/**
+ * Shared callback for an unlocked vault (fresh login, unlock, or page load with a DEK)
+ * Loads protected assets; on failure signs out silently and shows the login modal with the reason
+ */
+export async function handleSuccessfulAuth() {
+	const { bootstrap, encryptedDocs } = pendingFetches ?? startUserFetches();
+	pendingFetches = null; // consumed; the next login starts fresh fetches
+
+	try {
+		const userResult = await bootstrap;
+
+		appState.setAuthState(true, userResult.email);
+		appState.setFoods(appState.getState().publicFoods, userResult.foods);
+
+		// Hide the modal on success
+		renderAuthUI("HIDDEN");
+
+		loadCustomFoodsInBackground(encryptedDocs, userResult.foods);
+	} catch (e) {
+		await handleProfileLoadError(
+			e,
+			"the OFC index",
+			(isLoggedIn, email) => appState.setAuthState(isLoggedIn, email),
+			handleSuccessfulAuth,
+		);
+	}
+}
+
 async function initializeOFC() {
 	const mountPoint = document.getElementById("ofc-app-mount");
 	if (!mountPoint) {
@@ -92,37 +113,40 @@ async function initializeOFC() {
 		}
 	});
 
-	// Global key listener for Escape
-	window.addEventListener("keydown", (e) => {
-		if (e.key === "Escape") {
-			appState.setSelectedFood(null);
-		}
-	});
+	// Escape is handled inside the protocol dialog so it never closes it from behind the auth or feedback modals
 
 	// --- AUTHENTICATION AND DATA LOAD ---
 
-	// Load public data and check auth in parallel
-	const [publicFoods, vaultState] = await Promise.all([
-		loadPublicFoods(),
-		determineVaultState(),
-	]);
-	appState.setFoods(publicFoods, []);
+	// public data and session check in parallel
+	const publicFoodsPromise = loadPublicFoods();
+	const vaultStatePromise = determineVaultState();
 
-	if (vaultState === "UNAUTHENTICATED") {
-		// Public mode => publicFoods
-		appState.setAuthState(false, null);
-	} else if (vaultState === "LOCKED") {
-		// Logged in to Supabase, but DEK missing: force unlock
-		renderAuthUI("UNLOCK", handleSuccessfulAuth);
-	} else if (vaultState === "UNLOCKED") {
-		// Fully Authenticated and Decrypted! Load user data
-		const [userResult, customFoods] = await Promise.all([
-			handleUserLoad(),
-			loadCustomFoods(),
+	let publicFoods: Food[];
+	let vaultState: Awaited<typeof vaultStatePromise>;
+	let sessionEmail: string | null;
+	try {
+		const {
+			data: { session },
+		} = await supabase.auth.getSession();
+		sessionEmail = session?.user.email ?? null;
+		// start network fetch without waiting for DEK
+		if (session) startUserFetches();
+		// On fresh login, start them as soon as Supabase sign-in returns
+		setSignedInHook(startUserFetches);
+
+		[publicFoods, vaultState] = await Promise.all([
+			publicFoodsPromise,
+			vaultStatePromise,
 		]);
-		appState.setAuthState(userResult.isLoggedIn, userResult.email);
-		appState.setFoods(publicFoods, [...userResult.foods, ...customFoods]);
+	} catch (e) {
+		console.error("OFC index failed to start:", e);
+		render(
+			html`<p class="ofc-warning-text">Couldn't load the food database. Reload the page to try again.</p>`,
+			mountPoint,
+		);
+		return;
 	}
+	appState.setFoods(publicFoods, []);
 
 	const changelogLink =
 		(
@@ -131,7 +155,7 @@ async function initializeOFC() {
 			) as HTMLAnchorElement
 		)?.href || "#";
 
-	// init UI (removes skeleton)
+	// init UI (removes skeleton) before the profile loads, so public search works even if the edge function is slow
 	initApp(mountPoint, {
 		onLogin: () => renderAuthUI("LOGIN", handleSuccessfulAuth),
 		onLogout: async () => {
@@ -142,6 +166,18 @@ async function initializeOFC() {
 		version: __VERSION_OFC_INDEX__,
 		changelogUrl: changelogLink,
 	});
+
+	if (vaultState === "UNAUTHENTICATED") {
+		// Public mode => publicFoods
+		appState.setAuthState(false, null);
+	} else if (vaultState === "LOCKED") {
+		// Logged in to Supabase, but DEK missing: force unlock
+		renderAuthUI("UNLOCK", handleSuccessfulAuth);
+	} else if (vaultState === "UNLOCKED") {
+		// Show the signed-in toolbar now; provisioned foods appear when the profile loads
+		appState.setAuthState(true, sessionEmail);
+		void handleSuccessfulAuth();
+	}
 }
 
 // Initialize when DOM is ready

@@ -1,0 +1,169 @@
+/*-----------------------------------------------------------------------
+  THEMING VARIABLES
+  Define your light/dark theme colors; toggle with a `.switch` on <html> or <body>
+------------------------------------------------------------------------*/
+:root {
+  /* Dark mode */
+  --popup-background: #1e1e1e;
+  --popup-text: #ffffff;
+  --popup-border: #444;
+  --popup-shadow: rgba(0, 0, 0, 0.5);
+  --popup-link: #1e90ff;
+  --popup-icon: #f90;
+}
+
+:root.switch {
+  /* Light mode */
+  --popup-background: #ffffff;
+  --popup-text: #000000;
+  --popup-border: #ccc;
+  --popup-shadow: rgba(0, 0, 0, 0.1);
+  --popup-link: #0645ad;
+  --popup-icon: #c40;
+}
+
+/*-----------------------------------------------------------------------
+  POPUP MODAL (Native Dialog)
+------------------------------------------------------------------------*/
+dialog.popup-modal {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  
+  /* Reset max-width/height so content dictates it */
+  max-width: 100vw;
+  max-height: 100vh;
+  
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: popup-fade-in 0.3s ease-out forwards;
+  }
+
+  &[open] {
+    animation: popup-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes popup-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes popup-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.popup-modal[open] {
+    animation: popup-fade-in 0.2s ease-out forwards;
+  }
+}
+
+/*-----------------------------------------------------------------------
+  POPUP CONTENT BOX
+------------------------------------------------------------------------*/
+.popup-content {
+  background: var(--popup-background);
+  color: var(--popup-text);
+  border: 1px solid var(--popup-border);
+  box-shadow: 0 10px 40px -10px var(--popup-shadow), 0 4px 16px -4px rgba(0,0,0,0.1);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  overflow-y: auto;
+  position: relative;
+  
+  /* Responsive sizing */
+  width: 90vw;
+  max-width: 56.25rem; /* ~900px */
+  max-height: 85vh;
+
+  @media (max-width: 600px) {
+    width: 95vw;
+    max-height: 80vh;
+    padding: 1.5rem;
+  }
+}
+
+/*-----------------------------------------------------------------------
+  CLOSE BUTTON (“×”)
+------------------------------------------------------------------------*/
+.popup-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--popup-text);
+  opacity: 0.7;
+  transition: background 0.2s, opacity 0.2s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  
+  &:hover {
+    background: rgba(128, 128, 128, 0.1);
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/*-----------------------------------------------------------------------
+  TRIGGER ICON BUTTON
+------------------------------------------------------------------------*/
+.popup-trigger {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  .popup-icon {
+    display: inline-block;
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: var(--popup-icon);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), fill 0.2s;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--popup-icon);
+      display: block; // removes inline spacing quirk
+    }
+  }
+
+  &:hover .popup-icon {
+    transform: scale(1.15) translateY(-1px);
+    fill: var(--popup-icon);
+  }
+}
+
+/*-----------------------------------------------------------------------
+  LINK INSIDE POPUP (if used)
+------------------------------------------------------------------------*/
+.popup-content a {
+  color: var(--popup-link);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

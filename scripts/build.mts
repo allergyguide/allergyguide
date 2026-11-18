@@ -1,9 +1,12 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { pruneBlobs } from "./build-clean-blobs.mjs";
 import { buildGenetics } from "./build-genetics.mts";
+import { buildMedications } from "./build-medications.mts";
 import { buildTS } from "./build-ts.mjs";
 import { compileTypst, loadTypstBinary } from "./build-typ.mjs";
 import { copyLegacyJS, verifyUsersData } from "./build-utils.mjs";
+import { validateMedications } from "./build-validate-medications.mts";
 
 // ==========================================
 // CONFIGURATION & SETUP
@@ -37,11 +40,19 @@ console.log("-----VERIFY USER SECURITY CONFIGURATION-----");
 await verifyUsersData();
 console.log("---------------------------\n");
 
+console.log("-----BUILD MEDICATIONS JSON-----");
+buildMedications();
+console.log("---------------------------\n");
+
+console.log("-----VALIDATE MEDICATIONS JSON-----");
+validateMedications();
+console.log("---------------------------\n");
+
 // TYPST
 // Download binary if required, compile .typ to .pdf
 console.log("-----TYPST LOAD AND COMPILE-----");
 loadTypstBinary();
-compileTypst(commit_hash);
+await compileTypst(commit_hash);
 console.log("---------------------------\n");
 
 // FETCH GENETICS PANEL DATA
@@ -57,4 +68,16 @@ console.log("---------------------------\n");
 // TS COMPILE AND BUILD
 console.log("-----TS COMPILE AND BUILD-----");
 await buildTS(toolVersioning, commit_hash);
+console.log("---------------------------\n");
+
+// PRUNE ORPHANED BLOBS
+// Production only: every build (previews, branch deploys, local) shares the live blob store, so a non-production build whose fetch list differs would delete files the live site still serves
+console.log("-----PRUNE ORPHANED BLOBS-----");
+if (process.env.CONTEXT === "production") {
+	await pruneBlobs();
+} else {
+	console.log(
+		`Skipping prune (CONTEXT=${process.env.CONTEXT ?? "unset"}, not production)`,
+	);
+}
 console.log("---------------------------\n");

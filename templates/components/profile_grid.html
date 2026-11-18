@@ -1,0 +1,22 @@
+{% component profile_grid() %}
+{# This component will pull a JSON from the body of the component to display
+The format of the json in the body must be as such:
+[
+{ "name": "Joshua Yu, MD BSc", "src": "/images/profile_jy.png", "text": "PGY-3 IM resident at McMaster, fellow-to-be at UBC."}
+] #}
+{# Load the JSON reference data passed into the component #}
+{% set profiles = load_data(literal=body, format="json") %}
+<div class="profile_grid">
+	{% for profile in profiles %}
+	<div class="grid-item">
+		<div class="profile-card">
+			<img src="{{ profile.src }}" alt="{{ profile.name }}" class="profile-card-image">
+			<div class="profile-card-content">
+				<h3 class="profile-card-name">{{ profile.name }}</h3>
+				<p class="profile-card-description">{{ profile.text }}</p>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endcomponent profile_grid %}

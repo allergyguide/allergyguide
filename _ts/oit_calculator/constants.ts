@@ -57,6 +57,11 @@ export const DEFAULT_CONFIG: ProtocolConfig = {
 export const OIT_CLICKWRAP_ACCEPTED_KEY = "oit_clickwrap_accepted_v1";
 export const CLICKWRAP_EXPIRY_DAYS = 7;
 
+// User-entered food protein / serving size precision (g or ml). Curated library values keep their own precision.
+export const FOOD_INPUT_DECIMALS = 1;
+// Custom vs standard food protein considered "the same" within this many mg per g/ml (0.05 g/100 g): absorbs 1-decimal rounding of per-100 values
+export const STANDARD_FOOD_PROTEIN_TOLERANCE_MG = new Decimal(0.5);
+
 export const HISTORY_DEBOUNCE_MS = 300;
 export const VALIDATION_DEBOUNCE_MS = 250;
 

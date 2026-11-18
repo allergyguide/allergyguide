@@ -8,7 +8,7 @@ toc = true
 authors = ["Joshua Yu"]
 +++
 
-## [Unreleased]
+## [unreleased]
 
 ### Added
 
@@ -23,6 +23,64 @@ authors = ["Joshua Yu"]
 ### Security
 
 ---
+
+## [0.17.7] - 2026-11-13
+
+### Fixed
+
+- A brief outage of the login service or a network drop no longer signs you out. Reload the page to try again.
+- An expired or invalid login now says "Your session has expired" instead of saying the account lacks access.
+- If your profile fails to load when you open the page, you now see a message explaining why instead of the calculator silently staying in public mode.
+
+---
+
+## [0.17.6] - 2026-11-13
+
+### Added
+
+- Copy to Clipboard: the button now confirms with "Copied" (or "Copied N protocols" when several tabs are open) for 2 seconds
+- My Library: a food or protocol being deleted now fades with a moving highlight until the deletion is confirmed. Its buttons are disabled in the meantime, and the row comes back if the deletion fails
+
+### Changed
+
+- Search results: branded and custom foods now appear first only when they match your search about as well as other foods. A closer match always ranks higher
+- Performance: faster loading right after logging in
+- The "no warnings" message is easier to read and still reminds you that doses must be verified
+- Library delete buttons and food settings warnings now use icons instead of emoji
+- Light mode uses an updated (burnt orange) accent colour
+
+### Fixed
+
+- Copy to Clipboard no longer throws an error in browsers that block clipboard access
+
+## [0.17.3] - 2026-11-08
+
+### Added
+
+- Single-Step Patient Handouts: Authorized users can now generate a targeted PDF patient handout for single protocol steps. The handout includes detailed preparation instructions, a pre-updose review checklist, and a reaction log.
+
+### Changed
+
+- Performance: improved loading speeds for authorized users
+- Food settings: protein content and serving size entries are now limited to 1 decimal place. Foods from the CNF/Brand/Provisioned libraries keep their original precision, and the settings fields now display it in full (e.g. 9.54 g instead of 9.5 g) so the value shown always matches the value used in calculations
+
+### Fixed
+
+- Calculation: Fixed an issue where the initial doses generated for a transition food (Food B) were not applying the "smart snapping" to clean, measurable increments (like 0.05g or 0.5ml) until they were manually edited
+- Duplicate detection for custom foods. New custom foods that share a name with an existing custom food are not allowed; if they share it with an existing CNF/Brand/Provisioned food, a warning is displayed
+- Duplicate food warnings: protein content is shown as entered (e.g. "35 g/100 g vs 25 g/100 g") rather than as mg per g/ml, and differences of up to 0.05 g per 100 g (0.5 mg per g/ml) are not flagged, so rounding a library value to 1 decimal place doesn't trigger a warning usually
+- If a dilution is impossible, the calculator will fall back to direct dosing. Previously it would omit the impossible step entirely. This is only applicable in the case of extremely low protein concentrations where dilutions in the first place would be inappropriate
+- Food B settings: changing Food B's protein content, serving size, or transition threshold no longer resets customized step doses to the default dosing strategy. Manual edits to Food A steps (e.g. mix amounts) are also kept
+- Warnings: entering a target protein of 0 mg together with 0 g of food to mix no longer stops the warnings from updating; a critical warning is shown for that step instead
+- Dilutions: for very small dilutions, the calculator now suggests a rounded water amount of 0.5 ml when rounding down would give 0 ml
+- Switching a food between solid and liquid now rounds dilution water amounts to clean increments, the same as when editing a step
+- Loading a protocol into a tab now replaces that tab's note, so a note from the previous protocol no longer carries over
+- Loading a saved protocol with a Food B transition threshold of 0 no longer loses the threshold
+- Warning messages now display food names with special characters (e.g. "&" or apostrophes) correctly
+- Warnings: if the protocol cannot be checked because of an unexpected error, a critical warning now asks you to review every step by hand. Previously the warnings from before the edit stayed on screen
+- Warnings: a 0 mg target on a direct step of a food with 0 g protein no longer stops the warnings from updating
+- Copy to Clipboard: capsule foods no longer show a protein line with an incorrect "ml" serving unit, and food names with special characters (e.g. "<") now display correctly when pasted as formatted text
+- Switching a step from direct to dilution now shows a message when no practical dilution exists, instead of doing nothing
 
 ## [0.17.1] - 2026-06-14
 

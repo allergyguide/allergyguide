@@ -68,7 +68,7 @@ export class WorkspaceManager {
 					: protocol.foodA.name;
 
 				activeTab.title =
-					rawTitle.length > 20 ? `${rawTitle.substring(0, 20)}...` : rawTitle;
+					rawTitle.length > 50 ? `${rawTitle.substring(0, 50)}...` : rawTitle;
 			} else {
 				activeTab.title = `Untitled ${this.tabs.indexOf(activeTab) + 1}`;
 			}

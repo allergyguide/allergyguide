@@ -141,7 +141,7 @@ export function WarningsSidebar(
 	if (warnings.length === 0) {
 		return html`
       <div class="no-warnings">
-        Protocol passes internal checks: see <a href="${rulesURL}" target="_blank">here</a> for the issues we check for.<br><br>THIS DOES NOT GUARANTEE THE PROTOCOL IS VALID.<br>DOSES MUST STILL BE VERIFIED/REVIEWED.
+        Protocol passes internal checks (<a href="${rulesURL}" target="_blank">see which issues we check for</a>).<br><br><strong>This does not guarantee the protocol is valid.</strong> Doses must still be verified/reviewed.
       </div>
     `;
 	}

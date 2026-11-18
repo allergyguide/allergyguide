@@ -4,10 +4,16 @@
  * Handle Export buttons (PDF, ASCII) and call actual export module from exports
  */
 
-import { exportASCII, generatePdf } from "../export/exports";
-import { workspace } from "../state/instances";
+import { html } from "lit-html";
+import { renderAuthUI } from "../../core/ui/auth-modals";
+import { exportToClipboard, generatePdf } from "../export/exports";
+import { generatePatientHandout } from "../export/handout";
+import { handleSuccessfulAuth } from "../main";
+import { appState, workspace } from "../state/instances";
+import type { HandoutSelection } from "../types";
 import { type ProtocolExportData, SourceType } from "../types";
 import { serializeProtocol } from "../utils";
+import { showHandoutModal } from "./components/HandoutModal";
 import { isClickwrapAccepted, showClickwrapModal } from "./modals";
 
 /**
@@ -61,14 +67,44 @@ export function initExportEvents(): void {
 		const target = e.target as HTMLElement;
 		if (target.id === "export-ascii") {
 			const data = getExportDataFromWorkspace();
-			if (data.length > 0) {
-				exportASCII(data);
+			if (data.length > 0 && (await exportToClipboard(data))) {
+				target.dataset.label ??= target.textContent ?? "";
+				// The export column is auto-width; pin the button so the shorter label doesn't reflow the layout
+				target.style.minWidth = `${target.offsetWidth}px`;
+				target.textContent =
+					data.length > 1 ? `Copied ${data.length} protocols` : "Copied";
+				setTimeout(() => {
+					target.textContent = target.dataset.label ?? "";
+					target.style.minWidth = "";
+					delete target.dataset.label;
+				}, 2000);
 			}
 		} else if (target.id === "export-pdf") {
 			if (isClickwrapAccepted()) {
 				await triggerPdfGeneration();
 			} else {
 				showClickwrapModal();
+			}
+		} else if (target.id === "export-handout") {
+			if (appState.isLoggedIn) {
+				showHandoutModal();
+			} else {
+				const authTeaserTemplate = html`
+					<div class="auth-feature-teaser">
+						<p>Per-step handouts are restricted to authorized users.</p>
+						<a href="/pdfs/oit_handout_sample.pdf" target="_blank" rel="noopener noreferrer" class="auth-feature-thumbnail-container">
+							<img src="/images/oit_handout_thumbnail.png" alt="Sample Patient Handout" class="auth-feature-thumbnail" />
+						</a>
+					</div>
+				`;
+				renderAuthUI(
+					"LOGIN",
+					handleSuccessfulAuth,
+					"",
+					"Sign in to access more features",
+					authTeaserTemplate,
+					"core-modal-md",
+				);
 			}
 		}
 	});
@@ -153,5 +189,27 @@ export async function copyActiveProtocolAsProvisioned(): Promise<void> {
 	} catch (err) {
 		console.error("Failed to copy JSON to clipboard:", err);
 		alert("Failed to copy JSON to clipboard. See console.");
+	}
+}
+
+/**
+ * Orchestrates the patient handout generation workflow
+ */
+export async function triggerPatientHandoutGeneration(
+	selections: HandoutSelection[],
+	startDate: string,
+): Promise<void> {
+	try {
+		const { jsPDF } = await import("jspdf");
+		const { PDFDocument } = await import("pdf-lib");
+		const { applyPlugin } = await import("jspdf-autotable");
+		applyPlugin(jsPDF);
+
+		await generatePatientHandout(selections, startDate, jsPDF, PDFDocument);
+	} catch (error) {
+		console.error("Failed to generate Handout PDF: ", error);
+		alert(
+			"Error generating Handout PDF. Please check the console for details.",
+		);
 	}
 }

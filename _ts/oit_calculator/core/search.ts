@@ -84,10 +84,10 @@ export function performSearch(
 		}));
 
 	// Source weighting tie-breaker:
-	// if scores are within 10 points, sort by source weight
+	// if scores are within 0.05 (fuzzysort 3 scores are 0..1), sort by source weight
 	mappedFoods.sort((a, b) => {
 		const scoreDiff = b.score - a.score;
-		if (Math.abs(scoreDiff) <= 10) {
+		if (Math.abs(scoreDiff) <= 0.05) {
 			const weightA = SourceWeight[a.data.source] || 0;
 			const weightB = SourceWeight[b.data.source] || 0;
 			if (weightA !== weightB) return weightB - weightA;

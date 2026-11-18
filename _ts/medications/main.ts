@@ -1,0 +1,80 @@
+import { render } from "lit-html";
+import {
+	medCardTemplate,
+	mountMedIndex,
+	placeholderCardTemplate,
+	startingIndication,
+} from "./components";
+import { getSavedProvince, PROVINCE_EVENT, setProvince } from "./constants";
+import type { MedicationDatabase } from "./schema";
+
+/**
+ * Initializes the medications app by fetching the JSON database once and mounting lit-html components
+ */
+async function initMedications() {
+	// Already parsed by zod at build time (build-validate-medications.mts writes the parsed output), so no client-side validation
+	let db: MedicationDatabase;
+	try {
+		const res = await fetch("/toml/medications.json");
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+		db = await res.json();
+	} catch (e) {
+		console.error("Failed to load medication JSON data", e);
+		return;
+	}
+
+	// Check for the full Index App mount
+	const indexMount = document.getElementById("med-index-mount");
+	if (indexMount) {
+		console.log("Mounting Med Index App");
+		mountMedIndex(db, indexMount);
+	}
+
+	// Check for Popup Islands
+	const islandMounts = document.querySelectorAll(".med-card-mount");
+	islandMounts.forEach((mount) => {
+		const drugId = mount.getAttribute("data-drug-id");
+		if (drugId && db[drugId]) {
+			console.log(`Mounting Med Card for ${drugId}`);
+			let currentProv = getSavedProvince();
+			// Popups can start on the page's indication, e.g. the CRSwNP page opens dupilumab on CRSwNP
+			const startInd = startingIndication(
+				db[drugId],
+				mount.getAttribute("data-indication"),
+			);
+			let currentIndication = startInd;
+
+			const renderIsland = () => {
+				render(
+					medCardTemplate(
+						db[drugId],
+						currentProv,
+						setProvince, // the listener below updates currentProv and re-renders
+						currentIndication,
+						(newInd) => {
+							currentIndication = newInd;
+							// This callback exists solely to keep currentIndication in sync
+						},
+						true,
+						startInd,
+					),
+					mount as HTMLElement,
+				);
+			};
+
+			document.addEventListener(PROVINCE_EVENT, (e: Event) => {
+				currentProv = (e as CustomEvent<string>).detail;
+				renderIsland();
+			});
+
+			renderIsland();
+		} else if (drugId) {
+			// "placeholder" marks a card not written yet; any other missing ID is likely a typo
+			if (drugId !== "placeholder")
+				console.warn(`Drug ID ${drugId} not found in database.`);
+			render(placeholderCardTemplate(), mount as HTMLElement);
+		}
+	});
+}
+
+document.addEventListener("DOMContentLoaded", initMedications);

@@ -6,14 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": [
-			"**",
-			"!_legacy_js",
-			"!templates",
-			"!netlify/functions/protected-content.js",
-			"!netlify/functions/protected-image.js",
-			"!package_abridge.js"
-		]
+		"includes": ["**", "!_legacy_js", "!templates", "!package_abridge.js"]
 	},
 	"formatter": {
 		"enabled": true,

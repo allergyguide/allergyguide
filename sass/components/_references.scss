@@ -1,0 +1,103 @@
+// Use your theme variables for dark/light mode
+:root {
+  /* Dark mode */
+  --ref_background: #1e1e1e;
+  --ref_text: #ffffff;
+  --ref_border: #444;
+  --ref_shadow: rgba(0, 0, 0, 0.5);
+  --ref_link: #1e90ff;
+  --ref_notes_bg: rgba(255, 255, 255, 0.05); // Subtle contrast against dark background
+  --ref_notes_text: #a3a3a3;
+}
+
+:root.switch {
+  /* Light mode */
+  --ref_background: #ffffff;
+  --ref_text: #000000;
+  --ref_border: #ccc;
+  --ref_shadow: rgba(0, 0, 0, 0.1);
+  --ref_link: #0645ad;
+  --ref_notes_bg: #f5f5f5; // Subtle contrast against light background
+  --ref_notes_text: #666666;
+}
+
+/* Reference icon style */
+.ref-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 0.2rem;
+  vertical-align: middle;
+  border-radius: 4px;
+  padding: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.ref-icon svg {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), fill 0.2s ease;
+  fill: var(--a1); // Your highlight color
+  width: 1rem;
+  height: 1rem;
+}
+
+.ref-icon:hover {
+  background-color: color-mix(in srgb, var(--a1) 10%, transparent);
+}
+
+.ref-icon:hover svg {
+  transform: scale(1.1) translateY(-1px);
+}
+
+/* Individual reference entry styling inside modal */
+.ref-entry {
+  margin-bottom: 1.5rem;
+}
+
+/* Styling for the reference text and notes */
+.ref-text {
+  margin: 0 0 0.5rem 0;
+  color: inherit;
+  text-indent: -1.5rem; // Creates the hanging indent
+  padding-left: 1.5rem; // Indents all lines except the first one
+  display: block; // Ensures it behaves correctly in different contexts
+  font-size: 1rem;
+  line-height: 1.5;
+
+  a {
+    color: inherit;
+    font-weight: normal;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.ref-notes {
+  color: var(--ref_notes_text);
+  background-color: var(--ref_notes_bg);
+  padding: 0.875rem;
+  border-radius: 6px;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.ref-separator {
+  border: none;
+  height: 1px;
+  background: var(--ref_border);
+  margin: 1.5rem 0;
+}
+
+.ref-bib {
+  padding-left: 2rem;
+  
+  .item {
+    text-indent: -2rem;
+    padding-left: 0;
+    margin-bottom: 0.5rem;
+  }
+}

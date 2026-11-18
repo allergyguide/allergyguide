@@ -15,7 +15,7 @@ authors = ["Allergyguide"]
 <div style="margin-top: 1rem;">
 </div>
 
-{% admonition(type="note", icon="note", title="Quick start") %}
+{% <admonition type="note" icon="note" title="Quick start"> %}
 Tool is derived directly from the [Cochrane Risk of Bias assessment tool](https://methods.cochrane.org/risk-bias-2), licensed under CC BY-NC-ND 4.0. Higgins (2019).
 
 <br>
@@ -28,6 +28,6 @@ See [here](@/contribute_guides/rob_2_guide.md) for an abridged guide to the tool
 
 Click the overall button to copy a summary of the results. Unless you click the above button or clear your cache, your selections/text will be saved.
 
-{% end %}
+{% </admonition> %}
 
-{{rob_2()}}
+{{ <rob_2 /> }}

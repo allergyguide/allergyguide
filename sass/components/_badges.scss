@@ -1,0 +1,24 @@
+/* Topic status chips (status_badge component). not-started has no chip; it is muted via .is-not-started. */
+.status-badge {
+  --badge-hue: var(--core-ink-muted);
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  border-radius: 9999px;
+  color: color-mix(in oklch, var(--badge-hue) 75%, var(--core-ink));
+  background-color: color-mix(in oklch, var(--badge-hue) 16%, transparent);
+  user-select: none;
+}
+
+.badge-wip {
+  --badge-hue: var(--core-warning);
+}
+
+.badge-ready {
+  --badge-hue: var(--core-success);
+}

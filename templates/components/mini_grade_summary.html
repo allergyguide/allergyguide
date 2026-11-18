@@ -1,0 +1,21 @@
+{# score: an int within 0 and 4 inclusive #}
+{% component mini_grade_summary(score)  %}
+{% if score not in [0,1,2,3,4] %}
+{{ throw(message=score ~ " is not a valid score for grade. Must be within [0,4]") }}
+{% endif %}
+<div class="mini-grade-summary-table">
+<table>
+<tr>
+{% for i in range(start=0, end=4) %}
+<td>
+{% if i < score %}
+<span class="circle filled">+</span>
+{% else %}
+<span class="circle empty"></span>
+{% endif %}
+</td>
+{% endfor %}
+</tr>
+</table>
+</div>
+{% endcomponent %}

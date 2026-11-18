@@ -1,7 +1,9 @@
 import { html, nothing, render } from "lit-html";
+import { validateCustomFoodAgainstStandard } from "../../core/validator";
 import { appState } from "../../state/instances";
 import { type Food, FoodType, SourceType } from "../../types";
 import { getMeasuringUnit } from "../../utils";
+import { renderFoodValidationNotice, validateFoodName } from "./FoodSettings";
 
 interface SaveModalOptions {
 	title: string;
@@ -134,26 +136,29 @@ export function showSaveFoodModal(options: SaveFoodModalOptions) {
 		: options.food.name;
 	let errorMsg = "";
 
+	const getStandardWarning = (name: string): string => {
+		if (!appState?.getStandardFoods) return "";
+		const tempFood: Food = {
+			...options.food,
+			name,
+		};
+		const standardWarnings = validateCustomFoodAgainstStandard(
+			tempFood,
+			appState.getStandardFoods(),
+		);
+		return standardWarnings.length > 0 ? standardWarnings[0].message : "";
+	};
+
+	let standardWarningMsg = "";
+
 	const validateName = (name: string): string => {
-		const trimmed = name.trim();
-		if (trimmed.length === 0) return "Name cannot be empty.";
-
 		const idToExclude = options.saveAsNew ? undefined : options.food.id;
-
-		const isDuplicate = appState
-			.getUserFoods()
-			.some(
-				(f) =>
-					f.name.toLowerCase() === trimmed.toLowerCase() &&
-					(f as { id?: string }).id !== idToExclude,
-			);
-		if (isDuplicate) return "A food with this name already exists.";
-
-		return "";
+		return validateFoodName(name, idToExclude);
 	};
 
 	// Initial validation
 	errorMsg = validateName(currentName);
+	standardWarningMsg = getStandardWarning(currentName);
 
 	const renderModal = () => {
 		const template = () => html`
@@ -173,11 +178,13 @@ export function showSaveFoodModal(options: SaveFoodModalOptions) {
 						@input=${(e: Event) => {
 							currentName = (e.target as HTMLInputElement).value;
 							errorMsg = validateName(currentName);
+							standardWarningMsg = getStandardWarning(currentName);
 							renderModal();
 						}}
 						@keydown=${(e: KeyboardEvent) => {
 							currentName = (e.target as HTMLInputElement).value;
 							errorMsg = validateName(currentName);
+							standardWarningMsg = getStandardWarning(currentName);
 							if (e.key === "Enter" && errorMsg === "")
 								options.onSave(currentName);
 							if (e.key === "Escape") options.onCancel();
@@ -185,7 +192,7 @@ export function showSaveFoodModal(options: SaveFoodModalOptions) {
 						placeholder="Enter food name..."
 						autocomplete="off"
 					/>
-					${errorMsg ? html`<div class="oit-error-message">${errorMsg}</div>` : nothing}
+					${renderFoodValidationNotice(errorMsg, standardWarningMsg)}
 				</div>
 
 				<div class="oit-food-summary">

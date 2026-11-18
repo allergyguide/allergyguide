@@ -1,0 +1,10 @@
+{% component two_columns_fancy() %}
+<div class="two_columns_fancy">
+<div class="column">
+{{ body | split(pat="<!-- split -->") | first | markdown | safe }}
+</div>
+<div class="column">
+{{ body | split(pat="<!-- split -->") | last | markdown | safe }}
+</div>
+</div>
+{% endcomponent two_columns_fancy %}

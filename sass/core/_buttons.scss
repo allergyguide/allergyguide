@@ -38,7 +38,7 @@
 
 .core-btn-primary {
   background-color: $core-color-primary;
-  color: #fff; // High contrast on brand orange
+  color: $core-color-on-primary;
 
   &:hover:not(:disabled) {
     background-color: $core-color-primary-dark;

@@ -1,0 +1,10 @@
+{% component status_badge(status) %}
+{# Topic status chip. not-started renders nothing: those topics are muted via the parent's status class instead. #}
+{% if status == "wip" %}
+<span class="status-badge badge-wip">In progress</span>
+{% elif status == "ready" %}
+<span class="status-badge badge-ready">Ready</span>
+{% elif status != "not-started" %}
+{{ throw(message = status ~ " is not a valid option. Only not-started, wip, or ready are accepted.") }}
+{% endif %}
+{% endcomponent %}

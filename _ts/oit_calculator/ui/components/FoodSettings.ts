@@ -1,6 +1,7 @@
 import Decimal from "decimal.js";
 import { html, nothing, render } from "lit-html";
 import { live } from "lit-html/directives/live.js";
+import { validateCustomFoodAgainstStandard } from "../../core/validator";
 import { appState, workspace } from "../../state/instances";
 import type { ProtocolState } from "../../state/protocolState";
 import type { WorkspaceManager } from "../../state/workspaceManager";
@@ -21,7 +22,11 @@ import {
 } from "../actions/settingsActions";
 import { saveCustomFood } from "../actions/vaultActions";
 
-const validateFoodName = (name: string, currentId?: string): string => {
+// Show at least 1 decimal, but never hide extra precision from curated values (e.g. CNF 9.54), so what is shown is what is calculated
+const formatFoodInput = (d: Decimal) =>
+	d.decimalPlaces() > 1 ? d.toString() : d.toFixed(1);
+
+export const validateFoodName = (name: string, currentId?: string): string => {
 	const trimmed = name.trim();
 	if (trimmed.length === 0) return "Name cannot be empty.";
 
@@ -36,6 +41,28 @@ const validateFoodName = (name: string, currentId?: string): string => {
 
 	return "";
 };
+
+/**
+ * Renders consolidated inline validation feedback (blocking error or non-blocking caution).
+ */
+export function renderFoodValidationNotice(
+	errorMsg?: string,
+	warningMsg?: string,
+) {
+	if (errorMsg) {
+		return html`<div class="oit-error-message oit-slide-up">${errorMsg}</div>`;
+	}
+	if (warningMsg) {
+		return html`<div class="oit-warning-message oit-slide-up">
+			<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16" aria-hidden="true">
+				<path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+				<path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+			</svg>
+			${warningMsg}
+		</div>`;
+	}
+	return nothing;
+}
 
 /**
  * Helper to render source badges (BRAND, USER) and food metadata pills
@@ -169,7 +196,14 @@ const baseFoodForm = (
 	const isCapsule = food.type === FoodType.CAPSULE;
 	const unit = food.type === FoodType.SOLID ? "g" : "ml";
 
-	const errorMsg = validateFoodName(food.name, food.id);
+	const errorMsg =
+		food.source === SourceType.USER ? validateFoodName(food.name, food.id) : "";
+	const standardWarnings =
+		food.source === SourceType.USER && appState?.getStandardFoods
+			? validateCustomFoodAgainstStandard(food, appState.getStandardFoods())
+			: [];
+	const standardWarningMsg =
+		standardWarnings.length > 0 ? standardWarnings[0].message : "";
 
 	// --- DIRTY & DRIFT CALCULATION ---
 	let driftTooltip = "";
@@ -183,7 +217,7 @@ const baseFoodForm = (
 		} else {
 			const masterFood = appState.foodsById.get(food.id);
 			if (!masterFood) {
-				driftTooltip = `⚠️ ${food.name} is not in your custom library.`;
+				driftTooltip = `${food.name} is not in your custom library.`;
 				isDirty = true; // Mark as dirty so they can Save/Restore it
 			} else {
 				const masterProtein = new Decimal(masterFood.gramsInServing);
@@ -295,11 +329,7 @@ const baseFoodForm = (
 />
 ${renderBadge(food, isDirty, errorMsg, targetSlot, driftTooltip)}
 </div>
-${
-	errorMsg
-		? html`<div class="oit-error-message oit-slide-up">${errorMsg}</div>`
-		: nothing
-}
+${renderFoodValidationNotice(errorMsg, standardWarningMsg)}
 
 <div class="setting-row">
       <label>Protein:</label>
@@ -308,7 +338,7 @@ ${
           type="number"
           min="0"
           id="${idPrefix}-protein"
-          .value="${live(food.gramsInServing.toFixed(1))}"
+          .value="${live(formatFoodInput(food.gramsInServing))}"
           step="0.1"
           ?disabled="${isCapsule}"
           @change="${(e: Event) => handlers.onProtein(state, (e.target as HTMLInputElement).value)}"
@@ -318,7 +348,7 @@ ${
           type="number"
           min="0"
           id="${idPrefix}-serving-size"
-          .value="${live(food.servingSize.toFixed(1))}"
+          .value="${live(formatFoodInput(food.servingSize))}"
           step="0.1"
           ?disabled="${isCapsule}"
           @change="${(e: Event) => handlers.onServing(state, (e.target as HTMLInputElement).value)}"

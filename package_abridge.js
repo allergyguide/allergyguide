@@ -8,10 +8,16 @@ const { exec } = require("child_process");
 const { exit } = require("process");
 const execPromise = util.promisify(exec);
 
-if (!fs.existsSync("config.toml")) {
-	throw new Error("ERROR: cannot find config.toml!");
+const configFile = fs.existsSync("zola.toml")
+	? "zola.toml"
+	: fs.existsSync("config.toml")
+		? "config.toml"
+		: null;
+
+if (!configFile) {
+	throw new Error("ERROR: cannot find zola.toml or config.toml!");
 }
-const tomlString = String(fs.readFileSync("config.toml"));
+const tomlString = String(fs.readFileSync(configFile));
 const data = TOML.parse(tomlString);
 const js_prestyle = data.extra.js_prestyle;
 const js_switcher = data.extra.js_switcher;
@@ -64,32 +70,32 @@ async function abridge() {
 	// set index_format for chosen search_library accordingly.
 	if (search_library === "offline") {
 		replaceInFileSync({
-			files: "config.toml",
+			files: configFile,
 			from: /index_format.*=.*/g,
 			to: 'index_format = "elasticlunr_javascript"',
 		});
 		args = args + ' -u "' + __dirname + '\/public"'; //set base_url to the path on disk for offline site.
 	} else if (search_library === "elasticlunrjava") {
 		replaceInFileSync({
-			files: "config.toml",
+			files: configFile,
 			from: /index_format.*=.*/g,
 			to: 'index_format = "elasticlunr_javascript"',
 		});
 	} else if (search_library === "elasticlunr") {
 		replaceInFileSync({
-			files: "config.toml",
+			files: configFile,
 			from: /index_format.*=.*/g,
 			to: 'index_format = "elasticlunr_json"',
 		});
 	} else if (search_library === "pagefind") {
 		replaceInFileSync({
-			files: "config.toml",
+			files: configFile,
 			from: /index_format.*=.*/g,
 			to: 'index_format = "fuse_json"',
 		});
 	} else if (search_library === "tinysearch") {
 		replaceInFileSync({
-			files: "config.toml",
+			files: configFile,
 			from: /index_format.*=.*/g,
 			to: 'index_format = "fuse_json"',
 		});
@@ -524,7 +530,7 @@ function minify(fileA, outfile) {
 async function searchChange(searchOption) {
 	const { replaceInFileSync } = await import("replace-in-file");
 	replaceInFileSync({
-		files: "config.toml",
+		files: configFile,
 		from: /search_library.*=.*/g,
 		to: 'search_library = \"' + searchOption + '\"',
 	});
@@ -709,11 +715,12 @@ async function sync() {
 	//   exit(1);
 	// }
 
-	const configToml = path.join(__dirname, "config.toml");
-	const submoduleConfigToml = path.join(
-		__dirname,
-		"themes/abridge/config.toml",
-	);
+	const configToml = path.join(__dirname, configFile);
+	const submoduleConfigToml = fs.existsSync(
+		path.join(__dirname, "themes/abridge/zola.toml"),
+	)
+		? path.join(__dirname, "themes/abridge/zola.toml")
+		: path.join(__dirname, "themes/abridge/config.toml");
 
 	let adjustTomlContent = function (content) {
 		content = content.replace(/^\s+|\s+$|\s+(?=\s)/g, ""); // Remove all leading and trailing whitespaces and multiple whitespaces
@@ -738,7 +745,7 @@ async function sync() {
 		console.log(
 			"\x1b[34m%s\x1b[0m",
 			"info:",
-			"The config.toml file format may have changed, please update it manually.",
+			`The ${configFile} file format may have changed, please update it manually.`,
 		);
 	}
 }
